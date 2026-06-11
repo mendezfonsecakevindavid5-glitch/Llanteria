@@ -244,66 +244,68 @@
             const seccionResultados = document.getElementById("resultadosBusqueda");
             const contenedorTarjetas = document.getElementById("contenedorTarjetas");
 
-            btnBuscar.addEventListener("click", function () {
-                const ancho = document.getElementById("anchoSelect").value;
-                const perfil = document.getElementById("perfilSelect").value;
-                const diametro = document.getElementById("diametroSelect").value;
+            if (btnBuscar) {
+                btnBuscar.addEventListener("click", function () {
+                    const ancho = document.getElementById("anchoSelect").value;
+                    const perfil = document.getElementById("perfilSelect").value;
+                    const diametro = document.getElementById("diametroSelect").value;
 
-                if (!ancho || !perfil || !diametro) {
-                    Swal.fire({
-                        title: 'Faltan medidas',
-                        text: 'Por favor selecciona Ancho, Perfil y Diámetro para realizar la búsqueda.',
-                        icon: 'warning',
-                        confirmButtonColor: '#C92B0A',
-                        confirmButtonText: 'Entendido'
-                    });
-                    return;
-                }
+                    if (!ancho || !perfil || !diametro) {
+                        Swal.fire({
+                            title: 'Faltan medidas',
+                            text: 'Por favor selecciona Ancho, Perfil y Diámetro para realizar la búsqueda.',
+                            icon: 'warning',
+                            confirmButtonColor: '#C92B0A',
+                            confirmButtonText: 'Entendido'
+                        });
+                        return;
+                    }
 
-                const resultados = catalogoPrueba.filter(llanta =>
-                    llanta.ancho === ancho && llanta.perfil === perfil && llanta.diametro === diametro
-                );
+                    const resultados = catalogoPrueba.filter(llanta =>
+                        llanta.ancho === ancho && llanta.perfil === perfil && llanta.diametro === diametro
+                    );
 
-                contenedorTarjetas.innerHTML = "";
+                    contenedorTarjetas.innerHTML = "";
 
-                if (resultados.length > 0) {
-                    resultados.forEach(llanta => {
-                        const cardHTML = `
-                            <div class="col-md-4">
-                                <div class="card border-0 shadow-sm rounded-xl overflow-hidden h-100 bg-white category-card">
-                                    <div class="position-relative">
-                                        <img src="${llanta.img}" class="img-fluid w-100" style="height: 220px; object-fit: cover;" alt="${llanta.nombre}">
-                                        <span class="position-absolute top-0 end-0 bg-dark text-white fw-bold px-3 py-1 m-2 small rounded-pill bg-primary-llanteria">¡Disponible!</span>
-                                    </div>
-                                    <div class="p-4">
-                                        <span class="badge bg-light text-dark border text-uppercase mb-2">${llanta.ancho}/${llanta.perfil} R${llanta.diametro}</span>
-                                        <h5 class="fw-bold text-dark mb-1">${llanta.nombre}</h5>
-                                        <p class="text-muted small mb-3">Neumático de alta calidad optimizado para el clima y las vías de Valledupar.</p>
-                                        <div class="d-flex justify-content-between align-items-center mt-3">
-                                            <span class="fs-5 fw-bold text-success">${llanta.precio}</span>
-                                            <a href="#contacto" class="btn btn-llanteria-action btn-sm fw-bold px-3 py-2 rounded-3">
-                                                <i class="fa-brands fa-whatsapp me-1"></i> Cotizar
-                                            </a>
+                    if (resultados.length > 0) {
+                        resultados.forEach(llanta => {
+                            const cardHTML = `
+                                <div class="col-md-4">
+                                    <div class="card border-0 shadow-sm rounded-xl overflow-hidden h-100 bg-white category-card">
+                                        <div class="position-relative">
+                                            <img src="${llanta.img}" class="img-fluid w-100" style="height: 220px; object-fit: cover;" alt="${llanta.nombre}">
+                                            <span class="position-absolute top-0 end-0 bg-dark text-white fw-bold px-3 py-1 m-2 small rounded-pill bg-primary-llanteria">¡Disponible!</span>
+                                        </div>
+                                        <div class="p-4">
+                                            <span class="badge bg-light text-dark border text-uppercase mb-2">${llanta.ancho}/${llanta.perfil} R${llanta.diametro}</span>
+                                            <h5 class="fw-bold text-dark mb-1">${llanta.nombre}</h5>
+                                            <p class="text-muted small mb-3">Neumático de alta calidad optimizado para el clima y las vías de Valledupar.</p>
+                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                                <span class="fs-5 fw-bold text-success">${llanta.precio}</span>
+                                                <a href="#contacto" class="btn btn-llanteria-action btn-sm fw-bold px-3 py-2 rounded-3">
+                                                    <i class="fa-brands fa-whatsapp me-1"></i> Cotizar
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                            `;
+                            contenedorTarjetas.innerHTML += cardHTML;
+                        });
+                    } else {
+                        contenedorTarjetas.innerHTML = `
+                            <div class="col-12 text-center py-5">
+                                <i class="fa-solid fa-circle-info text-muted display-4 mb-3"></i>
+                                <h5 class="fw-bold text-dark">Medida sin existencias en vitrina</h5>
+                                <p class="text-muted">No encontramos resultados exactos para esa medida, pero la podemos solicitar a bodega central. ¡Escríbenos en la sección de contacto!</p>
                             </div>
                         `;
-                        contenedorTarjetas.innerHTML += cardHTML;
-                    });
-                } else {
-                    contenedorTarjetas.innerHTML = `
-                        <div class="col-12 text-center py-5">
-                            <i class="fa-solid fa-circle-info text-muted display-4 mb-3"></i>
-                            <h5 class="fw-bold text-dark">Medida sin existencias en vitrina</h5>
-                            <p class="text-muted">No encontramos resultados exactos para esa medida, pero la podemos solicitar a bodega central. ¡Escríbenos en la sección de contacto!</p>
-                        </div>
-                    `;
-                }
+                    }
 
-                seccionResultados.classList.remove("d-none");
-                seccionResultados.scrollIntoView({ behavior: 'smooth' });
-            });
+                    seccionResultados.classList.remove("d-none");
+                    seccionResultados.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
         });
     </script>
 }
