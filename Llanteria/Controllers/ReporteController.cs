@@ -36,15 +36,14 @@ public class ReporteController : Controller
 
     public IActionResult GenerarGeneral(DateTime fechaInicio, DateTime fechaFin)
     {
-        // 1. Traemos los datos a memoria
+        // 1. Traemos TODOS los datos de la base de datos a memoria (incluyendo el Cliente de la factura)
         var listaFacturas = _context.Facturas.Include(f => f.IdClienteNavigation).ToList();
         var listaGastos = _context.Gastos.ToList();
 
-        // 2. Filtramos comparando año, mes y día
+        // 2. Filtramos minuciosamente por el rango de fechas seleccionado (año, mes y día)
         var model = new ReporteGeneralViewModel
         {
             Facturas = listaFacturas.Where(f => f.Fecha.HasValue &&
-                                                // Creamos un objeto DateTime nuevo solo para comparar
                                                 new DateTime(f.Fecha.Value.Year, f.Fecha.Value.Month, f.Fecha.Value.Day) >= fechaInicio.Date &&
                                                 new DateTime(f.Fecha.Value.Year, f.Fecha.Value.Month, f.Fecha.Value.Day) <= fechaFin.Date)
                                     .ToList(),
@@ -55,6 +54,10 @@ public class ReporteController : Controller
                                 .ToList()
         };
 
-        return new ViewAsPdf("ReporteGeneral", model);
+        // 3. Forzamos a Rotativa a usar la vista "ReporteFacturas" (que es donde tienes este diseño) pasándole el modelo correcto
+        return new ViewAsPdf("ReporteFacturas", model)
+        {
+            FileName = $"Reporte_General_{DateTime.Now:yyyyMMdd}.pdf"
+        };
     }
 }
