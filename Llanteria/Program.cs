@@ -26,6 +26,8 @@ builder.Services.AddScoped<MarcaService>();
 builder.Services.AddScoped<BodegaService>();
 builder.Services.AddScoped<TipoServicioService>();
 builder.Services.AddScoped<CatalogoIncentivoService>();
+// Registrar el servicio de Perfil para la Inyección de Dependencias
+builder.Services.AddScoped<Llanteria.Services.IPerfilService, Llanteria.Services.PerfilService>();
 
 // Cambia tu línea actual por esta:
 Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath);

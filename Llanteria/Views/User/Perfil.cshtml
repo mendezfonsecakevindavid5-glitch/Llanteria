@@ -1,0 +1,236 @@
+﻿@model Llanteria.Models.PerfilUsuarioViewModel
+@{
+    ViewData["Title"] = "Mi Perfil Profesional";
+}
+
+<style>
+    /* Estilos Premium para la gestión del Perfil */
+    .avatar-wrapper {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto;
+    }
+
+    .avatar-preview {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        border: 4px solid #ffffff;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease;
+    }
+
+    .avatar-wrapper:hover .avatar-preview {
+        transform: scale(1.02);
+    }
+
+    .avatar-upload-btn {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background-color: #000000;
+        color: #ffffff;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+    }
+
+        .avatar-upload-btn:hover {
+            background-color: #C92B0A;
+            transform: scale(1.1);
+        }
+
+    .card-profile-premium {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    .form-label-custom {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #6c757d;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.4rem;
+    }
+
+    .form-control-custom {
+        border-radius: 8px;
+        padding: 0.65rem 1rem;
+        border: 1px solid #dee2e6;
+    }
+
+        .form-control-custom:focus {
+            border-color: #C92B0A;
+            box-shadow: 0 0 0 0.25rem rgba(201, 43, 10, 0.15);
+        }
+</style>
+
+<div class="container py-5">
+    <form asp-controller="User" asp-action="ActualizarPerfil" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card card-profile-premium text-center p-4 bg-white">
+
+                    <div class="avatar-wrapper mb-3">
+                        <img id="previewFoto" src="@(string.IsNullOrEmpty(Model.FotoBase64) ? "/images/default-user.png" : Model.FotoBase64)"
+                             class="avatar-preview" alt="Foto de perfil"
+                             onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'" />
+
+                        <label for="uploadFoto" class="avatar-upload-btn">
+                            <i class="fa-solid fa-camera"></i>
+                            <input type="file" id="uploadFoto" asp-for="NuevaFoto" hidden accept="image/*" onchange="previewImage(event)" />
+                        </label>
+                    </div>
+
+                    <h4 class="fw-bold text-dark mb-0">@Model.Nombre</h4>
+                    <span class="badge bg-light text-muted px-3 py-2 rounded-pill mb-4 mt-1 border">Cliente Digital</span>
+
+                    <div class="p-3 rounded-3 text-white text-start shadow-sm" style="background: linear-gradient(135deg, #000000 0%, #222222 100%); border-left: 5px solid #C92B0A;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <small class="text-uppercase tracking-wider fw-bold text-muted d-block mb-1" style="font-size: 0.7rem;">Club Llantería</small>
+                                <h5 class="m-0 fw-bold">Puntos KM</h5>
+                            </div>
+                            <div>
+                                <span class="display-6 fw-bold" style="color: #C92B0A !important;">@Model.Puntos</span>
+                            </div>
+                        </div>
+                        <div class="mt-2 pt-2 border-top border-secondary">
+                            <small class="small text-muted text-secondary" style="font-size: 0.75rem;">
+                                <i class="fa-solid fa-circle-check me-1 text-success"></i>¡Medidas de llanta seguras!
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card card-profile-premium p-4 bg-white">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="p-2 rounded-3 me-3 text-white" style="background-color: #C92B0A;">
+                            <i class="fa-solid fa-user-sliders fa-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold text-dark m-0">Información del Perfil</h4>
+                            <p class="text-muted small m-0">Personaliza tus preferencias de navegación e información del vehículo.</p>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Nombre Completo</label>
+                            <input asp-for="Nombre" class="form-control form-control-custom" placeholder="Ej. Juan Pérez" />
+                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Correo Electrónico</label>
+                            <input asp-for="Correo" class="form-control form-control-custom bg-light" readonly />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Teléfono / WhatsApp</label>
+                            <input asp-for="Telefono" class="form-control form-control-custom" placeholder="Ej. 3001234567" />
+                            <span asp-validation-for="Telefono" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Dirección de Residencia</label>
+                            <input asp-for="Direccion" class="form-control form-control-custom" placeholder="Calle, Carrera, Barrio" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Preferencia de Tema</label>
+                            <select asp-for="TemaPreferencia" class="form-select form-control-custom">
+                                <option value="Light">Claro (Predeterminado)</option>
+                                <option value="Dark">Oscuro Premium</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label-custom">Notas del Vehículo / Biografía</label>
+                            <textarea asp-for="Bio" class="form-control form-control-custom" rows="3" placeholder="Ej: Tengo una camioneta Hilux 4x4, prefiero llantas A/T para terreno difícil..."></textarea>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <div class="form-check form-switch p-3 bg-light rounded-3 d-flex align-items-center justify-content-between px-3">
+                                <label class="form-check-label fw-bold text-dark m-0 fs-6" for="NotificacionesActivas">
+                                    <i class="fa-solid fa-bell text-warning me-2"></i>Alertas de Promociones
+                                </label>
+                                <input class="form-check-input ms-0" type="checkbox" asp-for="NotificacionesActivas" style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                            </div>
+                            <small class="text-muted d-block mt-1 ms-1">Te avisaremos inmediatamente cuando las llantas que buscas bajen de precio en Valledupar.</small>
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-4">
+                        <button type="submit" class="btn text-white px-5 py-2.5 fw-bold text-uppercase shadow-sm" style="background-color: #C92B0A; border-radius: 8px;">
+                            <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Configuración
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    const output = document.getElementById('previewFoto');
+                    output.src = reader.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: '¡Excelente!',
+                    text: '@TempData["SuccessMessage"]',
+                    icon: 'success',
+                    confirmButtonColor: '#C92B0A',
+                    confirmButtonText: 'Entendido'
+                });
+            });
+        </script>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: 'Hubo un problema',
+                    text: '@TempData["ErrorMessage"]',
+                    icon: 'error',
+                    confirmButtonColor: '#000000',
+                    confirmButtonText: 'Reintentar'
+                });
+            });
+        </script>
+    }
+}

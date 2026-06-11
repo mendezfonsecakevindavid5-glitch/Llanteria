@@ -63,8 +63,6 @@
                         </li>
                     </ul>
 
-                </div>
-
                     <ul class="navbar-nav ms-auto d-flex flex-row align-items-center gap-2 mt-2 mt-lg-0">
                         <li class="nav-item">
                             <a class="btn btn-outline-danger btn-sm fw-bold px-3 py-2 rounded-pill shadow-sm" style="color: #C92B0A; border-color: #C92B0A;" asp-controller="Account" asp-action="Register">
@@ -78,8 +76,13 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" aria-labelledby="userMenu">
                                 <li>
-                                    <a class="dropdown-item py-2 fw-bold" style="color: #C92B0A;" asp-controller="Dashboard" asp-action="Index">
-                                        <i class="fa-solid fa-user-gear me-2"></i> Panel de Control
+                                    <a class="dropdown-item py-2 fw-bold text-dark" asp-controller="Dashboard" asp-action="Index">
+                                        <i class="fa-solid fa-chart-line me-2 text-muted"></i> Panel de Control
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2 fw-bold" style="color: #C92B0A;" asp-controller="User" asp-action="Perfil">
+                                        <i class="fa-solid fa-user-gear me-2"></i> Mi Perfil
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
