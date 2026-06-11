@@ -15,22 +15,23 @@
                 scroll-behavior: smooth;
                 scroll-padding-top: 75px;
             }
+            /* Efecto premium para el menú activo */
+            .nav-link {
+                transition: color 0.2s ease-in-out;
+            }
+
+                .nav-link:hover {
+                    color: #C92B0A !important;
+                }
     </style>
 </head>
 <body>
     <header class="sticky-top shadow-sm" style="z-index: 1050; background-color: #ffffff;">
-        @{
-            var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
-            var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
-            bool isHomeIndex = (currentController == "Home" && currentAction == "Index");
-            string basePath = isHomeIndex ? "" : "/Home/Index";
-        }
-
         <nav class="navbar navbar-expand-lg navbar-light bg-white py-2">
             <div class="container-fluid px-4">
 
                 <a class="navbar-brand fw-bold text-dark me-4" asp-controller="Home" asp-action="Index">
-                    <i class="fa-solid fa-screwdriver-wrench text-warning me-2"></i>Llantería<span class="text-primary">DB</span>
+                    <i class="fa-solid fa-screwdriver-wrench text-danger me-2" style="color: #C92B0A !important;"></i>Llantería<span style="color: #C92B0A;">Valledupar</span>
                 </a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,40 +41,42 @@
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav mx-auto align-items-center gap-1">
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold px-3" href="@basePath#inicio">Inicio</a>
+                            <a class="nav-link fw-semibold px-3" asp-controller="Home" asp-action="Index">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold px-3" href="@basePath#categorias">Categorías</a>
+                            <a class="nav-link fw-semibold px-3" href="/#categorias">Categorías</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold px-3" href="@basePath#nosotros">Sobre Nosotros</a>
+                            <a class="nav-link fw-semibold px-3" asp-controller="Nosotros" asp-action="Index">Sobre Nosotros</a>
+                        </li>
+                        <li> class="nav-item">
+                        <a class="nav-link fw-semibold px-3" asp-controller="Promociones" asp-action="Index">Promociones</a>
+                       </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold px-3" asp-controller="Servicios" asp-action="Index">Servicios</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold px-3" href="@basePath#servicios">Servicios</a>
+                            <a class="nav-link fw-semibold px-3" href="/#productos">Productos</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold px-3" href="@basePath#productos">Productos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link fw-semibold px-3" href="@basePath#contacto">Contacto</a>
+                            <a class="nav-link fw-semibold px-3" asp-controller="Contacto" asp-action="Index">Contacto</a>
                         </li>
                     </ul>
 
                     <ul class="navbar-nav ms-auto d-flex flex-row align-items-center gap-2 mt-2 mt-lg-0">
                         <li class="nav-item">
-                            <a class="btn btn-outline-warning btn-sm fw-bold px-3 py-2 rounded-pill shadow-sm text-dark" asp-controller="Account" asp-action="Register">
-                                <i class="fa-solid fa-star me-1 text-warning"></i> ¡Gana Puntos!
+                            <a class="btn btn-outline-danger btn-sm fw-bold px-3 py-2 rounded-pill shadow-sm" style="color: #C92B0A; border-color: #C92B0A;" asp-controller="Account" asp-action="Register">
+                                <i class="fa-solid fa-star me-1"></i> ¡Gana Puntos!
                             </a>
                         </li>
 
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle btn btn-primary btn-sm px-3 py-2 text-white fw-bold rounded-3 shadow-sm d-flex align-items-center gap-1" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle btn text-white btn-sm px-3 py-2 fw-bold rounded-3 shadow-sm d-flex align-items-center gap-1" style="background-color: #000000; border: none;" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa-solid fa-circle-user"></i> Mi Cuenta
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" aria-labelledby="userMenu">
                                 <li>
-                                    <!-- Corregido: Apunta al Dashboard principal de administración -->
-                                    <a class="dropdown-item py-2 fw-bold text-primary" asp-controller="Dashboard" asp-action="Index">
+                                    <a class="dropdown-item py-2 fw-bold" style="color: #C92B0A;" asp-controller="Dashboard" asp-action="Index">
                                         <i class="fa-solid fa-user-gear me-2"></i> Panel de Control
                                     </a>
                                 </li>
@@ -84,7 +87,6 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <!-- Corregido: Acción cambiada a "Login" para regresar a la pantalla de entrada al cerrar sesión -->
                                     <a class="dropdown-item text-danger py-2" asp-controller="Account" asp-action="Login">
                                         <i class="fa-solid fa-power-off me-2"></i> Cerrar Sesión
                                     </a>
@@ -111,6 +113,5 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
+    @await RenderSectionAsync("Scripts", required: false)</body>
 </html>
