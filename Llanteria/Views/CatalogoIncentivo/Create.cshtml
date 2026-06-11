@@ -1,0 +1,44 @@
+﻿@model Llanteria.Models.CatalogoIncentivo
+
+@{
+    ViewData["Title"] = "Nuevo Incentivo";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-success text-white text-center">
+                <h5 class="mb-0">Configurar Nuevo Premio</h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Create">
+                    <div class="mb-3">
+                        <label asp-for="NombrePremio" class="form-label fw-bold">Nombre del Premio</label>
+                        <input asp-for="NombrePremio" class="form-control" placeholder="Ej: Alineación Gratis" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Descripcion" class="form-label fw-bold">Descripción Corta</label>
+                        <textarea asp-for="Descripcion" class="form-control" rows="2" placeholder="Explique qué incluye el premio..."></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PuntosRequeridos" class="form-label fw-bold">Puntos Necesarios</label>
+                            <input asp-for="PuntosRequeridos" type="number" class="form-control" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StockDisponible" class="form-label fw-bold">Stock Inicial</label>
+                            <input asp-for="StockDisponible" type="number" class="form-control" value="0" />
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary">Publicar en Catálogo</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

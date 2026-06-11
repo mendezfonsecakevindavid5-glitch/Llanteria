@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Llanteria.Models.Marca>
+
+@{
+    ViewData["Title"] = "Gestión de Marcas";
+}
+
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="fa-solid fa-copyright"></i> Marcas Registradas</h4>
+        <a asp-action="Create" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-plus"></i> Nueva Marca
+        </a>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Nombre de la Marca</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><strong>@item.Nombre</strong></td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminar(@item.Id, '@item.Nombre')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmarEliminar(id, nombre) {
+            Swal.fire({
+                title: '¿Eliminar marca?',
+                text: "Se borrará: " + nombre + ". Asegúrate de que no tenga productos vinculados.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Marca/Delete/' + id;
+                }
+            })
+        }
+    </script>
+}

@@ -1,0 +1,119 @@
+﻿@model Llanteria.Models.Factura
+
+@{
+    ViewData["Title"] = "Nueva Venta";
+}
+
+<div class="container py-5" style="max-width: 900px;">
+
+    <!-- ENCABEZADO -->
+    <div class="mb-4 animate__animated animate__fadeIn">
+        <a asp-action="Index" class="text-muted text-decoration-none small fw-bold d-inline-flex align-items-center gap-2 mb-2 transition-transform hover-left">
+            <i class="fa-solid fa-arrow-left"></i> Volver al Historial
+        </a>
+        <h2 class="fw-black text-dark text-uppercase m-0 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-cart-plus text-success"></i> Registrar Nueva Venta
+        </h2>
+        <p class="text-muted small m-0">Completa la información para generar una nueva factura de venta en el sistema.</p>
+    </div>
+
+    <!-- TARJETA DEL FORMULARIO -->
+    <div class="card border-0 shadow-sm rounded-xl overflow-hidden animate__animated animate__fadeInUp">
+        <div class="card-body p-4 p-md-5 bg-white">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div class="row g-3">
+                    <!-- Cliente y Fecha -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select asp-for="IdCliente" class="form-select" asp-items="ViewBag.IdCliente" required>
+                                <option value="">-- Seleccione --</option>
+                            </select>
+                            <label asp-for="IdCliente" class="fw-semibold text-muted">Cliente</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="Fecha" class="form-control" type="date" required />
+                            <label asp-for="Fecha" class="fw-semibold text-muted">Fecha de Venta</label>
+                        </div>
+                    </div>
+
+                    <!-- Valores Financieros -->
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input asp-for="TotalBruto" class="form-control text-end fw-bold" type="number" step="0.01" placeholder="0" required />
+                            <label asp-for="TotalBruto" class="fw-semibold text-muted">Subtotal ($)</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input asp-for="Iva" class="form-control text-end fw-bold" type="number" step="0.01" placeholder="0" required />
+                            <label asp-for="Iva" class="fw-semibold text-muted">IVA ($)</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input asp-for="RteFte" class="form-control text-end fw-bold" type="number" step="0.01" placeholder="0" />
+                            <label asp-for="RteFte" class="fw-semibold text-muted">Retención ($)</label>
+                        </div>
+                    </div>
+
+                    <!-- Total Final -->
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <input asp-for="TotalPagar" class="form-control text-end fw-bold text-success fs-5" type="number" step="0.01" placeholder="0" required />
+                            <label asp-for="TotalPagar" class="fw-semibold text-success">Total a Pagar ($)</label>
+                        </div>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <textarea asp-for="Observaciones" class="form-control" style="height: 100px;" placeholder="Detalles"></textarea>
+                            <label asp-for="Observaciones" class="fw-semibold text-muted">Observaciones</label>
+                        </div>
+                    </div>
+
+                    <!-- BOTONES -->
+                    <div class="col-12 pt-3 border-top d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-light fw-bold px-4 py-2 rounded-3 border">Cancelar</a>
+                        <button type="submit" class="btn btn-success fw-bold px-4 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2 transition-transform">
+                            <i class="fa-solid fa-floppy-disk"></i> Generar Factura
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-xl {
+        border-radius: 12px !important;
+    }
+
+    .hover-left:hover {
+        transform: translateX(-4px);
+    }
+
+    .transition-transform {
+        transition: 0.2s;
+    }
+
+        .transition-transform:hover {
+            transform: translateY(-2px);
+        }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #198754;
+        box-shadow: 0 0 0 0.25px rgba(25, 135, 84, 0.25);
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

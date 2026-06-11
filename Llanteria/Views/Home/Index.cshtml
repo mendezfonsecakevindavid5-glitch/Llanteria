@@ -1,0 +1,468 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+}
+
+<style>
+    /* Paleta de Colores Corporativos */
+    :root {
+        --llanteria-primary: #C92B0A; /* Header superior y Footer */
+        --llanteria-dark: #000000; /* Enlaces de navegación e íconos principales */
+        --llanteria-light: #FFFFFF; /* Fondo del cuerpo y textos contrastantes */
+    }
+
+    body {
+        background-color: var(--llanteria-light);
+        color: var(--llanteria-dark);
+    }
+
+    /* Clases de Utilidad Personalizadas para la Paleta */
+    .text-primary-llanteria {
+        color: var(--llanteria-primary) !important;
+    }
+
+    .bg-primary-llanteria {
+        background-color: var(--llanteria-primary) !important;
+    }
+
+    .text-dark-llanteria {
+        color: var(--llanteria-dark) !important;
+    }
+
+    .bg-dark-llanteria {
+        background-color: var(--llanteria-dark) !important;
+    }
+
+    /* Adaptación de Botones y Detalles al Estilo Requerido */
+    .btn-llanteria-action {
+        background-color: var(--llanteria-primary);
+        color: var(--llanteria-light);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-llanteria-action:hover {
+            background-color: #a62308;
+            color: var(--llanteria-light);
+            transform: translateY(-2px);
+        }
+
+    .btn-llanteria-secondary {
+        background-color: var(--llanteria-dark);
+        color: var(--llanteria-light);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-llanteria-secondary:hover {
+            background-color: #222222;
+            color: var(--llanteria-light);
+            transform: translateY(-2px);
+        }
+
+    .accent-bar {
+        width: 60px;
+        height: 4px;
+        background-color: var(--llanteria-primary);
+        opacity: 1;
+    }
+
+    .category-card {
+        border: 1px solid #eaeaea;
+        transition: all 0.3s ease;
+    }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-color: var(--llanteria-primary);
+        }
+</style>
+
+<section id="inicio" class="position-relative text-white d-flex align-items-center" style="background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/images/Section-Image.avif') no-repeat center center/cover; min-height: 80vh;">
+    <div class="container text-center pt-5">
+        <span class="badge bg-primary-llanteria text-white text-uppercase tracking-wider px-3 py-2 rounded-pill fw-bold mb-3">Tecnología en Movimiento</span>
+        <h1 class="display-3 fw-black text-uppercase tracking-tight font-premium-title text-white">Encuentra la Llanta Ideal</h1>
+        <p class="lead font-premium-body max-width-600 mx-auto text-white">Selecciona las especificaciones técnicas de tu vehículo y conduce con seguridad.</p>
+    </div>
+</section>
+
+<div class="container position-relative" style="z-index: 25; margin-top: -60px;">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="floating-search-box p-4 backend-search-bar bg-white shadow-lg rounded-3">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select class="form-select bg-white" id="anchoSelect">
+                                <option value="">Cualquiera</option>
+                                <option value="185">185 mm</option>
+                                <option value="205">205 mm</option>
+                            </select>
+                            <label for="anchoSelect" class="fw-bold text-dark text-uppercase small">Ancho</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select class="form-select bg-white" id="perfilSelect">
+                                <option value="">Cualquiera</option>
+                                <option value="65">65 %</option>
+                                <option value="55">55 %</option>
+                            </select>
+                            <label for="perfilSelect" class="fw-bold text-dark text-uppercase small">Perfil</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select class="form-select bg-white" id="diametroSelect">
+                                <option value="">Cualquiera</option>
+                                <option value="15">R15</option>
+                                <option value="16">R16</option>
+                            </select>
+                            <label for="diametroSelect" class="fw-bold text-dark text-uppercase small">Diámetro</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" id="btnBuscarLlantas" class="btn btn-llanteria-action w-100 py-3 fw-bold text-uppercase shadow-sm">
+                            <i class="fa-solid fa-magnifying-glass me-2"></i>Buscar Ahora
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section id="resultadosBusqueda" class="py-5 d-none" style="background-color: #f1f3f5; margin-top: 30px;">
+    <div class="container">
+        <div class="text-center mb-4">
+            <span class="badge bg-dark-llanteria text-white text-uppercase px-3 py-2 rounded-pill fw-bold mb-2">Disponibilidad Inmediata</span>
+            <h2 class="font-premium-title fw-black text-uppercase text-dark m-0">Llantas Encontradas</h2>
+            <hr class="mx-auto accent-bar">
+        </div>
+        <div class="row g-4 justify-content-center" id="contenedorTarjetas"></div>
+    </div>
+</section>
+
+<section id="categorias" class="py-5" style="margin-top: 40px;">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h2 class="font-premium-title fw-black text-uppercase text-dark m-0">Explorar por Categoría</h2>
+            <hr class="mx-auto accent-bar">
+        </div>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card h-100 p-4 text-start position-relative overflow-hidden category-card rounded-xl">
+                    <h5 class="fw-bold m-0 text-dark">Autos & SUV</h5>
+                    <p class="small font-premium-body text-muted mt-2">Turismo, camionetas y confort familiar.</p>
+                    <i class="fa-solid fa-car category-icon-bg"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 p-4 text-start position-relative overflow-hidden category-card rounded-xl">
+                    <h5 class="fw-bold m-0 text-dark">Motos</h5>
+                    <p class="small font-premium-body text-muted mt-2">Pista, enduro, scooters y cuatrimotos.</p>
+                    <i class="fa-solid fa-motorcycle category-icon-bg"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 p-4 text-start position-relative overflow-hidden category-card rounded-xl">
+                    <h5 class="fw-bold m-0 text-dark">Comercial</h5>
+                    <p class="small font-premium-body text-muted mt-2">Camiones, buses y flotas logísticas.</p>
+                    <i class="fa-solid fa-truck-front category-icon-bg"></i>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 p-4 text-start position-relative overflow-hidden category-card rounded-xl">
+                    <h5 class="fw-bold m-0 text-dark">Industrial</h5>
+                    <p class="small font-premium-body text-muted mt-2">OTR, maquinaria agrícola y construcción.</p>
+                    <i class="fa-solid fa-tractor category-icon-bg"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="nosotros" class="py-5 bg-white">
+    <div class="container py-4">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="text-primary-llanteria fw-bold text-uppercase tracking-wider small">¿Quiénes Somos?</span>
+                <h2 class="font-premium-title fw-black text-uppercase text-dark mt-2 mb-4">Pasión por las llantas, compromiso con tu seguridad</h2>
+                <p class="font-premium-body text-muted mb-4 text-justify">
+                    En <strong>Llantería Valledupar</strong>, nos dedicamos a ofrecer soluciones integrales en neumáticos y mantenimiento automotriz. No solo vendemos productos, garantizamos estabilidad y confianza en cada kilómetro que recorres. Contamos con un equipo altamente calificado y tecnología de punta para cuidar de ti y de tu vehículo.
+                </p>
+                <div class="row g-4">
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fa-solid fa-shield-halved text-primary-llanteria display-6 me-3"></i>
+                            <div>
+                                <h6 class="fw-bold m-0">100% Seguro</h6>
+                                <small class="text-muted">Garantía Extendida</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fa-solid fa-business-time text-primary-llanteria display-6 me-3"></i>
+                            <div>
+                                <h6 class="fw-bold m-0">Servicio Rápido</h6>
+                                <small class="text-muted">Optimizamos tu tiempo</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="/images/Section-Image.avif" alt="Nuestro Taller" class="img-fluid rounded-xl shadow-lg transition-transform" onerror="this.src='https://images.unsplash.com/photo-1486006920555-c77dce18193b?q=80&w=800'">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="servicios" class="py-5" style="background-color: #f8f9fa;">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h2 class="font-premium-title fw-black text-uppercase text-dark m-0">Nuestros Servicios</h2>
+            <hr class="mx-auto accent-bar">
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-4 h-100 category-card">
+                    <div class="bg-primary-llanteria text-white p-3 rounded-3 d-inline-block mb-3" style="width: fit-content;">
+                        <i class="fa-solid fa-compact-disc fa-xl"></i>
+                    </div>
+                    <h5 class="fw-bold">Montaje y Balanceo</h5>
+                    <p class="small text-muted font-premium-body">Instalación computarizada y precisa para eliminar vibraciones y asegurar una conducción suave.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-4 h-100 category-card">
+                    <div class="bg-primary-llanteria text-white p-3 rounded-3 d-inline-block mb-3" style="width: fit-content;">
+                        <i class="fa-solid fa-arrows-to-dot fa-xl"></i>
+                    </div>
+                    <h5 class="fw-bold">Alineación 3D</h5>
+                    <p class="small text-muted font-premium-body">Ajuste milimétrico de la dirección para prevenir el desgaste irregular y prematuro de tus llantas.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-4 h-100 category-card">
+                    <div class="bg-primary-llanteria text-white p-3 rounded-3 d-inline-block mb-3" style="width: fit-content;">
+                        <i class="fa-solid fa-oil-can fa-xl"></i>
+                    </div>
+                    <h5 class="fw-bold">Mantenimiento Express</h5>
+                    <p class="small text-muted font-premium-body">Cambio de aceite, filtros y revisión de frenos utilizando insumos homologados de alta calidad.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="productos" class="py-5 bg-white">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h2 class="font-premium-title fw-black text-uppercase text-dark m-0">Productos Destacadas</h2>
+            <p class="text-muted font-premium-body mt-2">Trabajamos con las mejores marcas del mercado internacional</p>
+            <hr class="mx-auto accent-bar">
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm overflow-hidden h-100 rounded-xl category-card">
+                    <img src="/images/producto1.jpg" class="img-fluid w-100" alt="Llanta Premium" style="height: 250px; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1578844251758-2f71da64c96f?q=80&w=500'">
+                    <div class="p-3 text-center">
+                        <h6 class="fw-bold text-uppercase m-0">Llantas de Alta Performance</h6>
+                        <small class="text-primary-llanteria fw-semibold">Máximo agarre en seco y mojado</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm overflow-hidden h-100 rounded-xl category-card">
+                    <img src="/images/producto2.jpg" class="img-fluid w-100" alt="Llanta Camioneta" style="height: 250px; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=500'">
+                    <div class="p-3 text-center">
+                        <h6 class="fw-bold text-uppercase m-0">Llantas Todo Terreno (A/T)</h6>
+                        <small class="text-primary-llanteria fw-semibold">Diseño robusto para caminos difíciles</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm overflow-hidden h-100 rounded-xl category-card">
+                    <img src="/images/producto3.jpg" class="img-fluid w-100" alt="Rines Deportivos" style="height: 250px; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1611245451512-84f93ee7d483?q=80&w=500'">
+                    <div class="p-3 text-center">
+                        <h6 class="fw-bold text-uppercase m-0">Rines de Aleación Especial</h6>
+                        <small class="text-primary-llanteria fw-semibold">Estilo y ligereza estructural</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="promociones" class="py-5 bg-dark-llanteria text-white text-center position-relative overflow-hidden">
+    <div class="container py-4 position-relative" style="z-index: 2;">
+        <h2 class="font-premium-title fw-black text-uppercase text-white mb-3">Ofertas Especiales del Mes</h2>
+        <p class="lead font-premium-body mb-4 text-white-50">Aprovecha nuestros descuentos exclusivos antes de que expiren.</p>
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="p-4 rounded-xl border bg-blur" style="background-color: rgba(201, 43, 10, 0.08); border-color: var(--llanteria-primary) !important;">
+                    <h4 class="fw-bold text-primary-llanteria mb-2">¡Combo de Alineación Completa!</h4>
+                    <p class="mb-4 font-premium-body text-white">Por la compra de 4 llantas de cualquier marca, te obsequiamos la alineación 3D y el balanceo de forma <strong>GRATIS</strong>.</p>
+                    <a href="#contacto" class="btn btn-llanteria-action fw-bold text-uppercase px-4 py-2 rounded-pill">Agendar Cita</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="contacto" class="py-5" style="background-color: #f8f9fa;">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h2 class="font-premium-title fw-black text-uppercase text-dark m-0">Ponte en Contacto</h2>
+            <hr class="mx-auto accent-bar">
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm p-4 h-100 rounded-xl">
+                    <h4 class="fw-bold text-dark mb-4">Información de Atención</h4>
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary-llanteria text-white p-3 rounded-circle me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-location-dot"></i></div>
+                        <div>
+                            <h6 class="fw-bold m-0">Ubicación principal</h6>
+                            <small class="text-muted">Valledupar, Cesar, Colombia</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-dark-llanteria text-white p-3 rounded-circle me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-phone"></i></div>
+                        <div>
+                            <h6 class="fw-bold m-0">Línea Telefónica / WhatsApp</h6>
+                            <small class="text-muted">+57 300 123 4567</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-primary-llanteria text-white p-3 rounded-circle me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-clock"></i></div>
+                        <div>
+                            <h6 class="fw-bold m-0">Horario de Atención</h6>
+                            <small class="text-muted">Lun - Sáb: 8:00 AM - 6:00 PM</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm p-4 h-100 rounded-xl">
+                    <h4 class="fw-bold text-dark mb-4">Envíanos un mensaje</h4>
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="formName" placeholder="Tu nombre" required />
+                                    <label for="formName">Nombre Completo</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="formEmail" placeholder="correo@ejemplo.com" required />
+                                    <label for="formEmail">Correo Electrónico</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="formSubject" placeholder="Asunto" />
+                                    <label for="formSubject">Asunto o Vehículo</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="formMessage" placeholder="Tu mensaje aquí" style="height: 120px;" required></textarea>
+                                    <label for="formMessage">¿En qué podemos ayudarte?</label>
+                                </div>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="button" onclick="Swal.fire('¡Enviado!', 'Tu mensaje ha sido registrado. Pronto nos contactaremos contigo.', 'success')" class="btn btn-llanteria-secondary px-4 py-2 rounded-3 fw-bold text-uppercase shadow-sm">
+                                    Enviar Mensaje
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const catalogoPrueba = [
+                { ancho: "185", perfil: "65", diametro: "15", nombre: "Michelin Energy Saver+", precio: "$345.000", img: "https://images.unsplash.com/photo-1578844251758-2f71da64c96f?q=80&w=500" },
+                { ancho: "185", perfil: "65", diametro: "15", nombre: "Bridgestone Ecopia EP150", precio: "$310.000", img: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=500" },
+                { ancho: "205", perfil: "55", diametro: "16", nombre: "Pirelli Cinturato P7", precio: "$460.000", img: "https://images.unsplash.com/photo-1611245451512-84f93ee7d483?q=80&w=500" },
+                { ancho: "205", perfil: "55", diametro: "16", nombre: "Goodyear Eagle F1 Asymmetric", precio: "$495.000", img: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?q=80&w=500" }
+            ];
+
+            const btnBuscar = document.getElementById("btnBuscarLlantas");
+            const seccionResultados = document.getElementById("resultadosBusqueda");
+            const contenedorTarjetas = document.getElementById("contenedorTarjetas");
+
+            btnBuscar.addEventListener("click", function () {
+                const ancho = document.getElementById("anchoSelect").value;
+                const perfil = document.getElementById("perfilSelect").value;
+                const diametro = document.getElementById("diametroSelect").value;
+
+                if (!ancho || !perfil || !diametro) {
+                    Swal.fire({
+                        title: 'Faltan medidas',
+                        text: 'Por favor selecciona Ancho, Perfil y Diámetro para realizar la búsqueda.',
+                        icon: 'warning',
+                        confirmButtonColor: '#C92B0A',
+                        confirmButtonText: 'Entendido'
+                    });
+                    return;
+                }
+
+                const resultados = catalogoPrueba.filter(llanta =>
+                    llanta.ancho === ancho && llanta.perfil === perfil && llanta.diametro === diametro
+                );
+
+                contenedorTarjetas.innerHTML = "";
+
+                if (resultados.length > 0) {
+                    resultados.forEach(llanta => {
+                        const cardHTML = `
+                            <div class="col-md-4">
+                                <div class="card border-0 shadow-sm rounded-xl overflow-hidden h-100 bg-white category-card">
+                                    <div class="position-relative">
+                                        <img src="${llanta.img}" class="img-fluid w-100" style="height: 220px; object-fit: cover;" alt="${llanta.nombre}">
+                                        <span class="position-absolute top-0 end-0 bg-dark text-white fw-bold px-3 py-1 m-2 small rounded-pill bg-primary-llanteria">¡Disponible!</span>
+                                    </div>
+                                    <div class="p-4">
+                                        <span class="badge bg-light text-dark border text-uppercase mb-2">${llanta.ancho}/${llanta.perfil} R${llanta.diametro}</span>
+                                        <h5 class="fw-bold text-dark mb-1">${llanta.nombre}</h5>
+                                        <p class="text-muted small mb-3">Neumático de alta calidad optimizado para el clima y las vías de Valledupar.</p>
+                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                            <span class="fs-5 fw-bold text-success">${llanta.precio}</span>
+                                            <a href="#contacto" class="btn btn-llanteria-action btn-sm fw-bold px-3 py-2 rounded-3">
+                                                <i class="fa-brands fa-whatsapp me-1"></i> Cotizar
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        contenedorTarjetas.innerHTML += cardHTML;
+                    });
+                } else {
+                    contenedorTarjetas.innerHTML = `
+                        <div class="col-12 text-center py-5">
+                            <i class="fa-solid fa-circle-info text-muted display-4 mb-3"></i>
+                            <h5 class="fw-bold text-dark">Medida sin existencias en vitrina</h5>
+                            <p class="text-muted">No encontramos resultados exactos para esa medida, pero la podemos solicitar a bodega central. ¡Escríbenos en la sección de contacto!</p>
+                        </div>
+                    `;
+                }
+
+                seccionResultados.classList.remove("d-none");
+                seccionResultados.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+}

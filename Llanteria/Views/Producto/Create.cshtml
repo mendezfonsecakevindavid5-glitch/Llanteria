@@ -1,0 +1,106 @@
+﻿@model Llanteria.Models.Producto // Asegúrate de que coincida con tu Namespace original
+
+@{
+    ViewData["Title"] = "Registrar Producto";
+}
+
+<div class="container py-5" style="max-width: 800px;">
+
+    <div class="mb-4 animate__animated animate__fadeIn">
+        <a asp-action="Index" class="text-muted text-decoration-none small fw-bold d-inline-flex align-items-center gap-2 mb-2 transition-transform hover-left">
+            <i class="fa-solid fa-arrow-left"></i> Volver al Catálogo
+        </a>
+        <h2 class="fw-black text-dark text-uppercase m-0 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-plus-circle text-success"></i> Registrar Nuevo Producto
+        </h2>
+        <p class="text-muted small m-0">Ingresa las especificaciones técnicas y precios para añadir la llanta al inventario.</p>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-xl overflow-hidden animate__animated animate__fadeInUp">
+        <div class="card-body p-4 p-md-5 bg-white">
+
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <input asp-for="Nombre" class="form-control" placeholder="Ej. Michelin Energy Saver" required />
+                            <label asp-for="Nombre" class="fw-semibold text-muted">Nombre del Producto / Llanta</label>
+                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select asp-for="Categoria" class="form-select" required>
+                                <option value="" disabled selected>Selecciona una opción</option>
+                                <option value="Autos & SUV">Autos & SUV</option>
+                                <option value="Motos">Motos</option>
+                                <option value="Comercial">Comercial</option>
+                                <option value="Industrial">Industrial</option>
+                            </select>
+                            <label asp-for="Categoria" class="fw-semibold text-muted">Categoría de Vehículo</label>
+                            <span asp-validation-for="Categoria" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="PrecioCompra" type="number" class="form-control text-end fw-semibold text-muted" placeholder="0" required />
+                            <label asp-for="PrecioCompra" class="fw-semibold text-muted">Precio de Compra ($)</label>
+                            <span asp-validation-for="PrecioCompra" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 offset-md-6">
+                        <div class="form-floating">
+                            <input asp-for="PrecioVenta" type="number" class="form-control text-end fw-bold text-success" placeholder="0" required />
+                            <label asp-for="PrecioVenta" class="fw-semibold text-success">Precio de Venta ($)</label>
+                            <span asp-validation-for="PrecioVenta" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 pt-3 border-top d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-light fw-bold px-4 py-2 rounded-3 border">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success fw-bold px-4 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2 transition-transform">
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar Producto
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-xl {
+        border-radius: 12px !important;
+    }
+
+    .hover-left:hover {
+        transform: translateX(-4px);
+    }
+
+    .transition-transform {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .transition-transform:hover {
+            transform: translateY(-2px);
+        }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #198754;
+        box-shadow: 0 0 0 0.25px rgba(25, 135, 84, 0.25);
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

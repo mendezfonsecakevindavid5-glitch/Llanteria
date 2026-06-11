@@ -1,0 +1,46 @@
+﻿@model Llanteria.Models.Cliente
+
+@{
+    ViewData["Title"] = "Editar Cliente";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card shadow border-0">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="fa-solid fa-user-pen"></i> Actualizar Datos de Cliente</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Nombres" class="form-label fw-bold"></label>
+                            <input asp-for="Nombres" class="form-control" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Apellidos" class="form-label fw-bold"></label>
+                            <input asp-for="Apellidos" class="form-control" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Tipo Documento</label>
+                            <select asp-for="IdDocumento" class="form-select" asp-items="ViewBag.IdDocumento"></select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Género</label>
+                            <select asp-for="IdSexo" class="form-select" asp-items="ViewBag.IdSexo"></select>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label asp-for="PuntosAcumulados" class="form-label fw-bold">Puntos Actuales</label>
+                            <input asp-for="PuntosAcumulados" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="text-end mt-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Volver</a>
+                        <button type="submit" class="btn btn-dark">Actualizar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

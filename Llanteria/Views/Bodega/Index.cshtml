@@ -1,0 +1,68 @@
+﻿@model IEnumerable<Llanteria.Models.Bodega>
+
+@{
+    ViewData["Title"] = "Gestión de Bodegas";
+}
+
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="fa-solid fa-warehouse"></i> Ubicaciones de Almacenamiento</h4>
+        <a asp-action="Create" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-plus"></i> Nueva Bodega
+        </a>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Bodega</th>
+                    <th>Ubicación</th>
+                    <th class="text-center">Capacidad Máx.</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><strong>@item.NombreBodega</strong></td>
+                        <td>@(item.Ubicacion ?? "No especificada")</td>
+                        <td class="text-center">
+                            <span class="badge bg-info text-dark">
+                                @(item.CapacidadMaxima?.ToString() ?? "Sin límite")
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminar(@item.Id, '@item.NombreBodega')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmarEliminar(id, nombre) {
+            Swal.fire({
+                title: '¿Eliminar bodega?',
+                text: "Se borrará: " + nombre,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Bodega/Delete/' + id;
+                }
+            })
+        }
+    </script>
+}

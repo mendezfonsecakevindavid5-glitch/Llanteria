@@ -1,0 +1,40 @@
+﻿@model Llanteria.Models.Bodega
+
+@{
+    ViewData["Title"] = "Editar Bodega";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow border-0">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="fa-solid fa-pen-to-square"></i> Modificar Bodega</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="NombreBodega" class="form-label fw-bold">Nombre</label>
+                        <input asp-for="NombreBodega" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Ubicacion" class="form-label fw-bold">Ubicación</label>
+                        <input asp-for="Ubicacion" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CapacidadMaxima" class="form-label fw-bold">Capacidad Máxima</label>
+                        <input asp-for="CapacidadMaxima" type="number" class="form-control" />
+                    </div>
+
+                    <div class="text-end mt-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-dark">Actualizar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

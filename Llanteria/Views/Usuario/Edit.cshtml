@@ -1,0 +1,50 @@
+﻿@model Llanteria.Models.Usuario
+
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow border-0">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="fa-solid fa-user-gear"></i> Ajustes de Cuenta</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="Username" class="form-label fw-bold"></label>
+                        <input asp-for="Username" class="form-control" readonly />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Cambiar Estado</label>
+                            <select asp-for="Estado" class="form-select">
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                                <option value="Baneado">Baneado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Cambiar Rol</label>
+                            <select asp-for="IdRol" class="form-select" asp-items="ViewBag.IdRol"></select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MotivoSancion" class="form-label fw-bold">Motivo de Sanción (Opcional)</label>
+                        <textarea asp-for="MotivoSancion" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="text-end mt-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-dark">Actualizar Cuenta</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

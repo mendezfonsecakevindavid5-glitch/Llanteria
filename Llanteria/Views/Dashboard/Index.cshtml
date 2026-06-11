@@ -1,0 +1,160 @@
+﻿@model IEnumerable<Llanteria.Models.Factura>
+
+@{
+    ViewData["Title"] = "Panel de Control";
+}
+
+<div class="container-fluid pt-4">
+    <div class="row">
+        <div class="col-md-3 col-lg-2 mb-4">
+            <div class="card border-0 shadow-sm p-3 bg-white rounded-xl">
+                <div class="text-center mb-3">
+                    <div class="bg-primary text-white p-3 rounded-circle d-inline-block mb-2">
+                        <i class="fa-solid fa-user-gear fa-2xl"></i>
+                    </div>
+                    <h6 class="fw-bold m-0">Operaciones</h6>
+                    <small class="text-muted">Panel Interno</small>
+                </div>
+                <hr class="text-muted">
+                <div class="nav flex-column nav-pills gap-2">
+                    <a class="nav-link active bg-dark fw-bold" asp-controller="Dashboard" asp-action="Index">
+                        <i class="fa-solid fa-chart-pie me-2"></i>Inicio Panel
+                    </a>
+                    <a class="nav-link text-dark fw-semibold" asp-controller="Producto" asp-action="Index">
+                        <i class="fa-solid fa-box me-2 text-muted"></i>Inventario
+                    </a>
+                    <a class="nav-link text-dark fw-semibold" asp-controller="Factura" asp-action="Index">
+                        <i class="fa-solid fa-file-invoice-dollar me-2 text-muted"></i>Ventas
+                    </a>
+                    <a class="nav-link text-dark fw-semibold" asp-controller="Cliente" asp-action="Index">
+                        <i class="fa-solid fa-users me-2 text-muted"></i>Clientes
+                    </a>
+                    <a class="nav-link text-dark fw-semibold" asp-controller="Vehiculo" asp-action="Index">
+                        <i class="fa-solid fa-car me-2 text-muted"></i>Vehículos
+                    </a>
+                    <a class="nav-link text-dark fw-semibold" asp-controller="Gasto" asp-action="Index">
+                        <i class="fa-solid fa-wallet me-2 text-muted"></i>Gastos
+                    </a>
+
+                    <hr class="text-muted my-2">
+                    <small class="text-uppercase fw-bold text-muted px-2" style="font-size: 0.75rem;">Configuración</small>
+                    <a class="nav-link text-dark fw-semibold" asp-controller="Empleado" asp-action="Index">
+                        <i class="fa-solid fa-id-card me-2 text-muted"></i>Empleados
+                    </a>
+                    <a class="nav-link text-dark fw-semibold" asp-controller="TipoServicio" asp-action="Index">
+                        <i class="fa-solid fa-bell-concierge me-2 text-muted"></i>Servicios
+                    </a>
+
+                    <hr class="text-muted my-2">
+                    <small class="text-uppercase fw-bold text-muted px-2" style="font-size: 0.75rem;">Reportes</small>
+                    <button type="button" class="nav-link text-danger fw-semibold border-0 w-100 text-start" data-bs-toggle="modal" data-bs-target="#modalReporte">
+                        <i class="fa-solid fa-file-pdf me-2"></i>Reporte General
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9 col-lg-10">
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Ingresos Totales</small><h3 class="fw-black text-success mt-1">$@string.Format("{0:N2}", ViewBag.TotalVentas)</h3></div><div class="bg-success bg-opacity-10 text-success p-3 rounded-3"><i class="fa-solid fa-money-bill-trend-up fa-xl"></i></div></div></div></div>
+                <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Clientes</small><h3 class="fw-black text-dark mt-1">@ViewBag.CantidadClientes</h3></div><div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3"><i class="fa-solid fa-users fa-xl"></i></div></div></div></div>
+                <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Items Inventario</small><h3 class="fw-black text-dark mt-1">@ViewBag.CantidadProductos</h3></div><div class="bg-warning bg-opacity-10 text-warning p-3 rounded-3"><i class="fa-solid fa-boxes-stacked fa-xl"></i></div></div></div></div>
+                <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Egresos / Gastos</small><h3 class="fw-black text-danger mt-1">$@string.Format("{0:N2}", ViewBag.TotalGastos)</h3></div><div class="bg-danger bg-opacity-10 text-danger p-3 rounded-3"><i class="fa-solid fa-hand-holding-dollar fa-xl"></i></div></div></div></div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm rounded-xl">
+                        <div class="card-header bg-white py-3 border-0"><h5 class="fw-bold m-0 text-dark"><i class="fa-solid fa-clock-rotate-left text-muted me-2"></i>Últimas Facturas</h5></div>
+                        <div class="table-responsive px-3 pb-3">
+                            <table class="table table-hover align-middle m-0">
+                                <thead><tr><th>Factura</th><th>Fecha</th><th class="text-end">Total</th><th class="text-center">Acción</th></tr></thead>
+                                <tbody>
+                                    @foreach (var venta in Model)
+                                    {
+                                        <tr>
+                                            <td><span class="fw-bold"># @venta.Id</span></td>
+                                            <td>@(venta.Fecha?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                                            <td class="text-end fw-bold text-success">$@venta.TotalPagar.ToString("N2")</td>
+                                            <td class="text-center"><a asp-controller="Factura" asp-action="Edit" asp-route-id="@venta.Id" class="btn btn-light btn-sm rounded-2"><i class="fa-solid fa-arrow-right text-muted"></i></a></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-xl p-4 mb-3">
+                        <h6 class="fw-bold mb-3 text-warning"><i class="fa-solid fa-triangle-exclamation me-2"></i>Stock Crítico</h6>
+                        <div class="alert alert-warning border-0 bg-warning bg-opacity-10 small">Hay <strong>@ViewBag.ProductosBajos</strong> productos con existencias bajas.</div>
+                        <a asp-controller="Producto" asp-action="Index" class="btn btn-outline-warning btn-sm w-100 fw-bold">Gestionar Inventario</a>
+                    </div>
+                    <div class="card border-0 shadow-sm rounded-xl p-4">
+                        <h6 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-bolt me-2"></i>Acciones Rápidas</h6>
+                        <div class="d-grid gap-2">
+                            <a asp-controller="Factura" asp-action="Create" class="btn btn-success fw-bold"><i class="fa-solid fa-plus me-2"></i>Nueva Factura</a>
+                            <a asp-controller="Gasto" asp-action="Create" class="btn btn-danger fw-bold"><i class="fa-solid fa-minus me-2"></i>Registrar Gasto</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalReporte" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 rounded-xl">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Generar Reporte General</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Reporte" asp-action="GenerarGeneral" method="get" target="_blank">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Fecha Inicio</label>
+                        <input type="date" name="fechaInicio" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-01")" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha Fin</label>
+                        <input type="date" name="fechaFin" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary fw-bold">Generar PDF</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-xl {
+        border-radius: 16px !important;
+    }
+
+    .fw-black {
+        font-weight: 900 !important;
+    }
+
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important;
+        }
+
+    .nav-link {
+        transition: all 0.3s;
+        border-radius: 8px;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: #212529 !important;
+        color: white !important;
+    }
+</style>

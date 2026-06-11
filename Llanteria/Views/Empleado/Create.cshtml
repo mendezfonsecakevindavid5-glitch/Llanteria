@@ -1,0 +1,139 @@
+﻿@model Llanteria.Models.Empleado
+
+@{
+    ViewData["Title"] = "Registrar Nuevo Empleado";
+}
+
+<div class="container py-5" style="max-width: 900px;">
+
+    <!-- ENCABEZADO CON BOTÓN DE REGRESAR -->
+    <div class="mb-4 animate__animated animate__fadeIn">
+        <a asp-action="Index" class="text-muted text-decoration-none small fw-bold d-inline-flex align-items-center gap-2 mb-2 transition-transform hover-left">
+            <i class="fa-solid fa-arrow-left"></i> Volver a la Lista
+        </a>
+        <h2 class="fw-black text-dark text-uppercase m-0 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-user-plus text-primary"></i> Ficha de Registro de Personal
+        </h2>
+        <p class="text-muted small m-0">Completa el formulario para dar de alta a un nuevo colaborador en la base de datos del taller.</p>
+    </div>
+
+    <!-- TARJETA DEL FORMULARIO -->
+    <div class="card border-0 shadow-sm rounded-xl overflow-hidden animate__animated animate__fadeInUp">
+        <div class="card-body p-4 p-md-5 bg-white">
+
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div class="row g-3">
+                    <!-- Nombres y Apellidos -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="Nombres" class="form-control" placeholder="Nombres" required />
+                            <label asp-for="Nombres" class="fw-semibold text-muted">Nombres</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="Apellidos" class="form-control" placeholder="Apellidos" required />
+                            <label asp-for="Apellidos" class="fw-semibold text-muted">Apellidos</label>
+                        </div>
+                    </div>
+
+                    <!-- Identificación -->
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <select asp-for="IdDocumento" class="form-select" asp-items="ViewBag.IdDocumento"></select>
+                            <label asp-for="IdDocumento" class="fw-semibold text-muted">Tipo Documento</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input asp-for="NumeroDocumento" class="form-control" placeholder="Nro. Documento" required />
+                            <label asp-for="NumeroDocumento" class="fw-semibold text-muted">Nro. Documento</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <select asp-for="IdSexo" class="form-select" asp-items="ViewBag.IdSexo"></select>
+                            <label asp-for="IdSexo" class="fw-semibold text-muted">Género</label>
+                        </div>
+                    </div>
+
+                    <!-- Contacto -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="Correo" type="email" class="form-control" placeholder="Correo" />
+                            <label asp-for="Correo" class="fw-semibold text-muted">Correo Electrónico</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="Telefono" class="form-control" placeholder="Teléfono" />
+                            <label asp-for="Telefono" class="fw-semibold text-muted">Teléfono</label>
+                        </div>
+                    </div>
+
+                    <!-- Datos Laborales -->
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <select asp-for="IdRol" class="form-select" asp-items="ViewBag.IdRol"></select>
+                            <label asp-for="IdRol" class="fw-semibold text-muted">Cargo / Rol</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input asp-for="Salario" type="number" step="0.01" class="form-control text-end fw-bold text-success" placeholder="Salario" required />
+                            <label asp-for="Salario" class="fw-semibold text-success">Salario Mensual ($)</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input asp-for="Horario" class="form-control" placeholder="Ej: 8am - 6pm" />
+                            <label asp-for="Horario" class="fw-semibold text-muted">Horario Laboral</label>
+                        </div>
+                    </div>
+
+                    <!-- BOTONES -->
+                    <div class="col-12 pt-3 border-top d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-light fw-bold px-4 py-2 rounded-3 border">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary fw-bold px-4 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2 transition-transform">
+                            <i class="fa-solid fa-user-check"></i> Guardar Empleado
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-xl {
+        border-radius: 12px !important;
+    }
+
+    .hover-left:hover {
+        transform: translateX(-4px);
+    }
+
+    .transition-transform {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .transition-transform:hover {
+            transform: translateY(-2px);
+        }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25px rgba(13, 110, 253, 0.25);
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,39 @@
+﻿@model Llanteria.Models.Bodega
+
+@{
+    ViewData["Title"] = "Nueva Bodega";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow border-0">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fa-solid fa-plus"></i> Registrar Bodega</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div class="mb-3">
+                        <label asp-for="NombreBodega" class="form-label fw-bold">Nombre de la Bodega</label>
+                        <input asp-for="NombreBodega" class="form-control" placeholder="Ej: Bodega Central" required />
+                        <span asp-validation-for="NombreBodega" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Ubicacion" class="form-label fw-bold">Dirección / Ubicación</label>
+                        <input asp-for="Ubicacion" class="form-control" placeholder="Ej: Pasillo A - Estante 2" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CapacidadMaxima" class="form-label fw-bold">Capacidad Máxima (Opcional)</label>
+                        <input asp-for="CapacidadMaxima" type="number" class="form-control" placeholder="Ej: 500" />
+                    </div>
+
+                    <div class="text-end mt-3">
+                        <a asp-action="Index" class="btn btn-secondary">Regresar</a>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
