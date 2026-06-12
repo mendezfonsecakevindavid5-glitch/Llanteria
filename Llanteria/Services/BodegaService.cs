@@ -1,5 +1,8 @@
 ﻿using Llanteria.Data;
 using Llanteria.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace Llanteria.Services;
 
 public class BodegaService
 {
@@ -20,24 +23,24 @@ public class BodegaService
         return _context.Bodegas.Find(id);
     }
 
-    public void AddBodega(Bodega obj)
+    public void AddBodega(Bodega b)
     {
-        _context.Bodegas.Add(obj);
+        _context.Bodegas.Add(b);
         _context.SaveChanges();
     }
 
-    public void UpdateBodega(Bodega obj)
+    public void UpdateBodega(Bodega b)
     {
-        _context.Bodegas.Update(obj);
+        _context.Bodegas.Update(b);
         _context.SaveChanges();
     }
 
     public void DeleteBodega(int id)
     {
-        var obj = _context.Bodegas.Find(id);
-        if (obj != null)
+        var b = _context.Bodegas.Find(id);
+        if (b != null)
         {
-            _context.Bodegas.Remove(obj);
+            _context.Bodegas.Remove(b);
             _context.SaveChanges();
         }
     }

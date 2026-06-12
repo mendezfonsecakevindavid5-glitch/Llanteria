@@ -4,36 +4,50 @@
     ViewData["Title"] = "Nueva Bodega";
 }
 
-<div class="row justify-content-center mt-4">
-    <div class="col-md-6">
-        <div class="card shadow border-0">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="fa-solid fa-plus"></i> Registrar Bodega</h5>
-            </div>
-            <div class="card-body">
+<div class="container pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-xl p-4">
+                <div class="mb-4">
+                    <h4 class="fw-bold text-dark">
+                        <i class="fa-solid fa-plus text-primary me-2"></i>Registrar Bodega
+                    </h4>
+                    <small class="text-muted">Crea una nueva ubicación de almacenamiento</small>
+                </div>
+
                 <form asp-action="Create">
                     <div class="mb-3">
-                        <label asp-for="NombreBodega" class="form-label fw-bold">Nombre de la Bodega</label>
-                        <input asp-for="NombreBodega" class="form-control" placeholder="Ej: Bodega Central" required />
-                        <span asp-validation-for="NombreBodega" class="text-danger"></span>
+                        <label asp-for="NombreBodega" class="form-label fw-bold small">Nombre de la Bodega</label>
+                        <input asp-for="NombreBodega" class="form-control rounded-lg" placeholder="Ej. Bodega Central" required />
+                        <span asp-validation-for="NombreBodega" class="text-danger small"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Ubicacion" class="form-label fw-bold">Dirección / Ubicación</label>
-                        <input asp-for="Ubicacion" class="form-control" placeholder="Ej: Pasillo A - Estante 2" />
+                        <label asp-for="Ubicacion" class="form-label fw-bold small">Dirección / Ubicación</label>
+                        <input asp-for="Ubicacion" class="form-control rounded-lg" placeholder="Ej. Pasillo A - Estante 2" />
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="CapacidadMaxima" class="form-label fw-bold">Capacidad Máxima (Opcional)</label>
-                        <input asp-for="CapacidadMaxima" type="number" class="form-control" placeholder="Ej: 500" />
+                        <label asp-for="CapacidadMaxima" class="form-label fw-bold small">Capacidad Máxima (Items)</label>
+                        <input asp-for="CapacidadMaxima" type="number" class="form-control rounded-lg" placeholder="Ej. 500" />
                     </div>
 
-                    <div class="text-end mt-3">
-                        <a asp-action="Index" class="btn btn-secondary">Regresar</a>
-                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    <div class="d-flex gap-2 mt-4">
+                        <a asp-action="Index" class="btn btn-light flex-grow-1 fw-bold">Regresar</a>
+                        <button type="submit" class="btn btn-primary flex-grow-1 fw-bold">Guardar Bodega</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .rounded-xl {
+        border-radius: 16px !important;
+    }
+
+    .rounded-lg {
+        border-radius: 8px !important;
+    }
+</style>

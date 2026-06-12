@@ -15,13 +15,18 @@ public class DashboardController : Controller
 
     public IActionResult Index()
     {
-        // Indicadores clave para el negocio
+        // Indicadores existentes
         ViewBag.TotalVentas = _context.Facturas.Sum(f => f.TotalPagar);
         ViewBag.CantidadClientes = _context.Clientes.Count();
         ViewBag.CantidadProductos = _context.Productos.Count();
-        ViewBag.TotalGastos = _context.Gastos.Sum(g => g.Monto); // Asumiendo propiedad Monto en Gasto
+        ViewBag.TotalGastos = _context.Gastos.Sum(g => g.Monto);
+        ViewBag.CantidadBodegas = _context.Bodegas.Count();
 
-        // Listado de últimas 5 ventas para mostrar en una tabla rápida
+        // ✅ CORRECCIÓN: Contar productos cuyo stock actual es menor al mínimo definido
+        ViewBag.ProductosBajos = _context.Inventarios
+            .Count(i => i.StockActual != null && i.StockActual <= i.StockMinimo);
+
+        // Listado de últimas 5 ventas
         var ultimasVentas = _context.Facturas
             .OrderByDescending(f => f.Id)
             .Take(5)

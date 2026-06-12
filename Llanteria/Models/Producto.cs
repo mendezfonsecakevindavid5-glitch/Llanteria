@@ -33,4 +33,10 @@ public partial class Producto
     // ✅ NUEVO: Captura el archivo binario en el formulario sin guardarse directamente en la BD
     [NotMapped]
     public IFormFile? ImagenArchivo { get; set; }
+
+    // ✅ NUEVO: Relación con Bodega
+    public int IdBodega { get; set; }
+
+    [ForeignKey("IdBodega")]
+    public virtual Bodega? BodegaNavigation { get; set; }
 }

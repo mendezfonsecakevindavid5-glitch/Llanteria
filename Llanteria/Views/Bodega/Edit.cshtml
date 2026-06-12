@@ -4,37 +4,51 @@
     ViewData["Title"] = "Editar Bodega";
 }
 
-<div class="row justify-content-center mt-4">
-    <div class="col-md-6">
-        <div class="card shadow border-0">
-            <div class="card-header bg-warning">
-                <h5 class="mb-0"><i class="fa-solid fa-pen-to-square"></i> Modificar Bodega</h5>
-            </div>
-            <div class="card-body">
+<div class="container pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-xl p-4">
+                <div class="mb-4">
+                    <h4 class="fw-bold text-dark">
+                        <i class="fa-solid fa-pen-to-square text-warning me-2"></i>Modificar Bodega
+                    </h4>
+                    <small class="text-muted">Actualiza los datos de la ubicación física</small>
+                </div>
+
                 <form asp-action="Edit">
                     <input type="hidden" asp-for="Id" />
 
                     <div class="mb-3">
-                        <label asp-for="NombreBodega" class="form-label fw-bold">Nombre</label>
-                        <input asp-for="NombreBodega" class="form-control" />
+                        <label asp-for="NombreBodega" class="form-label fw-bold small">Nombre de la Bodega</label>
+                        <input asp-for="NombreBodega" class="form-control rounded-lg" placeholder="Ej. Bodega Principal" required />
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Ubicacion" class="form-label fw-bold">Ubicación</label>
-                        <input asp-for="Ubicacion" class="form-control" />
+                        <label asp-for="Ubicacion" class="form-label fw-bold small">Ubicación</label>
+                        <input asp-for="Ubicacion" class="form-control rounded-lg" placeholder="Ej. Zona Norte / Pasillo 2" />
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="CapacidadMaxima" class="form-label fw-bold">Capacidad Máxima</label>
-                        <input asp-for="CapacidadMaxima" type="number" class="form-control" />
+                        <label asp-for="CapacidadMaxima" class="form-label fw-bold small">Capacidad Máxima (Items)</label>
+                        <input asp-for="CapacidadMaxima" type="number" class="form-control rounded-lg" placeholder="0" />
                     </div>
 
-                    <div class="text-end mt-3">
-                        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
-                        <button type="submit" class="btn btn-dark">Actualizar</button>
+                    <div class="d-flex gap-2 mt-4">
+                        <a asp-action="Index" class="btn btn-light flex-grow-1 fw-bold">Cancelar</a>
+                        <button type="submit" class="btn btn-warning flex-grow-1 fw-bold text-white">Actualizar Cambios</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .rounded-xl {
+        border-radius: 16px !important;
+    }
+
+    .rounded-lg {
+        border-radius: 8px !important;
+    }
+</style>
