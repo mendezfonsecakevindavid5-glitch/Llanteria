@@ -4,102 +4,90 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Sistema Llantería</title>
-
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Llanteria.styles.css" asp-append-version="true" />
-
     <style>
-            html {
-                scroll-behavior: smooth;
-                scroll-padding-top: 75px;
-            }
-            /* Efecto premium para el menú activo */
-            .nav-link {
-                transition: color 0.2s ease-in-out;
-            }
-
-                .nav-link:hover {
-                    color: #C92B0A !important;
-                }
+        html { scroll-behavior: smooth; scroll-padding-top: 75px; }
+        .nav-link:hover { color: #C92B0A !important; }
     </style>
 </head>
 <body>
     <header class="sticky-top shadow-sm" style="z-index: 1050; background-color: #ffffff;">
         <nav class="navbar navbar-expand-lg navbar-light bg-white py-2">
             <div class="container-fluid px-4">
-
                 <a class="navbar-brand fw-bold text-dark me-4" asp-controller="Home" asp-action="Index">
                     <i class="fa-solid fa-screwdriver-wrench text-danger me-2" style="color: #C92B0A !important;"></i>Llantería<span style="color: #C92B0A;">Valledupar</span>
                 </a>
-
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav mx-auto align-items-center gap-1">
-                        <li class="nav-item">
-                            <a class="nav-link fw-semibold px-3" href="/#inicio">Inicio</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link fw-semibold px-3" href="/#categorias">Categorías</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link fw-semibold px-3" href="/#nosotros">Sobre Nosotros</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link fw-semibold px-3" href="/#promociones">Promociones</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link fw-semibold px-3" href="/#servicios">Servicios</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link fw-semibold px-3" href="/#productos">Productos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link fw-semibold px-3" asp-controller="Contacto" asp-action="Index">Contacto</a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link fw-semibold px-3" href="/#inicio">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link fw-semibold px-3" href="/#productos">Productos</a></li>
+                        <li class="nav-item"><a class="nav-link fw-semibold px-3" asp-controller="Contacto" asp-action="Index">Contacto</a></li>
                     </ul>
 
-                    <ul class="navbar-nav ms-auto d-flex flex-row align-items-center gap-2 mt-2 mt-lg-0">
-                        <li class="nav-item">
-                            <a class="btn btn-outline-danger btn-sm fw-bold px-3 py-2 rounded-pill shadow-sm" style="color: #C92B0A; border-color: #C92B0A;" asp-controller="Account" asp-action="Register">
-                                <i class="fa-solid fa-star me-1"></i> ¡Gana Puntos!
-                            </a>
-                        </li>
+                    <ul class="navbar-nav ms-auto align-items-center gap-3 mt-2 mt-lg-0">
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="btn btn-outline-danger btn-sm fw-bold px-3 py-2 rounded-pill" asp-controller="Account" asp-action="Register">
+                                    <i class="fa-solid fa-star me-1"></i> ¡Gana Puntos!
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-dark btn-sm fw-bold px-3 py-2 rounded-pill" asp-controller="Account" asp-action="Login">
+                                    <i class="fa-solid fa-right-to-bracket me-1"></i> Ingresar
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center justify-content-center p-0" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle shadow-sm" style="width: 42px; height: 42px; background-color: #C92B0A; color: white;">
+                                        <i class="fa-solid fa-user-shield"></i>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" style="min-width: 220px;">
+                                    <li class="px-3 py-2 text-center">
+                                        <span class="d-block fw-bold text-dark small">@User.Identity.Name</span>
+                                        <span class="badge bg-light text-muted border">@(User.IsInRole("Administrador") ? "Administrador" : "Empleado")</span>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
 
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle btn text-white btn-sm px-3 py-2 fw-bold rounded-3 shadow-sm d-flex align-items-center gap-1" style="background-color: #000000; border: none;" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-circle-user"></i> Mi Cuenta
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" aria-labelledby="userMenu">
-                                <li>
-                                    <a class="dropdown-item py-2 fw-bold text-dark" asp-controller="Dashboard" asp-action="Index">
-                                        <i class="fa-solid fa-chart-line me-2 text-muted"></i> Panel de Control
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item py-2 fw-bold" style="color: #C92B0A;" asp-controller="User" asp-action="Perfil">
-                                        <i class="fa-solid fa-user-gear me-2"></i> Mi Perfil
-                                    </a>
-                                </li>
-
-                                <li><hr class="dropdown-divider"></li>
-
-                                <li>
-                                    <a class="dropdown-item py-2" asp-controller="Account" asp-action="Login">
-                                        <i class="fa-solid fa-key me-2 text-muted"></i>Ingreso Personal
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item text-danger py-2" asp-controller="Account" asp-action="Login">
-                                        <i class="fa-solid fa-power-off me-2"></i> Cerrar Sesión
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                                    @if (User.IsInRole("Administrador"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item py-2" asp-controller="Dashboard" asp-action="Index">
+                                                <i class="fa-solid fa-chart-line me-2 text-primary"></i> Panel de Control
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item py-2" asp-controller="Log" asp-action="Index">
+                                                <i class="fa-solid fa-clipboard-list me-2 text-warning"></i> Registro Actividad
+                                            </a>
+                                        </li>
+                                    }
+                                    
+                                    <li>
+                                        <a class="dropdown-item py-2" asp-controller="User" asp-action="Perfil">
+                                            <i class="fa-solid fa-user-gear me-2 text-muted"></i> Mi Perfil
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger py-2" asp-controller="Account" asp-action="Logout">
+                                            <i class="fa-solid fa-power-off me-2"></i> Cerrar Sesión
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

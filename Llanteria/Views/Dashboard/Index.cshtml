@@ -12,57 +12,56 @@
                     <div class="bg-primary text-white p-3 rounded-circle d-inline-block mb-2">
                         <i class="fa-solid fa-user-gear fa-2xl"></i>
                     </div>
-                    <h6 class="fw-bold m-0">Operaciones</h6>
-                    <small class="text-muted">Panel Interno</small>
+                    <h6 class="fw-bold m-0">Panel @(User.IsInRole("Administrador") ? "Administrador" : "Empleado")</h6>
                 </div>
                 <hr class="text-muted">
                 <div class="nav flex-column nav-pills gap-2">
                     <a class="nav-link active bg-dark fw-bold" asp-controller="Dashboard" asp-action="Index">
                         <i class="fa-solid fa-chart-pie me-2"></i>Inicio Panel
                     </a>
-                    <a class="nav-link text-dark fw-semibold" asp-controller="Producto" asp-action="Index">
-                        <i class="fa-solid fa-box me-2 text-muted"></i>Inventario
-                    </a>
-                    <a class="nav-link text-dark fw-semibold" asp-controller="Bodega" asp-action="Index">
-                        <i class="fa-solid fa-warehouse me-2 text-muted"></i>Bodegas
-                    </a>
-                    <a class="nav-link text-dark fw-semibold" asp-controller="Proveedore" asp-action="Index">
-                        <i class="fa-solid fa-industry me-2 text-muted"></i>Proveedores
-                    </a>
+
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <a class="nav-link text-dark fw-semibold" asp-controller="Producto" asp-action="Index">
+                            <i class="fa-solid fa-box me-2 text-muted"></i>Inventario
+                        </a>
+                        <a class="nav-link text-dark fw-semibold" asp-controller="Bodega" asp-action="Index">
+                            <i class="fa-solid fa-warehouse me-2 text-muted"></i>Bodegas
+                        </a>
+                        <a class="nav-link text-dark fw-semibold" asp-controller="Proveedore" asp-action="Index">
+                            <i class="fa-solid fa-industry me-2 text-muted"></i>Proveedores
+                        </a>
+                        <a class="nav-link text-dark fw-semibold" asp-controller="Marca" asp-action="Index">
+                            <i class="fa-solid fa-tags me-2 text-muted"></i>Marcas
+                        </a>
+                        <a class="nav-link text-dark fw-semibold" asp-controller="Log" asp-action="Index">
+                            <i class="fa-solid fa-clipboard-list me-2 text-muted"></i>Registro de Actividad
+                        </a>
+                        <a class="nav-link text-dark fw-semibold" asp-controller="Empleado" asp-action="Index">
+                            <i class="fa-solid fa-id-card me-2 text-muted"></i>Empleados
+                        </a>
+                    }
+
                     <a class="nav-link text-dark fw-semibold" asp-controller="Factura" asp-action="Index">
                         <i class="fa-solid fa-file-invoice-dollar me-2 text-muted"></i>Ventas
                     </a>
                     <a class="nav-link text-dark fw-semibold" asp-controller="Cliente" asp-action="Index">
                         <i class="fa-solid fa-users me-2 text-muted"></i>Clientes
                     </a>
-                    <a class="nav-link text-dark fw-semibold" asp-controller="Cliente" asp-action="GestionPuntos">
-                        <i class="fa-solid fa-star me-2 text-warning"></i>Control de Puntos
-                    </a>
-                    <a class="nav-link text-dark fw-semibold" asp-controller="Vehiculo" asp-action="Index">
-                        <i class="fa-solid fa-car me-2 text-muted"></i>Vehículos
-                    </a>
-                    <a class="nav-link text-dark fw-semibold" asp-controller="Gasto" asp-action="Index">
-                        <i class="fa-solid fa-wallet me-2 text-muted"></i>Gastos
-                    </a>
-                    <hr class="text-muted my-2">
-                    <small class="text-uppercase fw-bold text-muted px-2" style="font-size: 0.75rem;">Configuración</small>
-                    <a class="nav-link text-dark fw-semibold" asp-controller="Empleado" asp-action="Index">
-                        <i class="fa-solid fa-id-card me-2 text-muted"></i>Empleados
-                    </a>
-                    <a class="nav-link text-dark fw-semibold" asp-controller="TipoServicio" asp-action="Index">
-                        <i class="fa-solid fa-bell-concierge me-2 text-muted"></i>Servicios
-                    </a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-9 col-lg-10">
-            <div class="row g-3 mb-4">
-                <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Ingresos</small><h3 class="fw-black text-success mt-1">$@string.Format("{0:N2}", ViewBag.TotalVentas)</h3></div><div class="bg-success bg-opacity-10 text-success p-3 rounded-3"><i class="fa-solid fa-money-bill-trend-up fa-xl"></i></div></div></div></div>
-                <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Clientes</small><h3 class="fw-black text-dark mt-1">@ViewBag.CantidadClientes</h3></div><div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3"><i class="fa-solid fa-users fa-xl"></i></div></div></div></div>
-                <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Bodegas</small><h3 class="fw-black text-dark mt-1">@ViewBag.CantidadBodegas</h3></div><div class="bg-secondary bg-opacity-10 text-secondary p-3 rounded-3"><i class="fa-solid fa-warehouse fa-xl"></i></div></div></div></div>
-                <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Egresos</small><h3 class="fw-black text-danger mt-1">$@string.Format("{0:N2}", ViewBag.TotalGastos)</h3></div><div class="bg-danger bg-opacity-10 text-danger p-3 rounded-3"><i class="fa-solid fa-hand-holding-dollar fa-xl"></i></div></div></div></div>
-            </div>
+            @if (User.IsInRole("Administrador"))
+            {
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Ingresos</small><h3 class="fw-black text-success mt-1">$@string.Format("{0:N2}", ViewBag.TotalVentas)</h3></div><div class="bg-success bg-opacity-10 text-success p-3 rounded-3"><i class="fa-solid fa-money-bill-trend-up fa-xl"></i></div></div></div></div>
+                    <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Clientes</small><h3 class="fw-black text-dark mt-1">@ViewBag.CantidadClientes</h3></div><div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3"><i class="fa-solid fa-users fa-xl"></i></div></div></div></div>
+                    <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Bodegas</small><h3 class="fw-black text-dark mt-1">@ViewBag.CantidadBodegas</h3></div><div class="bg-secondary bg-opacity-10 text-secondary p-3 rounded-3"><i class="fa-solid fa-warehouse fa-xl"></i></div></div></div></div>
+                    <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Egresos</small><h3 class="fw-black text-danger mt-1">$@string.Format("{0:N2}", ViewBag.TotalGastos)</h3></div><div class="bg-danger bg-opacity-10 text-danger p-3 rounded-3"><i class="fa-solid fa-hand-holding-dollar fa-xl"></i></div></div></div></div>
+                </div>
+            }
 
             <div class="row g-4">
                 <div class="col-lg-8">
@@ -99,30 +98,10 @@
 </div>
 
 <style>
-    .rounded-xl {
-        border-radius: 16px !important;
-    }
-
-    .fw-black {
-        font-weight: 900 !important;
-    }
-
-    .card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important;
-        }
-
-    .nav-link {
-        transition: all 0.3s;
-        border-radius: 8px;
-    }
-
-    .nav-pills .nav-link.active {
-        background-color: #212529 !important;
-        color: white !important;
-    }
+    .rounded-xl { border-radius: 16px !important; }
+    .fw-black { font-weight: 900 !important; }
+    .card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important; }
+    .nav-link { transition: all 0.3s; border-radius: 8px; }
+    .nav-pills .nav-link.active { background-color: #212529 !important; color: white !important; }
 </style>

@@ -1,71 +1,76 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Llanteria.Models;
 using Llanteria.Services;
+using Llanteria.Filters; // 👈 Necesario para el filtro
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
 
-namespace Llanteria.Controllers;
-
-public class AccountController : Controller
+namespace Llanteria.Controllers
 {
-    private readonly UsuarioService _userSer;
-    private readonly ClienteService _clienteSer;
-    private readonly SexoService _sexoSer;
-    private readonly TipoDocumentoService _docSer;
-
-    public AccountController(UsuarioService userSer, ClienteService clienteSer, SexoService sexoSer, TipoDocumentoService docSer)
+    public class AccountController : Controller
     {
-        _userSer = userSer;
-        _clienteSer = clienteSer;
-        _sexoSer = sexoSer;
-        _docSer = docSer;
-    }
+        private readonly UsuarioService _userSer;
+        private readonly ClienteService _clienteSer;
+        private readonly SexoService _sexoSer;
+        private readonly TipoDocumentoService _docSer;
 
-    // --- LOGIN PARA EMPLEADOS Y ADMINS ---
-    [HttpPost]
-    public IActionResult Login(string username, string password)
-    {
-        // 💡 CREDENCIALES TEMPORALES PARA PRUEBAS Y SUSTENTACIÓN
-        if (username == "admin" && password == "12345")
+        public AccountController(UsuarioService userSer, ClienteService clienteSer, SexoService sexoSer, TipoDocumentoService docSer)
         {
-            // Redirige directamente al Panel de Control que creamos
-            return RedirectToAction("Index", "Dashboard");
+            _userSer = userSer;
+            _clienteSer = clienteSer;
+            _sexoSer = sexoSer;
+            _docSer = docSer;
         }
 
-        // Lógica original (si no es el admin de prueba, busca en la base de datos)
-        var user = _userSer.GetUsuarios()
-            .FirstOrDefault(u => u.Username == username && u.PasswordHash == password);
+        [HttpGet]
+        public IActionResult Login() => View();
 
-        if (user != null && user.Estado == "Activo")
+        [HttpPost]
+        // Se registra el intento de login exitoso mediante el filtro
+        // Nota: Solo se registrará si el método retorna un resultado exitoso (RedirectToAction)
+        [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Inicio de sesión exitoso", "Usuarios" })]
+        public IActionResult Login(string username, string password)
         {
-            return RedirectToAction("Index", "Dashboard");
+            var user = _userSer.GetUsuarios()
+                .FirstOrDefault(u => u.Username == username);
+
+            if (user != null && user.PasswordHash == password && user.Estado == "Activo")
+            {
+                // Aquí deberías crear la sesión (Cookie de autenticación/Claims)
+                // Es vital que aquí guardes el ID del usuario en los Claims 
+                // para que el filtro de Log funcione correctamente.
+                return RedirectToAction("Index", "Dashboard");
+            }
+
+            ViewBag.Error = "Credenciales inválidas o cuenta inactiva.";
+            return View();
         }
 
-        ViewBag.Error = "Credenciales inválidas o cuenta inactiva.";
-        return View();
-    }
-
-    // --- REGISTRO PARA CLIENTES (SISTEMA DE INCENTIVOS) ---
-    public IActionResult Register()
-    {
-        ViewBag.IdSexo = new SelectList(_sexoSer.GetSexos(), "Id", "Nombre");
-        ViewBag.IdDocumento = new SelectList(_docSer.GetTipoDocumentos(), "Id", "Nombre");
-        return View();
-    }
-
-    [HttpPost]
-    public IActionResult Register(Cliente cliente)
-    {
-        if (ModelState.IsValid)
+        [HttpGet]
+        public IActionResult Register()
         {
-            // Al registrarse por primera vez, le damos 50 puntos de bienvenida
-            cliente.PuntosAcumulados = 50;
-            _clienteSer.AddCliente(cliente);
-            return RedirectToAction("Welcome");
+            ViewBag.IdSexo = new SelectList(_sexoSer.GetSexos(), "Id", "Nombre");
+            ViewBag.IdDocumento = new SelectList(_docSer.GetTipoDocumentos(), "Id", "Nombre");
+            return View();
         }
-        ViewBag.IdSexo = new SelectList(_sexoSer.GetSexos(), "Id", "Nombre");
-        ViewBag.IdDocumento = new SelectList(_docSer.GetTipoDocumentos(), "Id", "Nombre");
-        return View(cliente);
-    }
 
-    public IActionResult Welcome() => View();
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Registro de nuevo cliente", "Clientes" })]
+        public IActionResult Register(Cliente cliente)
+        {
+            if (ModelState.IsValid)
+            {
+                cliente.PuntosAcumulados = 50;
+                _clienteSer.AddCliente(cliente);
+                return RedirectToAction("Welcome");
+            }
+
+            ViewBag.IdSexo = new SelectList(_sexoSer.GetSexos(), "Id", "Nombre");
+            ViewBag.IdDocumento = new SelectList(_docSer.GetTipoDocumentos(), "Id", "Nombre");
+            return View(cliente);
+        }
+
+        public IActionResult Welcome() => View();
+    }
 }

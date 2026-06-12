@@ -14,6 +14,7 @@ builder.Services.AddDbContext<LlanteriaDbContext>(options =>
 builder.Services.AddScoped<TipoDocumentoService>();
 builder.Services.AddScoped<SexoService>();
 builder.Services.AddScoped<UsuarioService>();
+builder.Services.AddScoped<ILogService, LogService>();
 builder.Services.AddScoped<ProveedoreService>();
 builder.Services.AddScoped<ClienteService>();
 builder.Services.AddScoped<RoleService>();

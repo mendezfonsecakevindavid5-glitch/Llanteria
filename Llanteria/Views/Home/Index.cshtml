@@ -192,37 +192,25 @@
     <div class="container py-4">
         <div class="text-center mb-5">
             <h2 class="font-premium-title fw-black text-uppercase text-dark m-0">Productos Destacados</h2>
-            <p class="text-muted font-premium-body mt-2">Trabajamos con las mejores marcas del mercado internacional</p>
             <hr class="mx-auto accent-bar">
         </div>
         <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm overflow-hidden h-100 rounded-xl category-card">
-                    <img src="/images/producto1.jpg" class="img-fluid w-100" alt="Llanta Premium" style="height: 250px; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1578844251758-2f71da64c96f?q=80&w=500'">
-                    <div class="p-3 text-center">
-                        <h6 class="fw-bold text-uppercase m-0">Llantas de Alta Performance</h6>
-                        <small class="text-primary-llanteria fw-semibold">Máximo agarre en seco y mojado</small>
+            @if (Model != null)
+            {
+                @foreach (var p in Model.Take(3))
+                {
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm overflow-hidden h-100 rounded-xl category-card">
+                            <img src="/images/productos/@(string.IsNullOrEmpty(p.Categoria) ? "default-producto.png" : p.Categoria)"
+                                 class="img-fluid w-100" style="height: 250px; object-fit: cover;" alt="@p.Nombre">
+                            <div class="p-3 text-center">
+                                <h6 class="fw-bold text-uppercase m-0">@p.Nombre</h6>
+                                <small class="text-primary-llanteria fw-semibold">@p.PrecioVenta.ToString("C0")</small>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm overflow-hidden h-100 rounded-xl category-card">
-                    <img src="/images/producto2.jpg" class="img-fluid w-100" alt="Llanta Camioneta" style="height: 250px; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=500'">
-                    <div class="p-3 text-center">
-                        <h6 class="fw-bold text-uppercase m-0">Llantas Todo Terreno (A/T)</h6>
-                        <small class="text-primary-llanteria fw-semibold">Diseño robusto para caminos difíciles</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm overflow-hidden h-100 rounded-xl category-card">
-                    <img src="/images/producto3.jpg" class="img-fluid w-100" alt="Rines Deportivos" style="height: 250px; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1611245451512-84f93ee7d483?q=80&w=500'">
-                    <div class="p-3 text-center">
-                        <h6 class="fw-bold text-uppercase m-0">Rines de Aleación Especial</h6>
-                        <small class="text-primary-llanteria fw-semibold">Estilo y ligereza estructural</small>
-                    </div>
-                </div>
-            </div>
+                }
+            }
         </div>
     </div>
 </section>
@@ -233,79 +221,56 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const catalogoPrueba = [
-                { ancho: "185", perfil: "65", diametro: "15", nombre: "Michelin Energy Saver+", precio: "$345.000", img: "https://images.unsplash.com/photo-1578844251758-2f71da64c96f?q=80&w=500" },
-                { ancho: "185", perfil: "65", diametro: "15", nombre: "Bridgestone Ecopia EP150", precio: "$310.000", img: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=500" },
-                { ancho: "205", perfil: "55", diametro: "16", nombre: "Pirelli Cinturato P7", precio: "$460.000", img: "https://images.unsplash.com/photo-1611245451512-84f93ee7d483?q=80&w=500" },
-                { ancho: "205", perfil: "55", diametro: "16", nombre: "Goodyear Eagle F1 Asymmetric", precio: "$495.000", img: "https://images.unsplash.com/photo-1486006920555-c77dce18193b?q=80&w=500" }
-            ];
-
             const btnBuscar = document.getElementById("btnBuscarLlantas");
             const seccionResultados = document.getElementById("resultadosBusqueda");
             const contenedorTarjetas = document.getElementById("contenedorTarjetas");
 
-            if (btnBuscar) {
-                btnBuscar.addEventListener("click", function () {
-                    const ancho = document.getElementById("anchoSelect").value;
-                    const perfil = document.getElementById("perfilSelect").value;
-                    const diametro = document.getElementById("diametroSelect").value;
+            btnBuscar.addEventListener("click", async function () {
+                const ancho = document.getElementById("anchoSelect").value;
+                const perfil = document.getElementById("perfilSelect").value;
+                const diametro = document.getElementById("diametroSelect").value;
 
-                    if (!ancho || !perfil || !diametro) {
-                        Swal.fire({
-                            title: 'Faltan medidas',
-                            text: 'Por favor selecciona Ancho, Perfil y Diámetro para realizar la búsqueda.',
-                            icon: 'warning',
-                            confirmButtonColor: '#C92B0A',
-                            confirmButtonText: 'Entendido'
-                        });
-                        return;
-                    }
+                if (!ancho || !perfil || !diametro) {
+                    Swal.fire({
+                        title: 'Faltan medidas',
+                        text: 'Por favor selecciona Ancho, Perfil y Diámetro.',
+                        icon: 'warning',
+                        confirmButtonColor: '#C92B0A'
+                    });
+                    return;
+                }
 
-                    const resultados = catalogoPrueba.filter(llanta =>
-                        llanta.ancho === ancho && llanta.perfil === perfil && llanta.diametro === diametro
-                    );
+                // Llamada al servidor
+                const response = await fetch('@Url.Action("GetLlantasJson", "Producto")');
+                const catalogo = await response.json();
 
-                    contenedorTarjetas.innerHTML = "";
+                // Filtrar datos reales
+                const resultados = catalogo.filter(l =>
+                    l.ancho == ancho && l.perfil == perfil && l.diametro == diametro
+                );
 
-                    if (resultados.length > 0) {
-                        resultados.forEach(llanta => {
-                            const cardHTML = `
-                                <div class="col-md-4">
-                                    <div class="card border-0 shadow-sm rounded-xl overflow-hidden h-100 bg-white category-card">
-                                        <div class="position-relative">
-                                            <img src="${llanta.img}" class="img-fluid w-100" style="height: 220px; object-fit: cover;" alt="${llanta.nombre}">
-                                            <span class="position-absolute top-0 end-0 bg-dark text-white fw-bold px-3 py-1 m-2 small rounded-pill bg-primary-llanteria">¡Disponible!</span>
-                                        </div>
-                                        <div class="p-4">
-                                            <span class="badge bg-light text-dark border text-uppercase mb-2">${llanta.ancho}/${llanta.perfil} R${llanta.diametro}</span>
-                                            <h5 class="fw-bold text-dark mb-1">${llanta.nombre}</h5>
-                                            <p class="text-muted small mb-3">Neumático de alta calidad optimizado para el clima y las vías de Valledupar.</p>
-                                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                                <span class="fs-5 fw-bold text-success">${llanta.precio}</span>
-                                                <a href="#contacto" class="btn btn-llanteria-action btn-sm fw-bold px-3 py-2 rounded-3">
-                                                    <i class="fa-brands fa-whatsapp me-1"></i> Cotizar
-                                                </a>
-                                            </div>
-                                        </div>
+                contenedorTarjetas.innerHTML = "";
+                if (resultados.length > 0) {
+                    resultados.forEach(llanta => {
+                        contenedorTarjetas.innerHTML += `
+                            <div class="col-md-4">
+                                <div class="card border-0 shadow-sm rounded-xl overflow-hidden h-100 bg-white">
+                                    <img src="${llanta.img}" class="img-fluid w-100" style="height: 220px; object-fit: cover;">
+                                    <div class="p-4">
+                                        <h5 class="fw-bold text-dark">${llanta.nombre}</h5>
+                                        <p class="text-success fw-bold fs-5">${llanta.precio}</p>
+                                        <a href="#contacto" class="btn btn-llanteria-action w-100">Cotizar</a>
                                     </div>
                                 </div>
-                            `;
-                            contenedorTarjetas.innerHTML += cardHTML;
-                        });
-                    } else {
-                        contenedorTarjetas.innerHTML = `
-                            <div class="col-12 text-center py-5">
-                                <i class="fa-solid fa-circle-info text-muted display-4 mb-3"></i>
-                                <h5 class="fw-bold text-dark">Medida sin existencias en vitrina</h5>
-                                <p class="text-muted">No encontramos resultados exactos para esa medida, pero la podemos solicitar a bodega central. ¡Escríbenos en la sección de contacto!</p>
-                            </div>
-                        `;
-                    }
+                            </div>`;
+                    });
+                } else {
+                    contenedorTarjetas.innerHTML = `<div class="col-12 text-center py-5"><h5>Sin existencias con estas medidas.</h5></div>`;
+                }
 
-                    seccionResultados.classList.remove("d-none");
-                    seccionResultados.scrollIntoView({ behavior: 'smooth' });
-                });
-            }
+                seccionResultados.classList.remove("d-none");
+                seccionResultados.scrollIntoView({ behavior: 'smooth' });
+            });
         });
     </script>
 }

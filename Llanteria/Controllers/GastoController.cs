@@ -1,87 +1,78 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Llanteria.Models;
 using Llanteria.Services;
+using Llanteria.Filters; // 👈 NECESARIO: Namespace de tu filtro
 
-namespace Llanteria.Controllers;
-
-public class GastoController : Controller
+namespace Llanteria.Controllers
 {
-    private readonly GastoService ser;
-
-    // Inyección del servicio de gastos para gestionar egresos
-    public GastoController(GastoService gastoService)
+    public class GastoController : Controller
     {
-        ser = gastoService;
-    }
+        private readonly GastoService ser;
 
-    // Listado de todos los gastos (incluye la categoría del gasto)
-    public IActionResult Index()
-    {
-        var lista = ser.GetGastos();
-        return View(lista);
-    }
-
-    // Vista para registrar un nuevo gasto o factura por pagar
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // Acción para guardar el registro del gasto
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Create(Gasto g)
-    {
-        try
+        public GastoController(GastoService gastoService)
         {
-            if (ModelState.IsValid)
+            ser = gastoService;
+        }
+
+        public IActionResult Index() => View(ser.GetGastos());
+
+        public IActionResult Create() => View();
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        // 👈 AUDITORÍA: Registrar creación de egreso
+        [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Registró un nuevo gasto", "Gasto" })]
+        public IActionResult Create(Gasto g)
+        {
+            try
             {
-                ser.AddGasto(g);
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    ser.AddGasto(g);
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(g);
             }
-            return View(g);
-        }
-        catch
-        {
-            return View(g);
-        }
-    }
-
-    // Vista para editar un gasto (ej. cambiar estado de Pendiente a Pago)
-    public IActionResult Edit(int id)
-    {
-        var g = ser.GetGasto(id);
-        if (g == null)
-        {
-            return NotFound();
-        }
-        return View(g);
-    }
-
-    // Acción para actualizar la información del gasto
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Edit(int id, Gasto g)
-    {
-        try
-        {
-            if (ModelState.IsValid)
+            catch
             {
-                ser.UpdateGasto(g);
-                return RedirectToAction(nameof(Index));
+                return View(g);
             }
-            return View(g);
         }
-        catch
-        {
-            return View(g);
-        }
-    }
 
-    // Acción para eliminar un registro de gasto (compatible con SweetAlert2)
-    public IActionResult Delete(int id)
-    {
-        ser.DeleteGasto(id);
-        return RedirectToAction(nameof(Index));
+        public IActionResult Edit(int id)
+        {
+            var g = ser.GetGasto(id);
+            if (g == null) return NotFound();
+            return View(g);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        // 👈 AUDITORÍA: Registrar edición de egreso
+        [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Editó un gasto", "Gasto" })]
+        public IActionResult Edit(int id, Gasto g)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    ser.UpdateGasto(g);
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(g);
+            }
+            catch
+            {
+                return View(g);
+            }
+        }
+
+        // 👈 AUDITORÍA: Registrar eliminación de egreso
+        [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Eliminó un gasto", "Gasto" })]
+        public IActionResult Delete(int id)
+        {
+            ser.DeleteGasto(id);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

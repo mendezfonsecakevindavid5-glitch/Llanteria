@@ -1,197 +1,165 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Llanteria.Models;
 using Llanteria.Services;
+using Llanteria.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Hosting; // 👈 Obligatorio para IWebHostEnvironment
+using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System;
 using System.Linq;
 
-namespace Llanteria.Controllers;
-
-public class ProductoController : Controller
+namespace Llanteria.Controllers
 {
-    private readonly ProductoService ser;
-    private readonly ProveedoreService provSer; // Para el combo de proveedores
-    private readonly MarcaService marcSer; // Para el combo de marcas
-    private readonly IWebHostEnvironment _webHostEnvironment; // 👈 CLAVE para encontrar la carpeta wwwroot
-
-    // Inyectamos el entorno web dentro del constructor actual
-    public ProductoController(ProductoService productoService, ProveedoreService proveedoreService, MarcaService marcaService, IWebHostEnvironment webHostEnvironment)
+    public class ProductoController : Controller
     {
-        ser = productoService;
-        provSer = proveedoreService;
-        marcSer = marcaService;
-        _webHostEnvironment = webHostEnvironment;
-    }
+        private readonly ProductoService ser;
+        private readonly ProveedoreService provSer;
+        private readonly MarcaService marcSer;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-    // Listado de productos
-    public ActionResult Index()
-    {
-        var lista = ser.GetProductos();
-        return View(lista);
-    }
-
-    // ACCIÓN NUEVA: Filtrar por medidas desde la Home
-    public IActionResult FiltrarMedidas(string ancho, string perfil, string diametro)
-    {
-        var resultados = ser.GetProductos().Where(p =>
-            (string.IsNullOrEmpty(ancho) || p.DetalleProducto?.Ancho == ancho) &&
-            (string.IsNullOrEmpty(perfil) || p.DetalleProducto?.Perfil == perfil) &&
-            (string.IsNullOrEmpty(diametro) || p.DetalleProducto?.Diametro == diametro)
-        ).ToList();
-
-        ViewBag.FiltroActivo = true;
-        return View("Index", resultados);
-    }
-
-    // Vista para crear nuevo producto
-    public ActionResult Create()
-    {
-        CargarCombos();
-        return View();
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult Create(Producto p)
-    {
-        try
+        public ProductoController(ProductoService productoService, ProveedoreService proveedoreService, MarcaService marcaService, IWebHostEnvironment webHostEnvironment)
         {
-            if (ModelState.IsValid)
-            {
-                // 📂 PROCESAR IMAGEN COMPU -> WWWROOT
-                if (p.ImagenArchivo != null)
-                {
-                    string carpetaProductos = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productos");
-
-                    // Si la carpeta de productos no existe, el sistema la crea automáticamente
-                    if (!Directory.Exists(carpetaProductos))
-                    {
-                        Directory.CreateDirectory(carpetaProductos);
-                    }
-
-                    // Generar un nombre de archivo único e irrepetible
-                    string nombreUnico = Guid.NewGuid().ToString() + "_" + Path.GetFileName(p.ImagenArchivo.FileName);
-                    string rutaDestino = Path.Combine(carpetaProductos, nombreUnico);
-
-                    // Guardar físicamente el archivo cargado en el disco
-                    using (var fileStream = new FileStream(rutaDestino, FileMode.Create))
-                    {
-                        p.ImagenArchivo.CopyTo(fileStream);
-                    }
-
-                    // Asignamos el nombre único en la columna Categoria de tu base de datos
-                    p.Categoria = nombreUnico;
-                }
-                else
-                {
-                    // Si el usuario no sube una foto, asignamos la imagen genérica del sistema
-                    p.Categoria = "default-producto.png";
-                }
-
-                ser.AddProducto(p);
-                return RedirectToAction(nameof(Index));
-            }
+            ser = productoService;
+            provSer = proveedoreService;
+            marcSer = marcaService;
+            _webHostEnvironment = webHostEnvironment;
         }
-        catch (Exception ex)
+
+        [HttpGet]
+        public JsonResult GetLlantasJson()
         {
-            ModelState.AddModelError("", "Error al guardar: " + ex.Message);
+            var productos = ser.GetProductos()
+                .Where(p => p.DetalleProducto != null)
+                .Select(p => new {
+                    ancho = p.DetalleProducto.Ancho,
+                    perfil = p.DetalleProducto.Perfil,
+                    diametro = p.DetalleProducto.Diametro,
+                    nombre = p.Nombre,
+                    // AQUÍ ESTABA EL ERROR: Usamos PrecioVenta en lugar de Precio
+                    precio = p.PrecioVenta.ToString("C0"),
+                    img = "/images/productos/" + (string.IsNullOrEmpty(p.Categoria) ? "default-producto.png" : p.Categoria)
+                }).ToList();
+
+            return Json(productos);
         }
-        CargarCombos();
-        return View(p);
-    }
 
-    // Vista para editar producto
-    public ActionResult Edit(int id)
-    {
-        var p = ser.GetProducto(id);
-        if (p == null) return NotFound();
+        public ActionResult Index() => View(ser.GetProductos());
 
-        CargarCombos();
-        return View(p);
-    }
+        // --- CRUD Y ACCIONES RESTO ---
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult Edit(int id, Producto ob)
-    {
-        try
+        public ActionResult Create()
         {
-            if (ModelState.IsValid)
+            CargarCombos();
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Creó nuevo producto", "Producto" })]
+        public ActionResult Create(Producto p)
+        {
+            try
             {
-                // Recuperamos el estado actual del producto para conservar o limpiar su foto anterior
-                var productoExistente = ser.GetProducto(id);
-
-                if (ob.ImagenArchivo != null)
+                if (ModelState.IsValid)
                 {
-                    string carpetaProductos = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productos");
-
-                    // Generar un nuevo nombre único de archivo
-                    string nombreUnico = Guid.NewGuid().ToString() + "_" + Path.GetFileName(ob.ImagenArchivo.FileName);
-                    string rutaDestino = Path.Combine(carpetaProductos, nombreUnico);
-
-                    using (var fileStream = new FileStream(rutaDestino, FileMode.Create))
+                    if (p.ImagenArchivo != null)
                     {
-                        ob.ImagenArchivo.CopyTo(fileStream);
-                    }
+                        string carpetaProductos = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productos");
+                        if (!Directory.Exists(carpetaProductos)) Directory.CreateDirectory(carpetaProductos);
 
-                    // Borramos físicamente del disco la foto anterior para no acumular basura (excepto si es la por defecto)
-                    if (productoExistente != null && !string.IsNullOrEmpty(productoExistente.Categoria) && productoExistente.Categoria != "default-producto.png")
-                    {
-                        string rutaFotoAnterior = Path.Combine(carpetaProductos, productoExistente.Categoria);
-                        if (System.IO.File.Exists(rutaFotoAnterior))
+                        string nombreUnico = Guid.NewGuid().ToString() + "_" + Path.GetFileName(p.ImagenArchivo.FileName);
+                        string rutaDestino = Path.Combine(carpetaProductos, nombreUnico);
+
+                        using (var fileStream = new FileStream(rutaDestino, FileMode.Create))
                         {
-                            System.IO.File.Delete(rutaFotoAnterior);
+                            p.ImagenArchivo.CopyTo(fileStream);
                         }
+                        p.Categoria = nombreUnico;
+                    }
+                    else
+                    {
+                        p.Categoria = "default-producto.png";
                     }
 
-                    // Guardamos el nuevo nombre en el objeto modificado
-                    ob.Categoria = nombreUnico;
+                    ser.AddProducto(p);
+                    return RedirectToAction(nameof(Index));
                 }
-                else
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al guardar: " + ex.Message);
+            }
+            CargarCombos();
+            return View(p);
+        }
+
+        public ActionResult Edit(int id)
+        {
+            var p = ser.GetProducto(id);
+            if (p == null) return NotFound();
+            CargarCombos();
+            return View(p);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Editó un producto", "Producto" })]
+        public ActionResult Edit(int id, Producto ob)
+        {
+            try
+            {
+                if (ModelState.IsValid)
                 {
-                    // Si el usuario edita datos del producto pero no sube una nueva foto, retenemos la que ya tenía
-                    if (productoExistente != null)
+                    var productoExistente = ser.GetProducto(id);
+                    if (ob.ImagenArchivo != null)
+                    {
+                        string carpetaProductos = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productos");
+                        string nombreUnico = Guid.NewGuid().ToString() + "_" + Path.GetFileName(ob.ImagenArchivo.FileName);
+                        string rutaDestino = Path.Combine(carpetaProductos, nombreUnico);
+
+                        using (var fileStream = new FileStream(rutaDestino, FileMode.Create))
+                        {
+                            ob.ImagenArchivo.CopyTo(fileStream);
+                        }
+
+                        if (productoExistente != null && !string.IsNullOrEmpty(productoExistente.Categoria) && productoExistente.Categoria != "default-producto.png")
+                        {
+                            string rutaFotoAnterior = Path.Combine(carpetaProductos, productoExistente.Categoria);
+                            if (System.IO.File.Exists(rutaFotoAnterior)) System.IO.File.Delete(rutaFotoAnterior);
+                        }
+                        ob.Categoria = nombreUnico;
+                    }
+                    else if (productoExistente != null)
                     {
                         ob.Categoria = productoExistente.Categoria;
                     }
+
+                    ser.UpdateProducto(ob);
+                    return RedirectToAction(nameof(Index));
                 }
-
-                ser.UpdateProducto(ob);
-                return RedirectToAction(nameof(Index));
             }
+            catch { ModelState.AddModelError("", "Error al actualizar."); }
+            CargarCombos();
+            return View(ob);
         }
-        catch
-        {
-            ModelState.AddModelError("", "Error al actualizar.");
-        }
-        CargarCombos();
-        return View(ob);
-    }
 
-    // Acción para eliminar
-    public ActionResult Delete(int id)
-    {
-        // 🗑️ Limpieza automática del disco al eliminar el producto
-        var p = ser.GetProducto(id);
-        if (p != null && !string.IsNullOrEmpty(p.Categoria) && p.Categoria != "default-producto.png")
+        [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Eliminó un producto", "Producto" })]
+        public ActionResult Delete(int id)
         {
-            string rutaImagen = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productos", p.Categoria);
-            if (System.IO.File.Exists(rutaImagen))
+            var p = ser.GetProducto(id);
+            if (p != null && !string.IsNullOrEmpty(p.Categoria) && p.Categoria != "default-producto.png")
             {
-                System.IO.File.Delete(rutaImagen);
+                string rutaImagen = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productos", p.Categoria);
+                if (System.IO.File.Exists(rutaImagen)) System.IO.File.Delete(rutaImagen);
             }
+            ser.DeleteProducto(id);
+            return RedirectToAction(nameof(Index));
         }
 
-        ser.DeleteProducto(id);
-        return RedirectToAction(nameof(Index));
-    }
-
-    // Llenar los selectores para las vistas
-    private void CargarCombos()
-    {
-        ViewBag.IdProveedor = new SelectList(provSer.GetProveedores(), "Id", "NombreEmpresa");
-        ViewBag.IdMarca = new SelectList(marcSer.GetMarcas(), "Id", "Nombre");
+        private void CargarCombos()
+        {
+            ViewBag.IdProveedor = new SelectList(provSer.GetProveedores(), "Id", "NombreEmpresa");
+            ViewBag.IdMarca = new SelectList(marcSer.GetMarcas(), "Id", "Nombre");
+        }
     }
 }
