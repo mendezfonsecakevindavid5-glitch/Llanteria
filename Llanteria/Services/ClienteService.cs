@@ -23,6 +23,16 @@ public class ClienteService
             .ToList();
     }
 
+    // ✅ NUEVO: Obtener todos los clientes ordenados por puntos (para el panel de administración)
+    public List<Cliente> GetClientesPorPuntos()
+    {
+        return _context.Clientes
+            .Include(c => c.IdDocumentoNavigation)
+            .Include(c => c.IdSexoNavigation)
+            .OrderByDescending(c => c.PuntosAcumulados)
+            .ToList();
+    }
+
     // Obtener un cliente por su ID
     public Cliente? GetCliente(int id)
     {
@@ -30,6 +40,18 @@ public class ClienteService
             .Include(c => c.IdDocumentoNavigation)
             .Include(c => c.IdSexoNavigation)
             .FirstOrDefault(c => c.Id == id);
+    }
+
+    // ✅ NUEVO: Actualizar únicamente el balance de puntos de un cliente de forma rápida
+    public void ActualizarPuntos(int clienteId, int nuevosPuntos)
+    {
+        var cliente = _context.Clientes.Find(clienteId);
+        if (cliente != null)
+        {
+            cliente.PuntosAcumulados = nuevosPuntos;
+            _context.Clientes.Update(cliente);
+            _context.SaveChanges();
+        }
     }
 
     // Agregar un nuevo cliente

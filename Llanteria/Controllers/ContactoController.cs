@@ -1,27 +1,34 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Net;
 using System.Net.Mail;
+using System.Threading.Tasks;
 
 public class ContactoController : Controller
 {
+    // GET: /Contacto
+    [HttpGet]
+    public IActionResult Index()
+    {
+        return View();
+    }
+
     [HttpPost]
     public async Task<IActionResult> EnviarMensaje(string Nombre, string Correo, string Asunto, string Mensaje)
     {
         try
         {
-            // Puedes usar un servicio profesional como SendGrid/Resend. 
-            // Para arrancar rápido y profesional sin costo, usaremos el SMTP seguro de tu proveedor de correo (ej. Gmail/Outlook)
             var tuCorreoDestino = "mendezfonsecakevindavid5@gmail.com";
             var passwordAplicacion = "tuup ydch lglq rwwa"; // Clave de aplicación generada en tu cuenta
 
-            var smtpClient = new SmtpClient("smtp.gmail.com") // Si usas Outlook: smtp.office365.com
+            var smtpClient = new SmtpClient("smtp.gmail.com")
             {
                 Port = 587,
                 Credentials = new NetworkCredential(tuCorreoDestino, passwordAplicacion),
                 EnableSsl = true,
             };
 
-            // Creamos el diseño profesional en HTML para el cuerpo del correo
+            // Estructura HTML del correo impecable...
             string cuerpoHtml = $@"
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;'>
                 <div style='background-color: #C92B0A; color: white; padding: 20px; text-align: center;'>
@@ -65,20 +72,24 @@ public class ContactoController : Controller
                 IsBodyHtml = true,
             };
 
-            // Añadimos la cabecera ReplyTo para que cuando le des a "Responder" en tu correo, le responda directo al cliente
             mailMessage.ReplyToList.Add(new MailAddress(Correo));
             mailMessage.To.Add(tuCorreoDestino);
 
             await smtpClient.SendMailAsync(mailMessage);
 
-            // Redireccionamos al Inicio mostrando un mensaje de éxito usando TempData
+            // ✅ Asignamos el TempData de éxito
             TempData["MensajeEnviado"] = "true";
-            return RedirectToAction("Index", "Home");
+
+            // 🔄 REDIRECCIÓN CORREGIDA: Volvemos a la misma vista de Contacto
+            return RedirectToAction(nameof(Index));
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            ViewBag.Error = "No se pudo enviar el mensaje: " + ex.Message;
-            return RedirectToAction("Index", "Home");
+            // ✅ CORRECCIÓN: Cambiamos ViewBag por TempData para que sobreviva a la redirección
+            TempData["ErrorCorreo"] = "true";
+
+            // 🔄 REDIRECCIÓN CORREGIDA
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema; // 👈 Obligatorio
+using Microsoft.AspNetCore.Http; // 👈 Obligatorio para IFormFile
 
 namespace Llanteria.Models;
 
@@ -17,6 +19,7 @@ public partial class Producto
 
     public int IdProveedor { get; set; }
 
+    // 💡 Usaremos esta columna de texto existente para guardar el nombre del archivo (ej: "michelin-r16.jpg")
     public string? Categoria { get; set; }
 
     public virtual ICollection<DetalleFactura> DetalleFacturas { get; set; } = new List<DetalleFactura>();
@@ -26,4 +29,8 @@ public partial class Producto
     public virtual Proveedore IdProveedorNavigation { get; set; } = null!;
 
     public virtual ICollection<Inventario> Inventarios { get; set; } = new List<Inventario>();
+
+    // ✅ NUEVO: Captura el archivo binario en el formulario sin guardarse directamente en la BD
+    [NotMapped]
+    public IFormFile? ImagenArchivo { get; set; }
 }

@@ -25,6 +25,41 @@ public class ClienteController : Controller
         return View(ser.GetClientes());
     }
 
+    // ✅ NUEVO: Vista de Administración y Control de Puntos
+    public IActionResult GestionPuntos()
+    {
+        var clientes = ser.GetClientesPorPuntos();
+        return View(clientes);
+    }
+
+    // ✅ NUEVO: Acción POST mediante AJAX para alterar puntos sin recargar la página
+    [HttpPost]
+    public IActionResult ModificarPuntos(int clienteId, int cantidad, string operacion)
+    {
+        var cliente = ser.GetCliente(clienteId);
+        if (cliente == null)
+        {
+            return Json(new { success = false, message = "Cliente no encontrado en el sistema." });
+        }
+
+        int nuevosPuntos = cliente.PuntosAcumulados;
+
+        if (operacion == "sumar")
+        {
+            nuevosPuntos += cantidad;
+        }
+        else if (operacion == "restar")
+        {
+            // Evita que los puntos queden en números negativos utilizando Math.Max
+            nuevosPuntos = Math.Max(0, nuevosPuntos - cantidad);
+        }
+
+        // Guardamos los cambios llamando al servicio
+        ser.ActualizarPuntos(clienteId, nuevosPuntos);
+
+        return Json(new { success = true, nuevosPuntos = nuevosPuntos });
+    }
+
     // Vista para registrar un nuevo cliente
     public IActionResult Create()
     {

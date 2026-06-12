@@ -1,7 +1,7 @@
-﻿@model IEnumerable<Llanteria.Models.TipoServicio>
+﻿@model IEnumerable<Llanteria.Models.Proveedore>
 
 @{
-    ViewData["Title"] = "Catálogo de Servicios";
+    ViewData["Title"] = "Aliados y Proveedores";
 }
 
 <div class="container py-5" style="max-width: 1200px;">
@@ -12,24 +12,33 @@
                 <i class="fa-solid fa-arrow-left"></i> Volver al Panel
             </a>
             <h2 class="fw-black text-dark text-uppercase m-0 d-flex align-items-center gap-2">
-                <i class="fa-solid fa-gears" style="color: #C92B0A;"></i> Servicios del Taller
+                <i class="fa-solid fa-industry" style="color: #C92B0A;"></i> Aliados y Proveedores
             </h2>
-            <p class="text-muted small m-0">Gestiona los servicios mecánicos ofrecidos, sus costos base e identidad visual (imágenes del catálogo).</p>
+            <p class="text-muted small m-0">Administra los fabricantes de llantas, rines, herramientas y distribuidores oficiales del taller.</p>
         </div>
 
         <a asp-action="Create" class="btn text-white fw-bold px-4 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2 transition-transform" style="background-color: #C92B0A; border: none;">
-            <i class="fa-solid fa-plus"></i> Nuevo Servicio
+            <i class="fa-solid fa-plus"></i> Registrar Proveedor
         </a>
     </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show rounded-3 mb-4 shadow-sm border-0" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
     <div class="card border-0 shadow-sm rounded-xl overflow-hidden animate__animated animate__fadeInUp">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="text-white text-uppercase small tracking-wider" style="background-color: #000000;">
                     <tr>
-                        <th scope="col" class="ps-4 text-center" style="width: 120px;">Imagen</th>
-                        <th scope="col" class="py-3">Nombre del Servicio</th>
-                        <th scope="col" class="text-end py-3" style="width: 200px;">Valor Sugerido</th>
+                        <th scope="col" class="ps-4 text-center" style="width: 110px;">Logo</th>
+                        <th scope="col" class="py-3">Nombre de la Empresa</th>
+                        <th scope="col" class="py-3">Contacto / Asesor</th>
+                        <th scope="col" class="py-3">Teléfono de Atención</th>
                         <th scope="col" class="text-center py-3" style="width: 180px;">Acciones</th>
                     </tr>
                 </thead>
@@ -40,28 +49,38 @@
                         {
                             <tr>
                                 <td class="ps-4 text-center">
-                                    <div class="rounded-3 border bg-light shadow-sm d-inline-flex align-items-center justify-content-center overflow-hidden" style="width: 60px; height: 60px;">
-                                        <img src="@Url.Content("~/images/servicios/" + (string.IsNullOrEmpty(item.IconoPath) || item.IconoPath.StartsWith("fa-") ? "default-servicio.png" : item.IconoPath))"
+                                    <div class="rounded-3 border bg-light shadow-sm d-inline-flex align-items-center justify-content-center overflow-hidden" style="width: 55px; height: 55px;">
+                                        <img src="@Url.Content("~/images/proveedores/" + item.Id + ".png")"
                                              class="w-100 h-100 object-fit-cover"
-                                             alt="@item.NombreServicio"
-                                             onerror="this.src='/images/servicios/default-servicio.png';" />
+                                             alt="@item.NombreEmpresa"
+                                             onerror="this.src='/images/proveedores/default-proveedor.png';" />
                                     </div>
                                 </td>
 
                                 <td>
-                                    <span class="fw-bold text-dark fs-6">@item.NombreServicio</span>
+                                    <span class="fw-bold text-dark fs-6">@item.NombreEmpresa</span>
                                 </td>
 
-                                <td class="text-end fw-bold pe-3 fs-6" style="color: #C92B0A;">
-                                    $ @item.ValorServicio.ToString("N0")
+                                <td>
+                                    <span class="text-dark fw-semibold">
+                                        <i class="fa-solid fa-user-tie text-secondary me-1" style="font-size: 0.9rem;"></i>
+                                        @(string.IsNullOrEmpty(item.Contacto) ? "No especificado" : item.Contacto)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-light text-dark border px-2 py-1.5 fw-medium">
+                                        <i class="fa-solid fa-phone text-muted me-1"></i>
+                                        @(string.IsNullOrEmpty(item.Telefono) ? "S/N" : item.Telefono)
+                                    </span>
                                 </td>
 
                                 <td class="text-center pe-4">
                                     <div class="d-flex justify-content-center gap-1">
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark rounded-2" title="Editar">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark rounded-2" title="Editar Información">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </a>
-                                        <button type="button" class="btn btn-sm btn-outline-danger rounded-2" title="Eliminar" onclick="confirmarEliminar(@item.Id, '@item.NombreServicio')">
+                                        <button type="button" class="btn btn-sm btn-outline-danger rounded-2" title="Eliminar Proveedor" onclick="confirmarEliminar(@item.Id, '@item.NombreEmpresa')">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
                                     </div>
@@ -72,9 +91,9 @@
                     else
                     {
                         <tr>
-                            <td colspan="4" class="text-center py-5 text-muted">
+                            <td colspan="5" class="text-center py-5 text-muted">
                                 <i class="fa-solid fa-folder-open display-4 mb-3 d-block text-secondary"></i>
-                                <span class="fw-semibold">No hay servicios registrados en este momento.</span>
+                                <span class="fw-semibold">No hay proveedores registrados en el sistema.</span>
                             </td>
                         </tr>
                     }
@@ -110,8 +129,8 @@
     <script>
         function confirmarEliminar(id, nombre) {
             Swal.fire({
-                title: '¿Eliminar servicio?',
-                text: "Se borrará de forma permanente: " + nombre + ". Asegúrate de que no esté incluido en órdenes de trabajo activas.",
+                title: '¿Eliminar proveedor?',
+                text: "Se borrará de forma permanente a: \"" + nombre + "\". Asegúrate de que no tenga productos asociados en stock, o el sistema denegará la acción.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#C92B0A',
@@ -123,7 +142,7 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = '/TipoServicio/Delete/' + id;
+                    window.location.href = '/Proveedore/Delete/' + id;
                 }
             })
         }

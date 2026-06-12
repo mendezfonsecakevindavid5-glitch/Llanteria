@@ -4,40 +4,74 @@
     ViewData["Title"] = "Editar Cliente";
 }
 
-<div class="row justify-content-center mt-4">
-    <div class="col-md-8">
-        <div class="card shadow border-0">
-            <div class="card-header bg-warning">
-                <h5 class="mb-0"><i class="fa-solid fa-user-pen"></i> Actualizar Datos de Cliente</h5>
+<div class="row justify-content-center mt-5">
+    <div class="col-lg-9">
+        <div class="card shadow border-0 rounded-3 overflow-hidden bg-white">
+            <div class="card-header py-3 d-flex align-items-center gap-2" style="background-color: #212529; border: none;">
+                <i class="fa-solid fa-user-pen text-white fs-5"></i>
+                <h5 class="mb-0 text-white fw-bold text-uppercase tracking-wide">Actualizar Información de Cliente</h5>
             </div>
-            <div class="card-body">
-                <form asp-action="Edit">
+            <div class="card-body p-4">
+                <form asp-action="Edit" method="post">
                     <input type="hidden" asp-for="Id" />
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Nombres" class="form-label fw-bold"></label>
-                            <input asp-for="Nombres" class="form-control" />
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Nombres" class="form-control" placeholder="Nombres" required />
+                                <label asp-for="Nombres">Nombres</label>
+                            </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Apellidos" class="form-label fw-bold"></label>
-                            <input asp-for="Apellidos" class="form-control" />
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Apellidos" class="form-control" placeholder="Apellidos" required />
+                                <label asp-for="Apellidos">Apellidos</label>
+                            </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Tipo Documento</label>
-                            <select asp-for="IdDocumento" class="form-select" asp-items="ViewBag.IdDocumento"></select>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select asp-for="IdDocumento" class="form-select" asp-items="ViewBag.IdDocumento"></select>
+                                <label>Tipo Documento</label>
+                            </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Género</label>
-                            <select asp-for="IdSexo" class="form-select" asp-items="ViewBag.IdSexo"></select>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="NumeroDocumento" class="form-control" placeholder="Documento" required />
+                                <label asp-for="NumeroDocumento">Número de Documento</label>
+                            </div>
                         </div>
-                        <div class="col-md-12 mb-3">
-                            <label asp-for="PuntosAcumulados" class="form-label fw-bold">Puntos Actuales</label>
-                            <input asp-for="PuntosAcumulados" class="form-control" />
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Correo" type="email" class="form-control" placeholder="Correo" />
+                                <label asp-for="Correo">Correo Electrónico</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Telefono" class="form-control" placeholder="Teléfono" />
+                                <label asp-for="Telefono">Teléfono</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select asp-for="IdSexo" class="form-select" asp-items="ViewBag.IdSexo"></select>
+                                <label>Género</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="PuntosAcumulados" class="form-control" placeholder="Puntos" />
+                                <label asp-for="PuntosAcumulados">Puntos Acumulados</label>
+                            </div>
                         </div>
                     </div>
-                    <div class="text-end mt-3">
-                        <a asp-action="Index" class="btn btn-outline-secondary">Volver</a>
-                        <button type="submit" class="btn btn-dark">Actualizar Cambios</button>
+
+                    <div class="d-flex justify-content-end align-items-center gap-2 mt-4 pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4 py-2 fw-semibold rounded-3">
+                            Volver al Listado
+                        </a>
+                        <button type="submit" class="btn text-white px-5 py-2 fw-bold text-uppercase shadow-sm rounded-3" style="background-color: #C92B0A; border: none;">
+                            Actualizar Cambios
+                        </button>
                     </div>
                 </form>
             </div>

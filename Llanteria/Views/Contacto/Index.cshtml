@@ -57,11 +57,14 @@
     @if (TempData["MensajeEnviado"] != null)
     {
         <script>
-            Swal.fire({
-            title: '¡Mensaje Enviado!',
-            text: 'Tu consulta ha sido recibida con éxito. Revisa tu bandeja de entrada pronto.',
-            icon: 'success',
-            confirmButtonColor: '#C92B0A'
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: '¡Mensaje Enviado!',
+                    text: 'Tu consulta ha sido recibida con éxito. Revisa tu bandeja de entrada pronto.',
+                    icon: 'success',
+                    confirmButtonColor: '#C92B0A',
+                    confirmButtonText: 'Entendido'
+                });
             });
         </script>
     }
@@ -69,11 +72,14 @@
     @if (TempData["ErrorCorreo"] != null)
     {
         <script>
-            Swal.fire({
-            title: 'Error al enviar',
-            text: 'No se pudo despachar el correo. Verifica tu configuración SMTP.',
-            icon: 'error',
-            confirmButtonColor: '#000000'
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: 'Error al enviar',
+                    text: 'No se pudo despachar el correo. Verifica tu configuración SMTP.',
+                    icon: 'error',
+                    confirmButtonColor: '#000000',
+                    confirmButtonText: 'Reintentar'
+                });
             });
         </script>
     }

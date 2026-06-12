@@ -1,0 +1,115 @@
+﻿@model IEnumerable<Llanteria.Models.Cliente>
+
+@{
+    ViewData["Title"] = "Control de Puntos de Fidelidad";
+}
+
+<div class="container-fluid pt-4">
+    <div class="card border-0 shadow-sm rounded-xl p-4 bg-white" style="border-radius: 16px !important;">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h4 class="fw-bold m-0 text-dark">
+                    <i class="fa-solid fa-star text-warning me-2"></i>Control de Puntos de Fidelidad
+                </h4>
+                <small class="text-muted">Visualiza, audita y modifica los puntos acumulados de la clientela</small>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Cliente / Documento</th>
+                        <th>Contacto</th>
+                        <th class="text-center">Puntos Totales</th>
+                        <th class="text-center">Acciones de Ajuste</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cliente in Model)
+                    {
+                        <tr>
+                            <td>
+                                <span class="fw-bold text-dark d-block">@cliente.Nombres @cliente.Apellidos</span>
+                                <small class="text-muted font-monospace">CC: @cliente.NumeroDocumento</small>
+                            </td>
+                            <td>
+                                <span class="d-block small"><i class="fa-solid fa-phone me-1 text-muted"></i>@cliente.Telefono</span>
+                                <span class="d-block small"><i class="fa-solid fa-envelope me-1 text-muted"></i>@cliente.Correo</span>
+                            </td>
+                            <td class="text-center">
+                                <span id="puntos-@cliente.Id" class="badge bg-warning text-dark font-monospace fs-6 px-3 py-2 rounded-pill fw-bold">
+                                    <i class="fa-solid fa-star me-1"></i>@cliente.PuntosAcumulados pts
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group gap-1">
+                                    <button class="btn btn-outline-success btn-sm rounded-2 fw-bold" onclick="alterarPuntos(@cliente.Id, '@cliente.Nombres @cliente.Apellidos', 'sumar')">
+                                        <i class="fa-solid fa-plus me-1"></i> Sumar
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm rounded-2 fw-bold" onclick="alterarPuntos(@cliente.Id, '@cliente.Nombres @cliente.Apellidos', 'restar')">
+                                        <i class="fa-solid fa-minus me-1"></i> Restar
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function alterarPuntos(clienteId, nombreCompleto, operacion) {
+            const esSuma = operacion === 'sumar';
+            const accionTitulo = esSuma ? 'Sumar Puntos' : 'Restar Puntos';
+            const botonColor = esSuma ? '#198754' : '#dc3545';
+
+            Swal.fire({
+                title: `${accionTitulo} a:\n ${nombreCompleto}`,
+                input: 'number',
+                inputLabel: 'Digita el monto de puntos a cambiar',
+                inputPlaceholder: 'Ej. 100',
+                showCancelButton: true,
+                confirmButtonText: 'Procesar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: botonColor,
+                inputValidator: (value) => {
+                    if (!value || value <= 0) {
+                        return '¡Por favor ingresa una cantidad válida mayor a 0!';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const cant = result.value;
+
+                    // Conexión directa a tu ClienteController por AJAX
+                    $.post('/Cliente/ModificarPuntos', {
+                        clienteId: clienteId,
+                        cantidad: cant,
+                        operacion: operacion
+                    }, function (data) {
+                        if (data.success) {
+                            // Cambia el número de puntos en la pantalla al instante sin recargar
+                            $(`#puntos-${clienteId}`).html(`<i class="fa-solid fa-star me-1"></i>${data.nuevosPuntos} pts`);
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Ajuste realizado!',
+                                text: `Los puntos de ${nombreCompleto} han sido actualizados con éxito.`,
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    }).fail(function () {
+                        Swal.fire('Error crítico', 'No se pudo conectar con el servidor.', 'error');
+                    });
+                }
+            });
+        }
+    </script>
+}
