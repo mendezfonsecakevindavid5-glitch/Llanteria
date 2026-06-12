@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Llanteria.Models
 {
     public class PerfilUsuarioViewModel
     {
-       
         public int Id { get; set; }
 
         public string? Bio { get; set; }
@@ -29,5 +30,25 @@ namespace Llanteria.Models
         public string? Direccion { get; set; }
 
         public int Puntos { get; set; }
+
+        // ============================================================
+        // 📄 HISTORIAL DE FACTURAS Y SERVICIOS (DATOS SIMULADOS)
+        // ============================================================
+        public List<FacturaSimuladaViewModel> FacturasRecientes { get; set; } = new List<FacturaSimuladaViewModel>();
+    }
+
+    /// <summary>
+    /// Modelo auxiliar para simular la estructura de tus tablas reales:
+    /// Factura, DetalleFactura y TipoServicio.
+    /// </summary>
+    public class FacturaSimuladaViewModel
+    {
+        public int Id { get; set; }
+        public string NumeroFactura { get; set; } = null!;
+        public DateTime Fecha { get; set; }
+        public decimal TotalPagar { get; set; }
+        public string ServicioPrincipal { get; set; } = null!;
+        public string DetalleItems { get; set; } = null!;
+        public string EstadoPago { get; set; } = null!;
     }
 }
