@@ -31,24 +31,18 @@ namespace Llanteria.Models
 
         public int Puntos { get; set; }
 
-        // ============================================================
-        // 📄 HISTORIAL DE FACTURAS Y SERVICIOS (DATOS SIMULADOS)
-        // ============================================================
-        public List<FacturaSimuladaViewModel> FacturasRecientes { get; set; } = new List<FacturaSimuladaViewModel>();
+        // Ahora apunta a modelos de datos reales
+        public List<FacturaViewModel> FacturasRecientes { get; set; } = new List<FacturaViewModel>();
     }
 
-    /// <summary>
-    /// Modelo auxiliar para simular la estructura de tus tablas reales:
-    /// Factura, DetalleFactura y TipoServicio.
-    /// </summary>
-    public class FacturaSimuladaViewModel
+    public class FacturaViewModel
     {
         public int Id { get; set; }
         public string NumeroFactura { get; set; } = null!;
         public DateTime Fecha { get; set; }
         public decimal TotalPagar { get; set; }
-        public string ServicioPrincipal { get; set; } = null!;
-        public string DetalleItems { get; set; } = null!;
-        public string EstadoPago { get; set; } = null!;
+        public string ServicioPrincipal { get; set; } = "N/A";
+        public string DetalleItems { get; set; } = "N/A";
+        public string EstadoPago { get; set; } = "Pendiente";
     }
 }
