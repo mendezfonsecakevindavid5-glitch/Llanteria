@@ -4,27 +4,33 @@
 
 <div class="row justify-content-center pt-5">
     <div class="col-md-5 col-lg-4">
-        <div class="card border-0 shadow-sm rounded-xl p-4 bg-white">
+        <div class="card border-0 shadow-lg rounded-4 p-4 bg-white">
             <div class="text-center mb-4">
-                <div class="bg-dark text-warning p-3 rounded-circle d-inline-block mb-2 shadow-sm" style="width: 65px; height: 65px;">
-                    <i class="fa-solid fa-lock fa-xl"></i>
+                <div class="bg-light text-danger p-3 rounded-circle d-inline-block mb-3 shadow-sm" style="width: 70px; height: 70px; border: 2px solid #C92B0A;">
+                    <i class="fa-solid fa-user-shield fa-2x mt-2" style="color: #C92B0A;"></i>
                 </div>
-                <h4 class="fw-bold text-dark m-0">Ingreso Administrativo</h4>
-                <p class="text-muted small">Personal Técnico, Empleados y Administradores</p>
+                
+                <h4 class="fw-bold text-dark m-0">Ingreso al Sistema</h4>
+                <p class="text-muted small">Acceso para Clientes, Personal y Administradores</p>
+                
+                <div class="d-flex justify-content-center gap-3 mt-2 text-secondary small">
+                    <span><i class="fa-solid fa-user me-1"></i>Cliente</span>
+                    <span><i class="fa-solid fa-screwdriver-wrench me-1"></i>Personal</span>
+                    <span><i class="fa-solid fa-lock me-1"></i>Admin</span>
+                </div>
             </div>
 
-            <!-- Alerta de Credenciales Inválidas o Cuenta Inactiva -->
             @if (ViewBag.Error != null)
             {
-                <div class="alert alert-danger font-sm border-0 py-2 text-center rounded-3 shadow-sm mb-3" role="alert">
-                    <i class="fa-solid fa-triangle-exclamation me-1"></i> @ViewBag.Error
+                <div class="alert alert-danger border-0 py-2 text-center rounded-3 shadow-sm mb-3" role="alert">
+                    <small><i class="fa-solid fa-triangle-exclamation me-1"></i> @ViewBag.Error</small>
                 </div>
             }
 
             <form asp-action="Login" method="post">
                 <div class="mb-3">
                     <div class="form-floating">
-                        <input type="text" name="username" class="form-control" placeholder="usuario123" required />
+                        <input type="text" name="username" class="form-control" placeholder="nombre.usuario" required />
                         <label class="text-muted"><i class="fa-solid fa-user me-2"></i>Nombre de Usuario</label>
                     </div>
                 </div>
@@ -37,11 +43,15 @@
                 </div>
 
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-primary py-2 fw-bold text-uppercase text-white rounded-3 shadow-sm transition-transform">
+                    <button type="submit" class="btn py-2 fw-bold text-uppercase text-white rounded-3 shadow-sm" style="background-color: #C92B0A; border: none;">
                         Entrar al Sistema
                     </button>
                 </div>
             </form>
+
+            <div class="text-center mt-3">
+                <small class="text-muted">¿No tienes cuenta? <a asp-controller="Account" asp-action="Register" class="text-danger fw-bold">Regístrate aquí</a></small>
+            </div>
         </div>
     </div>
 </div>

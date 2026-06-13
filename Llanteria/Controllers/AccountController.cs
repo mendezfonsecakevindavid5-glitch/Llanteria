@@ -1,9 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Llanteria.Models;
 using Llanteria.Services;
-using Llanteria.Filters; // 👈 Necesario para el filtro
+using Llanteria.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore; // Necesario para .Include si fuera necesario
 
 namespace Llanteria.Controllers
 {
@@ -26,24 +32,48 @@ namespace Llanteria.Controllers
         public IActionResult Login() => View();
 
         [HttpPost]
-        // Se registra el intento de login exitoso mediante el filtro
-        // Nota: Solo se registrará si el método retorna un resultado exitoso (RedirectToAction)
-        [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Inicio de sesión exitoso", "Usuarios" })]
-        public IActionResult Login(string username, string password)
+        public async Task<IActionResult> Login(string username, string password)
         {
+            // SOLUCIÓN: Buscamos en la lista directamente. 
+            // Como ya es una lista, el Include no es necesario si la relación está cargada.
             var user = _userSer.GetUsuarios()
                 .FirstOrDefault(u => u.Username == username);
 
             if (user != null && user.PasswordHash == password && user.Estado == "Activo")
             {
-                // Aquí deberías crear la sesión (Cookie de autenticación/Claims)
-                // Es vital que aquí guardes el ID del usuario en los Claims 
-                // para que el filtro de Log funcione correctamente.
-                return RedirectToAction("Index", "Dashboard");
+                // Si la navegación IdRolNavigation es null, es porque la lista no cargó la relación.
+                // Accedemos a través de la propiedad que ya tienes en el modelo.
+                string nombreRol = user.IdRolNavigation?.NombreRol ?? "Cliente";
+
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Role, nombreRol)
+                };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties { IsPersistent = true };
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                                              new ClaimsPrincipal(claimsIdentity), authProperties);
+
+                if (nombreRol == "Administrador" || nombreRol == "Empleado")
+                {
+                    return RedirectToAction("Index", "Dashboard");
+                }
+
+                return RedirectToAction("Home", "Index");
             }
 
             ViewBag.Error = "Credenciales inválidas o cuenta inactiva.";
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -56,7 +86,6 @@ namespace Llanteria.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Registro de nuevo cliente", "Clientes" })]
         public IActionResult Register(Cliente cliente)
         {
             if (ModelState.IsValid)
@@ -65,7 +94,6 @@ namespace Llanteria.Controllers
                 _clienteSer.AddCliente(cliente);
                 return RedirectToAction("Welcome");
             }
-
             ViewBag.IdSexo = new SelectList(_sexoSer.GetSexos(), "Id", "Nombre");
             ViewBag.IdDocumento = new SelectList(_docSer.GetTipoDocumentos(), "Id", "Nombre");
             return View(cliente);

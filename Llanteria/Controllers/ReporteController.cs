@@ -3,13 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using Rotativa.AspNetCore;
 using Llanteria.Models;
 using Llanteria.Data;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize(Roles = "Administrador")]
 public class ReporteController : Controller
 {
     private readonly LlanteriaDbContext _context;
     public ReporteController(LlanteriaDbContext context) { _context = context; }
 
-    // Reporte Individual (ej: /Reporte/GenerarIndividual?tipo=Factura)
     public IActionResult GenerarIndividual(string tipo)
     {
         object datos = null;
@@ -18,46 +19,62 @@ public class ReporteController : Controller
         switch (tipo)
         {
             case "Factura":
-                datos = _context.Facturas.Include(f => f.IdClienteNavigation).ToList();
+                datos = _context.Facturas.Include(f => f.IdClienteNavigation).OrderByDescending(f => f.Fecha).ToList();
                 vista = "ReporteFacturas";
                 break;
             case "Gasto":
-                datos = _context.Gastos.Include(g => g.IdCategoriaNavigation).ToList();
+                datos = _context.Gastos.OrderByDescending(g => g.FechaRegistro).ToList();
                 vista = "ReporteGastos";
                 break;
             case "Inventario":
                 datos = _context.Inventarios.Include(i => i.IdProductoNavigation).ToList();
                 vista = "ReporteInventario";
                 break;
+            default:
+                return RedirectToAction("Index", "Dashboard");
         }
 
-        return new ViewAsPdf(vista, datos) { FileName = $"Reporte_{tipo}_{DateTime.Now:yyyyMMdd}.pdf" };
+        return new ViewAsPdf(vista, datos)
+        {
+            FileName = $"Reporte_{tipo}_{DateTime.Now:yyyyMMdd}.pdf",
+            PageSize = Rotativa.AspNetCore.Options.Size.A4
+        };
     }
 
     public IActionResult GenerarGeneral(DateTime fechaInicio, DateTime fechaFin)
     {
-        // 1. Traemos TODOS los datos de la base de datos a memoria (incluyendo el Cliente de la factura)
-        var listaFacturas = _context.Facturas.Include(f => f.IdClienteNavigation).ToList();
-        var listaGastos = _context.Gastos.ToList();
+        // 1. Valores por defecto
+        if (fechaInicio == DateTime.MinValue) fechaInicio = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+        if (fechaFin == DateTime.MinValue) fechaFin = DateTime.Now;
 
-        // 2. Filtramos minuciosamente por el rango de fechas seleccionado (año, mes y día)
+        // 2. Convertimos las entradas a tipos compatibles
+        DateOnly inicioDO = DateOnly.FromDateTime(fechaInicio);
+        DateOnly finDO = DateOnly.FromDateTime(fechaFin);
+
+        // 3. Consulta filtrada directamente en la base de datos
         var model = new ReporteGeneralViewModel
         {
-            Facturas = listaFacturas.Where(f => f.Fecha.HasValue &&
-                                                new DateTime(f.Fecha.Value.Year, f.Fecha.Value.Month, f.Fecha.Value.Day) >= fechaInicio.Date &&
-                                                new DateTime(f.Fecha.Value.Year, f.Fecha.Value.Month, f.Fecha.Value.Day) <= fechaFin.Date)
-                                    .ToList(),
+            // Factura usa DateOnly, comparamos con DateOnly
+            Facturas = _context.Facturas
+                .Include(f => f.IdClienteNavigation)
+                .Where(f => f.Fecha.HasValue && f.Fecha.Value >= inicioDO && f.Fecha.Value <= finDO)
+                .OrderByDescending(f => f.Fecha)
+                .ToList(),
 
-            Gastos = listaGastos.Where(g => g.FechaRegistro.HasValue &&
-                                            new DateTime(g.FechaRegistro.Value.Year, g.FechaRegistro.Value.Month, g.FechaRegistro.Value.Day) >= fechaInicio.Date &&
-                                            new DateTime(g.FechaRegistro.Value.Year, g.FechaRegistro.Value.Month, g.FechaRegistro.Value.Day) <= fechaFin.Date)
-                                .ToList()
+            // Gasto usa DateTime, comparamos con DateTime (usando .Date para ignorar la hora)
+            Gastos = _context.Gastos
+                .Where(g => g.FechaRegistro.HasValue && g.FechaRegistro.Value.Date >= fechaInicio.Date && g.FechaRegistro.Value.Date <= fechaFin.Date)
+                .OrderByDescending(g => g.FechaRegistro)
+                .ToList()
         };
 
-        // 3. Forzamos a Rotativa a usar la vista "ReporteFacturas" (que es donde tienes este diseño) pasándole el modelo correcto
-        return new ViewAsPdf("ReporteFacturas", model)
+        // 4. Retornamos usando tu vista de diseño profesional
+        return new ViewAsPdf("ReporteGeneral", model)
         {
-            FileName = $"Reporte_General_{DateTime.Now:yyyyMMdd}.pdf"
+            FileName = $"Reporte_General_{fechaInicio:yyyyMMdd}_al_{fechaFin:yyyyMMdd}.pdf",
+            PageSize = Rotativa.AspNetCore.Options.Size.A4,
+            PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+            CustomSwitches = "--viewport-size 1280x1024 --print-media-type --footer-right [page]/[toPage]"
         };
     }
 }

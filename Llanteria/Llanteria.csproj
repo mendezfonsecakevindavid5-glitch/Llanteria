@@ -24,7 +24,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\images\Llantas\" />
+    <Folder Include="wwwroot\images\Categorias\" />
+    <Folder Include="wwwroot\images\Perfiles\" />
+    <Folder Include="wwwroot\images\Servicios\" />
+    <Folder Include="wwwroot\images\Promociones\" />
+    <Folder Include="wwwroot\images\Productos\" />
   </ItemGroup>
 
 </Project>

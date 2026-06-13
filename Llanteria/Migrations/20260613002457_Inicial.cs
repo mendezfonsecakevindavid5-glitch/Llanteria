@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Llanteria.Migrations
 {
     /// <inheritdoc />
-    public partial class AgregarIdBodegaAProducto : Migration
+    public partial class Inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -207,6 +207,7 @@ namespace Llanteria.Migrations
                     PrecioVenta = table.Column<decimal>(type: "decimal(14,2)", nullable: false),
                     IdProveedor = table.Column<int>(type: "int", nullable: false),
                     Categoria = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    RutaImagen = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IdBodega = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

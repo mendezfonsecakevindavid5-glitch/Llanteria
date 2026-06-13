@@ -21,6 +21,7 @@ public partial class Producto
 
     // 💡 Usaremos esta columna de texto existente para guardar el nombre del archivo (ej: "michelin-r16.jpg")
     public string? Categoria { get; set; }
+    public string? RutaImagen { get; set; }
 
     public virtual ICollection<DetalleFactura> DetalleFacturas { get; set; } = new List<DetalleFactura>();
 

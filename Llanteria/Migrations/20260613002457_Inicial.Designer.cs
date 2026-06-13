@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Llanteria.Migrations
 {
     [DbContext(typeof(LlanteriaDbContext))]
-    [Migration("20260612153920_AgregarRelacionBodegaAProducto")]
-    partial class AgregarRelacionBodegaAProducto
+    [Migration("20260613002457_Inicial")]
+    partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -699,6 +699,9 @@ namespace Llanteria.Migrations
 
                     b.Property<decimal>("PrecioVenta")
                         .HasColumnType("decimal(14, 2)");
+
+                    b.Property<string>("RutaImagen")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id")
                         .HasName("PK__Producto__3214EC07A32D7B2F");

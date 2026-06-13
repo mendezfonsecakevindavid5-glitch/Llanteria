@@ -697,6 +697,9 @@ namespace Llanteria.Migrations
                     b.Property<decimal>("PrecioVenta")
                         .HasColumnType("decimal(14, 2)");
 
+                    b.Property<string>("RutaImagen")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id")
                         .HasName("PK__Producto__3214EC07A32D7B2F");
 

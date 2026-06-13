@@ -35,17 +35,14 @@ namespace Llanteria.Controllers
                     perfil = p.DetalleProducto.Perfil,
                     diametro = p.DetalleProducto.Diametro,
                     nombre = p.Nombre,
-                    // AQUÍ ESTABA EL ERROR: Usamos PrecioVenta en lugar de Precio
                     precio = p.PrecioVenta.ToString("C0"),
-                    img = "/images/productos/" + (string.IsNullOrEmpty(p.Categoria) ? "default-producto.png" : p.Categoria)
+                    img = "/images/productos/" + (string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen)
                 }).ToList();
 
             return Json(productos);
         }
 
         public ActionResult Index() => View(ser.GetProductos());
-
-        // --- CRUD Y ACCIONES RESTO ---
 
         public ActionResult Create()
         {
@@ -74,11 +71,11 @@ namespace Llanteria.Controllers
                         {
                             p.ImagenArchivo.CopyTo(fileStream);
                         }
-                        p.Categoria = nombreUnico;
+                        p.RutaImagen = nombreUnico;
                     }
                     else
                     {
-                        p.Categoria = "default-producto.png";
+                        p.RutaImagen = "default-producto.png";
                     }
 
                     ser.AddProducto(p);
@@ -111,9 +108,11 @@ namespace Llanteria.Controllers
                 if (ModelState.IsValid)
                 {
                     var productoExistente = ser.GetProducto(id);
+                    string carpetaProductos = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productos");
+
                     if (ob.ImagenArchivo != null)
                     {
-                        string carpetaProductos = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productos");
+                        // Guardar nueva imagen
                         string nombreUnico = Guid.NewGuid().ToString() + "_" + Path.GetFileName(ob.ImagenArchivo.FileName);
                         string rutaDestino = Path.Combine(carpetaProductos, nombreUnico);
 
@@ -122,16 +121,17 @@ namespace Llanteria.Controllers
                             ob.ImagenArchivo.CopyTo(fileStream);
                         }
 
-                        if (productoExistente != null && !string.IsNullOrEmpty(productoExistente.Categoria) && productoExistente.Categoria != "default-producto.png")
+                        // Eliminar imagen anterior si existe y no es la default
+                        if (productoExistente != null && !string.IsNullOrEmpty(productoExistente.RutaImagen) && productoExistente.RutaImagen != "default-producto.png")
                         {
-                            string rutaFotoAnterior = Path.Combine(carpetaProductos, productoExistente.Categoria);
+                            string rutaFotoAnterior = Path.Combine(carpetaProductos, productoExistente.RutaImagen);
                             if (System.IO.File.Exists(rutaFotoAnterior)) System.IO.File.Delete(rutaFotoAnterior);
                         }
-                        ob.Categoria = nombreUnico;
+                        ob.RutaImagen = nombreUnico;
                     }
                     else if (productoExistente != null)
                     {
-                        ob.Categoria = productoExistente.Categoria;
+                        ob.RutaImagen = productoExistente.RutaImagen;
                     }
 
                     ser.UpdateProducto(ob);
@@ -147,9 +147,9 @@ namespace Llanteria.Controllers
         public ActionResult Delete(int id)
         {
             var p = ser.GetProducto(id);
-            if (p != null && !string.IsNullOrEmpty(p.Categoria) && p.Categoria != "default-producto.png")
+            if (p != null && !string.IsNullOrEmpty(p.RutaImagen) && p.RutaImagen != "default-producto.png")
             {
-                string rutaImagen = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productos", p.Categoria);
+                string rutaImagen = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productos", p.RutaImagen);
                 if (System.IO.File.Exists(rutaImagen)) System.IO.File.Delete(rutaImagen);
             }
             ser.DeleteProducto(id);

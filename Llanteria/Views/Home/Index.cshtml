@@ -3,129 +3,38 @@
 }
 
 <style>
-    /* Paleta de Colores Corporativos */
     :root {
-        --llanteria-primary: #C92B0A; /* Header superior y Footer */
-        --llanteria-dark: #000000; /* Enlaces de navegación e íconos principales */
-        --llanteria-light: #FFFFFF; /* Fondo del cuerpo y textos contrastantes */
+        --llanteria-primary: #C92B0A;
+        --llanteria-dark: #000000;
+        --llanteria-light: #FFFFFF;
     }
-
-    body {
-        background-color: var(--llanteria-light);
-        color: var(--llanteria-dark);
-    }
-
-    /* Clases de Utilidad Personalizadas para la Paleta */
-    .text-primary-llanteria {
-        color: var(--llanteria-primary) !important;
-    }
-
-    .bg-primary-llanteria {
-        background-color: var(--llanteria-primary) !important;
-    }
-
-    .text-dark-llanteria {
-        color: var(--llanteria-dark) !important;
-    }
-
-    .bg-dark-llanteria {
-        background-color: var(--llanteria-dark) !important;
-    }
-
-    /* Adaptación de Botones y Detalles al Estilo Requerido */
-    .btn-llanteria-action {
-        background-color: var(--llanteria-primary);
-        color: var(--llanteria-light);
-        border: none;
-        transition: all 0.3s ease;
-    }
-
-        .btn-llanteria-action:hover {
-            background-color: #a62308;
-            color: var(--llanteria-light);
-            transform: translateY(-2px);
-        }
-
-    .btn-llanteria-secondary {
-        background-color: var(--llanteria-dark);
-        color: var(--llanteria-light);
-        border: none;
-        transition: all 0.3s ease;
-    }
-
-        .btn-llanteria-secondary:hover {
-            background-color: #222222;
-            color: var(--llanteria-light);
-            transform: translateY(-2px);
-        }
-
-    .accent-bar {
-        width: 60px;
-        height: 4px;
-        background-color: var(--llanteria-primary);
-        opacity: 1;
-    }
-
-    .category-card {
-        border: 1px solid #eaeaea;
-        transition: all 0.3s ease;
-    }
-
-        .category-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            border-color: var(--llanteria-primary);
-        }
+    body { background-color: var(--llanteria-light); color: var(--llanteria-dark); }
+    .bg-primary-llanteria { background-color: var(--llanteria-primary) !important; }
+    .bg-dark-llanteria { background-color: var(--llanteria-dark) !important; }
+    .btn-llanteria-action { background-color: var(--llanteria-primary); color: var(--llanteria-light); border: none; transition: 0.3s; }
+    .btn-llanteria-action:hover { background-color: #a62308; color: var(--llanteria-light); transform: translateY(-2px); }
+    .accent-bar { width: 60px; height: 4px; background-color: var(--llanteria-primary); }
+    .category-card { border: 1px solid #eaeaea; transition: 0.3s; }
+    .category-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: var(--llanteria-primary); }
 </style>
 
 <section id="inicio" class="position-relative text-white d-flex align-items-center" style="background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/images/Section-Image.avif') no-repeat center center/cover; min-height: 80vh;">
     <div class="container text-center pt-5">
-        <span class="badge bg-primary-llanteria text-white text-uppercase tracking-wider px-3 py-2 rounded-pill fw-bold mb-3">Tecnología en Movimiento</span>
-        <h1 class="display-3 fw-black text-uppercase tracking-tight font-premium-title text-white">Encuentra la Llanta Ideal</h1>
-        <p class="lead font-premium-body max-width-600 mx-auto text-white">Selecciona las especificaciones técnicas de tu vehículo y conduce con seguridad.</p>
+        <span class="badge bg-primary-llanteria text-uppercase tracking-wider px-3 py-2 rounded-pill fw-bold mb-3">Tecnología en Movimiento</span>
+        <h1 class="display-3 fw-black text-uppercase">Encuentra la Llanta Ideal</h1>
+        <p class="lead max-width-600 mx-auto">Selecciona las especificaciones técnicas y conduce con seguridad.</p>
     </div>
 </section>
 
 <div class="container position-relative" style="z-index: 25; margin-top: -60px;">
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <div class="floating-search-box p-4 backend-search-bar bg-white shadow-lg rounded-3">
-                <div class="row g-3 align-items-center">
-                    <div class="col-md-3">
-                        <div class="form-floating">
-                            <select class="form-select bg-white" id="anchoSelect">
-                                <option value="">Cualquiera</option>
-                                <option value="185">185 mm</option>
-                                <option value="205">205 mm</option>
-                            </select>
-                            <label for="anchoSelect" class="fw-bold text-dark text-uppercase small">Ancho</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-floating">
-                            <select class="form-select bg-white" id="perfilSelect">
-                                <option value="">Cualquiera</option>
-                                <option value="65">65 %</option>
-                                <option value="55">55 %</option>
-                            </select>
-                            <label for="perfilSelect" class="fw-bold text-dark text-uppercase small">Perfil</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-floating">
-                            <select class="form-select bg-white" id="diametroSelect">
-                                <option value="">Cualquiera</option>
-                                <option value="15">R15</option>
-                                <option value="16">R16</option>
-                            </select>
-                            <label for="diametroSelect" class="fw-bold text-dark text-uppercase small">Diámetro</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <button type="button" id="btnBuscarLlantas" class="btn btn-llanteria-action w-100 py-3 fw-bold text-uppercase shadow-sm">
-                            <i class="fa-solid fa-magnifying-glass me-2"></i>Buscar Ahora
-                        </button>
-                    </div>
+            <div class="p-4 bg-white shadow-lg rounded-3">
+                <div class="row g-3">
+                    <div class="col-md-3"><div class="form-floating"><select class="form-select" id="anchoSelect"><option value="">Cualquiera</option><option value="185">185</option><option value="205">205</option></select><label>Ancho</label></div></div>
+                    <div class="col-md-3"><div class="form-floating"><select class="form-select" id="perfilSelect"><option value="">Cualquiera</option><option value="65">65</option><option value="55">55</option></select><label>Perfil</label></div></div>
+                    <div class="col-md-3"><div class="form-floating"><select class="form-select" id="diametroSelect"><option value="">Cualquiera</option><option value="15">R15</option><option value="16">R16</option></select><label>Diámetro</label></div></div>
+                    <div class="col-md-3"><button type="button" id="btnBuscarLlantas" class="btn btn-llanteria-action w-100 py-3 fw-bold text-uppercase">Buscar Ahora</button></div>
                 </div>
             </div>
         </div>
@@ -134,79 +43,26 @@
 
 <section id="resultadosBusqueda" class="py-5 d-none" style="background-color: #f1f3f5; margin-top: 30px;">
     <div class="container">
-        <div class="text-center mb-4">
-            <span class="badge bg-dark-llanteria text-white text-uppercase px-3 py-2 rounded-pill fw-bold mb-2">Disponibilidad Inmediata</span>
-            <h2 class="font-premium-title fw-black text-uppercase text-dark m-0">Llantas Encontradas</h2>
-            <hr class="mx-auto accent-bar">
-        </div>
+        <div class="text-center mb-4"><h2 class="fw-black text-uppercase">Llantas Encontradas</h2><hr class="mx-auto accent-bar"></div>
         <div class="row g-4 justify-content-center" id="contenedorTarjetas"></div>
     </div>
 </section>
 
-<section id="categorias" class="py-5" style="margin-top: 40px;">
-    <div class="container py-4">
-        <div class="text-center mb-5">
-            <h2 class="font-premium-title fw-black text-uppercase text-dark m-0">Explorar por Categoría</h2>
-            <hr class="mx-auto accent-bar">
-        </div>
-        <div class="row g-4">
-            <div class="col-md-3">
-                <div class="card h-100 p-4 text-start position-relative overflow-hidden category-card rounded-xl">
-                    <h5 class="fw-bold m-0 text-dark">Autos & SUV</h5>
-                    <p class="small font-premium-body text-muted mt-2">Turismo, camionetas y confort familiar.</p>
-                    <i class="fa-solid fa-car category-icon-bg"></i>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card h-100 p-4 text-start position-relative overflow-hidden category-card rounded-xl">
-                    <h5 class="fw-bold m-0 text-dark">Motos</h5>
-                    <p class="small font-premium-body text-muted mt-2">Pista, enduro, scooters y cuatrimotos.</p>
-                    <i class="fa-solid fa-motorcycle category-icon-bg"></i>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card h-100 p-4 text-start position-relative overflow-hidden category-card rounded-xl">
-                    <h5 class="fw-bold m-0 text-dark">Comercial</h5>
-                    <p class="small font-premium-body text-muted mt-2">Camiones, buses y flotas logísticas.</p>
-                    <i class="fa-solid fa-truck-front category-icon-bg"></i>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card h-100 p-4 text-start position-relative overflow-hidden category-card rounded-xl">
-                    <h5 class="fw-bold m-0 text-dark">Industrial</h5>
-                    <p class="small font-premium-body text-muted mt-2">OTR, maquinaria agrícola y construcción.</p>
-                    <i class="fa-solid fa-tractor category-icon-bg"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
+<section id="categorias" class="py-5"><div class="container">...</div></section>
 <partial name="~/Views/Nosotros/Index.cshtml" />
-
 <partial name="~/Views/Servicios/Index.cshtml" />
-
 <partial name="~/Views/Promociones/Index.cshtml" />
 
 <section id="productos" class="py-5 bg-white">
-    <div class="container py-4">
-        <div class="text-center mb-5">
-            <h2 class="font-premium-title fw-black text-uppercase text-dark m-0">Productos Destacados</h2>
-            <hr class="mx-auto accent-bar">
-        </div>
+    <div class="container">
+        <div class="text-center mb-5"><h2 class="fw-black text-uppercase">Productos Destacados</h2><hr class="mx-auto accent-bar"></div>
         <div class="row g-4">
-            @if (Model != null)
-            {
-                @foreach (var p in Model.Take(3))
-                {
+            @if (Model != null) {
+                @foreach (var p in Model.Take(3)) {
                     <div class="col-md-4">
-                        <div class="card border-0 shadow-sm overflow-hidden h-100 rounded-xl category-card">
-                            <img src="/images/productos/@(string.IsNullOrEmpty(p.Categoria) ? "default-producto.png" : p.Categoria)"
-                                 class="img-fluid w-100" style="height: 250px; object-fit: cover;" alt="@p.Nombre">
-                            <div class="p-3 text-center">
-                                <h6 class="fw-bold text-uppercase m-0">@p.Nombre</h6>
-                                <small class="text-primary-llanteria fw-semibold">@p.PrecioVenta.ToString("C0")</small>
-                            </div>
+                        <div class="card border-0 shadow-sm category-card h-100">
+                            <img src="/images/Productos/@(string.IsNullOrEmpty(p.RutaImagen) ? "default.png" : p.RutaImagen)" class="img-fluid" style="height: 250px; object-fit: cover;">
+                            <div class="p-3 text-center"><h6 class="fw-bold text-uppercase">@p.Nombre</h6><small class="text-primary fw-semibold">@p.PrecioVenta.ToString("C0")</small></div>
                         </div>
                     </div>
                 }
@@ -217,60 +73,44 @@
 
 <partial name="~/Views/Contacto/Index.cshtml" />
 
-
 @section Scripts {
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const btnBuscar = document.getElementById("btnBuscarLlantas");
-            const seccionResultados = document.getElementById("resultadosBusqueda");
-            const contenedorTarjetas = document.getElementById("contenedorTarjetas");
+        document.getElementById("btnBuscarLlantas").addEventListener("click", async function () {
+            const ancho = document.getElementById("anchoSelect").value;
+            const perfil = document.getElementById("perfilSelect").value;
+            const diametro = document.getElementById("diametroSelect").value;
 
-            btnBuscar.addEventListener("click", async function () {
-                const ancho = document.getElementById("anchoSelect").value;
-                const perfil = document.getElementById("perfilSelect").value;
-                const diametro = document.getElementById("diametroSelect").value;
+            if (!ancho || !perfil || !diametro) {
+                Swal.fire({ title: 'Atención', text: 'Selecciona medidas completas.', icon: 'warning' });
+                return;
+            }
 
-                if (!ancho || !perfil || !diametro) {
-                    Swal.fire({
-                        title: 'Faltan medidas',
-                        text: 'Por favor selecciona Ancho, Perfil y Diámetro.',
-                        icon: 'warning',
-                        confirmButtonColor: '#C92B0A'
-                    });
-                    return;
-                }
+            const url = `/Producto/GetLlantasJson?ancho=${ancho}&perfil=${perfil}&diametro=${diametro}`;
+            const response = await fetch(url);
+            const resultados = await response.json();
 
-                // Llamada al servidor
-                const response = await fetch('@Url.Action("GetLlantasJson", "Producto")');
-                const catalogo = await response.json();
-
-                // Filtrar datos reales
-                const resultados = catalogo.filter(l =>
-                    l.ancho == ancho && l.perfil == perfil && l.diametro == diametro
-                );
-
-                contenedorTarjetas.innerHTML = "";
-                if (resultados.length > 0) {
-                    resultados.forEach(llanta => {
-                        contenedorTarjetas.innerHTML += `
-                            <div class="col-md-4">
-                                <div class="card border-0 shadow-sm rounded-xl overflow-hidden h-100 bg-white">
-                                    <img src="${llanta.img}" class="img-fluid w-100" style="height: 220px; object-fit: cover;">
-                                    <div class="p-4">
-                                        <h5 class="fw-bold text-dark">${llanta.nombre}</h5>
-                                        <p class="text-success fw-bold fs-5">${llanta.precio}</p>
-                                        <a href="#contacto" class="btn btn-llanteria-action w-100">Cotizar</a>
-                                    </div>
+            const contenedor = document.getElementById("contenedorTarjetas");
+            contenedor.innerHTML = "";
+            
+            if (resultados.length > 0) {
+                resultados.forEach(llanta => {
+                    contenedor.innerHTML += `
+                        <div class="col-md-4">
+                            <div class="card shadow-sm border-0 h-100">
+                                <img src="${llanta.img}" class="img-fluid" style="height: 220px; object-fit: cover;">
+                                <div class="p-4">
+                                    <h5 class="fw-bold">${llanta.nombre}</h5>
+                                    <p class="text-success fw-bold">${llanta.precio}</p>
+                                    <a href="#contacto" class="btn btn-llanteria-action w-100">Cotizar</a>
                                 </div>
-                            </div>`;
-                    });
-                } else {
-                    contenedorTarjetas.innerHTML = `<div class="col-12 text-center py-5"><h5>Sin existencias con estas medidas.</h5></div>`;
-                }
-
-                seccionResultados.classList.remove("d-none");
-                seccionResultados.scrollIntoView({ behavior: 'smooth' });
-            });
+                            </div>
+                        </div>`;
+                });
+            } else {
+                contenedor.innerHTML = `<div class="col-12 text-center py-5"><h5>No hay existencias con esas medidas.</h5></div>`;
+            }
+            document.getElementById("resultadosBusqueda").classList.remove("d-none");
+            document.getElementById("resultadosBusqueda").scrollIntoView({ behavior: 'smooth' });
         });
     </script>
 }

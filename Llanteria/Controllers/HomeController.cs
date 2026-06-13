@@ -16,31 +16,30 @@ namespace Llanteria.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string ancho, string perfil, string diametro)
         {
-            // Extraemos los valores únicos de la tabla DetalleProducto para llenar los selectores
-            ViewBag.Anchos = _context.DetalleProductos
-                .Where(d => d.Ancho != null)
-                .Select(d => d.Ancho)
-                .Distinct()
-                .OrderBy(a => a)
-                .ToList();
+            // Llenamos los ViewBag para los SelectList (esto es lo que ya tenías)
+            ViewBag.Anchos = _context.DetalleProductos.Where(d => d.Ancho != null).Select(d => d.Ancho).Distinct().OrderBy(a => a).ToList();
+            ViewBag.Perfiles = _context.DetalleProductos.Where(d => d.Perfil != null).Select(d => d.Perfil).Distinct().OrderBy(p => p).ToList();
+            ViewBag.Diametros = _context.DetalleProductos.Where(d => d.Diametro != null).Select(d => d.Diametro).Distinct().OrderBy(d => d).ToList();
 
-            ViewBag.Perfiles = _context.DetalleProductos
-                .Where(d => d.Perfil != null)
-                .Select(d => d.Perfil)
-                .Distinct()
-                .OrderBy(p => p)
-                .ToList();
+            // Lógica de búsqueda
+            var productos = _context.Productos.AsQueryable();
 
-            ViewBag.Diametros = _context.DetalleProductos
-                .Where(d => d.Diametro != null)
-                .Select(d => d.Diametro)
-                .Distinct()
-                .OrderBy(d => d)
-                .ToList();
+            if (!string.IsNullOrEmpty(ancho) || !string.IsNullOrEmpty(perfil) || !string.IsNullOrEmpty(diametro))
+            {
+                productos = productos.Where(p => p.DetalleProducto != null);
 
-            return View();
+                if (!string.IsNullOrEmpty(ancho)) productos = productos.Where(p => p.DetalleProducto.Ancho == ancho);
+                if (!string.IsNullOrEmpty(perfil)) productos = productos.Where(p => p.DetalleProducto.Perfil == perfil);
+                if (!string.IsNullOrEmpty(diametro)) productos = productos.Where(p => p.DetalleProducto.Diametro == diametro);
+
+                // Retornamos la lista de resultados
+                return View(productos.ToList());
+            }
+
+            // Si no hay búsqueda, enviamos una lista vacía
+            return View(new List<Producto>());
         }
 
         public IActionResult Privacy()
