@@ -104,5 +104,7 @@ namespace Llanteria.Controllers
             ser.DeleteFactura(id);
             return RedirectToAction(nameof(Index));
         }
+
+
     }
 }

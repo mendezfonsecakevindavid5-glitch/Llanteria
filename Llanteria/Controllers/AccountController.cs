@@ -5,11 +5,11 @@ using Llanteria.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore; // Necesario para .Include si fuera necesario
 
 namespace Llanteria.Controllers
 {
@@ -28,41 +28,33 @@ namespace Llanteria.Controllers
             _docSer = docSer;
         }
 
-        [HttpGet]
-        public IActionResult Login() => View();
-
         [HttpPost]
-        public async Task<IActionResult> Login(string username, string password)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(string username, string password) // Cambiamos 'correo' por 'username'
         {
-            // SOLUCIÓN: Buscamos en la lista directamente. 
-            // Como ya es una lista, el Include no es necesario si la relación está cargada.
-            var user = _userSer.GetUsuarios()
-                .FirstOrDefault(u => u.Username == username);
+            // 1. Buscamos por Username, ya que el modelo Usuario no tiene Correo
+            var user = _userSer.GetUsuarios().FirstOrDefault(u => u.Username == username);
 
+            // 2. Validación: Asegúrate de que PasswordHash sea string. 
+            // Si te da error de BinaryReader, es porque el objeto usuario tiene un conflicto de tipos.
             if (user != null && user.PasswordHash == password && user.Estado == "Activo")
             {
-                // Si la navegación IdRolNavigation es null, es porque la lista no cargó la relación.
-                // Accedemos a través de la propiedad que ya tienes en el modelo.
                 string nombreRol = user.IdRolNavigation?.NombreRol ?? "Cliente";
 
                 var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.Username),
-                    new Claim(ClaimTypes.Role, nombreRol)
-                };
+        {
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Role, nombreRol)
+        };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var authProperties = new AuthenticationProperties { IsPersistent = true };
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                                              new ClaimsPrincipal(claimsIdentity), authProperties);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
                 if (nombreRol == "Administrador" || nombreRol == "Empleado")
-                {
                     return RedirectToAction("Index", "Dashboard");
-                }
 
-                return RedirectToAction("Home", "Index");
+                return RedirectToAction("Index", "Home");
             }
 
             ViewBag.Error = "Credenciales inválidas o cuenta inactiva.";
@@ -88,14 +80,57 @@ namespace Llanteria.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Register(Cliente cliente)
         {
+            ModelState.Remove("IdDocumentoNavigation");
+            ModelState.Remove("IdSexoNavigation");
+
             if (ModelState.IsValid)
             {
                 cliente.PuntosAcumulados = 50;
                 _clienteSer.AddCliente(cliente);
                 return RedirectToAction("Welcome");
             }
-            ViewBag.IdSexo = new SelectList(_sexoSer.GetSexos(), "Id", "Nombre");
-            ViewBag.IdDocumento = new SelectList(_docSer.GetTipoDocumentos(), "Id", "Nombre");
+
+            ViewBag.IdSexo = new SelectList(_sexoSer.GetSexos(), "Id", "Nombre", cliente.IdSexo);
+            ViewBag.IdDocumento = new SelectList(_docSer.GetTipoDocumentos(), "Id", "Nombre", cliente.IdDocumento);
+            return View(cliente);
+        }
+
+        // --- FUNCIONES DE PERFIL ---
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult MiPerfil()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login");
+
+            var cliente = _clienteSer.GetClientes().FirstOrDefault(c => c.Id.ToString() == userId);
+
+            if (cliente == null) return NotFound();
+
+            ViewBag.IdSexo = new SelectList(_sexoSer.GetSexos(), "Id", "Nombre", cliente.IdSexo);
+            ViewBag.IdDocumento = new SelectList(_docSer.GetTipoDocumentos(), "Id", "Nombre", cliente.IdDocumento);
+
+            return View(cliente);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult MiPerfil(Cliente cliente)
+        {
+            ModelState.Remove("IdDocumentoNavigation");
+            ModelState.Remove("IdSexoNavigation");
+
+            if (ModelState.IsValid)
+            {
+                _clienteSer.UpdateCliente(cliente);
+                TempData["Success"] = "Perfil actualizado correctamente.";
+                return RedirectToAction("MiPerfil");
+            }
+
+            ViewBag.IdSexo = new SelectList(_sexoSer.GetSexos(), "Id", "Nombre", cliente.IdSexo);
+            ViewBag.IdDocumento = new SelectList(_docSer.GetTipoDocumentos(), "Id", "Nombre", cliente.IdDocumento);
             return View(cliente);
         }
 

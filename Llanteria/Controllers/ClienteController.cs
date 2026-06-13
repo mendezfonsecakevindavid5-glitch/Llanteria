@@ -2,132 +2,118 @@
 using Llanteria.Models;
 using Llanteria.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
-namespace Llanteria.Controllers;
-
-public class ClienteController : Controller
+namespace Llanteria.Controllers
 {
-    private readonly ClienteService ser;
-    // Necesitamos estos servicios para llenar los Selects de la vista
-    private readonly TipoDocumentoService docSer;
-    private readonly SexoService sexoSer;
-
-    public ClienteController(ClienteService clienteService, TipoDocumentoService documentoService, SexoService sexoService)
+    public class ClienteController : Controller
     {
-        ser = clienteService;
-        docSer = documentoService;
-        sexoSer = sexoService;
-    }
+        private readonly ClienteService ser;
+        private readonly TipoDocumentoService docSer;
+        private readonly SexoService sexoSer;
 
-    // Listado de clientes
-    public IActionResult Index()
-    {
-        return View(ser.GetClientes());
-    }
-
-    // ✅ NUEVO: Vista de Administración y Control de Puntos
-    public IActionResult GestionPuntos()
-    {
-        var clientes = ser.GetClientesPorPuntos();
-        return View(clientes);
-    }
-
-    // ✅ NUEVO: Acción POST mediante AJAX para alterar puntos sin recargar la página
-    [HttpPost]
-    public IActionResult ModificarPuntos(int clienteId, int cantidad, string operacion)
-    {
-        var cliente = ser.GetCliente(clienteId);
-        if (cliente == null)
+        public ClienteController(ClienteService clienteService, TipoDocumentoService documentoService, SexoService sexoService)
         {
-            return Json(new { success = false, message = "Cliente no encontrado en el sistema." });
+            ser = clienteService;
+            docSer = documentoService;
+            sexoSer = sexoService;
         }
 
-        int nuevosPuntos = cliente.PuntosAcumulados;
+        // --- ACCIONES DE ADMINISTRACIÓN (SOLO ADMINS) ---
+        [Authorize]
+        public IActionResult Index() => View(ser.GetClientes());
 
-        if (operacion == "sumar")
+        [Authorize]
+        public IActionResult Create()
         {
-            nuevosPuntos += cantidad;
-        }
-        else if (operacion == "restar")
-        {
-            // Evita que los puntos queden en números negativos utilizando Math.Max
-            nuevosPuntos = Math.Max(0, nuevosPuntos - cantidad);
+            CargarCombos();
+            return View();
         }
 
-        // Guardamos los cambios llamando al servicio
-        ser.ActualizarPuntos(clienteId, nuevosPuntos);
-
-        return Json(new { success = true, nuevosPuntos = nuevosPuntos });
-    }
-
-    // Vista para registrar un nuevo cliente
-    public IActionResult Create()
-    {
-        CargarCombos();
-        return View();
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Create(Cliente c)
-    {
-        try
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Cliente c)
         {
             if (ModelState.IsValid)
             {
                 ser.AddCliente(c);
                 return RedirectToAction(nameof(Index));
             }
+            CargarCombos();
+            return View(c);
         }
-        catch (Exception ex)
+
+        // --- REGISTRO PÚBLICO (CLUB DE PUNTOS) ---
+        [AllowAnonymous]
+        public IActionResult Register()
         {
-            ModelState.AddModelError("", "Error al guardar: " + ex.Message);
+            CargarCombos();
+            return View(); // Busca en Views/Cliente/Register.cshtml
         }
-        CargarCombos();
-        return View(c);
-    }
 
-    // Vista para editar información del cliente
-    public IActionResult Edit(int id)
-    {
-        var c = ser.GetCliente(id);
-        if (c == null) return NotFound();
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public IActionResult Register(Cliente c)
+        {
+            if (!ModelState.IsValid)
+            {
+                CargarCombos();
+                return View(c);
+            }
 
-        CargarCombos();
-        return View(c);
-    }
+            try
+            {
+                ser.AddCliente(c);
+                return RedirectToAction(nameof(ConfirmacionRegistro));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al registrarse: " + ex.Message);
+                CargarCombos();
+                return View(c);
+            }
+        }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Edit(int id, Cliente c)
-    {
-        try
+        [AllowAnonymous]
+        public IActionResult ConfirmacionRegistro() => View();
+
+        // --- OTRAS ACCIONES ADMINISTRATIVAS ---
+        [Authorize]
+        public IActionResult Edit(int id)
+        {
+            var c = ser.GetCliente(id);
+            if (c == null) return NotFound();
+            CargarCombos();
+            return View(c);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Cliente c)
         {
             if (ModelState.IsValid)
             {
                 ser.UpdateCliente(c);
                 return RedirectToAction(nameof(Index));
             }
+            CargarCombos();
+            return View(c);
         }
-        catch (Exception ex)
+
+        [Authorize]
+        public IActionResult Delete(int id)
         {
-            ModelState.AddModelError("", "Error al actualizar: " + ex.Message);
+            ser.DeleteCliente(id);
+            return RedirectToAction(nameof(Index));
         }
-        CargarCombos();
-        return View(c);
-    }
 
-    // Acción para eliminar
-    public IActionResult Delete(int id)
-    {
-        ser.DeleteCliente(id);
-        return RedirectToAction(nameof(Index));
-    }
-
-    // Método privado para no repetir código de carga de Selects
-    private void CargarCombos()
-    {
-        ViewBag.IdDocumento = new SelectList(docSer.GetTipoDocumentos(), "Id", "Nombre");
-        ViewBag.IdSexo = new SelectList(sexoSer.GetSexos(), "Id", "Nombre");
+        private void CargarCombos()
+        {
+            ViewBag.IdDocumento = new SelectList(docSer.GetTipoDocumentos() ?? new List<TipoDocumento>(), "Id", "Nombre");
+            ViewBag.IdSexo = new SelectList(sexoSer.GetSexos() ?? new List<Sexo>(), "Id", "Nombre");
+        }
     }
 }

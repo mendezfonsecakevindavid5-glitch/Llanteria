@@ -1,4 +1,7 @@
-﻿@{
+﻿@using System.Linq
+@model IEnumerable<Llanteria.Models.Producto>
+
+@{
     ViewData["Title"] = "Inicio";
 }
 
@@ -49,6 +52,7 @@
 </section>
 
 <section id="categorias" class="py-5"><div class="container">...</div></section>
+
 <partial name="~/Views/Nosotros/Index.cshtml" />
 <partial name="~/Views/Servicios/Index.cshtml" />
 <partial name="~/Views/Promociones/Index.cshtml" />

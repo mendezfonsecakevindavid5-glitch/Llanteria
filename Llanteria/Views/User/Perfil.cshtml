@@ -75,6 +75,20 @@
             border-color: #C92B0A;
             box-shadow: 0 0 0 0.25rem rgba(201, 43, 10, 0.15);
         }
+
+    .btn-security {
+        background: transparent;
+        border: 1px solid #dee2e6;
+        color: #6c757d;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-security:hover {
+            background: #f8f9fa;
+            color: #C92B0A;
+            border-color: #C92B0A;
+        }
 </style>
 
 <div class="container py-5">
@@ -100,7 +114,7 @@
                     <h4 class="fw-bold text-dark mb-0">@Model.Nombre</h4>
                     <span class="badge bg-light text-muted px-3 py-2 rounded-pill mb-4 mt-1 border">Cliente Digital</span>
 
-                    <div class="p-3 rounded-3 text-white text-start shadow-sm" style="background: linear-gradient(135deg, #000000 0%, #222222 100%); border-left: 5px solid #C92B0A;">
+                    <div class="p-3 rounded-3 text-white text-start shadow-sm mb-3" style="background: linear-gradient(135deg, #000000 0%, #222222 100%); border-left: 5px solid #C92B0A;">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <small class="text-uppercase tracking-wider fw-bold text-muted d-block mb-1" style="font-size: 0.7rem;">Club Llantería</small>
@@ -116,6 +130,13 @@
                             </small>
                         </div>
                     </div>
+
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-security w-100 py-2.5 fw-bold text-uppercase" data-bs-toggle="modal" data-bs-target="#modalPass">
+                            <i class="fa-solid fa-lock me-2"></i>Seguridad de Cuenta
+                        </button>
+                    </div>
+
                 </div>
             </div>
 
@@ -173,131 +194,165 @@
                                     <i class="fa-solid fa-bell text-warning me-2"></i>Alertas de Promociones
                                 </label>
                                 <input class="form-check-input ms-0" type="checkbox" asp-for="NotificacionesActivas" style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                                </div>
+                                <small class="text-muted d-block mt-1 ms-1">Te avisaremos inmediatamente cuando las llantas que buscas bajen de precio en Valledupar.</small>
                             </div>
-                            <small class="text-muted d-block mt-1 ms-1">Te avisaremos inmediatamente cuando las llantas que buscas bajen de precio en Valledupar.</small>
                         </div>
-                    </div>
 
-                    <div class="text-end mt-4">
-                        <button type="submit" class="btn text-white px-5 py-2.5 fw-bold text-uppercase shadow-sm" style="background-color: #C92B0A; border-radius: 8px;">
-                            <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Configuración
-                        </button>
+                        <div class="text-end mt-4">
+                            <button type="submit" class="btn text-white px-5 py-2.5 fw-bold text-uppercase shadow-sm" style="background-color: #C92B0A; border-radius: 8px;">
+                                <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Configuración
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </form>
+        </form>
 
-    <div class="row g-4 mt-3">
-        <div class="col-12">
-            <div class="card card-profile-premium p-4 bg-white">
-                <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
-                    <div class="d-flex align-items-center">
-                        <div class="p-2 rounded-3 me-3 text-white" style="background-color: #000000;">
-                            <i class="fa-solid fa-file-invoice-dollar fa-lg"></i>
+        <div class="row g-4 mt-3">
+            <div class="col-12">
+                <div class="card card-profile-premium p-4 bg-white">
+                    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+                        <div class="d-flex align-items-center">
+                            <div class="p-2 rounded-3 me-3 text-white" style="background-color: #000000;">
+                                <i class="fa-solid fa-file-invoice-dollar fa-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold text-dark m-0">Historial de Servicios y Facturas</h4>
+                                <p class="text-muted small m-0">Consulta tus mantenimientos anteriores, compras de llantas y montos pagados.</p>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="fw-bold text-dark m-0">Historial de Servicios y Facturas</h4>
-                            <p class="text-muted small m-0">Consulta tus mantenimientos anteriores, compras de llantas y montos pagados.</p>
-                        </div>
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-bold" style="color: #C92B0A !important; background-color: rgba(201, 43, 10, 0.1) !important;">
+                            @Model.FacturasRecientes.Count Servicios Registrados
+                        </span>
                     </div>
-                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-bold" style="color: #C92B0A !important; background-color: rgba(201, 43, 10, 0.1) !important;">
-                        @Model.FacturasRecientes.Count Servicios Registrados
-                    </span>
-                </div>
 
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light text-uppercase fs-7" style="font-size: 0.75rem; letter-spacing: 0.5px;">
-                            <tr>
-                                <th class="ps-3 text-secondary">N° Factura</th>
-                                <th class="text-secondary">Fecha</th>
-                                <th class="text-secondary">Servicio Principal</th>
-                                <th class="text-secondary">Detalle de Compra</th>
-                                <th class="text-secondary">Total</th>
-                                <th class="text-secondary text-center">Estado</th>
-                                <th class="text-secondary text-end pe-3">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var factura in Model.FacturasRecientes)
-                            {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light text-uppercase fs-7" style="font-size: 0.75rem; letter-spacing: 0.5px;">
                                 <tr>
-                                    <td class="ps-3 fw-bold text-dark">@factura.NumeroFactura</td>
-                                    <td class="text-muted" style="font-size: 0.9rem;">
-                                        @factura.Fecha.ToString("dd/MM/yyyy")
-                                    </td>
-                                    <td>
-                                        <span class="fw-semibold text-dark d-block">@factura.ServicioPrincipal</span>
-                                    </td>
-                                    <td class="text-muted small" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                        @factura.DetalleItems
-                                    </td>
-                                    <td class="fw-bold text-dark">
-                                        $@factura.TotalPagar.ToString("N0")
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge bg-success-subtle text-success px-2.5 py-1.5 rounded-pill fw-bold" style="font-size: 0.75rem;">
-                                            <i class="fa-solid fa-circle text-success me-1" style="font-size: 0.5rem;"></i> @factura.EstadoPago
-                                        </span>
-                                    </td>
-                                    <td class="text-end pe-3">
-                                        <button type="button" class="btn btn-sm btn-outline-dark rounded-3 px-3 py-1" onclick="Swal.fire('FAC-Detalle','Esta es una simulación del PDF de la factura @factura.NumeroFactura','info')">
-                                            <i class="fa-solid fa-eye me-1"></i> Ver PDF
-                                        </button>
-                                    </td>
+                                    <th class="ps-3 text-secondary">N° Factura</th>
+                                    <th class="text-secondary">Fecha</th>
+                                    <th class="text-secondary">Servicio Principal</th>
+                                    <th class="text-secondary">Detalle de Compra</th>
+                                    <th class="text-secondary">Total</th>
+                                    <th class="text-secondary text-center">Estado</th>
+                                    <th class="text-secondary text-end pe-3">Acción</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                @foreach (var factura in Model.FacturasRecientes)
+                                {
+                                    <tr>
+                                        <td class="ps-3 fw-bold text-dark">@factura.NumeroFactura</td>
+                                        <td class="text-muted" style="font-size: 0.9rem;">
+                                            @factura.Fecha.ToString("dd/MM/yyyy")
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold text-dark d-block">@factura.ServicioPrincipal</span>
+                                        </td>
+                                        <td class="text-muted small" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            @factura.DetalleItems
+                                        </td>
+                                        <td class="fw-bold text-dark">
+                                            $@factura.TotalPagar.ToString("N0")
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success-subtle text-success px-2.5 py-1.5 rounded-pill fw-bold" style="font-size: 0.75rem;">
+                                                <i class="fa-solid fa-circle text-success me-1" style="font-size: 0.5rem;"></i> @factura.EstadoPago
+                                            </span>
+                                        </td>
+                                        <td class="text-end pe-3">
+                                            <button type="button" class="btn btn-sm btn-outline-dark rounded-3 px-3 py-1" onclick="Swal.fire('FAC-Detalle','Esta es una simulación del PDF de la factura @factura.NumeroFactura','info')">
+                                                <i class="fa-solid fa-eye me-1"></i> Ver PDF
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
 
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-@section Scripts {
-    <script>
-        function previewImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function() {
-                    const output = document.getElementById('previewFoto');
-                    output.src = reader.result;
-                };
-                reader.readAsDataURL(file);
+    <div class="modal fade" id="modalPass" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+                <form asp-controller="User" asp-action="CambiarPassword" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-header border-0 pb-0 pt-4 px-4">
+                        <h5 class="modal-title fw-bold text-dark">
+                            <i class="fa-solid fa-shield-halved text-danger me-2"></i>Seguridad de Cuenta
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body px-4 pt-3">
+                        <p class="text-muted small mb-3">Para cambiar tus credenciales de acceso de forma segura, ingresa la clave actual registrada en el sistema.</p>
+                    
+                        <div class="mb-3">
+                            <label class="form-label-custom">Contraseña Actual</label>
+                            <input type="password" name="actual" class="form-control form-control-custom" placeholder="••••••••" required />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label-custom">Nueva Contraseña</label>
+                            <input type="password" name="nueva" class="form-control form-control-custom" placeholder="Mínimo 6 caracteres" required />
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 px-4 pb-4 pt-2">
+                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal" style="border-radius: 8px;">Cancelar</button>
+                        <button type="submit" class="btn text-white px-4 fw-bold shadow-sm" style="background-color: #C92B0A; border-radius: 8px;">
+                            Actualizar Clave
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            function previewImage(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function() {
+                        const output = document.getElementById('previewFoto');
+                        output.src = reader.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
             }
-        }
-    </script>
+        </script>
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                Swal.fire({
-                    title: '¡Excelente!',
-                    text: '@TempData["SuccessMessage"]',
-                    icon: 'success',
-                    confirmButtonColor: '#C92B0A',
-                    confirmButtonText: 'Entendido'
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    Swal.fire({
+                        title: '¡Excelente!',
+                        text: '@Html.Raw(TempData["SuccessMessage"])',
+                        icon: 'success',
+                        confirmButtonColor: '#C92B0A',
+                        confirmButtonText: 'Entendido'
+                    });
                 });
-            });
-        </script>
-    }
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                Swal.fire({
-                    title: 'Hubo un problema',
-                    text: '@TempData["ErrorMessage"]',
-                    icon: 'error',
-                    confirmButtonColor: '#000000',
-                    confirmButtonText: 'Reintentar'
+            </script>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    Swal.fire({
+                        title: 'Hubo un problema',
+                        text: '@Html.Raw(TempData["ErrorMessage"])',
+                        icon: 'error',
+                        confirmButtonColor: '#000000',
+                        confirmButtonText: 'Reintentar'
+                    });
                 });
-            });
-        </script>
+            </script>
+        }
     }
-}

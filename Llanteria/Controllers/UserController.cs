@@ -1,15 +1,18 @@
-﻿using Llanteria.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Llanteria.Models;
 using Llanteria.Services;
-using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Llanteria.Controllers
 {
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IPerfilService _perfilService;
 
-        // Inyección de dependencias del servicio de perfil
+        // Solo dependemos de IPerfilService para mantener el código limpio
         public UserController(IPerfilService perfilService)
         {
             _perfilService = perfilService;
@@ -19,15 +22,18 @@ namespace Llanteria.Controllers
         [HttpGet]
         public async Task<IActionResult> Perfil()
         {
-            // ID temporal de prueba (Mock) para desarrollo. 
-            // Cuando integres el login real, aquí extraerás el ID del usuario autenticado.
-            int usuarioIdMock = 1;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var model = await _perfilService.ObtenerPerfilPorUsuarioIdAsync(usuarioIdMock);
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            int usuarioId = int.Parse(userIdClaim);
+            var model = await _perfilService.ObtenerPerfilPorUsuarioIdAsync(usuarioId);
 
             if (model == null)
             {
-                // Si por alguna razón el usuario no tiene fila en PerfilUsuario, puedes lanzar un error controlado
                 return NotFound("No se encontró el perfil para el usuario especificado.");
             }
 
@@ -36,30 +42,47 @@ namespace Llanteria.Controllers
 
         // POST: /User/ActualizarPerfil
         [HttpPost]
-        [ValidateAntiForgeryToken] // Protección contra ataques CSRF
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ActualizarPerfil(PerfilUsuarioViewModel model)
         {
-            // Validamos que los campos obligatorios del ViewModel (como el Nombre o Teléfono) se cumplan
             if (!ModelState.IsValid)
             {
-                // Si la validación falla, recargamos la vista mostrando los errores
                 return View("Perfil", model);
             }
 
-            // Llamamos al servicio para guardar la Bio, Preferencias y procesar la Foto circular
             var guardadoExitoso = await _perfilService.ActualizarPerfilAsync(model);
 
             if (guardadoExitoso)
-            {
-                // Mensaje que leerá el script de SweetAlert2 en la vista
                 TempData["SuccessMessage"] = "¡Tu perfil se ha actualizado con éxito!";
+            else
+                TempData["ErrorMessage"] = "No se pudieron guardar los cambios. Inténtalo de nuevo.";
+
+            return RedirectToAction(nameof(Perfil));
+        }
+
+        // POST: /User/CambiarPassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CambiarPassword(string actual, string nueva)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim)) return RedirectToAction("Login", "Account");
+
+            int userId = int.Parse(userIdClaim);
+
+            // Usamos el método asíncrono que definimos en el servicio
+            bool exito = await _perfilService.ActualizarPasswordAsync(userId, actual, nueva);
+
+            if (exito)
+            {
+                TempData["SuccessMessage"] = "Contraseña actualizada exitosamente.";
             }
             else
             {
-                TempData["ErrorMessage"] = "No se pudieron guardar los cambios. Inténtalo de nuevo.";
+                TempData["ErrorMessage"] = "Error al cambiar la contraseña. Verifica tu clave actual.";
             }
 
-            // Redireccionamos al GET para limpiar el envío del formulario y refrescar la pantalla
             return RedirectToAction(nameof(Perfil));
         }
     }

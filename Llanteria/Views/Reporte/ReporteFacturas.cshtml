@@ -1,6 +1,9 @@
 ﻿@model Llanteria.Models.ReporteGeneralViewModel
 @{
     Layout = null;
+    // Prevenir errores si las listas vienen nulas
+    var facturas = Model.Facturas ?? new List<Llanteria.Models.Factura>();
+    var gastos = Model.Gastos ?? new List<Llanteria.Models.Gasto>();
 }
 <!DOCTYPE html>
 <html lang="es">
@@ -8,25 +11,18 @@
     <meta charset="utf-8" />
     <style>
         body { font-family: 'Arial', sans-serif; font-size: 13px; color: #333; line-height: 1.4; margin: 30px; }
-        
-        /* Cabecera */
         .header { border-bottom: 3px solid #C92B0A; padding-bottom: 10px; margin-bottom: 20px; }
         .company-info h1 { margin: 0; color: #C92B0A; text-transform: uppercase; font-size: 24px; }
         .report-meta { text-align: right; color: #666; font-size: 11px; }
-
-        /* Tarjetas (Usando tablas para compatibilidad total con Rotativa) */
         .summary-table { width: 100%; margin-bottom: 30px; border-spacing: 15px 0; }
         .card { border: 1px solid #ddd; padding: 15px; border-radius: 4px; background: #fcfcfc; text-align: center; }
         .card h4 { margin: 0 0 5px 0; font-size: 10px; text-transform: uppercase; color: #7f8c8d; }
         .card p { margin: 0; font-size: 18px; font-weight: bold; color: #000; }
-
-        /* Tablas de Datos */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th { background: #C92B0A; color: white; padding: 10px; text-align: left; font-size: 12px; }
         td { border-bottom: 1px solid #eee; padding: 10px; font-size: 12px; }
         .text-pos { color: #27ae60; font-weight: bold; }
         .text-neg { color: #c0392b; font-weight: bold; }
-
         .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 9px; color: #999; border-top: 1px solid #eee; padding-top: 5px; }
     </style>
 </head>
@@ -39,36 +35,28 @@
         </div>
         <div class="report-meta">
             <p><strong>Generado el:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
-            <p><strong>Usuario:</strong> @User.Identity.Name</p>
         </div>
     </div>
 
     <table class="summary-table">
         <tr>
-            <td class="card"><h4>Total Ventas</h4><p>$ @Model.Facturas.Sum(f => f.TotalPagar).ToString("N0")</p></td>
-            <td class="card"><h4>Total Gastos</h4><p>$ @Model.Gastos.Sum(g => g.Monto).ToString("N0")</p></td>
-            @if (User.IsInRole("Administrador")) {
-                <td class="card"><h4>Balance Neto</h4><p>$ @((Model.Facturas.Sum(f => f.TotalPagar) - Model.Gastos.Sum(g => g.Monto)).ToString("N0") )</p></td>
-            }
+            <td class="card"><h4>Total Ventas</h4><p>$ @facturas.Sum(f => f.TotalPagar).ToString("N0")</p></td>
+            <td class="card"><h4>Total Gastos</h4><p>$ @gastos.Sum(g => g.Monto).ToString("N0")</p></td>
+            <td class="card"><h4>Balance Neto</h4><p>$ @((facturas.Sum(f => f.TotalPagar) - gastos.Sum(g => g.Monto)).ToString("N0") )</p></td>
         </tr>
     </table>
 
     <h3 style="color: #C92B0A; border-bottom: 1px solid #eee;">Detalle de Transacciones</h3>
     <table>
         <thead>
-            <tr>
-                <th>Tipo</th>
-                <th>Fecha</th>
-                <th>Descripción</th>
-                <th>Monto</th>
-            </tr>
+            <tr><th>Tipo</th><th>Fecha</th><th>Descripción</th><th>Monto</th></tr>
         </thead>
         <tbody>
-            @foreach (var f in Model.Facturas.OrderByDescending(x => x.Fecha).Take(15))
+            @foreach (var f in facturas.OrderByDescending(x => x.Fecha).Take(15))
             {
                 <tr><td>Factura</td><td>@f.Fecha?.ToString("dd/MM/yyyy")</td><td>Venta #@f.Id</td><td class="text-pos">+ $ @f.TotalPagar.ToString("N0")</td></tr>
             }
-            @foreach (var g in Model.Gastos.OrderByDescending(x => x.FechaRegistro).Take(15))
+            @foreach (var g in gastos.OrderByDescending(x => x.FechaRegistro).Take(15))
             {
                 <tr><td>Gasto</td><td>@g.FechaRegistro?.ToString("dd/MM/yyyy")</td><td>@g.Descripcion</td><td class="text-neg">- $ @g.Monto.ToString("N0")</td></tr>
             }
@@ -76,7 +64,7 @@
     </table>
 
     <div class="footer">
-        Documento oficial de Llantería Valledupar. Este reporte es confidencial.
+        Documento oficial de Llantería Valledupar.
     </div>
 </body>
 </html>

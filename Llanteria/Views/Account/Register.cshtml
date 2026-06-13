@@ -15,11 +15,12 @@
                 <p class="text-muted small">Regístrate hoy y recibe de inmediato <span class="badge bg-success fw-bold">50 Puntos</span> de bienvenida.</p>
             </div>
 
-            <form asp-action="Register" method="post">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger font-sm border-0 py-2 rounded-3" role="alert"></div>
+            <form asp-controller="Account" asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+                
+                <div asp-validation-summary="All" class="alert alert-danger font-sm border-0 py-2 rounded-3" role="alert"></div>
 
                 <div class="row g-3">
-                    <!-- Tipo y Número de Documento -->
                     <div class="col-md-6">
                         <label asp-for="IdDocumento" class="form-label fw-bold text-muted small text-uppercase">Tipo de Documento</label>
                         <select asp-for="IdDocumento" class="form-select" asp-items="ViewBag.IdDocumento" required>
@@ -34,7 +35,6 @@
                         <span asp-validation-for="NumeroDocumento" class="text-danger small"></span>
                     </div>
 
-                    <!-- Nombres y Apellidos -->
                     <div class="col-md-6">
                         <label asp-for="Nombres" class="form-label fw-bold text-muted small text-uppercase">Nombres</label>
                         <input asp-for="Nombres" class="form-control" type="text" required />
@@ -47,7 +47,6 @@
                         <span asp-validation-for="Apellidos" class="text-danger small"></span>
                     </div>
 
-                    <!-- Celular y Sexo -->
                     <div class="col-md-6">
                         <label asp-for="Telefono" class="form-label fw-bold text-muted small text-uppercase">Celular / Teléfono</label>
                         <input asp-for="Telefono" class="form-control" type="tel" required />
@@ -62,7 +61,6 @@
                         <span asp-validation-for="IdSexo" class="text-danger small"></span>
                     </div>
 
-                    <!-- Correo Electrónico -->
                     <div class="col-12">
                         <label asp-for="Correo" class="form-label fw-bold text-muted small text-uppercase">Correo Electrónico</label>
                         <input asp-for="Correo" class="form-control" type="email" placeholder="nombre@ejemplo.com" required />

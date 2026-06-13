@@ -1,16 +1,22 @@
 using Llanteria.Data;
 using Llanteria.Services;
 using Microsoft.EntityFrameworkCore;
-using SixLabors.ImageSharp;
+using Microsoft.AspNetCore.Authentication.Cookies; // Necesario para la autenticación
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1. Configuración de Autenticación por Cookies
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login"; // Ruta de tu controlador de Login
+        options.AccessDeniedPath = "/Home/AccessDenied";
+    });
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
 builder.Services.AddDbContext<LlanteriaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Con")));
-
 
 builder.Services.AddScoped<TipoDocumentoService>();
 builder.Services.AddScoped<SexoService>();
@@ -28,14 +34,11 @@ builder.Services.AddScoped<MarcaService>();
 builder.Services.AddScoped<BodegaService>();
 builder.Services.AddScoped<TipoServicioService>();
 builder.Services.AddScoped<CatalogoIncentivoService>();
-// Registrar el servicio de Perfil para la Inyección de Dependencias
 builder.Services.AddScoped<Llanteria.Services.IPerfilService, Llanteria.Services.PerfilService>();
 
-// Cambia tu línea actual por esta:
 Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath);
 
 var app = builder.Build();
-
 
 using (var scope = app.Services.CreateScope())
 {
@@ -43,8 +46,6 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<LlanteriaDbContext>();
-
-        // Crea la base de datos y todas sus tablas automáticamente si no existen
         context.Database.EnsureCreated();
     }
     catch (Exception ex)
@@ -58,13 +59,14 @@ using (var scope = app.Services.CreateScope())
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseRouting();
 
+// 2. Middleware de Autenticación y Autorización (Orden estricto)
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

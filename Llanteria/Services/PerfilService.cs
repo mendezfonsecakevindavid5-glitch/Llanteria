@@ -28,19 +28,16 @@ namespace Llanteria.Services
 
             var empleado = perfil.IdUsuarioNavigation.IdEmpleadoNavigation;
 
-            var viewModel = new PerfilUsuarioViewModel
+            return new PerfilUsuarioViewModel
             {
                 Id = perfil.Id,
-                Nombre = $"{empleado.Nombres} {empleado.Apellidos}",
-                Correo = empleado.Correo ?? "Sin correo",
+                Nombre = empleado != null ? $"{empleado.Nombres} {empleado.Apellidos}" : "Usuario",
+                Correo = empleado?.Correo ?? "Sin correo",
+                Telefono = empleado?.Telefono ?? "",
                 Bio = perfil.Bio ?? "",
                 TemaPreferencia = perfil.TemaPreferencia ?? "Light",
-
-                // Usamos Convert.ToBoolean para manejar posibles nulos de la BD
                 NotificacionesActivas = perfil.NotificacionesActivas ?? false,
-
                 FotoBase64 = perfil.FotoCircular != null ? Convert.ToBase64String(perfil.FotoCircular) : null,
-
                 FacturasRecientes = await _context.Facturas
                     .Where(f => f.IdCliente == perfil.IdUsuario)
                     .OrderByDescending(f => f.Fecha)
@@ -49,28 +46,31 @@ namespace Llanteria.Services
                     {
                         Id = f.Id,
                         NumeroFactura = f.Id.ToString(),
-
-                        // CORRECCIÓN: Conversión segura de DateOnly? a DateTime
-                        Fecha = f.Fecha.HasValue
-                                ? f.Fecha.Value.ToDateTime(TimeOnly.MinValue)
-                                : DateTime.Now,
-
+                        Fecha = f.Fecha.HasValue ? f.Fecha.Value.ToDateTime(TimeOnly.MinValue) : DateTime.Now,
                         TotalPagar = f.TotalPagar,
                         EstadoPago = "Pagado"
                     }).ToListAsync()
             };
-
-            return viewModel;
         }
 
         public async Task<bool> ActualizarPerfilAsync(PerfilUsuarioViewModel model)
         {
-            var perfil = await _context.PerfilUsuarios.FindAsync(model.Id);
+            var perfil = await _context.PerfilUsuarios
+                .Include(p => p.IdUsuarioNavigation)
+                .ThenInclude(u => u.IdEmpleadoNavigation)
+                .FirstOrDefaultAsync(p => p.Id == model.Id);
+
             if (perfil == null) return false;
 
             perfil.Bio = model.Bio;
             perfil.NotificacionesActivas = model.NotificacionesActivas;
             perfil.TemaPreferencia = model.TemaPreferencia;
+
+            var empleado = perfil.IdUsuarioNavigation?.IdEmpleadoNavigation;
+            if (empleado != null)
+            {
+                empleado.Telefono = model.Telefono;
+            }
 
             if (model.NuevaFoto != null && model.NuevaFoto.Length > 0)
             {
@@ -81,8 +81,41 @@ namespace Llanteria.Services
                 }
             }
 
-            _context.PerfilUsuarios.Update(perfil);
-            return await _context.SaveChangesAsync() > 0;
+            try
+            {
+                return await _context.SaveChangesAsync() > 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        // --- NUEVO MÉTODO PARA EL CAMBIO DE CONTRASEÑA ---
+        public async Task<bool> ActualizarPasswordAsync(int usuarioId, string passwordActual, string nuevaPassword)
+        {
+            var usuario = await _context.Usuarios.FindAsync(usuarioId);
+
+            if (usuario == null) return false;
+
+            // Validación: ¿La contraseña actual es correcta?
+            if (usuario.PasswordHash != passwordActual)
+            {
+                return false;
+            }
+
+            // Actualizamos la contraseña
+            usuario.PasswordHash = nuevaPassword;
+
+            try
+            {
+                _context.Usuarios.Update(usuario);
+                return await _context.SaveChangesAsync() > 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }
