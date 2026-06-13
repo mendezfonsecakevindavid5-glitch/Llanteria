@@ -8,6 +8,10 @@ using System.IO;
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+// Importaciones necesarias para ImageSharp
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Formats.Webp;
 
 namespace Llanteria.Controllers
 {
@@ -70,7 +74,6 @@ namespace Llanteria.Controllers
             {
                 var original = ser.GetProducto(id);
 
-                // Si el usuario sube nueva foto, procesamos y borramos la anterior
                 if (ob.ImagenArchivo != null)
                 {
                     EliminarImagen(original?.RutaImagen);
@@ -88,7 +91,7 @@ namespace Llanteria.Controllers
             return View(ob);
         }
 
-        // --- MÉTODOS AUXILIARES PRIVADOS PARA MANTENER EL CÓDIGO LIMPIO ---
+        // --- MÉTODOS AUXILIARES OPTIMIZADOS ---
 
         private string ProcesarImagen(IFormFile? archivo)
         {
@@ -97,15 +100,24 @@ namespace Llanteria.Controllers
             string carpeta = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productos");
             if (!Directory.Exists(carpeta)) Directory.CreateDirectory(carpeta);
 
-            // Mantiene el nombre original descriptivo
-            string nombre = Path.GetFileName(archivo.FileName).ToLower().Replace(" ", "-");
-            string ruta = Path.Combine(carpeta, nombre);
+            // Nombre limpio terminado en .webp
+            string nombreBase = Path.GetFileNameWithoutExtension(archivo.FileName).ToLower().Replace(" ", "-");
+            string nombreWebp = nombreBase + ".webp";
+            string ruta = Path.Combine(carpeta, nombreWebp);
 
-            using (var fs = new FileStream(ruta, FileMode.Create))
+            // Redimensionamiento y optimización a WebP
+            using (Image image = Image.Load(archivo.OpenReadStream()))
             {
-                archivo.CopyTo(fs);
+                image.Mutate(x => x.Resize(new ResizeOptions
+                {
+                    Size = new Size(800, 800),
+                    Mode = ResizeMode.Max
+                }));
+
+                image.Save(ruta, new WebpEncoder { Quality = 75 });
             }
-            return nombre;
+
+            return nombreWebp;
         }
 
         private void EliminarImagen(string? nombreArchivo)
