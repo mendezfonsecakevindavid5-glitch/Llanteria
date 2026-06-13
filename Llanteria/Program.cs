@@ -1,6 +1,7 @@
 using Llanteria.Data;
 using Llanteria.Services;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp;
 
 var builder = WebApplication.CreateBuilder(args);
 
