@@ -5,68 +5,250 @@
     ViewData["Title"] = "Inicio";
 }
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+
 <style>
     :root {
         --llanteria-primary: #C92B0A;
-        --llanteria-dark: #000000;
+        --llanteria-dark: #09090B;
+        --llanteria-dark-surface: #121214;
         --llanteria-light: #FFFFFF;
+        --glass-bg: rgba(9, 9, 11, 0.75);
+        --glass-border: rgba(255, 255, 255, 0.08);
     }
-    body { background-color: var(--llanteria-light); color: var(--llanteria-dark); }
-    .bg-primary-llanteria { background-color: var(--llanteria-primary) !important; }
-    .bg-dark-llanteria { background-color: var(--llanteria-dark) !important; }
-    .btn-llanteria-action { background-color: var(--llanteria-primary); color: var(--llanteria-light); border: none; transition: 0.3s; }
-    .btn-llanteria-action:hover { background-color: #a62308; color: var(--llanteria-light); transform: translateY(-2px); }
-    .accent-bar { width: 60px; height: 4px; background-color: var(--llanteria-primary); }
-    .category-card { border: 1px solid #eaeaea; transition: 0.3s; }
-    .category-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: var(--llanteria-primary); }
+
+    body { 
+        background-color: var(--llanteria-light); 
+        color: var(--llanteria-dark);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        overflow-x: hidden;
+    }
+
+    /* Clases de Utilidad de Color */
+    .bg-primary-llanteria {
+        background-color: var(--llanteria-primary) !important;
+    }
+
+    /* HERO SLIDER CINEMÁTICO AVANZADO */
+    .hero-swiper {
+        width: 100%;
+        height: 85vh;
+        background-color: var(--llanteria-dark);
+    }
+
+    .swiper-slide-hero {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    }
+
+    .swiper-slide-hero img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+        will-change: transform;
+    }
+
+    /* Efecto Ken Burns Ultra-Suave */
+    .swiper-slide-active img {
+        animation: kenBurnsEffect 8s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(9,9,11,0.4) 0%, rgba(9,9,11,0.8) 100%);
+        z-index: 2;
+    }
+
+    .hero-content-wrapper {
+        position: relative;
+        z-index: 3;
+        color: var(--llanteria-light);
+    }
+
+    /* PANEL DE MATRIZ DE BÚSQUEDA (Glassmorphism de Alta Ingeniería) */
+    .search-matrix-panel {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    }
+
+    .form-floating-dark .form-select {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--llanteria-light);
+        border-radius: 12px;
+    }
+
+    .form-floating-dark .form-select:focus {
+        border-color: var(--llanteria-primary);
+        box-shadow: 0 0 0 4px rgba(201, 43, 10, 0.25);
+    }
+
+    .form-floating-dark label {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-hyper-action {
+        background: linear-gradient(135deg, var(--llanteria-primary) 0%, #911F07 100%);
+        color: var(--llanteria-light);
+        border: none;
+        border-radius: 12px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 15px rgba(201, 43, 10, 0.3);
+    }
+
+    .btn-hyper-action:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(201, 43, 10, 0.5);
+        color: var(--llanteria-light);
+    }
+
+    /* CARDS DE PRODUCTOS - NEO-ESTÉTICA */
+    .premium-product-card {
+        background: #FFFFFF;
+        border: 1px solid #E4E4E7;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .premium-product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        border-color: var(--llanteria-primary);
+    }
+
+    .accent-bar { 
+        width: 50px; 
+        height: 4px; 
+        background-color: var(--llanteria-primary); 
+        border-radius: 2px;
+    }
+
+    @@keyframes kenBurnsEffect {
+        from { transform: scale(1); }
+        to { transform: scale(1.07); }
+    }
 </style>
 
-<section id="inicio" class="position-relative text-white d-flex align-items-center" style="background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('/images/Section-Image.avif') no-repeat center center/cover; min-height: 80vh;">
-    <div class="container text-center pt-5">
-        <span class="badge bg-primary-llanteria text-uppercase tracking-wider px-3 py-2 rounded-pill fw-bold mb-3">Tecnología en Movimiento</span>
-        <h1 class="display-3 fw-black text-uppercase">Encuentra la Llanta Ideal</h1>
-        <p class="lead max-width-600 mx-auto">Selecciona las especificaciones técnicas y conduce con seguridad.</p>
+<section id="inicio" class="swiper hero-swiper">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide swiper-slide-hero">
+            <div class="hero-overlay"></div>
+            <img src="/images/Section-Image.avif" alt="High-End Track">
+            <div class="container hero-content-wrapper text-center">
+                <span class="badge bg-primary-llanteria text-uppercase px-3 py-2 rounded-pill fw-bold mb-3 animate__animated animate__fadeInDown">Tecnología de Competición</span>
+                <h1 class="display-2 fw-black text-uppercase tracking-tight animate__animated animate__zoomIn">Desempeño Absoluto</h1>
+                <p class="lead max-width-600 mx-auto text-white-50">Equipamiento premium para el control total sobre el asfalto.</p>
+            </div>
+        </div>
+        <div class="swiper-slide swiper-slide-hero">
+            <div class="hero-overlay"></div>
+            <img src="/images/banner.jpg" alt="Motorsport Performance">
+            <div class="container hero-content-wrapper text-center">
+                <span class="badge bg-primary-llanteria text-uppercase px-3 py-2 rounded-pill fw-bold mb-3">Ingeniería Avanzada</span>
+                <h1 class="display-2 fw-black text-uppercase tracking-tight">Seguridad en cada Curva</h1>
+                <p class="lead max-width-600 mx-auto text-white-50">Encuentra los neumáticos oficiales de las marcas líderes a nivel mundial.</p>
+            </div>
+        </div>
     </div>
+    <div class="swiper-pagination-hero"></div>
 </section>
 
-<div class="container position-relative" style="z-index: 25; margin-top: -60px;">
+<div class="container position-relative" style="z-index: 100; margin-top: -100px;">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="p-4 bg-white shadow-lg rounded-3">
+        <div class="col-lg-10" data-aos="fade-up">
+            <div class="search-matrix-panel">
                 <div class="row g-3">
-                    <div class="col-md-3"><div class="form-floating"><select class="form-select" id="anchoSelect"><option value="">Cualquiera</option><option value="185">185</option><option value="205">205</option></select><label>Ancho</label></div></div>
-                    <div class="col-md-3"><div class="form-floating"><select class="form-select" id="perfilSelect"><option value="">Cualquiera</option><option value="65">65</option><option value="55">55</option></select><label>Perfil</label></div></div>
-                    <div class="col-md-3"><div class="form-floating"><select class="form-select" id="diametroSelect"><option value="">Cualquiera</option><option value="15">R15</option><option value="16">R16</option></select><label>Diámetro</label></div></div>
-                    <div class="col-md-3"><button type="button" id="btnBuscarLlantas" class="btn btn-llanteria-action w-100 py-3 fw-bold text-uppercase">Buscar Ahora</button></div>
+                    <div class="col-md-3">
+                        <div class="form-floating form-floating-dark">
+                            <select class="form-select" id="anchoSelect">
+                                <option value="">Cualquiera</option>
+                                <option value="185">185</option>
+                                <option value="205">205</option>
+                            </select>
+                            <label>Ancho (mm)</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating form-floating-dark">
+                            <select class="form-select" id="perfilSelect">
+                                <option value="">Cualquiera</option>
+                                <option value="65">65</option>
+                                <option value="55">55</option>
+                            </select>
+                            <label>Perfil (%)</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating form-floating-dark">
+                            <select class="form-select" id="diametroSelect">
+                                <option value="">Cualquiera</option>
+                                <option value="15">R15</option>
+                                <option value="16">R16</option>
+                            </select>
+                            <label>Diámetro (In)</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-center">
+                        <button type="button" id="btnBuscarLlantas" class="btn btn-hyper-action w-100 py-3 text-uppercase">
+                            <i class="fa-solid fa-radar me-2"></i>Escanear Medidas
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<section id="resultadosBusqueda" class="py-5 d-none" style="background-color: #f1f3f5; margin-top: 30px;">
+<section id="resultadosBusqueda" class="py-5 d-none" style="background-color: #F4F4F5; margin-top: 50px;">
     <div class="container">
-        <div class="text-center mb-4"><h2 class="fw-black text-uppercase">Llantas Encontradas</h2><hr class="mx-auto accent-bar"></div>
+        <div class="text-center mb-5">
+            <h2 class="fw-black text-uppercase m-0">Resultados del Escaneo</h2>
+            <hr class="mx-auto accent-bar mt-3">
+        </div>
         <div class="row g-4 justify-content-center" id="contenedorTarjetas"></div>
     </div>
 </section>
 
-<section id="categorias" class="py-5"><div class="container">...</div></section>
+<section id="categorias" class="py-2"><div class="container"></div></section>
 
 <partial name="~/Views/Nosotros/Index.cshtml" />
 <partial name="~/Views/Servicios/Index.cshtml" />
 <partial name="~/Views/Promociones/Index.cshtml" />
 
 <section id="productos" class="py-5 bg-white">
-    <div class="container">
-        <div class="text-center mb-5"><h2 class="fw-black text-uppercase">Productos Destacados</h2><hr class="mx-auto accent-bar"></div>
+    <div class="container" data-aos="fade-up">
+        <div class="text-center mb-5">
+            <h2 class="fw-black text-uppercase m-0">Gama Almacenada</h2>
+            <hr class="mx-auto accent-bar mt-3">
+        </div>
         <div class="row g-4">
             @if (Model != null) {
                 @foreach (var p in Model.Take(3)) {
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm category-card h-100">
-                            <img src="/images/Productos/@(string.IsNullOrEmpty(p.RutaImagen) ? "default.png" : p.RutaImagen)" class="img-fluid" style="height: 250px; object-fit: cover;">
-                            <div class="p-3 text-center"><h6 class="fw-bold text-uppercase">@p.Nombre</h6><small class="text-primary fw-semibold">@p.PrecioVenta.ToString("C0")</small></div>
+                    <div class="col-md-4" data-aos="zoom-in-up">
+                        <div class="premium-product-card h-100 d-flex flex-column">
+                            <div class="overflow-hidden position-relative">
+                                <img src="/images/Productos/@(string.IsNullOrEmpty(p.RutaImagen) ? "default.png" : p.RutaImagen)" class="img-fluid w-100" style="height: 250px; object-fit: cover; transition: 0.5s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                            </div>
+                            <div class="p-4 text-center mt-auto">
+                                <h6 class="fw-bold text-uppercase text-dark mb-2" style="letter-spacing: 0.5px;">@p.Nombre</h6>
+                                <div class="fs-5 fw-black text-danger">@p.PrecioVenta.ToString("C0")</div>
+                            </div>
                         </div>
                     </div>
                 }
@@ -78,14 +260,38 @@
 <partial name="~/Views/Contacto/Index.cshtml" />
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Inicializar animaciones de scroll
+            AOS.init({ duration: 1000, once: true });
+
+            // Inicializar Swiper de fondo con disolución cruzada premium
+            const heroSwiper = new Swiper('.hero-swiper', {
+                loop: true,
+                effect: 'fade',
+                fadeEffect: { crossFade: true },
+                autoplay: { delay: 6500, disableOnInteraction: false },
+                speed: 1500
+            });
+        });
+
+        // Motor de búsqueda JSON optimizado estéticamente
         document.getElementById("btnBuscarLlantas").addEventListener("click", async function () {
             const ancho = document.getElementById("anchoSelect").value;
             const perfil = document.getElementById("perfilSelect").value;
             const diametro = document.getElementById("diametroSelect").value;
 
             if (!ancho || !perfil || !diametro) {
-                Swal.fire({ title: 'Atención', text: 'Selecciona medidas completas.', icon: 'warning' });
+                Swal.fire({ 
+                    title: 'Especificaciones Incompletas', 
+                    text: 'Por favor asigna todas las variables métricas para el escaneo.', 
+                    icon: 'info',
+                    confirmButtonColor: '#C92B0A'
+                });
                 return;
             }
 
@@ -98,22 +304,33 @@
             
             if (resultados.length > 0) {
                 resultados.forEach(llanta => {
+                    const imgUrl = llanta.img.startsWith('/') ? llanta.img : `/images/Llantas/${llanta.img}`;
+                    
                     contenedor.innerHTML += `
-                        <div class="col-md-4">
-                            <div class="card shadow-sm border-0 h-100">
-                                <img src="${llanta.img}" class="img-fluid" style="height: 220px; object-fit: cover;">
+                        <div class="col-md-4" data-aos="fade-up">
+                            <div class="premium-product-card h-100 bg-white">
+                                <div class="overflow-hidden">
+                                    <img src="${imgUrl}" class="img-fluid w-100" style="height: 230px; object-fit: cover; transition: 0.4s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                </div>
                                 <div class="p-4">
-                                    <h5 class="fw-bold">${llanta.nombre}</h5>
-                                    <p class="text-success fw-bold">${llanta.precio}</p>
-                                    <a href="#contacto" class="btn btn-llanteria-action w-100">Cotizar</a>
+                                    <h5 class="fw-bold text-dark text-uppercase fs-6" style="letter-spacing:0.5px;">${llanta.nombre}</h5>
+                                    <p class="text-danger fw-black fs-5 mb-3">${llanta.precio}</p>
+                                    <a href="#contacto" class="btn btn-hyper-action w-100 py-2.5 text-uppercase btn-sm">Cotizar Dimensión</a>
                                 </div>
                             </div>
                         </div>`;
                 });
             } else {
-                contenedor.innerHTML = `<div class="col-12 text-center py-5"><h5>No hay existencias con esas medidas.</h5></div>`;
+                contenedor.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <div class="text-muted"><i class="fa-solid fa-ban fa-3x mb-3 text-danger"></i></div>
+                        <h5 class="fw-bold text-dark">Sin Coincidencias en el Almacén</h5>
+                        <p class="text-muted small">No hay stock disponible para las dimensiones ingresadas actualmente.</p>
+                    </div>`;
             }
+            
             document.getElementById("resultadosBusqueda").classList.remove("d-none");
+            AOS.refresh(); 
             document.getElementById("resultadosBusqueda").scrollIntoView({ behavior: 'smooth' });
         });
     </script>

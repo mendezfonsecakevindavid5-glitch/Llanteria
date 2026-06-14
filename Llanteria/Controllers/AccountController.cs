@@ -28,6 +28,15 @@ namespace Llanteria.Controllers
             _docSer = docSer;
         }
 
+        // --- ACCIONES DE LOGIN ---
+
+        // ¡MÉTODO AGREGADO! Este es el encargado de abrir la página cuando haces clic en Ingresar
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string username, string password) // Cambiamos 'correo' por 'username'
@@ -36,17 +45,16 @@ namespace Llanteria.Controllers
             var user = _userSer.GetUsuarios().FirstOrDefault(u => u.Username == username);
 
             // 2. Validación: Asegúrate de que PasswordHash sea string. 
-            // Si te da error de BinaryReader, es porque el objeto usuario tiene un conflicto de tipos.
             if (user != null && user.PasswordHash == password && user.Estado == "Activo")
             {
                 string nombreRol = user.IdRolNavigation?.NombreRol ?? "Cliente";
 
                 var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Role, nombreRol)
-        };
+                {
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, nombreRol)
+                };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
@@ -67,6 +75,8 @@ namespace Llanteria.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }
+
+        // --- ACCIONES DE REGISTRO ---
 
         [HttpGet]
         public IActionResult Register()

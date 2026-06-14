@@ -5,85 +5,259 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="container-fluid pt-4">
-    <div class="row">
-        <div class="col-md-3 col-lg-2 mb-4">
-            <div class="card border-0 shadow-sm p-3 bg-white rounded-xl">
-                <div class="text-center mb-3">
-                    <div class="bg-primary text-white p-3 rounded-circle d-inline-block mb-2">
-                        <i class="fa-solid fa-user-gear fa-2xl"></i>
-                    </div>
-                    <h6 class="fw-bold m-0">Panel @(User.IsInRole("Administrador") ? "Administrador" : "Empleado")</h6>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+<style>
+    :root {
+        --color-premium-red: #C92B0A;
+        --color-premium-dark: #0F0F11;
+        --color-premium-gray: #1A1A1E;
+        --color-premium-border: #E5E7EB;
+    }
+
+    body {
+        background-color: #F8FAFC;
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Contenedor de Pantalla Completa Maximizada */
+    .dashboard-wrapper {
+        min-height: 100vh;
+        width: 100%;
+    }
+
+    /* Slider Cinemático */
+    .dashboard-slider {
+        width: 100%;
+        height: 280px;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+
+    .swiper-slide {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .swiper-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        animation: zoomCinematic 20s infinite alternate;
+        will-change: transform;
+    }
+
+    .slide-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to right, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0.1) 100%);
+        display: flex;
+        align-items: center;
+        padding: 3rem;
+        color: #ffffff;
+        z-index: 2;
+    }
+
+    /* Tarjetas de Indicadores (KPIs) */
+    .card-kpi-premium {
+        background: #FFFFFF;
+        border: 1px solid var(--color-premium-border);
+        border-radius: 18px;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card-kpi-premium:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.05);
+    }
+
+    .card-kpi-premium::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+    }
+
+    .kpi-ingresos::before { background-color: #10B981; }
+    .kpi-clientes::before { background-color: #3B82F6; }
+    .kpi-bodegas::before { background-color: #6B7280; }
+    .kpi-egresos::before { background-color: #EF4444; }
+
+    /* Estilos de Tablas y Listas */
+    .card-table-premium {
+        background: #FFFFFF;
+        border: 1px solid var(--color-premium-border);
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.01);
+    }
+
+    .table-premium thead th {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6B7280;
+        background-color: #F8FAFC;
+        border-bottom: 1px solid var(--color-premium-border);
+        padding: 1rem;
+    }
+
+    .table-premium tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid #F1F5F9;
+    }
+
+    .rounded-xl { border-radius: 16px !important; }
+    .fw-black { font-weight: 900 !important; }
+
+    /* Animación del Carrusel */
+@@keyframes zoomCinematic {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+}
+</style>
+
+<div class="container-fluid py-4 px-lg-4 dashboard-wrapper">
+    <div class="row g-4">
+        
+        <div class="col-12">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                <div>
+                    <h2 class="fw-black text-dark m-0 animate__animated animate__fadeInDown" style="letter-spacing: -1px;">Consola de Operaciones</h2>
+                    <p class="text-muted small m-0">Monitoreo corporativo y transacciones en tiempo real.</p>
                 </div>
-                <hr class="text-muted">
-                <div class="nav flex-column nav-pills gap-2">
-                    <a class="nav-link active bg-dark fw-bold" asp-controller="Dashboard" asp-action="Index">
-                        <i class="fa-solid fa-chart-pie me-2"></i>Inicio Panel
-                    </a>
-
-                    @if (User.IsInRole("Administrador"))
-                    {
-                        <a class="nav-link text-dark fw-semibold" asp-controller="Producto" asp-action="Index">
-                            <i class="fa-solid fa-box me-2 text-muted"></i>Inventario
-                        </a>
-                        <a class="nav-link text-dark fw-semibold" asp-controller="Bodega" asp-action="Index">
-                            <i class="fa-solid fa-warehouse me-2 text-muted"></i>Bodegas
-                        </a>
-                        <a class="nav-link text-dark fw-semibold" asp-controller="Proveedore" asp-action="Index">
-                            <i class="fa-solid fa-industry me-2 text-muted"></i>Proveedores
-                        </a>
-                        <a class="nav-link text-dark fw-semibold" asp-controller="Marca" asp-action="Index">
-                            <i class="fa-solid fa-tags me-2 text-muted"></i>Marcas
-                        </a>
-                        <a class="nav-link text-dark fw-semibold" asp-controller="Log" asp-action="Index">
-                            <i class="fa-solid fa-clipboard-list me-2 text-muted"></i>Registro de Actividad
-                        </a>
-                        <a class="nav-link text-dark fw-semibold" asp-controller="Empleado" asp-action="Index">
-                            <i class="fa-solid fa-id-card me-2 text-muted"></i>Empleados
-                        </a>
-                    }
-
-                    <a class="nav-link text-dark fw-semibold" asp-controller="Factura" asp-action="Index">
-                        <i class="fa-solid fa-file-invoice-dollar me-2 text-muted"></i>Ventas
-                    </a>
-                    <a class="nav-link text-dark fw-semibold" asp-controller="Cliente" asp-action="Index">
-                        <i class="fa-solid fa-users me-2 text-muted"></i>Clientes
-                    </a>
+                <div class="bg-white px-3 py-2 rounded-3 border text-end shadow-sm">
+                    <small class="text-uppercase text-muted fw-bold d-block" style="font-size: 0.6rem; letter-spacing: 0.5px;">Centro de Monitoreo</small>
+                    <span class="fw-bold text-dark fs-7" style="font-size: 0.9rem;"><i class="fa-solid fa-shield-halved text-danger me-1"></i> Valledupar Protegido</span>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-9 col-lg-10">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="swiper dashboard-slider">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <div class="slide-overlay">
+                                    <div class="animate__animated animate__fadeInLeft">
+                                        <span class="badge bg-danger mb-2 px-3 py-2 text-uppercase fw-bold" style="font-size: 0.7rem;">Gestión de Planta</span>
+                                        <h3 class="display-6 fw-bold text-white mb-2" style="letter-spacing: -1px;">Control de Inventario Automatizado</h3>
+                                        <p class="text-white-50 small max-w-md">Supervisa las existencias críticas de neumáticos de carga y rines deportivos directo desde la nube.</p>
+                                    </div>
+                                </div>
+                                <img src="https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=1400&q=80" alt="Llantas Premium" />
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="slide-overlay">
+                                    <div>
+                                        <span class="badge bg-warning text-dark mb-2 px-3 py-2 text-uppercase fw-bold" style="font-size: 0.7rem;">Garantía de Servicio</span>
+                                        <h3 class="display-6 fw-bold text-white mb-2" style="letter-spacing: -1px;">Alineación Automotriz Computarizada</h3>
+                                        <p class="text-white-50 small">Eficiencia de calibración en fosas de atención rápida para optimizar el flujo diario de vehículos.</p>
+                                    </div>
+                                </div>
+                                <img src="https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1400&q=80" alt="Taller Mecánico" />
+                            </div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                </div>
+            </div>
+
             @if (User.IsInRole("Administrador"))
             {
                 <div class="row g-3 mb-4">
-                    <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Ingresos</small><h3 class="fw-black text-success mt-1">$@string.Format("{0:N2}", ViewBag.TotalVentas)</h3></div><div class="bg-success bg-opacity-10 text-success p-3 rounded-3"><i class="fa-solid fa-money-bill-trend-up fa-xl"></i></div></div></div></div>
-                    <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Clientes</small><h3 class="fw-black text-dark mt-1">@ViewBag.CantidadClientes</h3></div><div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3"><i class="fa-solid fa-users fa-xl"></i></div></div></div></div>
-                    <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Bodegas</small><h3 class="fw-black text-dark mt-1">@ViewBag.CantidadBodegas</h3></div><div class="bg-secondary bg-opacity-10 text-secondary p-3 rounded-3"><i class="fa-solid fa-warehouse fa-xl"></i></div></div></div></div>
-                    <div class="col-sm-6 col-lg-3"><div class="card border-0 shadow-sm p-3 bg-white h-100 rounded-xl"><div class="d-flex align-items-center justify-content-between"><div><small class="text-muted fw-bold text-uppercase">Egresos</small><h3 class="fw-black text-danger mt-1">$@string.Format("{0:N2}", ViewBag.TotalGastos)</h3></div><div class="bg-danger bg-opacity-10 text-danger p-3 rounded-3"><i class="fa-solid fa-hand-holding-dollar fa-xl"></i></div></div></div></div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card-kpi-premium kpi-ingresos h-100 d-flex flex-column justify-content-between">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <small class="text-muted fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">Ventas Totales</small>
+                                    <h3 class="fw-black text-dark mt-1 mb-0">$@string.Format("{0:N2}", ViewBag.TotalVentas)</h3>
+                                </div>
+                                <div class="bg-success bg-opacity-10 text-success p-3 rounded-3">
+                                    <i class="fa-solid fa-money-bill-trend-up fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card-kpi-premium kpi-clientes h-100 d-flex flex-column justify-content-between">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <small class="text-muted fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">Clientes Registrados</small>
+                                    <h3 class="fw-black text-dark mt-1 mb-0">@ViewBag.CantidadClientes</h3>
+                                </div>
+                                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3">
+                                    <i class="fa-solid fa-users fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card-kpi-premium kpi-bodegas h-100 d-flex flex-column justify-content-between">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <small class="text-muted fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">Centros de Acopio</small>
+                                    <h3 class="fw-black text-dark mt-1 mb-0">@ViewBag.CantidadBodegas</h3>
+                                </div>
+                                <div class="bg-secondary bg-opacity-10 text-secondary p-3 rounded-3">
+                                    <i class="fa-solid fa-warehouse fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card-kpi-premium kpi-egresos h-100 d-flex flex-column justify-content-between">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <small class="text-muted fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.5px;">Inversión / Compras</small>
+                                    <h3 class="fw-black text-danger mt-1 mb-0">$@string.Format("{0:N2}", ViewBag.TotalGastos)</h3>
+                                </div>
+                                <div class="bg-danger bg-opacity-10 text-danger p-3 rounded-3">
+                                    <i class="fa-solid fa-hand-holding-dollar fa-lg"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             }
 
-            <div class="row g-4">
+            <div class="row g-4 mb-4">
                 <div class="col-lg-8">
-                    <div class="card border-0 shadow-sm rounded-xl">
-                        <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
-                            <h5 class="fw-bold m-0 text-dark"><i class="fa-solid fa-clock-rotate-left text-muted me-2"></i>Últimas Facturas</h5>
-                            <a asp-controller="Reporte" asp-action="GenerarIndividual" asp-route-tipo="Factura" class="btn btn-danger btn-sm shadow-sm fw-bold">
-                                <i class="fa-solid fa-file-pdf me-1"></i> Exportar Reporte
+                    <div class="card border-0 shadow-sm rounded-xl bg-white card-table-premium">
+                        <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center rounded-top-xl">
+                            <h5 class="fw-bold m-0 text-dark" style="font-size: 1.05rem;"><i class="fa-solid fa-receipt text-muted me-2"></i>Historial de Facturación Reciente</h5>
+                            <a asp-controller="Reporte" asp-action="GenerarIndividual" asp-route-tipo="Factura" class="btn btn-dark btn-sm shadow-sm fw-bold px-3 py-1.5 rounded-3" style="background-color: var(--color-premium-red); border: none;">
+                                <i class="fa-solid fa-file-pdf me-1"></i> Exportar Auditoría
                             </a>
                         </div>
                         <div class="table-responsive px-3 pb-3">
-                            <table class="table table-hover align-middle m-0">
-                                <thead><tr><th>Factura</th><th>Fecha</th><th class="text-end">Total</th><th class="text-center">Acción</th></tr></thead>
+                            <table class="table table-hover align-middle m-0 table-premium">
+                                <thead>
+                                    <tr>
+                                        <th>Factura</th>
+                                        <th>Fecha de Emisión</th>
+                                        <th class="text-end">Total Liquidado</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
                                 <tbody>
                                     @foreach (var venta in Model)
                                     {
                                         <tr>
-                                            <td><span class="fw-bold"># @venta.Id</span></td>
-                                            <td>@(venta.Fecha?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                                            <td><span class="fw-bold text-dark"># @venta.Id</span></td>
+                                            <td class="text-muted">@(venta.Fecha?.ToString("dd/MM/yyyy") ?? "N/A")</td>
                                             <td class="text-end fw-bold text-success">$@venta.TotalPagar.ToString("N2")</td>
-                                            <td class="text-center"><a asp-controller="Factura" asp-action="Edit" asp-route-id="@venta.Id" class="btn btn-light btn-sm rounded-2"><i class="fa-solid fa-arrow-right text-muted"></i></a></td>
+                                            <td class="text-center">
+                                                <a asp-controller="Factura" asp-action="Edit" asp-route-id="@venta.Id" class="btn btn-light btn-sm rounded-3 px-2.5 py-1.5 border">
+                                                    <i class="fa-solid fa-arrow-right text-muted"></i>
+                                                </a>
+                                            </td>
                                         </tr>
                                     }
                                 </tbody>
@@ -91,23 +265,120 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="col-lg-4">
-                    <div class="card border-0 shadow-sm rounded-xl p-4 mb-3">
-                        <h6 class="fw-bold mb-3 text-warning"><i class="fa-solid fa-triangle-exclamation me-2"></i>Stock Crítico</h6>
-                        <div class="alert alert-warning border-0 bg-warning bg-opacity-10 small">Hay <strong>@ViewBag.ProductosBajos</strong> productos con existencias bajas.</div>
-                        <a asp-controller="Producto" asp-action="Index" class="btn btn-outline-warning btn-sm w-100 fw-bold">Gestionar Inventario</a>
+                    <div class="card border-0 shadow-sm rounded-xl p-4 bg-white border mb-4" style="border-left: 5px solid #EAB308 !important;">
+                        <h6 class="fw-bold mb-3 text-warning"><i class="fa-solid fa-triangle-exclamation me-2"></i>Nivel Crítico de Inventario</h6>
+                        <div class="alert alert-warning border-0 bg-warning bg-opacity-10 small rounded-3 text-dark mb-3">
+                            Currently, <strong>@ViewBag.ProductosBajos</strong> references are below the configured minimum threshold.
+                        </div>
+                        <a asp-controller="Producto" asp-action="Index" class="btn btn-outline-warning btn-sm w-100 fw-bold py-2 rounded-3">Aprovisionar Almacén</a>
+                    </div>
+
+                    <div class="card border-0 shadow-sm rounded-xl p-3 bg-white border">
+                        <h6 class="fw-bold text-dark mb-2" style="font-size: 0.9rem;">Eficiencia de Atención</h6>
+                        <div id="chartMiniOperaciones"></div>
                     </div>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm p-4 bg-white rounded-xl card-table-premium">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold text-dark m-0" style="font-size: 1.05rem;">Rendimiento Comercial Mensual</h5>
+                            <span class="badge bg-light text-muted border px-3 py-1.5 rounded-pill">Tiempo Real</span>
+                        </div>
+                        <div id="chartVentasFlujo"></div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
-<style>
-    .rounded-xl { border-radius: 16px !important; }
-    .fw-black { font-weight: 900 !important; }
-    .card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-    .card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important; }
-    .nav-link { transition: all 0.3s; border-radius: 8px; }
-    .nav-pills .nav-link.active { background-color: #212529 !important; color: white !important; }
-</style>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        // Inicialización de Carrusel Cinematográfico de Alta Gama
+        const swiper = new Swiper('.dashboard-slider', {
+            loop: true,
+            effect: 'fade',
+            fadeEffect: { crossFade: true },
+            autoplay: {
+                delay: 7000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+                dynamicBullets: true
+            }
+        });
+
+        // Configuración del Gráfico Lineal de Flujo Financiero
+        var optionsVentas = {
+            chart: {
+                type: 'area',
+                height: 320,
+                toolbar: { show: false },
+                fontFamily: 'inherit'
+            },
+            colors: ['#C92B0A', '#1F2937'],
+            stroke: { curve: 'smooth', width: 3 },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.4,
+                    opacityTo: 0.02,
+                    stops: [0, 90, 100]
+                }
+            },
+            series: [{
+                name: 'Ingresos Operativos ($)',
+                data: [15000000, 22000000, 18000000, 29000000, 25000000, 42000000, 39000000]
+            }, {
+                name: 'Costos de Compra ($)',
+                data: [8000000, 12000000, 9500000, 15000000, 11000000, 19000000, 14000000]
+            }],
+            xaxis: {
+                categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'],
+                axisBorder: { show: false },
+                axisTicks: { show: false }
+            },
+            dataLabels: { enabled: false },
+            grid: { borderColor: '#F1F5F9' }
+        };
+        var chartVentas = new ApexCharts(document.querySelector("#chartVentasFlujo"), optionsVentas);
+        chartVentas.render();
+
+        // Configuración de Gráfico Radial de Eficiencia Operativa
+        var optionsMiniChart = {
+            chart: { type: 'radialBar', height: 180, sparkline: { enabled: true } },
+            plotOptions: {
+                radialBar: {
+                    hollow: { size: '65%' },
+                    dataLabels: {
+                        name: { show: false },
+                        value: {
+                            offsetY: 6,
+                            fontSize: '1.2rem',
+                            fontWeight: '700',
+                            color: '#1F2937'
+                        }
+                    }
+                }
+            },
+            colors: ['#C92B0A'],
+            series: [88],
+            labels: ['Eficiencia']
+        };
+        var miniChart = new ApexCharts(document.querySelector("#chartMiniOperaciones"), optionsMiniChart);
+        miniChart.render();
+    });
+</script>

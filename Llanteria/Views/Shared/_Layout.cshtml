@@ -4,47 +4,236 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Sistema Llantería</title>
+    
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Llanteria.styles.css" asp-append-version="true" />
+    
     <style>
-        html { scroll-behavior: smooth; scroll-padding-top: 75px; }
-        .nav-link:hover { color: #C92B0A !important; }
+            :root {
+                --llanteria-primary: #C92B0A;
+                --llanteria-dark: #09090B;
+                --llanteria-surface: #121214;
+                --llanteria-light: #FFFFFF;
+                --glass-nav-bg: rgba(9, 9, 11, 0.85);
+                --glass-nav-border: rgba(255, 255, 255, 0.08);
+            }
+
+            html {
+                scroll-behavior: smooth;
+                scroll-padding-top: 85px;
+            }
+
+            body {
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                background-color: #F8F9FA;
+                color: var(--llanteria-dark);
+            }
+
+            /* BARRA DE NAVEGACIÓN PREMIUM ESTILO MICHELIN PERFORMANCE */
+            .michelin-nav-global {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 1100;
+                background: var(--glass-nav-bg);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                border-bottom: 1px solid var(--glass-nav-border);
+                padding: 0.8rem 0;
+                transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            }
+
+            /* Nombre de la Marca Estético y Futurista */
+            .brand-matrix {
+                font-family: 'Orbitron', sans-serif;
+                font-weight: 900;
+                font-size: 1.35rem;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                color: var(--llanteria-light) !important;
+                text-decoration: none;
+                transition: transform 0.3s ease;
+            }
+
+                .brand-matrix span {
+                    color: var(--llanteria-primary);
+                    text-shadow: 0 0 15px rgba(201, 43, 10, 0.5);
+                }
+
+                .brand-matrix:hover {
+                    transform: scale(1.02);
+                }
+
+            /* Enlaces de Navegación con Efecto de Carga de Pista */
+            .nav-matrix-link {
+                color: rgba(255, 255, 255, 0.75) !important;
+                font-weight: 600;
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                padding: 0.5rem 1rem !important;
+                transition: all 0.3s ease;
+                position: relative;
+            }
+
+                .nav-matrix-link:hover {
+                    color: var(--llanteria-light) !important;
+                }
+
+                .nav-matrix-link::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -2px;
+                    left: 50%;
+                    width: 0;
+                    height: 2px;
+                    background-color: var(--llanteria-primary);
+                    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                    transform: translateX(-50%);
+                }
+
+                .nav-matrix-link:hover::after {
+                    width: 75%;
+                }
+
+            /* BOTONES DE ACCESO CLASIFICADOS */
+            .btn-matrix-outline {
+                color: var(--llanteria-light);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                background: transparent;
+                font-size: 0.8rem;
+                font-weight: 700;
+                letter-spacing: 0.5px;
+                transition: all 0.3s ease;
+            }
+
+                .btn-matrix-outline:hover {
+                    background: rgba(255, 255, 255, 0.08);
+                    border-color: var(--llanteria-light);
+                    color: var(--llanteria-light);
+                    transform: translateY(-1px);
+                }
+
+            .btn-matrix-action {
+                background: var(--llanteria-primary);
+                color: var(--llanteria-light);
+                border: none;
+                font-size: 0.8rem;
+                font-weight: 700;
+                letter-spacing: 0.5px;
+                box-shadow: 0 4px 12px rgba(201, 43, 10, 0.3);
+                transition: all 0.3s ease;
+            }
+
+                .btn-matrix-action:hover {
+                    background: #A62308;
+                    box-shadow: 0 6px 18px rgba(201, 43, 10, 0.5);
+                    color: var(--llanteria-light);
+                    transform: translateY(-1px);
+                }
+
+            /* DROPDOWN DE SEGURIDAD (ADMINISTRACIÓN / EMPLEADOS / CLIENTES) */
+            .user-matrix-avatar {
+                width: 40px;
+                height: 40px;
+                background: linear-gradient(135deg, var(--llanteria-primary) 0%, #801B06 100%);
+                color: var(--llanteria-light);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.1rem;
+                border: 2px solid rgba(255, 255, 255, 0.15);
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+
+                .user-matrix-avatar:hover {
+                    border-color: var(--llanteria-primary);
+                    box-shadow: 0 0 12px rgba(201, 43, 10, 0.4);
+                }
+
+            .dropdown-matrix-menu {
+                background: #121214 !important;
+                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                border-radius: 16px !important;
+                padding: 0.75rem !important;
+                box-shadow: 0 15px 35px rgba(0,0,0,0.5) !important;
+            }
+
+            .dropdown-matrix-item {
+                color: rgba(255, 255, 255, 0.75) !important;
+                font-size: 0.88rem;
+                font-weight: 500;
+                padding: 0.6rem 1rem !important;
+                border-radius: 10px;
+                transition: all 0.25s ease;
+            }
+
+                .dropdown-matrix-item:hover {
+                    background: rgba(255, 255, 255, 0.05) !important;
+                    color: var(--llanteria-light) !important;
+                }
+
+                .dropdown-matrix-item i {
+                    width: 22px;
+                    font-size: 1rem;
+                }
+
+            /* ESPACIADOR DE CONTROL GENERAL */
+            .main-matrix-container {
+                margin-top: 75px; /* Evita que la nav fija tape el contenido de las vistas internas */
+            }
+
+            /* FOOTER INDUSTRIAL RE-DISEÑADO */
+            .matrix-footer {
+                background: #09090B;
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+                font-size: 0.85rem;
+                color: rgba(255, 255, 255, 0.4) !important;
+            }
     </style>
 </head>
 <body>
-    <header class="sticky-top shadow-sm" style="z-index: 1050; background-color: #ffffff;">
-        <nav class="navbar navbar-expand-lg navbar-light bg-white py-2">
-            <div class="container-fluid px-4">
-                <a class="navbar-brand fw-bold text-dark me-4" asp-controller="Home" asp-action="Index">
-                    <i class="fa-solid fa-screwdriver-wrench text-danger me-2" style="color: #C92B0A !important;"></i>Llantería<span style="color: #C92B0A;">Valledupar</span>
+
+    <header>
+        <nav class="navbar navbar-expand-lg michelin-nav-global">
+            <div class="container px-4">
+                
+                <a class="brand-matrix d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                    <i class="fa-solid fa-radar me-2 text-danger" style="color: var(--llanteria-primary) !important; font-size: 1.15rem;"></i>Llantería<span>Valledupar</span>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                    <span class="navbar-toggler-icon"></span>
+
+                <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" style="box-shadow: none;">
+                    <i class="fa-solid fa-bars-staggered fs-4" style="color: var(--llanteria-light);"></i>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav mx-auto align-items-center gap-1">
-                        <li class="nav-item"><a class="nav-link fw-semibold px-3" href="/#inicio">Inicio</a></li>
-                        <li class="nav-item"><a class="nav-link fw-semibold px-3" href="/#categorias">Categorías</a></li>
-                        <li class="nav-item"><a class="nav-link fw-semibold px-3" href="/#nosotros">Nosotros</a></li>
-                        <li class="nav-item"><a class="nav-link fw-semibold px-3" href="/#promociones">Promociones</a></li>
-                        <li class="nav-item"><a class="nav-link fw-semibold px-3" href="/#servicios">Servicios</a></li>
-                        <li class="nav-item"><a class="nav-link fw-semibold px-3" href="/#productos">Productos</a></li>
-                        <li class="nav-item"><a class="nav-link fw-semibold px-3" asp-controller="Contacto" asp-action="Index">Contacto</a></li>
+                        <li class="nav-item"><a class="nav-link nav-matrix-link" href="/#inicio">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link nav-matrix-link" href="/#categorias">Categorías</a></li>
+                        <li class="nav-item"><a class="nav-link nav-matrix-link" href="/#nosotros">Nosotros</a></li>
+                        <li class="nav-item"><a class="nav-link nav-matrix-link" href="/#promociones">Promociones</a></li>
+                        <li class="nav-item"><a class="nav-link nav-matrix-link" href="/#servicios">Servicios</a></li>
+                        <li class="nav-item"><a class="nav-link nav-matrix-link" href="/#productos">Productos</a></li>
+                        <li class="nav-item"><a class="nav-link nav-matrix-link" asp-controller="Contacto" asp-action="Index">Contacto</a></li>
                     </ul>
 
-                    <ul class="navbar-nav ms-auto align-items-center gap-3 mt-2 mt-lg-0">
+                    <ul class="navbar-nav ms-auto align-items-center gap-2 mt-3 mt-lg-0">
                         @if (!User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="btn btn-outline-danger btn-sm fw-bold px-3 py-2 rounded-pill" asp-controller="Account" asp-action="Register">
-                                    <i class="fa-solid fa-star me-1"></i> ¡Gana Puntos!
+                                <a class="btn btn-matrix-outline px-3 py-2 rounded-pill" asp-controller="Account" asp-action="Register">
+                                    <i class="fa-solid fa-circle-dollar-to-slot me-1 text-danger"></i> ¡Gana Puntos!
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-dark btn-sm fw-bold px-3 py-2 rounded-pill" asp-controller="Account" asp-action="Login">
+                                <a class="btn btn-matrix-action px-3 py-2 rounded-pill" asp-controller="Account" asp-action="Login">
                                     <i class="fa-solid fa-right-to-bracket me-1"></i> Ingresar
                                 </a>
                             </li>
@@ -52,40 +241,41 @@
                         else
                         {
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center justify-content-center p-0" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <div class="d-flex align-items-center justify-content-center rounded-circle shadow-sm" style="width: 42px; height: 42px; background-color: #C92B0A; color: white;">
-                                        <i class="fa-solid fa-user-shield"></i>
+                                <a class="nav-link dropdown-toggle d-flex align-items-center justify-content-center p-0 data-toggle-clean" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="user-matrix-avatar shadow-sm">
+                                        <i class="fa-solid fa-user-gear"></i>
                                     </div>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" style="min-width: 220px;">
-                                    <li class="px-3 py-2 text-center">
-                                        <span class="d-block fw-bold text-dark small">@User.Identity.Name</span>
-                                        <span class="badge bg-light text-muted border">@(User.IsInRole("Administrador") ? "Administrador" : "Empleado")</span>
+                                <ul class="dropdown-menu dropdown-menu-end dropdown-matrix-menu mt-2 animate__animated animate__fadeInFast" style="min-width: 240px;">
+                                    <li class="px-3 py-2 text-center border-bottom border-secondary border-opacity-25 mb-2">
+                                        <span class="d-block fw-bold text-white small text-truncate">@User.Identity.Name</span>
+                                        <span class="badge bg-danger bg-opacity-20 text-danger border border-danger border-opacity-25 mt-1 px-2 py-1 style-role-badge">
+                                            @(User.IsInRole("Administrador") ? "⚙️ Administrador" : "💼 Personal Autorizado")
+                                        </span>
                                     </li>
-                                    <li><hr class="dropdown-divider"></li>
 
                                     @if (User.IsInRole("Administrador"))
                                     {
                                         <li>
-                                            <a class="dropdown-item py-2" asp-controller="Dashboard" asp-action="Index">
-                                                <i class="fa-solid fa-chart-line me-2 text-primary"></i> Panel de Control
+                                            <a class="dropdown-item dropdown-matrix-item" asp-controller="Dashboard" asp-action="Index">
+                                                <i class="fa-solid fa-chart-line text-info"></i> Panel de Control
                                             </a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item py-2" asp-controller="Log" asp-action="Index">
-                                                <i class="fa-solid fa-clipboard-list me-2 text-warning"></i> Registro Actividad
+                                            <a class="dropdown-item dropdown-matrix-item" asp-controller="Log" asp-action="Index">
+                                                <i class="fa-solid fa-shield-halved text-warning"></i> Registro Actividad
                                             </a>
                                         </li>
                                     }
                                     
                                     <li>
-                                        <a class="dropdown-item py-2" asp-controller="User" asp-action="Perfil">
-                                            <i class="fa-solid fa-user-gear me-2 text-muted"></i> Mi Perfil
+                                        <a class="dropdown-item dropdown-matrix-item" asp-controller="User" asp-action="Perfil">
+                                            <i class="fa-solid fa-id-card-clip text-muted"></i> Mi Perfil Técnico
                                         </a>
                                     </li>
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li><hr class="dropdown-divider border-secondary border-opacity-25"></li>
                                     <li>
-                                        <a class="dropdown-item text-danger py-2" asp-controller="Account" asp-action="Logout">
+                                        <a class="dropdown-item dropdown-matrix-item text-danger fw-bold" asp-controller="Account" asp-action="Logout">
                                             <i class="fa-solid fa-power-off me-2"></i> Cerrar Sesión
                                         </a>
                                     </li>
@@ -94,17 +284,18 @@
                         }
                     </ul>
                 </div>
+
             </div>
         </nav>
     </header>
 
-    <main role="main" class="pb-5" style="min-height: 80vh; background-color: #f8f9fa;">
+    <main role="main" class="main-matrix-container pb-0">
         @RenderBody()
     </main>
 
-    <footer class="border-top footer text-muted bg-white py-3">
-        <div class="container text-center">
-            &copy; 2026 - <strong>Llantería Valledupar</strong> - Gestión Profesional de Neumáticos y Servicios
+    <footer class="matrix-footer text-muted py-4 mt-0">
+        <div class="container text-center text-white-50">
+            &copy; 2026 - <strong style="color: var(--llanteria-light); font-family: 'Orbitron', sans-serif; font-size: 0.8rem; letter-spacing: 0.5px;">Llantería<span style="color: var(--llanteria-primary);">Valledupar</span></strong> - Núcleo de Ingeniería Avanzada de Neumáticos
         </div>
     </footer>
 
@@ -112,6 +303,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
