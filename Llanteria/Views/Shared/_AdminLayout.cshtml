@@ -7,28 +7,17 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <style>
-        body { background-color: #f4f6f9; }
-        .sidebar { min-height: 100vh; background-color: #2c3e50; color: white; width: 250px; position: fixed; z-index: 1000; }
-        .sidebar .nav-link { color: #bdc3c7; padding: 15px; border-bottom: 1px solid #34495e; transition: 0.3s; }
-        .sidebar .nav-link:hover, .sidebar .nav-link.active { background-color: #34495e; color: white; }
-        .main-content { margin-left: 250px; padding: 25px; }
-        .card { border-radius: 12px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            body {
+                background-color: #F8FAFC;
+                margin: 0;
+                padding: 0;
+            }
+            /* Eliminamos la barra fija y los márgenes viejos para que el Index use todo el ancho */
     </style>
 </head>
 <body>
-    <div class="sidebar d-flex flex-column">
-        <div class="p-3 text-center border-bottom border-secondary">
-            <h5 class="text-white mt-2"><i class="fa-solid fa-gauge-high me-2"></i>Admin Panel</h5>
-        </div>
-        <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Dashboard" ? "active" : "")" asp-controller="Dashboard" asp-action="Index"><i class="fa-solid fa-chart-line me-2"></i> Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Cliente" ? "active" : "")" asp-controller="Cliente" asp-action="Index"><i class="fa-solid fa-users me-2"></i> Clientes</a></li>
-            <li class="nav-item"><a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Producto" ? "active" : "")" asp-controller="Producto" asp-action="Index"><i class="fa-solid fa-box me-2"></i> Productos</a></li>
-            <li class="nav-item mt-auto"><a class="nav-link text-danger" asp-controller="Account" asp-action="Logout"><i class="fa-solid fa-power-off me-2"></i> Cerrar Sesión</a></li>
-        </ul>
-    </div>
 
-    <main class="main-content">
+    <main class="w-100">
         @RenderBody()
     </main>
 

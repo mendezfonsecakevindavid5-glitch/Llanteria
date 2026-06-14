@@ -27,6 +27,82 @@
         width: 100%;
     }
 
+    /* Panel Lateral Persistente Premium (El que te gusta) */
+    .sidebar-persistent {
+        position: sticky;
+        top: 24px;
+        height: calc(100vh - 48px);
+        background: #FFFFFF;
+        border: 1px solid var(--color-premium-border);
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    /* Foto de Perfil del Colaborador */
+    .admin-avatar-wrapper {
+        position: relative;
+        width: 90px;
+        height: 90px;
+        margin: 0 auto;
+    }
+
+    .admin-avatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #FFFFFF;
+        box-shadow: 0 4px 15px rgba(201, 43, 10, 0.2);
+    }
+
+    .status-indicator {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 14px;
+        height: 14px;
+        background-color: #10B981;
+        border: 2.5px solid #FFFFFF;
+        border-radius: 50%;
+    }
+
+    /* Navegación del Menú Lateral */
+    .nav-custom-link {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 1.2rem;
+        color: #4B5563;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 12px;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 0.25rem;
+    }
+
+    .nav-custom-link i {
+        width: 24px;
+        font-size: 1.1rem;
+        transition: transform 0.25s ease;
+    }
+
+    .nav-custom-link:hover {
+        background-color: rgba(201, 43, 10, 0.06);
+        color: var(--color-premium-red);
+    }
+
+    .nav-custom-link:hover i {
+        transform: scale(1.15);
+    }
+
+    .nav-custom-link.active-premium {
+        background: linear-gradient(135deg, var(--color-premium-dark) 0%, #222222 100%);
+        color: #FFFFFF !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
     /* Slider Cinemático */
     .dashboard-slider {
         width: 100%;
@@ -116,17 +192,86 @@
     .rounded-xl { border-radius: 16px !important; }
     .fw-black { font-weight: 900 !important; }
 
-    /* Animación del Carrusel */
-@@keyframes zoomCinematic {
-    from { transform: scale(1); }
-    to { transform: scale(1.08); }
-}
+    /* Doble @@ para evitar error de Razor */
+    @@keyframes zoomCinematic {
+        from { transform: scale(1); }
+        to { transform: scale(1.08); }
+    }
+
+    .sidebar-persistent::-webkit-scrollbar {
+        width: 5px;
+    }
+    .sidebar-persistent::-webkit-scrollbar-thumb {
+        background: #E5E7EB;
+        border-radius: 10px;
+    }
 </style>
 
 <div class="container-fluid py-4 px-lg-4 dashboard-wrapper">
     <div class="row g-4">
         
-        <div class="col-12">
+        <div class="col-md-4 col-xl-3 col-xxl-2">
+            <div class="sidebar-persistent p-3">
+                
+                <div class="text-center my-3">
+                    <div class="admin-avatar-wrapper mb-2">
+                        <img src="@(User.IsInRole("Administrador") ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" : "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80")" 
+                             class="admin-avatar" alt="Avatar Colaborador" />
+                        <div class="status-indicator"></div>
+                    </div>
+                    <h6 class="fw-bold m-0 text-dark">@User.Identity?.Name</h6>
+                    <span class="badge rounded-pill mt-1 px-3 py-1 text-uppercase fw-bold" 
+                          style="font-size: 0.65rem; background-color: rgba(201, 43, 10, 0.1); color: var(--color-premium-red);">
+                        @(User.IsInRole("Administrador") ? "Administrador" : "Empleado")
+                    </span>
+                </div>
+                
+                <hr class="text-muted opacity-25 my-2">
+                
+                <div class="nav flex-column gap-1 flex-grow-1">
+                    <a class="nav-custom-link active-premium" asp-controller="Dashboard" asp-action="Index">
+                        <i class="fa-solid fa-chart-pie me-3"></i>Inicio Panel
+                    </a>
+
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <a class="nav-custom-link" asp-controller="Producto" asp-action="Index">
+                            <i class="fa-solid fa-box me-3"></i>Inventario
+                        </a>
+                        <a class="nav-custom-link" asp-controller="Bodega" asp-action="Index">
+                            <i class="fa-solid fa-warehouse me-3"></i>Bodegas
+                        </a>
+                        <a class="nav-custom-link" asp-controller="Proveedore" asp-action="Index">
+                            <i class="fa-solid fa-industry me-3"></i>Proveedores
+                        </a>
+                        <a class="nav-custom-link" asp-controller="Marca" asp-action="Index">
+                            <i class="fa-solid fa-tags me-3"></i>Marcas
+                        </a>
+                        <a class="nav-custom-link" asp-controller="Log" asp-action="Index">
+                            <i class="fa-solid fa-clipboard-list me-3"></i>Logs Actividad
+                        </a>
+                        <a class="nav-custom-link" asp-controller="Empleado" asp-action="Index">
+                            <i class="fa-solid fa-id-card me-3"></i>Empleados
+                        </a>
+                    }
+
+                    <a class="nav-custom-link" asp-controller="Factura" asp-action="Index">
+                        <i class="fa-solid fa-file-invoice-dollar me-3"></i>Ventas
+                    </a>
+                    <a class="nav-custom-link" asp-controller="Cliente" asp-action="Index">
+                        <i class="fa-solid fa-users me-3"></i>Clientes
+                    </a>
+                </div>
+
+                <div class="mt-auto pt-3 border-top border-light">
+                    <a class="nav-custom-link text-danger mb-0" style="background-color: rgba(239, 68, 68, 0.05);" asp-controller="Account" asp-action="Logout">
+                        <i class="fa-solid fa-arrow-right-from-bracket me-3"></i>Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8 col-xl-9 col-xxl-10">
             
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                 <div>
@@ -270,7 +415,7 @@
                     <div class="card border-0 shadow-sm rounded-xl p-4 bg-white border mb-4" style="border-left: 5px solid #EAB308 !important;">
                         <h6 class="fw-bold mb-3 text-warning"><i class="fa-solid fa-triangle-exclamation me-2"></i>Nivel Crítico de Inventario</h6>
                         <div class="alert alert-warning border-0 bg-warning bg-opacity-10 small rounded-3 text-dark mb-3">
-                            Currently, <strong>@ViewBag.ProductosBajos</strong> references are below the configured minimum threshold.
+                            Actualmente se detectan <strong>@ViewBag.ProductosBajos</strong> referencias de llantas por debajo del umbral mínimo configurado.
                         </div>
                         <a asp-controller="Producto" asp-action="Index" class="btn btn-outline-warning btn-sm w-100 fw-bold py-2 rounded-3">Aprovisionar Almacén</a>
                     </div>
@@ -304,7 +449,6 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         
-        // Inicialización de Carrusel Cinematográfico de Alta Gama
         const swiper = new Swiper('.dashboard-slider', {
             loop: true,
             effect: 'fade',
@@ -320,7 +464,6 @@
             }
         });
 
-        // Configuración del Gráfico Lineal de Flujo Financiero
         var optionsVentas = {
             chart: {
                 type: 'area',
@@ -357,7 +500,6 @@
         var chartVentas = new ApexCharts(document.querySelector("#chartVentasFlujo"), optionsVentas);
         chartVentas.render();
 
-        // Configuración de Gráfico Radial de Eficiencia Operativa
         var optionsMiniChart = {
             chart: { type: 'radialBar', height: 180, sparkline: { enabled: true } },
             plotOptions: {
