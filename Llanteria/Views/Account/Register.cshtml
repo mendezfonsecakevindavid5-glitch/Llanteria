@@ -1,0 +1,86 @@
+﻿@model Llanteria.Models.Cliente
+
+@{
+    ViewData["Title"] = "¡Gana Puntos de Beneficio!";
+}
+
+<div class="row justify-content-center pt-4">
+    <div class="col-md-7 col-lg-6">
+        <div class="card border-0 shadow-sm rounded-xl p-4 bg-white">
+            <div class="text-center mb-4">
+                <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-circle d-inline-block mb-2">
+                    <i class="fa-solid fa-star-half-stroke fa-2xl"></i>
+                </div>
+                <h4 class="fw-bold text-dark m-0">Club Llantería Premium</h4>
+                <p class="text-muted small">Regístrate hoy y recibe de inmediato <span class="badge bg-success fw-bold">50 Puntos</span> de bienvenida.</p>
+            </div>
+
+            <form asp-controller="Account" asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+                
+                <div asp-validation-summary="All" class="alert alert-danger font-sm border-0 py-2 rounded-3" role="alert"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="IdDocumento" class="form-label fw-bold text-muted small text-uppercase">Tipo de Documento</label>
+                        <select asp-for="IdDocumento" class="form-select" asp-items="ViewBag.IdDocumento" required>
+                            <option value="">-- Seleccione --</option>
+                        </select>
+                        <span asp-validation-for="IdDocumento" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="NumeroDocumento" class="form-label fw-bold text-muted small text-uppercase">Nro. Documento</label>
+                        <input asp-for="NumeroDocumento" class="form-control" type="text" required />
+                        <span asp-validation-for="NumeroDocumento" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Nombres" class="form-label fw-bold text-muted small text-uppercase">Nombres</label>
+                        <input asp-for="Nombres" class="form-control" type="text" required />
+                        <span asp-validation-for="Nombres" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Apellidos" class="form-label fw-bold text-muted small text-uppercase">Apellidos</label>
+                        <input asp-for="Apellidos" class="form-control" type="text" required />
+                        <span asp-validation-for="Apellidos" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Telefono" class="form-label fw-bold text-muted small text-uppercase">Celular / Teléfono</label>
+                        <input asp-for="Telefono" class="form-control" type="tel" required />
+                        <span asp-validation-for="Telefono" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="IdSexo" class="form-label fw-bold text-muted small text-uppercase">Sexo / Género</label>
+                        <select asp-for="IdSexo" class="form-select" asp-items="ViewBag.IdSexo" required>
+                            <option value="">-- Seleccione --</option>
+                        </select>
+                        <span asp-validation-for="IdSexo" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Correo" class="form-label fw-bold text-muted small text-uppercase">Correo Electrónico</label>
+                        <input asp-for="Correo" class="form-control" type="email" placeholder="nombre@ejemplo.com" required />
+                        <span asp-validation-for="Correo" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-dark py-2 text-uppercase fw-bold shadow-sm rounded-3">
+                        Unirme y Ganar mis Puntos
+                    </button>
+                    <a href="/" class="btn btn-link btn-sm text-muted text-decoration-none mt-2 text-center">Volver al Inicio</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

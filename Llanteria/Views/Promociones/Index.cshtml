@@ -1,0 +1,204 @@
+﻿<style>
+    /* COMPONENTE DE ALTA INGENIERÍA - PROMOCIONES NEO-DARK */
+    .promos-cyber-section {
+        background: linear-gradient(180deg, #09090B 0%, #121214 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Líneas de cuadrícula tecnológica de fondo */
+    .promos-cyber-section::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: 
+            linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 40px 40px;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    /* Brillo difuso de fondo estilo competición */
+    .ambient-red-glow {
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(201, 43, 10, 0.15) 0%, rgba(0,0,0,0) 70%);
+        top: -10%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    /* Tarjeta Holográfica / Glassmorphism de Oferta */
+    .cyber-promo-card {
+        background: rgba(22, 22, 26, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 24px;
+        padding: 2.5rem 2rem;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        z-index: 2;
+        overflow: hidden;
+    }
+
+    .cyber-promo-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--llanteria-primary);
+        box-shadow: 0 20px 40px rgba(201, 43, 10, 0.15);
+    }
+
+    /* Indicador de badge premium integrado */
+    .promo-status-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.65rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        background: rgba(201, 43, 10, 0.15);
+        color: #FF4D2A;
+        border: 1px solid rgba(201, 43, 10, 0.3);
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+    }
+
+    /* Línea decorativa reactiva de la tarjeta */
+    .card-tech-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--llanteria-primary);
+        opacity: 0.5;
+        transition: opacity 0.3s;
+    }
+
+    .cyber-promo-card:hover .card-tech-line {
+        opacity: 1;
+        box-shadow: 0 0 15px var(--llanteria-primary);
+    }
+
+    /* Títulos con tipografía técnica */
+    .font-tech-title {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .price-strike {
+        font-size: 0.9rem;
+        text-decoration: line-through;
+        color: rgba(255, 255, 255, 0.4);
+    }
+</style>
+
+<section id="promociones" class="py-5 promos-cyber-section text-white position-relative">
+    <div class="ambient-red-glow"></div>
+    
+    <div class="container py-5 position-relative" style="z-index: 5;">
+        
+        <div class="text-center mb-5" data-aos="fade-down">
+            <span class="badge bg-danger text-uppercase px-3 py-2 rounded-pill fw-bold mb-3 animate__animated animate__pulse animate__infinite" 
+                  style="background-color: var(--llanteria-primary) !important; font-size: 0.75rem; letter-spacing: 1px;">
+                Campañas de Alto Rendimiento
+            </span>
+            <h2 class="fw-black text-uppercase text-white m-0 display-5" style="font-family: 'Orbitron', sans-serif; letter-spacing: 1px;">
+                Beneficios <span style="color: var(--llanteria-primary);">Exclusivos</span> del Mes
+            </h2>
+            <p class="lead text-white-50 max-width-600 mx-auto mt-2 small" style="font-size: 0.95rem;">
+                Optimiza los costes de tu vehículo con ingeniería de punta y promociones sujetas a disponibilidad de stock.
+            </p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="cyber-promo-card h-100 d-flex flex-column justify-content-between">
+                    <div class="card-tech-line"></div>
+                    <div class="promo-status-badge">Cupos Limitados</div>
+                    
+                    <div class="mb-4">
+                        <div class="text-start mb-3 text-primary-llanteria fs-4" style="color: var(--llanteria-primary);">
+                            <i class="fa-solid fa-gears"></i>
+                        </div>
+                        <h4 class="font-tech-title text-white mb-2">Combo Ingeniería 4x4</h4>
+                        <p class="text-white-50 small text-justify lh-base">
+                            Por la adquisición de un juego completo de **4 llantas** (cualquier marca o rin), el laboratorio automotriz te obsequia el servicio técnico de **alineación computarizada 3D** y el **balanceo láser** sin costo adicional.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="price-strike">Antes $120.000</span>
+                            <span class="badge bg-success bg-opacity-25 text-success fw-bold">¡GRATIS!</span>
+                        </div>
+                        <a href="#contacto" class="btn btn-hyper-action w-100 py-2.5 btn-sm text-uppercase">Agendar Escaneo</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="cyber-promo-card h-100 d-flex flex-column justify-content-between">
+                    <div class="card-tech-line"></div>
+                    <div class="promo-status-badge">-25% OFF</div>
+                    
+                    <div class="mb-4">
+                        <div class="text-start mb-3 text-primary-llanteria fs-4" style="color: var(--llanteria-primary);">
+                            <i class="fa-solid fa-gauge-high"></i>
+                        </div>
+                        <h4 class="font-tech-title text-white mb-2">Gama de Competición</h4>
+                        <p class="text-white-50 small text-justify lh-base">
+                            Equipa tu vehículo con marcas de rendimiento mundial (**Michelin y Bridgestone**). Obtén una deducción directa en factura del **25% en la segunda unidad** de referencias seleccionadas para asfalto húmedo y terreno mixto.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="text-white-50 small">Válido hasta agotar existencias físicas.</span>
+                        </div>
+                        <a href="#contacto" class="btn btn-hyper-action w-100 py-2.5 btn-sm text-uppercase">Ver Catálogo</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="cyber-promo-card h-100 d-flex flex-column justify-content-between">
+                    <div class="card-tech-line"></div>
+                    <div class="promo-status-badge">100% Digital</div>
+                    
+                    <div class="mb-4">
+                        <div class="text-start mb-3 text-primary-llanteria fs-4" style="color: var(--llanteria-primary);">
+                            <i class="fa-solid fa-car-on"></i>
+                        </div>
+                        <h4 class="font-tech-title text-white mb-2">Auditoría de Suspensión</h4>
+                        <p class="text-white-50 small text-justify lh-base">
+                            Conduce sin dudas. Agenda tu cita previa a través de nuestro portal web y accede a un **diagnóstico integral preventivo de suspensión, frenado y desgaste milimétrico de rines** de forma completamente gratuita.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="price-strike">Precio normal: $45.000</span>
+                        </div>
+                        <a href="#contacto" class="btn btn-hyper-action w-100 py-2.5 btn-sm text-uppercase">Solicitar Diagnóstico</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="400">
+            <p class="text-muted small m-0">
+                <i class="fa-solid fa-circle-info text-danger me-1"></i> Términos y condiciones aplicables. Los valores no son acumulables con otras campañas vigentes en la sucursal de Valledupar.
+            </p>
+        </div>
+
+    </div>
+</section>

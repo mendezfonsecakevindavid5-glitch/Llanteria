@@ -1,0 +1,71 @@
+﻿@model Llanteria.Models.Vehiculo
+
+@{
+    ViewData["Title"] = "Nuevo Vehículo";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <!-- TARJETA DE REGISTRO -->
+            <div class="card border-0 shadow-sm rounded-xl">
+                <div class="card-header bg-white border-bottom p-4">
+                    <h4 class="fw-black text-dark m-0"><i class="fa-solid fa-car-side text-primary me-2"></i>Registrar Vehículo</h4>
+                    <p class="text-muted small m-0 mt-1">Ingresa los datos del nuevo vehículo y asígnalo a un cliente.</p>
+                </div>
+
+                <form asp-action="Create" class="p-4">
+                    <div class="mb-4">
+                        <label asp-for="Placa" class="form-label fw-bold text-uppercase small">Placa</label>
+                        <input asp-for="Placa" class="form-control form-control-lg bg-light border-0" placeholder="Ej: ABC-123" required />
+                        <span asp-validation-for="Placa" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="Marca" class="form-label fw-bold text-uppercase small">Marca</label>
+                            <input asp-for="Marca" class="form-control border-0 bg-light" placeholder="Ej: Toyota" />
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="Modelo" class="form-label fw-bold text-uppercase small">Modelo</label>
+                            <input asp-for="Modelo" class="form-control border-0 bg-light" placeholder="Ej: Hilux 2024" />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="IdCliente" class="form-label fw-bold text-uppercase small">Cliente Asignado</label>
+                        <select asp-for="IdCliente" class="form-select border-0 bg-light" asp-items="ViewBag.IdCliente" required>
+                            <option value="">-- Seleccione Cliente --</option>
+                        </select>
+                        <span asp-validation-for="IdCliente" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4 py-2 rounded-3 fw-bold">Volver</a>
+                        <button type="submit" class="btn btn-primary px-4 py-2 rounded-3 fw-bold shadow-sm">
+                            <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Vehículo
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-xl {
+        border-radius: 20px !important;
+    }
+
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+        border-color: #0d6efd;
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,63 @@
+﻿@model Llanteria.Models.Vehiculo
+
+@{
+    ViewData["Title"] = "Editar Vehículo";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <!-- TARJETA DE EDICIÓN -->
+            <div class="card border-0 shadow-sm rounded-xl">
+                <div class="card-header bg-white border-bottom p-4">
+                    <h4 class="fw-black text-dark m-0"><i class="fa-solid fa-car-side text-primary me-2"></i>Editar Vehículo</h4>
+                    <p class="text-muted small m-0 mt-1">Modifica los detalles del vehículo y actualiza su propietario.</p>
+                </div>
+
+                <form asp-action="Edit" class="p-4">
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="mb-4">
+                        <label asp-for="Placa" class="form-label fw-bold text-uppercase small">Placa</label>
+                        <input asp-for="Placa" class="form-control form-control-lg bg-light border-0" placeholder="Ej: ABC-123" />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="Marca" class="form-label fw-bold text-uppercase small">Marca</label>
+                            <input asp-for="Marca" class="form-control border-0 bg-light" />
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="Modelo" class="form-label fw-bold text-uppercase small">Modelo</label>
+                            <input asp-for="Modelo" class="form-control border-0 bg-light" />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="IdCliente" class="form-label fw-bold text-uppercase small">Propietario / Cliente</label>
+                        <select asp-for="IdCliente" class="form-select border-0 bg-light" asp-items="ViewBag.IdCliente"></select>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4 py-2 rounded-3 fw-bold">Cancelar</a>
+                        <button type="submit" class="btn btn-dark px-4 py-2 rounded-3 fw-bold">
+                            <i class="fa-solid fa-save me-2"></i>Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-xl {
+        border-radius: 20px !important;
+    }
+
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+        border-color: #0d6efd;
+    }
+</style>

@@ -1,0 +1,218 @@
+﻿@{
+    ViewData["Title"] = "Ingreso al Sistema";
+}
+
+<style>
+    /* Contenedor principal */
+    .login-container-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 250px);
+        padding: 2rem 1rem;
+    }
+
+    /* Tarjeta con animación de entrada única */
+    .entrance-login-card {
+        background-color: #ffffff;
+        width: 100%;
+        max-width: 480px;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
+        animation: slideUpEntrance 0.6s ease-out forwards;
+        opacity: 0;
+    }
+
+    @@keyframes slideUpEntrance {
+        0% {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* Títulos y Descripciones */
+    .form-main-title {
+        font-size: 1.7rem; /* Fuente aumentada */
+        font-weight: 800;
+        color: #000000;
+    }
+
+    .form-description {
+        font-size: 1.1rem; /* Fuente aumentada */
+        color: #555555;
+        margin-top: 1.2rem; /* Separación aumentada debajo del título */
+        margin-bottom: 2rem; /* Separación extra antes de los campos */
+    }
+
+    .custom-field-label {
+        display: block;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #000000;
+        text-align: left;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Campos */
+    .custom-input-group {
+        height: 55px;
+    }
+
+        .custom-input-group .form-control {
+            font-size: 1.1rem;
+            border: 1px solid #ced4da;
+            border-left: none;
+            border-top-right-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+        }
+
+            .custom-input-group .form-control:focus {
+                border-color: #ced4da;
+                box-shadow: none;
+            }
+
+    .input-icon-text {
+        background-color: #ffffff;
+        border: 1px solid #ced4da;
+        border-right: none;
+        border-top-left-radius: 0.5rem;
+        border-bottom-left-radius: 0.5rem;
+        color: #000000;
+        padding: 0 1rem;
+        display: flex;
+        align-items: center;
+        font-size: 1.2rem;
+    }
+
+    /* Botón Ojo */
+    .password-toggle-btn {
+        background: transparent;
+        border: none;
+        color: #000000;
+        font-size: 1.4rem;
+        padding: 0;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+    }
+
+    /* Botón Ingresar */
+    .btn-login-submit {
+        background-color: #E60000;
+        color: #ffffff;
+        border: none;
+        font-size: 1.05rem;
+        transition: background-color 0.3s ease, opacity 0.3s ease;
+    }
+
+        .btn-login-submit:disabled {
+            background-color: #8B0000;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+    /* Pie de página */
+    .footer-link-container {
+        font-size: 1.05rem; /* Fuente aumentada ligeramente */
+    }
+</style>
+
+<div class="login-container-wrapper">
+    <div class="entrance-login-card border-0">
+        <div class="text-center mb-4">
+
+            <div class="d-flex align-items-center justify-content-center">
+                <i class="fa-solid fa-lock fa-xl me-3" style="color: #000000;"></i>
+                <h4 class="form-main-title m-0">Formulario de ingreso</h4>
+            </div>
+
+            <p class="form-description fw-bold">Por favor, ingrese sus credenciales para continuar</p>
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger border-0 py-2 text-center rounded-3 shadow-sm mb-3" role="alert">
+                <small><i class="fa-solid fa-triangle-exclamation me-1"></i> @ViewBag.Error</small>
+            </div>
+        }
+
+        <form id="loginForm" asp-action="Login" method="post">
+            <div class="d-flex align-items-end mb-4">
+                <div class="me-3" style="width: 25px;"></div>
+                <div class="flex-grow-1">
+                    <label class="custom-field-label">Usuario</label>
+                    <div class="input-group custom-input-group">
+                        <span class="input-icon-text"><i class="fa-regular fa-user"></i></span>
+                        <input type="text" name="username" class="form-control" required />
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-end mb-4">
+                <div class="me-3 pb-2 d-flex justify-content-center" style="width: 25px;">
+                    <button type="button" id="togglePasswordBtn" class="password-toggle-btn">
+                        <i id="eyeIcon" class="fa-regular fa-eye-slash"></i>
+                    </button>
+                </div>
+                <div class="flex-grow-1">
+                    <label class="custom-field-label">Contraseña</label>
+                    <div class="input-group custom-input-group">
+                        <span class="input-icon-text"><i class="fa-regular fa-key"></i></span>
+                        <input type="password" id="passwordInput" name="password" class="form-control" required />
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-end mb-4 mt-5">
+                <div class="me-3" style="width: 25px;"></div>
+                <div class="flex-grow-1 d-grid">
+                    <button type="submit" id="submitBtn" class="btn py-3 fw-bold text-uppercase rounded-3 shadow-sm btn-login-submit">
+                        Ingresar
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div class="text-center mt-3 border-top pt-3 footer-link-container">
+            <span class="text-muted">¿No tienes cuenta?</span>
+            <a asp-controller="Account" asp-action="Register" class="text-danger fw-bold text-decoration-none ms-2">Regístrate aquí</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleBtn = document.getElementById('togglePasswordBtn');
+            const passwordInput = document.getElementById('passwordInput');
+            const eyeIcon = document.getElementById('eyeIcon');
+            let isCooldownActivo = false;
+
+            toggleBtn.addEventListener('click', function () {
+                if (isCooldownActivo) return;
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    eyeIcon.classList.remove('fa-eye-slash');
+                    eyeIcon.classList.add('fa-eye');
+                } else {
+                    passwordInput.type = 'password';
+                    eyeIcon.classList.remove('fa-eye');
+                    eyeIcon.classList.add('fa-eye-slash');
+                }
+                isCooldownActivo = true;
+                toggleBtn.style.opacity = '0.4';
+                toggleBtn.style.cursor = 'wait';
+                setTimeout(() => { isCooldownActivo = false; toggleBtn.style.opacity = '1'; toggleBtn.style.cursor = 'pointer'; }, 7000);
+            });
+
+            document.getElementById('loginForm').addEventListener('submit', function () {
+                document.getElementById('submitBtn').disabled = true;
+            });
+        });
+    </script>
+}

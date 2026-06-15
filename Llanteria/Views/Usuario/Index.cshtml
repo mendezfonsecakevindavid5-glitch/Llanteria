@@ -1,0 +1,70 @@
+﻿@model IEnumerable<Llanteria.Models.Usuario>
+
+@{
+    ViewData["Title"] = "Gestión de Usuarios";
+}
+
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="fa-solid fa-user-shield"></i> Usuarios del Sistema</h4>
+        <a asp-action="Create" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-user-plus"></i> Nuevo Usuario
+        </a>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Username</th>
+                    <th>Rol</th>
+                    <th>Empleado</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><strong>@item.Username</strong></td>
+                        <td>@item.IdRolNavigation?.NombreRol</td>
+                        <td>@item.IdEmpleadoNavigation?.Nombres @item.IdEmpleadoNavigation?.Apellidos</td>
+                        <td class="text-center">
+                            <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger")">
+                                @item.Estado
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                <i class="fa-solid fa-user-pen"></i>
+                            </a>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminar(@item.Id, '@item.Username')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmarEliminar(id, user) {
+            Swal.fire({
+                title: '¿Eliminar acceso?',
+                text: "Se borrará la cuenta de: " + user,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Usuario/Delete/' + id;
+                }
+            })
+        }
+    </script>
+}

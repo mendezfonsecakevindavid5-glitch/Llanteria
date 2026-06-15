@@ -1,0 +1,346 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Sistema Llantería</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Llanteria.styles.css" asp-append-version="true" />
+
+    <style>
+            :root {
+                --llanteria-primary: #C92B0A;
+                --llanteria-dark: #09090B;
+                --llanteria-light: #FFFFFF;
+                --glass-nav-bg: rgba(201, 43, 10, 0.95);
+            }
+
+            /* Configuración para forzar el footer al final de la pantalla */
+            html, body {
+                height: 100%;
+                margin: 0;
+            }
+
+            body {
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                background-color: #F8F9FA;
+                color: var(--llanteria-dark);
+                display: flex;
+                flex-direction: column;
+            }
+
+            .michelin-nav-global {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 1100;
+                background: var(--glass-nav-bg);
+                backdrop-filter: blur(16px);
+                padding: 1.25rem 0;
+                box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            }
+
+            .brand-matrix {
+                font-family: 'Orbitron', sans-serif;
+                font-weight: 900;
+                text-transform: uppercase;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+            .nav-matrix-link {
+                color: #FFFFFF !important;
+                font-weight: 600;
+                font-size: 1.05rem;
+                padding: 0.5rem 0.65rem !important;
+                cursor: pointer;
+                position: relative;
+            }
+
+                .nav-matrix-link::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 0;
+                    height: 2px;
+                    background: #FFFFFF;
+                    transition: width 0.2s ease-out;
+                }
+
+                .nav-matrix-link:hover::after {
+                    width: 100%;
+                }
+
+                .nav-matrix-link:hover,
+                .nav-matrix-link:focus {
+                    background-color: transparent !important;
+                    color: var(--llanteria-light) !important;
+                    box-shadow: none !important;
+                }
+
+            /* Estilos del Botón con Brillo */
+            .btn-matrix-action {
+                background: #000000 !important;
+                color: #FFFFFF !important;
+                border: 1px solid #000000 !important;
+                padding: 0.4rem 1.4rem;
+                position: relative;
+                overflow: hidden;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+                /* Forzar colores constantes al hacer clic */
+                .btn-matrix-action:active,
+                .btn-matrix-action:focus,
+                .btn-matrix-action:visited {
+                    background: #000000 !important;
+                    border-color: #000000 !important;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+                    transform: none !important;
+                }
+
+                .btn-matrix-action:hover {
+                    background: #1a1a1c !important;
+                    transform: translateY(-2px);
+                }
+
+                /* Animación de Brillo (Línea Blanca) */
+                .btn-matrix-action::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 50%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+                    transform: skewX(-25deg);
+                    z-index: 1;
+                    pointer-events: none;
+                }
+
+            .animate-shine::before {
+                animation: shine-slide 0.6s ease-in-out forwards;
+            }
+
+            @@keyframes shine-slide {
+                0% {
+                    left: -100%;
+                }
+
+                100% {
+                    left: 200%;
+                }
+            }
+
+            /* Bloqueo de clics */
+            .click-disabled {
+                pointer-events: none !important;
+                opacity: 0.8;
+                cursor: not-allowed !important;
+            }
+
+            /* Contenedor principal flex para empujar el footer */
+            .main-matrix-container {
+                margin-top: 85px; /* Espaciado para el navbar fijo */
+                flex: 1 0 auto;
+                padding-bottom: 2rem;
+            }
+
+            /* Estilos del nuevo Footer Oscuro */
+            .matrix-footer {
+                flex-shrink: 0;
+                background: #000000; /* Color negro solicitado */
+                border-top: 1px solid rgba(255, 255, 255, 0.1); /* Ajustado para que resalte sobre negro */
+                color: var(--llanteria-light);
+            }
+
+            .footer-heading {
+                font-family: 'Orbitron', sans-serif;
+                font-weight: 700;
+                font-size: 1.4rem; /* Fuente aumentada */
+                color: #FFFFFF; /* Títulos en color blanco */
+                margin-bottom: 1.2rem;
+            }
+
+            .footer-links {
+                padding: 0;
+                list-style: none;
+            }
+
+                .footer-links li {
+                    margin-bottom: 0.8rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+            /* Ajuste para que los iconos se alineen mejor en pantallas pequeñas y grandes */
+            @@media (min-width: 768px) {
+                .footer-links li {
+                    justify-content: flex-start;
+                }
+            }
+
+            /* Elementos del footer que ya no son enlaces interactivos */
+            .footer-links span {
+                color: #FFFFFF; /* Valores en blanco */
+                font-weight: 500;
+                font-size: 0.95rem;
+                /* Eliminadas las transiciones, el cursor pointer y los colores de hover */
+            }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar navbar-expand-lg michelin-nav-global">
+            <div class="container-fluid px-4 px-lg-5">
+
+                <a class="brand-matrix d-flex align-items-center me-lg-5 header-interactable" asp-controller="Home" asp-action="Index">
+                    <i class="fa-solid fa-radar me-3" style="color: var(--llanteria-light); font-size: 1.8rem;"></i>
+                    <div class="d-flex flex-column text-start">
+                        <span style="color:white; font-size: 1.45rem;">LLantería</span>
+                        <span style="color:rgba(255,255,255,0.9); font-size: 0.85rem;">Valledupar</span>
+                    </div>
+                </a>
+
+                <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                    <i class="fa-solid fa-bars-staggered fs-4"></i>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto align-items-center gap-1">
+                        <li class="nav-item"><a class="nav-link nav-matrix-link header-interactable" href="/#inicio">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link nav-matrix-link header-interactable" href="/#categorias">Categorías</a></li>
+                        <li class="nav-item"><a class="nav-link nav-matrix-link header-interactable" href="/#nosotros">Nosotros</a></li>
+                        <li class="nav-item"><a class="nav-link nav-matrix-link header-interactable" href="/#promociones">Promociones</a></li>
+                        <li class="nav-item"><a class="nav-link nav-matrix-link header-interactable" href="/#servicios">Servicios</a></li>
+                        <li class="nav-item"><a class="nav-link nav-matrix-link header-interactable" href="/#productos">Productos</a></li>
+                        <li class="nav-item"><a class="nav-link nav-matrix-link header-interactable" asp-controller="Contacto" asp-action="Index">Contacto</a></li>
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto align-items-center gap-4 mt-3 mt-lg-0">
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link nav-matrix-link header-interactable" asp-controller="Account" asp-action="Register">Puntos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-matrix-action rounded-pill header-interactable" asp-controller="Account" asp-action="Login">
+                                    Iniciar sesión
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main" class="main-matrix-container">
+        @RenderBody()
+    </main>
+
+    <!-- FOOTER MODIFICADO -->
+    <footer class="matrix-footer py-5">
+        <div class="container">
+            <!-- Sistema de 4 Columnas -->
+            <div class="row text-center text-md-start mb-4">
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <h5 class="footer-heading">Garantías</h5>
+                    <ul class="footer-links">
+                        <!-- Reemplazados los tags <a> por <span> para eliminar navegación y efectos -->
+                        <li><span>Políticas de Devolución</span></li>
+                        <li><span>Términos de Garantía</span></li>
+                        <li><span>Registro de Neumáticos</span></li>
+                        <li><span>Soporte Post-venta</span></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <h5 class="footer-heading">Comunidad</h5>
+                    <ul class="footer-links">
+                        <li><span>Eventos Locales</span></li>
+                        <li><span>Club de Beneficios</span></li>
+                        <li><span>Blog y Consejos</span></li>
+                        <li><span>Testimonios</span></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <h5 class="footer-heading">Productos</h5>
+                    <ul class="footer-links">
+                        <li><span>Catálogo Completo</span></li>
+                        <li><span>Llantas para Auto</span></li>
+                        <li><span>Llantas para Camioneta</span></li>
+                        <li><span>Accesorios</span></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <h5 class="footer-heading">Contacto</h5>
+                    <ul class="footer-links">
+                        <!-- Datos reales y representativos con íconos blancos -->
+                        <li><span><i class="fa-solid fa-location-dot me-2 text-white"></i>Cra. 19 # 14-25, Valledupar</span></li>
+                        <li><span><i class="fa-solid fa-phone-volume me-2 text-white"></i>+57 320 123 4567</span></li>
+                        <li><span><i class="fa-solid fa-envelope-circle-check me-2 text-white"></i>soporte@llanteria.com</span></li>
+                        <li><span><i class="fa-solid fa-clock me-2 text-white"></i>Lun - Sáb: 8:00 AM - 6:00 PM</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="mb-4" style="border-color: rgba(255,255,255,0.2);">
+
+            <!-- Nombre del proyecto centrado y alineado horizontalmente -->
+            <div class="text-center">
+                <a class="brand-matrix d-inline-flex align-items-center justify-content-center text-decoration-none mb-2" asp-controller="Home" asp-action="Index">
+                    <i class="fa-solid fa-radar me-2" style="color: var(--llanteria-primary); font-size: 1.6rem;"></i>
+                    <span style="color: #FFFFFF; font-size: 1.4rem; margin-right: 6px;">LLantería</span>
+                    <span style="color: var(--llanteria-primary); font-size: 1.4rem;">Valledupar</span>
+                </a>
+                <!-- Texto debajo del nombre en color blanco -->
+                <p class="text-white small mb-0">&copy; 2026 - Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const interactables = document.querySelectorAll('.header-interactable');
+
+                interactables.forEach(element => {
+                    element.addEventListener("click", function (e) {
+
+                        // 1. Si ya está bloqueado, ignorar el clic
+                        if (this.classList.contains("click-disabled")) {
+                            e.preventDefault();
+                            return;
+                        }
+
+                        // 2. Bloquear temporalmente
+                        this.classList.add("click-disabled");
+
+                        // 3. Activar animación si es el botón principal
+                        if (this.classList.contains("btn-matrix-action")) {
+                            this.classList.add("animate-shine");
+                        }
+
+                        // 4. RESTAURAR el botón después de 800 milisegundos.
+                        // Esto permite que los enlaces de una misma página (como #inicio)
+                        // se puedan volver a presionar más tarde sin quedarse inútiles.
+                        setTimeout(() => {
+                            this.classList.remove("click-disabled");
+                            this.classList.remove("animate-shine"); // Resetea la animación
+                        }, 800);
+                    });
+                });
+            });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

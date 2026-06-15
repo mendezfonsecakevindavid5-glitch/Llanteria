@@ -1,0 +1,46 @@
+﻿@model Llanteria.Models.CatalogoIncentivo
+
+@{
+    ViewData["Title"] = "Editar Incentivo";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow border-0">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0">Actualizar Datos del Premio</h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Edit">
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="NombrePremio" class="form-label fw-bold">Nombre</label>
+                        <input asp-for="NombrePremio" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Descripcion" class="form-label fw-bold">Descripción</label>
+                        <textarea asp-for="Descripcion" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PuntosRequeridos" class="form-label fw-bold">Puntos</label>
+                            <input asp-for="PuntosRequeridos" type="number" class="form-control" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StockDisponible" class="form-label fw-bold">Stock Actual</label>
+                            <input asp-for="StockDisponible" type="number" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-3">
+                        <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                        <button type="submit" class="btn btn-dark">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

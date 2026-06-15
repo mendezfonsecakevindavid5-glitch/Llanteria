@@ -1,0 +1,238 @@
+html {
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-top: 85px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+.bg-llanteria-yellow {
+    background-color: #FFC107;
+}
+
+.rounded-xl {
+    border-radius: 20px !important;
+}
+
+.btn-search {
+    background-color: #000;
+    color: #fff;
+    border-radius: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.navbar-style {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1050;
+    background-color: transparent !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    padding: 25px 0;
+    transition: background-color 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+}
+
+    .navbar-style .nav-link,
+    .navbar-style .dropdown-toggle {
+        color: #ffffff !important;
+        font-size: 1.25rem;
+        font-weight: 600;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        transition: color 0.25s ease-in-out;
+    }
+
+    .navbar-style:hover {
+        background-color: #ffffff !important;
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15) !important;
+    }
+
+        .navbar-style:hover .nav-link,
+        .navbar-style:hover .navbar-brand,
+        .navbar-style:hover .dropdown-toggle {
+            color: #1a1a1a !important;
+        }
+
+    .navbar-style .dropdown-menu .dropdown-item {
+        color: #1a1a1a !important;
+        font-size: 1.05rem;
+    }
+
+        .navbar-style .dropdown-menu .dropdown-item:hover {
+            background-color: #f8f9fa !important;
+        }
+
+.navbar-left-shift {
+    margin-left: -15px;
+}
+
+.btn-stack {
+    width: 140px;
+    text-align: center;
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    border-radius: 30px;
+    padding: 10px 30px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+    .btn-outline:hover {
+        background-color: #ffffff;
+        color: #1a1a1a;
+        transform: translateY(-2px);
+    }
+
+.floating-search-box {
+    background-color: #0E5AEB !important;
+    border-radius: 15px;
+    margin-top: -60px;
+    position: relative;
+    z-index: 20;
+    box-shadow: 0 15px 35px rgba(14, 90, 235, 0.3);
+}
+
+.quality-section {
+    background-color: #000000;
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 60px;
+}
+
+.font-premium-title {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.font-premium-body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    opacity: 0.85;
+}
+
+.fw-black {
+    font-weight: 900;
+}
+
+.tracking-wider {
+    letter-spacing: 0.15em;
+}
+
+.tracking-tight {
+    letter-spacing: -0.03em;
+}
+
+.bg-blur {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.backend-search-bar .form-floating > .form-select {
+    padding-top: 1.625rem;
+    padding-bottom: 0.625rem;
+}
+
+.backend-search-bar .form-floating > label {
+    padding: 1rem 0.75rem;
+}
+
+.transition-transform {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease;
+}
+
+    .transition-transform:hover {
+        transform: scale(1.02);
+    }
+
+.category-card {
+    background-color: #fdfdfd;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(0, 0, 0, 0.03) !important;
+    cursor: pointer;
+}
+
+    .category-card:hover {
+        transform: translateY(-8px);
+        background-color: #ffffff;
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.075) !important;
+    }
+
+.category-icon-bg {
+    position: absolute;
+    bottom: -15px;
+    right: -10px;
+    font-size: 5.5rem;
+    color: rgba(0, 0, 0, 0.03);
+    z-index: 1;
+    transition: color 0.35s ease, transform 0.35s ease;
+}
+
+.category-card:hover .category-icon-bg {
+    color: rgba(255, 193, 7, 0.09);
+    transform: scale(1.1) rotate(-5deg);
+}
+
+<style >
+/* Estilo para las tarjetas con esquinas redondeadas tipo "Dashboard" */
+.rounded-xl {
+    border-radius: 16px !important;
+}
+
+/* Ajuste para que el texto de la sidebar no se rompa */
+.nav-link {
+    transition: all 0.3s ease;
+}
+
+    .nav-link:hover {
+        background-color: #f8f9fa;
+        transform: translateX(5px);
+    }
+
+/* Estilo para fuentes negritas y legibles */
+.fw-black {
+    font-weight: 900 !important;
+}
+
+/* Asegurar que el dashboard sea fluido */
+.container-fluid {
+    max-width: 1500px;
+}
+
+</style >
