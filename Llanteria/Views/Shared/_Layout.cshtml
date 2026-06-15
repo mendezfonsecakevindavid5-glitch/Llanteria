@@ -33,6 +33,7 @@
                 flex-direction: column;
             }
 
+            /* BARRA DE NAVEGACIÓN PREMIUM ESTILO MICHELIN PERFORMANCE */
             .michelin-nav-global {
                 position: fixed;
                 top: 0;
@@ -77,13 +78,6 @@
                     width: 100%;
                 }
 
-                .nav-matrix-link:hover,
-                .nav-matrix-link:focus {
-                    background-color: transparent !important;
-                    color: var(--llanteria-light) !important;
-                    box-shadow: none !important;
-                }
-
             /* Estilos del Botón con Brillo */
             .btn-matrix-action {
                 background: #000000 !important;
@@ -111,7 +105,7 @@
                     transform: translateY(-2px);
                 }
 
-                /* Animación de Brillo (Línea Blanca) */
+                /* Animación de Brillo */
                 .btn-matrix-action::before {
                     content: '';
                     position: absolute;
@@ -129,7 +123,7 @@
                 animation: shine-slide 0.6s ease-in-out forwards;
             }
 
-            @@keyframes shine-slide {
+            @keyframes shine-slide {
                 0% {
                     left: -100%;
                 }
@@ -139,7 +133,6 @@
                 }
             }
 
-            /* Bloqueo de clics */
             .click-disabled {
                 pointer-events: none !important;
                 opacity: 0.8;
@@ -148,24 +141,24 @@
 
             /* Contenedor principal flex para empujar el footer */
             .main-matrix-container {
-                margin-top: 85px; /* Espaciado para el navbar fijo */
+                margin-top: 85px;
                 flex: 1 0 auto;
                 padding-bottom: 2rem;
             }
 
-            /* Estilos del nuevo Footer Oscuro */
+            /* Estilos del Footer Oscuro */
             .matrix-footer {
                 flex-shrink: 0;
-                background: #000000; /* Color negro solicitado */
-                border-top: 1px solid rgba(255, 255, 255, 0.1); /* Ajustado para que resalte sobre negro */
+                background: #000000;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
                 color: var(--llanteria-light);
             }
 
             .footer-heading {
                 font-family: 'Orbitron', sans-serif;
                 font-weight: 700;
-                font-size: 1.4rem; /* Fuente aumentada */
-                color: #FFFFFF; /* Títulos en color blanco */
+                font-size: 1.4rem;
+                color: #FFFFFF;
                 margin-bottom: 1.2rem;
             }
 
@@ -181,19 +174,16 @@
                     justify-content: center;
                 }
 
-            /* Ajuste para que los iconos se alineen mejor en pantallas pequeñas y grandes */
-            @@media (min-width: 768px) {
+            @media (min-width: 768px) {
                 .footer-links li {
                     justify-content: flex-start;
                 }
             }
 
-            /* Elementos del footer que ya no son enlaces interactivos */
             .footer-links span {
-                color: #FFFFFF; /* Valores en blanco */
+                color: #FFFFFF;
                 font-weight: 500;
                 font-size: 0.95rem;
-                /* Eliminadas las transiciones, el cursor pointer y los colores de hover */
             }
     </style>
 </head>
@@ -202,7 +192,6 @@
     <header>
         <nav class="navbar navbar-expand-lg michelin-nav-global">
             <div class="container-fluid px-4 px-lg-5">
-
                 <a class="brand-matrix d-flex align-items-center me-lg-5 header-interactable" asp-controller="Home" asp-action="Index">
                     <i class="fa-solid fa-radar me-3" style="color: var(--llanteria-light); font-size: 1.8rem;"></i>
                     <div class="d-flex flex-column text-start">
@@ -248,15 +237,12 @@
         @RenderBody()
     </main>
 
-    <!-- FOOTER MODIFICADO -->
     <footer class="matrix-footer py-5">
         <div class="container">
-            <!-- Sistema de 4 Columnas -->
             <div class="row text-center text-md-start mb-4">
                 <div class="col-md-3 col-sm-6 mb-4">
                     <h5 class="footer-heading">Garantías</h5>
                     <ul class="footer-links">
-                        <!-- Reemplazados los tags <a> por <span> para eliminar navegación y efectos -->
                         <li><span>Políticas de Devolución</span></li>
                         <li><span>Términos de Garantía</span></li>
                         <li><span>Registro de Neumáticos</span></li>
@@ -284,7 +270,6 @@
                 <div class="col-md-3 col-sm-6 mb-4">
                     <h5 class="footer-heading">Contacto</h5>
                     <ul class="footer-links">
-                        <!-- Datos reales y representativos con íconos blancos -->
                         <li><span><i class="fa-solid fa-location-dot me-2 text-white"></i>Cra. 19 # 14-25, Valledupar</span></li>
                         <li><span><i class="fa-solid fa-phone-volume me-2 text-white"></i>+57 320 123 4567</span></li>
                         <li><span><i class="fa-solid fa-envelope-circle-check me-2 text-white"></i>soporte@llanteria.com</span></li>
@@ -295,14 +280,12 @@
 
             <hr class="mb-4" style="border-color: rgba(255,255,255,0.2);">
 
-            <!-- Nombre del proyecto centrado y alineado horizontalmente -->
             <div class="text-center">
                 <a class="brand-matrix d-inline-flex align-items-center justify-content-center text-decoration-none mb-2" asp-controller="Home" asp-action="Index">
                     <i class="fa-solid fa-radar me-2" style="color: var(--llanteria-primary); font-size: 1.6rem;"></i>
                     <span style="color: #FFFFFF; font-size: 1.4rem; margin-right: 6px;">LLantería</span>
                     <span style="color: var(--llanteria-primary); font-size: 1.4rem;">Valledupar</span>
                 </a>
-                <!-- Texto debajo del nombre en color blanco -->
                 <p class="text-white small mb-0">&copy; 2026 - Todos los derechos reservados.</p>
             </div>
         </div>
@@ -314,33 +297,27 @@
 
                 interactables.forEach(element => {
                     element.addEventListener("click", function (e) {
-
-                        // 1. Si ya está bloqueado, ignorar el clic
                         if (this.classList.contains("click-disabled")) {
                             e.preventDefault();
                             return;
                         }
 
-                        // 2. Bloquear temporalmente
                         this.classList.add("click-disabled");
 
-                        // 3. Activar animación si es el botón principal
                         if (this.classList.contains("btn-matrix-action")) {
                             this.classList.add("animate-shine");
                         }
 
-                        // 4. RESTAURAR el botón después de 800 milisegundos.
-                        // Esto permite que los enlaces de una misma página (como #inicio)
-                        // se puedan volver a presionar más tarde sin quedarse inútiles.
                         setTimeout(() => {
                             this.classList.remove("click-disabled");
-                            this.classList.remove("animate-shine"); // Resetea la animación
+                            this.classList.remove("animate-shine");
                         }, 800);
                     });
                 });
             });
     </script>
-
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

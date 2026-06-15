@@ -12,7 +12,7 @@
         padding: 2rem 1rem;
     }
 
-    /* Tarjeta con animación de entrada única */
+    /* Tarjeta con animación */
     .entrance-login-card {
         background-color: #ffffff;
         width: 100%;
@@ -36,30 +36,32 @@
         }
     }
 
-    /* Títulos y Descripciones */
+    /* Estilos visuales personalizados */
+    .icon-header-circle {
+        width: 70px;
+        height: 70px;
+        border: 2px solid #C92B0A;
+        background-color: #fff5f5;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     .form-main-title {
-        font-size: 1.7rem; /* Fuente aumentada */
+        font-size: 1.7rem;
         font-weight: 800;
         color: #000000;
     }
 
-    .form-description {
-        font-size: 1.1rem; /* Fuente aumentada */
-        color: #555555;
-        margin-top: 1.2rem; /* Separación aumentada debajo del título */
-        margin-bottom: 2rem; /* Separación extra antes de los campos */
-    }
-
     .custom-field-label {
         display: block;
-        font-size: 1.15rem;
+        font-size: 1.1rem;
         font-weight: 700;
         color: #000000;
-        text-align: left;
         margin-bottom: 0.5rem;
+        text-align: left;
     }
 
-    /* Campos */
     .custom-input-group {
         height: 55px;
     }
@@ -68,46 +70,35 @@
             font-size: 1.1rem;
             border: 1px solid #ced4da;
             border-left: none;
-            border-top-right-radius: 0.5rem;
-            border-bottom-right-radius: 0.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
         }
-
-            .custom-input-group .form-control:focus {
-                border-color: #ced4da;
-                box-shadow: none;
-            }
 
     .input-icon-text {
         background-color: #ffffff;
         border: 1px solid #ced4da;
         border-right: none;
-        border-top-left-radius: 0.5rem;
-        border-bottom-left-radius: 0.5rem;
-        color: #000000;
+        border-radius: 0.5rem 0 0 0.5rem;
         padding: 0 1rem;
         display: flex;
         align-items: center;
         font-size: 1.2rem;
     }
 
-    /* Botón Ojo */
     .password-toggle-btn {
         background: transparent;
         border: none;
         color: #000000;
         font-size: 1.4rem;
-        padding: 0;
         cursor: pointer;
         transition: opacity 0.3s ease;
     }
 
-    /* Botón Ingresar */
     .btn-login-submit {
-        background-color: #E60000;
+        background-color: #C92B0A;
         color: #ffffff;
         border: none;
-        font-size: 1.05rem;
-        transition: background-color 0.3s ease, opacity 0.3s ease;
+        font-size: 1.1rem;
+        transition: background-color 0.3s ease;
     }
 
         .btn-login-submit:disabled {
@@ -115,23 +106,20 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
-
-    /* Pie de página */
-    .footer-link-container {
-        font-size: 1.05rem; /* Fuente aumentada ligeramente */
-    }
 </style>
 
 <div class="login-container-wrapper">
-    <div class="entrance-login-card border-0">
+    <div class="entrance-login-card">
         <div class="text-center mb-4">
-
-            <div class="d-flex align-items-center justify-content-center">
-                <i class="fa-solid fa-lock fa-xl me-3" style="color: #000000;"></i>
-                <h4 class="form-main-title m-0">Formulario de ingreso</h4>
+            <div class="icon-header-circle rounded-circle mb-3 shadow-sm">
+                <i class="fa-solid fa-user-shield fa-xl" style="color: #C92B0A;"></i>
             </div>
-
-            <p class="form-description fw-bold">Por favor, ingrese sus credenciales para continuar</p>
+            <h4 class="form-main-title m-0">Ingreso al Sistema</h4>
+            <div class="d-flex justify-content-center gap-3 mt-3 text-secondary small">
+                <span><i class="fa-solid fa-user me-1"></i>Cliente</span>
+                <span><i class="fa-solid fa-screwdriver-wrench me-1"></i>Personal</span>
+                <span><i class="fa-solid fa-lock me-1"></i>Admin</span>
+            </div>
         </div>
 
         @if (ViewBag.Error != null)
@@ -142,43 +130,35 @@
         }
 
         <form id="loginForm" asp-action="Login" method="post">
-            <div class="d-flex align-items-end mb-4">
-                <div class="me-3" style="width: 25px;"></div>
-                <div class="flex-grow-1">
-                    <label class="custom-field-label">Usuario</label>
-                    <div class="input-group custom-input-group">
-                        <span class="input-icon-text"><i class="fa-regular fa-user"></i></span>
-                        <input type="text" name="username" class="form-control" required />
-                    </div>
+            <div class="mb-4">
+                <label class="custom-field-label">Usuario</label>
+                <div class="input-group custom-input-group">
+                    <span class="input-icon-text"><i class="fa-regular fa-user"></i></span>
+                    <input type="text" name="username" class="form-control" placeholder="nombre.usuario" required />
                 </div>
             </div>
 
-            <div class="d-flex align-items-end mb-4">
-                <div class="me-3 pb-2 d-flex justify-content-center" style="width: 25px;">
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label class="custom-field-label m-0">Contraseña</label>
                     <button type="button" id="togglePasswordBtn" class="password-toggle-btn">
                         <i id="eyeIcon" class="fa-regular fa-eye-slash"></i>
                     </button>
                 </div>
-                <div class="flex-grow-1">
-                    <label class="custom-field-label">Contraseña</label>
-                    <div class="input-group custom-input-group">
-                        <span class="input-icon-text"><i class="fa-regular fa-key"></i></span>
-                        <input type="password" id="passwordInput" name="password" class="form-control" required />
-                    </div>
+                <div class="input-group custom-input-group">
+                    <span class="input-icon-text"><i class="fa-regular fa-key"></i></span>
+                    <input type="password" id="passwordInput" name="password" class="form-control" placeholder="••••••••" required />
                 </div>
             </div>
 
-            <div class="d-flex align-items-end mb-4 mt-5">
-                <div class="me-3" style="width: 25px;"></div>
-                <div class="flex-grow-1 d-grid">
-                    <button type="submit" id="submitBtn" class="btn py-3 fw-bold text-uppercase rounded-3 shadow-sm btn-login-submit">
-                        Ingresar
-                    </button>
-                </div>
+            <div class="d-grid mt-4">
+                <button type="submit" id="submitBtn" class="btn py-3 fw-bold text-uppercase rounded-3 shadow-sm btn-login-submit">
+                    Ingresar al sistema
+                </button>
             </div>
         </form>
 
-        <div class="text-center mt-3 border-top pt-3 footer-link-container">
+        <div class="text-center mt-4 border-top pt-3">
             <span class="text-muted">¿No tienes cuenta?</span>
             <a asp-controller="Account" asp-action="Register" class="text-danger fw-bold text-decoration-none ms-2">Regístrate aquí</a>
         </div>
@@ -193,25 +173,34 @@
             const eyeIcon = document.getElementById('eyeIcon');
             let isCooldownActivo = false;
 
+            // Lógica de visibilidad de contraseña con Cooldown
             toggleBtn.addEventListener('click', function () {
                 if (isCooldownActivo) return;
+
                 if (passwordInput.type === 'password') {
                     passwordInput.type = 'text';
-                    eyeIcon.classList.remove('fa-eye-slash');
-                    eyeIcon.classList.add('fa-eye');
+                    eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
                 } else {
                     passwordInput.type = 'password';
-                    eyeIcon.classList.remove('fa-eye');
-                    eyeIcon.classList.add('fa-eye-slash');
+                    eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
                 }
+
                 isCooldownActivo = true;
                 toggleBtn.style.opacity = '0.4';
                 toggleBtn.style.cursor = 'wait';
-                setTimeout(() => { isCooldownActivo = false; toggleBtn.style.opacity = '1'; toggleBtn.style.cursor = 'pointer'; }, 7000);
+
+                setTimeout(() => {
+                    isCooldownActivo = false;
+                    toggleBtn.style.opacity = '1';
+                    toggleBtn.style.cursor = 'pointer';
+                }, 7000);
             });
 
+            // Bloqueo de doble envío al hacer submit
             document.getElementById('loginForm').addEventListener('submit', function () {
-                document.getElementById('submitBtn').disabled = true;
+                const btn = document.getElementById('submitBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Procesando...';
             });
         });
     </script>
