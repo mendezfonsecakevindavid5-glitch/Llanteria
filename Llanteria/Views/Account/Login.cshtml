@@ -1,9 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Ingreso al Sistema";
 }
-
 <style>
-    /* Contenedor principal */
     .login-container-wrapper {
         display: flex;
         align-items: center;
@@ -12,7 +10,18 @@
         padding: 2rem 1rem;
     }
 
-    /* Tarjeta con animación */
+    @@keyframes slideUpEntrance {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     .entrance-login-card {
         background-color: #ffffff;
         width: 100%;
@@ -24,19 +33,6 @@
         opacity: 0;
     }
 
-    @@keyframes slideUpEntrance {
-        0% {
-            transform: translateY(20px);
-            opacity: 0;
-        }
-
-        100% {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-
-    /* Estilos visuales personalizados */
     .icon-header-circle {
         width: 70px;
         height: 70px;
@@ -62,26 +58,42 @@
         text-align: left;
     }
 
-    .custom-input-group {
-        height: 55px;
+    .header-group {
+        margin-bottom: 2rem;
     }
 
-        .custom-input-group .form-control {
-            font-size: 1.1rem;
-            border: 1px solid #ced4da;
-            border-left: none;
-            border-radius: 0 0.5rem 0.5rem 0;
-        }
+    .form-description {
+        margin-top: 1rem;
+    }
 
-    .input-icon-text {
-        background-color: #ffffff;
-        border: 1px solid #ced4da;
-        border-right: none;
-        border-radius: 0.5rem 0 0 0.5rem;
-        padding: 0 1rem;
+    .input-wrapper {
+        position: relative;
         display: flex;
         align-items: center;
-        font-size: 1.2rem;
+        width: 100%;
+    }
+
+        .input-wrapper i.internal-icon {
+            position: absolute;
+            left: 15px;
+            color: #000000;
+            font-size: 1.1rem;
+            z-index: 2;
+        }
+
+    .custom-input {
+        height: 55px;
+        padding-left: 45px !important;
+        font-size: 1.1rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.5rem;
+        width: 100%;
+    }
+
+    .password-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .password-toggle-btn {
@@ -94,74 +106,87 @@
     }
 
     .btn-login-submit {
-        background-color: #C92B0A;
-        color: #ffffff;
-        border: none;
+        background-color: var(--llanteria-primary, #C92B0A) !important;
+        color: #ffffff !important;
+        border: none !important;
         font-size: 1.1rem;
-        transition: background-color 0.3s ease;
+        padding: 1rem;
+        font-weight: 700;
+        transition: filter 0.3s ease, background-color 0.3s ease;
     }
 
         .btn-login-submit:disabled {
-            background-color: #8B0000;
+            background-color: #8B0000 !important;
             opacity: 0.6;
             cursor: not-allowed;
         }
+
+        .btn-login-submit:hover {
+            filter: brightness(0.85);
+        }
+
+    .custom-error-text {
+        color: var(--llanteria-primary, #C92B0A);
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-top: 0.8rem;
+        display: block;
+    }
 </style>
 
 <div class="login-container-wrapper">
     <div class="entrance-login-card">
-        <div class="text-center mb-4">
-            <div class="icon-header-circle rounded-circle mb-3 shadow-sm">
-                <i class="fa-solid fa-user-shield fa-xl" style="color: #C92B0A;"></i>
-            </div>
-            <h4 class="form-main-title m-0">Ingreso al Sistema</h4>
-            <div class="d-flex justify-content-center gap-3 mt-3 text-secondary small">
-                <span><i class="fa-solid fa-user me-1"></i>Cliente</span>
-                <span><i class="fa-solid fa-screwdriver-wrench me-1"></i>Personal</span>
-                <span><i class="fa-solid fa-lock me-1"></i>Admin</span>
-            </div>
-        </div>
 
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger border-0 py-2 text-center rounded-3 shadow-sm mb-3" role="alert">
-                <small><i class="fa-solid fa-triangle-exclamation me-1"></i> @ViewBag.Error</small>
+        <div class="header-group">
+            <div class="d-flex align-items-center justify-content-center">
+                <i class="fa-solid fa-circle-user text-dark me-3" style="font-size: 2.5rem;"></i>
+                <h2 class="form-main-title m-0 fw-bold">Iniciar sesión</h2>
             </div>
-        }
+            <p class="form-description text-muted">
+                Por favor, ingresa tus credenciales para acceder al sistema.
+            </p>
+        </div>
 
         <form id="loginForm" asp-action="Login" method="post">
             <div class="mb-4">
                 <label class="custom-field-label">Usuario</label>
-                <div class="input-group custom-input-group">
-                    <span class="input-icon-text"><i class="fa-regular fa-user"></i></span>
-                    <input type="text" name="username" class="form-control" placeholder="nombre.usuario" required />
+                <div class="input-wrapper">
+                    <i class="fa-regular fa-user internal-icon"></i>
+                    <input type="text" name="username" class="form-control custom-input" required />
                 </div>
             </div>
 
-            <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <label class="custom-field-label m-0">Contraseña</label>
+            <div class="mb-2">
+                <label class="custom-field-label">Contraseña</label>
+                <div class="password-wrapper">
                     <button type="button" id="togglePasswordBtn" class="password-toggle-btn">
                         <i id="eyeIcon" class="fa-regular fa-eye-slash"></i>
                     </button>
-                </div>
-                <div class="input-group custom-input-group">
-                    <span class="input-icon-text"><i class="fa-regular fa-key"></i></span>
-                    <input type="password" id="passwordInput" name="password" class="form-control" placeholder="••••••••" required />
+                    <div class="input-wrapper flex-grow-1">
+                        <i class="fa-solid fa-lock internal-icon"></i>
+                        <input type="password" id="passwordInput" name="password" class="form-control custom-input" required />
+                    </div>
                 </div>
             </div>
+
+            @if (!string.IsNullOrEmpty(ViewBag.Error))
+            {
+                <div class="custom-error-text">
+                    &bull; @ViewBag.Error
+                </div>
+            }
 
             <div class="d-grid mt-4">
-                <button type="submit" id="submitBtn" class="btn py-3 fw-bold text-uppercase rounded-3 shadow-sm btn-login-submit">
-                    Ingresar al sistema
+                <button type="submit" id="submitBtn" class="btn btn-login-submit text-uppercase rounded-3">
+                    Ingresar
                 </button>
             </div>
-        </form>
 
-        <div class="text-center mt-4 border-top pt-3">
-            <span class="text-muted">¿No tienes cuenta?</span>
-            <a asp-controller="Account" asp-action="Register" class="text-danger fw-bold text-decoration-none ms-2">Regístrate aquí</a>
-        </div>
+            <div class="text-center mt-4 border-top pt-3">
+                <span class="text-muted">¿No tienes cuenta?</span>
+                <a asp-controller="Account" asp-action="Register" class="text-danger fw-bold text-decoration-none ms-2">Regístrate aquí</a>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -173,7 +198,6 @@
             const eyeIcon = document.getElementById('eyeIcon');
             let isCooldownActivo = false;
 
-            // Lógica de visibilidad de contraseña con Cooldown
             toggleBtn.addEventListener('click', function () {
                 if (isCooldownActivo) return;
 
@@ -196,11 +220,14 @@
                 }, 7000);
             });
 
-            // Bloqueo de doble envío al hacer submit
-            document.getElementById('loginForm').addEventListener('submit', function () {
+            document.getElementById('loginForm').addEventListener('submit', function (e) {
                 const btn = document.getElementById('submitBtn');
-                btn.disabled = true;
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Procesando...';
+                if (btn.getAttribute('data-clicked') === 'true') {
+                    e.preventDefault();
+                    return;
+                }
+                btn.setAttribute('data-clicked', 'true');
+                btn.style.pointerEvents = 'none';
             });
         });
     </script>

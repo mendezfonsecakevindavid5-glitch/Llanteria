@@ -47,6 +47,9 @@ public partial class Usuario
     [Display(Name = "Última Conexión")]
     public DateTime? UltimaConexion { get; set; }
 
+    [Display(Name = "Tipo de Documento")]
+    public int? IdTipoDocumento { get; set; }
+
     // --- Relaciones y Navegación ---
 
     public virtual ICollection<CanjeIncentivo> CanjeIncentivos { get; set; } = new List<CanjeIncentivo>();
@@ -58,6 +61,9 @@ public partial class Usuario
     [ForeignKey("IdRol")]
     [Display(Name = "Rol Asignado")]
     public virtual Role IdRolNavigation { get; set; } = null!;
+
+    [ForeignKey("IdTipoDocumento")]
+    public virtual TipoDocumento? IdTipoDocumentoNavigation { get; set; }
 
     public virtual ICollection<LogActividad> LogActividads { get; set; } = new List<LogActividad>();
 

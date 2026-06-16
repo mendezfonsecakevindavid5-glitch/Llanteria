@@ -38,6 +38,15 @@ builder.Services.AddScoped<Llanteria.Services.IPerfilService, Llanteria.Services
 
 Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath);
 
+
+Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath);
+
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromMinutes(10); // El código expira en 10 min
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -64,9 +73,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
-// 2. Middleware de Autenticación y Autorización (Orden estricto)
-app.UseAuthentication();
+app.UseSession();
 app.UseAuthorization();
 
 app.MapStaticAssets();
