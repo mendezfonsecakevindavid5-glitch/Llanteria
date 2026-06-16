@@ -1,0 +1,94 @@
+﻿@model IEnumerable<Llanteria.Models.Cliente>
+
+@{
+    ViewData["Title"] = "Gestión de Clientes";
+}
+
+<div class="card shadow border-0 rounded-3 overflow-hidden bg-white mt-5">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background-color: #000000; border: none;">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-address-book text-white fs-5"></i>
+            <h4 class="mb-0 text-white fw-bold text-uppercase tracking-wide">Directorio Profesional de Clientes</h4>
+        </div>
+        <a asp-action="Create" class="btn text-white btn-sm px-4 py-2 fw-bold rounded-3 shadow-sm d-flex align-items-center gap-2" style="background-color: #C92B0A; border: none;">
+            <i class="fa-solid fa-user-plus"></i> Nuevo Cliente
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead style="background-color: #f8f9fa;">
+                    <tr>
+                        <th class="ps-4 py-3 text-dark fw-bold">Nombre Completo</th>
+                        <th class="py-3 text-dark fw-bold">Identificación</th>
+                        <th class="py-3 text-dark fw-bold">Información de Contacto</th>
+                        <th class="py-3 text-center text-dark fw-bold">Puntos Premium</th>
+                        <th class="pe-4 py-3 text-center text-dark fw-bold">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold text-dark fs-6">@item.Nombres @item.Apellidos</div>
+                                <span class="badge bg-light text-secondary border mt-1">@item.IdSexoNavigation?.Nombre</span>
+                            </td>
+                            <td>
+                                <small class="text-muted text-uppercase d-block fw-semibold">@item.IdDocumentoNavigation?.Nombre</small>
+                                <span class="text-dark fw-bold">@item.NumeroDocumento</span>
+                            </td>
+                            <td>
+                                <div class="small text-dark mb-1">
+                                    <i class="fa-solid fa-phone text-muted me-1 fa-xs"></i> @(string.IsNullOrEmpty(item.Telefono) ? "Sin teléfono" : item.Telefono)
+                                </div>
+                                <div class="small text-muted">
+                                    <i class="fa-solid fa-envelope text-muted me-1 fa-xs"></i> @(string.IsNullOrEmpty(item.Correo) ? "Sin correo" : item.Correo)
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill px-3 py-2 text-dark shadow-sm fw-bold" style="background-color: #FFC107;">
+                                    <i class="fa-solid fa-star me-1 text-dark"></i> @item.PuntosAcumulados
+                                </span>
+                            </td>
+                            <td class="text-center pe-4">
+                                <div class="d-flex justify-content-center gap-1">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark rounded-2" title="Editar">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-2" onclick="confirmarEliminar(@item.Id, '@item.Nombres @item.Apellidos')" title="Eliminar">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmarEliminar(id, nombre) {
+            Swal.fire({
+                title: '¿Eliminar cliente?',
+                text: "Se borrará permanentemente a: " + nombre + ". Ten en cuenta que esto podría afectar las facturas y vehículos asociados.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#C92B0A',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                customClass: {
+                    popup: 'rounded-3'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Cliente/Delete/' + id;
+                }
+            })
+        }
+    </script>
+}

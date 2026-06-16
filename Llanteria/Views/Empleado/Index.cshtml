@@ -1,0 +1,156 @@
+﻿@model IEnumerable<Llanteria.Models.Empleado>
+
+@{
+    ViewData["Title"] = "Gestión de Empleados";
+}
+
+<div class="container py-5" style="max-width: 1200px;">
+
+    <!-- ENCABEZADO CON BOTÓN DE REGRESAR INTEGRADO -->
+    <div class="d-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeIn">
+        <div>
+            <a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none small fw-bold d-inline-flex align-items-center gap-2 mb-2 transition-transform hover-left">
+                <i class="fa-solid fa-arrow-left"></i> Volver al Panel
+            </a>
+            <h2 class="fw-black text-dark text-uppercase m-0 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-id-card text-primary"></i> Personal del Taller
+            </h2>
+            <p class="text-muted small m-0">Administra las fichas de los mecánicos, operarios y administradores, sus roles, salarios y horarios.</p>
+        </div>
+
+        <!-- Botón Registrar Empleado compacto y estilizado -->
+        <a asp-action="Create" class="btn btn-success fw-bold px-4 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2 transition-transform">
+            <i class="fa-solid fa-user-plus"></i> Registrar Empleado
+        </a>
+    </div>
+
+    <!-- TARJETA CONTENEDORA COMPACTA Y PROFESIONAL -->
+    <div class="card border-0 shadow-sm rounded-xl overflow-hidden animate__animated animate__fadeInUp">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark text-uppercase small tracking-wider" style="background-color: #1a1e21;">
+                    <tr>
+                        <th scope="col" class="ps-4">Nombre Completo</th>
+                        <th scope="col">Identificación</th>
+                        <th scope="col">Rol / Cargo</th>
+                        <th scope="col">Horario</th>
+                        <th scope="col" class="text-end" style="width: 150px;">Salario</th>
+                        <th scope="col" class="text-center" style="width: 150px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <!-- COLUMNA DATOS DE CONTACTO -->
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark fs-6">@item.Nombres @item.Apellidos</div>
+                                    <div class="text-muted small d-flex align-items-center gap-2 mt-1">
+                                        <span><i class="fa-solid fa-phone fa-xs"></i> @item.Telefono</span>
+                                        <span class="text-secondary">|</span>
+                                        <span><i class="fa-solid fa-envelope fa-xs"></i> @item.Correo</span>
+                                    </div>
+                                </td>
+
+                                <!-- COLUMNA DOCUMENTOS -->
+                                <td>
+                                    <span class="badge bg-light text-secondary border px-2 py-1 small rounded-pill mb-1">
+                                        @item.IdDocumentoNavigation?.Nombre
+                                    </span>
+                                    <div class="font-monospace text-dark small fw-semibold ps-1">@item.NumeroDocumento</div>
+                                </td>
+
+                                <!-- COLUMNA ROL / CARGO -->
+                                <td>
+                                    <span class="badge bg-primary text-white px-2 py-1.5 fw-bold rounded-2 shadow-sm" style="font-size: 0.75rem;">
+                                        <i class="fa-solid fa-briefcase fa-xs me-1"></i> @item.IdRolNavigation?.NombreRol
+                                    </span>
+                                </td>
+
+                                <!-- COLUMNA HORARIO -->
+                                <td>
+                                    <span class="text-dark small fw-semibold bg-light px-2 py-1 rounded border">
+                                        <i class="fa-regular fa-clock text-muted me-1"></i> @item.Horario
+                                    </span>
+                                </td>
+
+                                <!-- COLUMNA SALARIO -->
+                                <td class="text-end fw-bold text-success pe-3">
+                                    $ @item.Salario.ToString("N0")
+                                </td>
+
+                                <!-- BOTONES DE ACCIÓN COMPACTOS -->
+                                <td class="text-center pe-4">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary rounded-2" title="Editar Personal">
+                                            <i class="fa-solid fa-user-pen"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger rounded-2" title="Retirar Personal" onclick="confirmarEliminar(@item.Id, '@item.Nombres')">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <!-- MUESTRA ESTO SI NO HAY REGISTROS -->
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="fa-solid fa-users-slash display-4 mb-3 d-block text-secondary"></i>
+                                <span class="fw-semibold">No hay empleados registrados en la nómina actualmente.</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ESTILOS CSS EXTRA PARA COMPLETAR EL ACABADO PREMIUM -->
+<style>
+    .rounded-xl {
+        border-radius: 12px !important;
+    }
+
+    .hover-left:hover {
+        transform: translateX(-4px);
+    }
+
+    .transition-transform {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .transition-transform:hover {
+            transform: translateY(-2px);
+        }
+
+    .table method th {
+        border-bottom: none;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        function confirmarEliminar(id, nombre) {
+            Swal.fire({
+                title: '¿Retirar empleado?',
+                text: "Se eliminará permanentemente el registro de: " + nombre,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, retirar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Empleado/Delete/' + id;
+                }
+            })
+        }
+    </script>
+}

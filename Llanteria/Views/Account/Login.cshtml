@@ -1,0 +1,203 @@
+﻿@{
+    ViewData["Title"] = "Ingreso al Sistema";
+}
+
+<style>
+    .login-container-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 250px);
+        padding: 2rem 1rem;
+    }
+
+    @@keyframes slideUpEntrance {
+        0% { opacity: 0; transform: translateY(30px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .entrance-login-card {
+        background-color: #ffffff;
+        width: 100%;
+        max-width: 480px;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
+        animation: slideUpEntrance 0.6s ease-out forwards;
+    }
+
+    .header-group {
+        margin-bottom: 2rem; /* Más cerca de los campos de registro */
+    }
+
+    .form-description {
+        margin-top: 1rem; /* Separación prudente del título */
+    }
+
+    .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .input-wrapper i.internal-icon {
+        position: absolute;
+        left: 15px;
+        color: #000000;
+        font-size: 1.1rem;
+        z-index: 2;
+    }
+
+    .custom-input {
+        height: 55px;
+        padding-left: 45px !important;
+        font-size: 1.1rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.5rem;
+        width: 100%;
+    }
+
+    .password-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .password-toggle-btn {
+        background: transparent;
+        border: none;
+        color: #000000;
+        font-size: 1.4rem;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+        padding: 0;
+    }
+
+    .btn-login-submit {
+        background-color: var(--llanteria-primary, #C92B0A) !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-size: 1.1rem;
+        padding: 1rem;
+        font-weight: 700;
+        transition: filter 0.3s ease;
+    }
+
+    .btn-login-submit:hover {
+        filter: brightness(0.85); /* Efecto hover manteniendo el color base */
+    }
+
+    .custom-field-label {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .custom-error-text {
+        color: var(--llanteria-primary, #C92B0A);
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-top: 0.8rem;
+        display: block;
+    }
+</style>
+
+<div class="login-container-wrapper">
+    <div class="entrance-login-card">
+
+        <div class="header-group">
+            <div class="d-flex align-items-center justify-content-center">
+                <i class="fa-solid fa-circle-user text-dark me-3" style="font-size: 2.5rem;"></i>
+                <h2 class="form-main-title m-0 fw-bold">Iniciar sesión</h2>
+            </div>
+            <p class="form-description text-muted">
+                Por favor, ingresa tus credenciales para acceder al sistema.
+            </p>
+        </div>
+
+        <form id="loginForm" asp-action="Login" method="post">
+            <div class="mb-4">
+                <label class="custom-field-label">Usuario</label>
+                <div class="input-wrapper">
+                    <i class="fa-regular fa-user internal-icon"></i>
+                    <input type="text" name="username" class="form-control custom-input" required />
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <label class="custom-field-label">Contraseña</label>
+                <div class="password-wrapper">
+                    <button type="button" id="togglePasswordBtn" class="password-toggle-btn">
+                        <i id="eyeIcon" class="fa-regular fa-eye-slash"></i>
+                    </button>
+                    <div class="input-wrapper flex-grow-1">
+                        <i class="fa-solid fa-lock internal-icon"></i>
+                        <input type="password" id="passwordInput" name="password" class="form-control custom-input" required />
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(ViewBag.Error))
+            {
+                <div class="custom-error-text">
+                    &bull; @ViewBag.Error
+                </div>
+            }
+
+            <div class="d-grid mt-4">
+                <button type="submit" id="submitBtn" class="btn btn-login-submit text-uppercase rounded-3">
+                    Ingresar
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center mt-4 border-top pt-3">
+            <span class="text-muted">¿No tienes cuenta?</span>
+            <a asp-controller="Account" asp-action="Register" class="text-danger fw-bold text-decoration-none ms-2">Regístrate aquí</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleBtn = document.getElementById('togglePasswordBtn');
+            const passwordInput = document.getElementById('passwordInput');
+            const eyeIcon = document.getElementById('eyeIcon');
+            let isCooldownActivo = false;
+
+            toggleBtn.addEventListener('click', function () {
+                if (isCooldownActivo) return;
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+                } else {
+                    passwordInput.type = 'password';
+                    eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+                }
+
+                isCooldownActivo = true;
+                toggleBtn.style.opacity = '0.4';
+                toggleBtn.style.cursor = 'wait';
+
+                setTimeout(() => {
+                    isCooldownActivo = false;
+                    toggleBtn.style.opacity = '1';
+                    toggleBtn.style.cursor = 'pointer';
+                }, 7000);
+            });
+
+            document.getElementById('loginForm').addEventListener('submit', function (e) {
+                const btn = document.getElementById('submitBtn');
+                if (btn.getAttribute('data-clicked') === 'true') {
+                    e.preventDefault();
+                    return;
+                }
+                btn.setAttribute('data-clicked', 'true');
+                btn.style.pointerEvents = 'none';
+            });
+        });
+    </script>
+}

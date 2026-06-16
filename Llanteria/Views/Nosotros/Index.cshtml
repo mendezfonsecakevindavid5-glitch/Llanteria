@@ -1,0 +1,168 @@
+﻿<style>
+    /* DISEÑO DE INGENIERÍA - SECCIÓN NOSOTROS */
+    .nosotros-premium-section {
+        background: radial-gradient(circle at 90% 10%, rgba(201, 43, 10, 0.03) 0%, rgba(255, 255, 255, 0) 60%), #FFFFFF;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Marco de Imagen Asimétrico con Aceleración Gráfica */
+    .premium-image-frame {
+        position: relative;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+        will-change: transform;
+        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+        .premium-image-frame::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(9, 9, 11, 0) 50%, rgba(9, 9, 11, 0.4) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+    /* Detalle estético industrial detrás de la imagen */
+    .tech-grid-backdrop {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        background-image: radial-gradient(var(--llanteria-primary) 1.5px, transparent 1.5px);
+        background-size: 8px 8px;
+        bottom: -15px;
+        right: -15px;
+        opacity: 0.25;
+        z-index: -1;
+    }
+
+    .premium-image-frame:hover {
+        transform: scale(1.02) translateY(-4px);
+    }
+
+    /* Tarjetas de Propuesta de Valor Aero-Space */
+    .tech-feature-card {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .tech-feature-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background-color: var(--llanteria-primary);
+            transition: width 0.3s ease;
+        }
+
+        .tech-feature-card:hover {
+            background: #FFFFFF;
+            border-color: rgba(201, 43, 10, 0.2);
+            box-shadow: 0 12px 20px -8px rgba(201, 43, 10, 0.12);
+            transform: translateY(-2px);
+        }
+
+            .tech-feature-card:hover::after {
+                width: 100%;
+            }
+
+    /* Contenedor del Icono con Brillo Controlado */
+    .tech-icon-wrapper {
+        width: 56px;
+        height: 56px;
+        background-color: rgba(201, 43, 10, 0.06);
+        color: var(--llanteria-primary);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .tech-feature-card:hover .tech-icon-wrapper {
+        background-color: var(--llanteria-primary);
+        color: #FFFFFF;
+        transform: rotate(-5deg) scale(1.05);
+        box-shadow: 0 4px 12px rgba(201, 43, 10, 0.25);
+    }
+
+    .text-justify {
+        text-align: justify;
+    }
+</style>
+
+<section id="nosotros" class="py-5 nosotros-premium-section">
+    <div class="container py-5">
+        <div class="row align-items-center g-5">
+            
+            <div class="col-lg-6" data-aos="fade-right">
+                <span class="badge bg-danger bg-opacity-10 text-danger text-uppercase px-3 py-2 rounded-pill fw-bold mb-3"
+                      style="color: var(--llanteria-primary) !important; letter-spacing: 1.5px; font-size: 0.75rem;">
+                    Matriz Corporativa
+                </span>
+                
+                <h2 class="fw-black text-uppercase text-dark mt-2 mb-4 display-6" style="letter-spacing: -1px; line-height: 1.15;">
+                    Pasión por las llantas, <br><span style="color: var(--llanteria-primary);">compromiso absoluto</span> con tu seguridad
+                </h2>
+                
+                <p class="text-muted mb-4 text-justify lh-lg" style="font-size: 0.95rem;">
+                    En <strong>Llantería Valledupar</strong>, nos dedicamos a ofrecer soluciones integrales en neumáticos y mantenimiento automotriz. No solo vendemos productos, garantizamos estabilidad y confianza en cada kilómetro que recorres. Contamos con un equipo altamente calificado y tecnología de punta para cuidar de ti y de tu vehículo.
+                </p>
+                
+                <div class="row g-4 mt-2">
+                    <div class="col-sm-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="tech-feature-card">
+                            <div class="tech-icon-wrapper me-3">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold m-0 text-dark" style="letter-spacing: 0.3px;">100% Seguro</h6>
+                                <small class="text-muted d-block mt-0.5">Garantía Avanzada</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="tech-feature-card">
+                            <div class="tech-icon-wrapper me-3">
+                                <i class="fa-solid fa-business-time"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold m-0 text-dark" style="letter-spacing: 0.3px;">Servicio Rápido</h6>
+                                <small class="text-muted d-block mt-0.5">Boxes de flujo optimizado</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6" data-aos="fade-left" data-aos-delay="150">
+                <div class="position-relative p-2">
+                    <div class="tech-grid-backdrop"></div>
+                    
+                    <div class="premium-image-frame">
+                        <img src="/images/Section-Image.avif"
+                             alt="Centro de Ingeniería Llantería Valledupar"
+                             class="img-fluid w-100"
+                             style="height: 420px; object-fit: cover; transition: filter 0.3s ease;"
+                             onerror="this.src='https://images.unsplash.com/photo-1486006920555-c77dce18193b?q=80&w=800'">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

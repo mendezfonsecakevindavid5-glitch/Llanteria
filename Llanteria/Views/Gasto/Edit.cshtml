@@ -1,0 +1,117 @@
+﻿@model Llanteria.Models.Gasto
+
+@{
+    ViewData["Title"] = "Editar Gasto";
+}
+
+<div class="container py-5" style="max-width: 800px;">
+
+    <div class="mb-4 animate__animated animate__fadeIn">
+        <a asp-action="Index" class="text-muted text-decoration-none small fw-bold d-inline-flex align-items-center gap-2 mb-2 transition-transform hover-left">
+            <i class="fa-solid fa-arrow-left"></i> Volver a la Lista
+        </a>
+        <h2 class="fw-black text-dark text-uppercase m-0 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-file-invoice-dollar text-warning"></i> Actualizar Gasto
+        </h2>
+        <p class="text-muted small m-0">Modifica el monto, las fechas de vencimiento, el estado o actualiza el soporte digital del gasto.</p>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-xl overflow-hidden animate__animated animate__fadeInUp">
+        <div class="card-body p-4 p-md-5 bg-white">
+
+            <form asp-action="Edit" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="FechaRegistro" />
+                <input type="hidden" asp-for="ArchivoSupport" />
+
+                <div class="row g-3">
+
+                    @if (!string.IsNullOrEmpty(Model.ArchivoSupport))
+                    {
+                        <div class="col-12 bg-light p-3 rounded-3 border d-flex align-items-center justify-content-between">
+                            <span class="small fw-bold text-muted">Soporte Actual: @Model.ArchivoSupport</span>
+                            <a href="~/uploads/gastos/@Model.ArchivoSupport" target="_blank" class="btn btn-sm btn-outline-info">
+                                <i class="fa-solid fa-eye"></i> Ver archivo
+                            </a>
+                        </div>
+                    }
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select asp-for="IdCategoria" class="form-select" asp-items="ViewBag.IdCategoria"></select>
+                            <label asp-for="IdCategoria" class="fw-semibold text-muted">Categoría</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="Monto" class="form-control text-end fw-bold text-danger" placeholder="0" />
+                            <label asp-for="Monto" class="fw-semibold text-danger">Monto ($)</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input asp-for="FechaVencimiento" type="date" class="form-control" />
+                            <label asp-for="FechaVencimiento" class="fw-semibold text-muted">Vencimiento</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input asp-for="FechaPago" type="date" class="form-control" />
+                            <label asp-for="FechaPago" class="fw-semibold text-muted">Fecha de Pago</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <select asp-for="Estado" class="form-select">
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="Pagado">Pagado</option>
+                            </select>
+                            <label asp-for="Estado" class="fw-semibold text-muted">Estado</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label small fw-bold text-muted ps-1">Reemplazar archivo de soporte</label>
+                        <input type="file" name="Archivo" class="form-control py-3" />
+                    </div>
+
+                    <div class="col-12 pt-3 border-top d-flex justify-content-end gap-2">
+                        <a asp-action="Index" class="btn btn-light fw-bold px-4 py-2 rounded-3 border">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-warning fw-bold px-4 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2 transition-transform text-dark">
+                            <i class="fa-solid fa-square-check"></i> Actualizar Cambios
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-xl {
+        border-radius: 12px !important;
+    }
+
+    .hover-left:hover {
+        transform: translateX(-4px);
+    }
+
+    .transition-transform {
+        transition: 0.2s;
+    }
+
+        .transition-transform:hover {
+            transform: translateY(-2px);
+        }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.25px rgba(255, 193, 7, 0.25);
+    }
+</style>

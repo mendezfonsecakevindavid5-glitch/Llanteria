@@ -1,0 +1,76 @@
+﻿@model IEnumerable<Llanteria.Models.Bodega>
+@{
+    ViewData["Title"] = "Gestión de Bodegas";
+}
+
+<div class="container-fluid pt-4">
+    <div class="card border-0 shadow-sm rounded-xl p-4 bg-white">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="fw-bold m-0 text-dark">
+                    <i class="fa-solid fa-warehouse text-primary me-2"></i>Bodegas
+                </h4>
+                <small class="text-muted">Administración de ubicaciones físicas</small>
+            </div>
+            <a asp-action="Create" class="btn btn-primary fw-bold rounded-pill px-4">
+                <i class="fa-solid fa-plus me-2"></i>Nueva Bodega
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Bodega</th>
+                        <th>Ubicación</th>
+                        <th class="text-center">Capacidad Máx.</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><span class="fw-bold text-dark">@item.NombreBodega</span></td>
+                            <td><span class="text-muted">@(item.Ubicacion ?? "No especificada")</span></td>
+                            <td class="text-center">
+                                <span class="badge bg-info bg-opacity-10 text-dark fw-bold px-3 py-2 rounded-pill">
+                                    @(item.CapacidadMaxima?.ToString() ?? "N/A")
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-light btn-sm rounded-2 text-warning">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                                <button type="button" class="btn btn-light btn-sm rounded-2 text-danger" onclick="confirmarEliminar(@item.Id, '@item.NombreBodega')">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmarEliminar(id, nombre) {
+            Swal.fire({
+                title: '¿Eliminar bodega?',
+                text: `Estás a punto de eliminar la bodega: ${nombre}. Esta acción no se puede deshacer.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                customClass: { popup: 'rounded-xl' }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '@Url.Action("Delete", "Bodega")/' + id;
+                }
+            })
+        }
+    </script>
+}
