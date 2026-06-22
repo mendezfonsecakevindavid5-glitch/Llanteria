@@ -4,7 +4,7 @@
             <h2 class="font-premium-title fw-black text-uppercase text-dark m-0">Nuestros Servicios</h2>
             <hr class="mx-auto accent-bar">
         </div>
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm p-4 h-100 category-card">
                     <div class="bg-primary-llanteria text-white p-3 rounded-3 d-inline-block mb-3" style="width: fit-content;">
@@ -33,5 +33,53 @@
                 </div>
             </div>
         </div>
+
+        <div class="collapse" id="collapseServicios">
+            <div class="row g-4 justify-content-center mt-2">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm p-4 h-100 category-card">
+                        <div class="bg-primary-llanteria text-white p-3 rounded-3 d-inline-block mb-3" style="width: fit-content;">
+                            <i class="fa-solid fa-car-battery fa-xl"></i>
+                        </div>
+                        <h5 class="fw-bold">Baterías</h5>
+                        <p class="small text-muted font-premium-body">Diagnóstico de carga, venta e instalación de baterías de alto rendimiento con respaldo y garantía global.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm p-4 h-100 category-card">
+                        <div class="bg-primary-llanteria text-white p-3 rounded-3 d-inline-block mb-3" style="width: fit-content;">
+                            <i class="fa-solid fa-truck-monster fa-xl"></i>
+                        </div>
+                        <h5 class="fw-bold">Suspensión y Amortiguadores</h5>
+                        <p class="small text-muted font-premium-body">Revisión técnica de amortiguadores, bujes y terminales para garantizar la estabilidad y confort de tu auto.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm p-4 h-100 category-card">
+                        <div class="bg-primary-llanteria text-white p-3 rounded-3 d-inline-block mb-3" style="width: fit-content;">
+                            <i class="fa-solid fa-truck-pickup fa-xl"></i>
+                        </div>
+                        <h5 class="fw-bold">Serviteca Móvil</h5>
+                        <p class="small text-muted font-premium-body">Asistencia especializada directamente a tu hogar u oficina para el montaje, balanceo y despinche de tus llantas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <button type="button"
+                    id="btnToggleServicios"
+                    class="btn btn-hyper-action px-5 py-3 text-uppercase"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseServicios"
+                    aria-expanded="false"
+                    aria-controls="collapseServicios">
+                <i class="fa-solid fa-chevron-down me-2" id="iconToggleServicios"></i>
+                <span id="textToggleServicios">Ver Todos los Servicios</span>
+            </button>
+        </div>
+
     </div>
 </section>
