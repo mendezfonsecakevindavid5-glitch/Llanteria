@@ -30,6 +30,31 @@ namespace Llanteria.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
+        // --- VISTAS Y LOGICA (MÉTODOS GET) ---
+
+        [HttpGet]
+        public ActionResult Index() => View(ser.GetProductos());
+
+        [HttpGet]
+        public ActionResult Create()
+        {
+            CargarCombos(); // Carga las listas de Proveedores y Marcas en el ViewBag
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult Edit(int id)
+        {
+            var producto = ser.GetProducto(id);
+            if (producto == null)
+            {
+                return NotFound();
+            }
+
+            CargarCombos(); // Carga las listas de Proveedores y Marcas para la edición
+            return View(producto);
+        }
+
         [HttpGet]
         public JsonResult GetProductosJson()
         {
@@ -37,7 +62,8 @@ namespace Llanteria.Controllers
                 .Select(p => new {
                     nombre = p.Nombre,
                     precio = p.PrecioVenta.ToString("C0"),
-                    img = "/images/Productos/" + (string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen),
+                    // Se unifica la ruta a "productos" en minúscula para evitar fallos de rutas
+                    img = "/images/productos/" + (string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen),
                     categoria = p.Categoria,
                     detalles = p.DetalleProducto != null ? new
                     {
@@ -51,6 +77,8 @@ namespace Llanteria.Controllers
 
             return Json(productos);
         }
+
+        // --- PROCESAMIENTO DE FORMULARIOS (MÉTODOS POST) ---
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -120,6 +148,11 @@ namespace Llanteria.Controllers
             return nombreWebp;
         }
 
+        private void EmptyImagen(string? nombreArchivo) // Alias por claridad interna si fuera necesario
+        {
+            EliminarImagen(nombreArchivo);
+        }
+
         private void EliminarImagen(string? nombreArchivo)
         {
             if (string.IsNullOrEmpty(nombreArchivo) || nombreArchivo == "default-producto.png") return;
@@ -133,7 +166,5 @@ namespace Llanteria.Controllers
             ViewBag.IdProveedor = new SelectList(provSer.GetProveedores(), "Id", "NombreEmpresa");
             ViewBag.IdMarca = new SelectList(marcSer.GetMarcas(), "Id", "Nombre");
         }
-
-        public ActionResult Index() => View(ser.GetProductos());
     }
 }

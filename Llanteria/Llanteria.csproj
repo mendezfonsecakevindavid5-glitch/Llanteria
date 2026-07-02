@@ -7,6 +7,33 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\images\Categorias\**" />
+    <Compile Remove="wwwroot\images\Llantas\**" />
+    <Compile Remove="wwwroot\images\Perfiles\**" />
+    <Compile Remove="wwwroot\images\Productos\**" />
+    <Compile Remove="wwwroot\images\Promociones\**" />
+    <Compile Remove="wwwroot\images\Servicios\**" />
+    <Content Remove="wwwroot\images\Categorias\**" />
+    <Content Remove="wwwroot\images\Llantas\**" />
+    <Content Remove="wwwroot\images\Perfiles\**" />
+    <Content Remove="wwwroot\images\Productos\**" />
+    <Content Remove="wwwroot\images\Promociones\**" />
+    <Content Remove="wwwroot\images\Servicios\**" />
+    <EmbeddedResource Remove="wwwroot\images\Categorias\**" />
+    <EmbeddedResource Remove="wwwroot\images\Llantas\**" />
+    <EmbeddedResource Remove="wwwroot\images\Perfiles\**" />
+    <EmbeddedResource Remove="wwwroot\images\Productos\**" />
+    <EmbeddedResource Remove="wwwroot\images\Promociones\**" />
+    <EmbeddedResource Remove="wwwroot\images\Servicios\**" />
+    <None Remove="wwwroot\images\Categorias\**" />
+    <None Remove="wwwroot\images\Llantas\**" />
+    <None Remove="wwwroot\images\Perfiles\**" />
+    <None Remove="wwwroot\images\Productos\**" />
+    <None Remove="wwwroot\images\Promociones\**" />
+    <None Remove="wwwroot\images\Servicios\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="10.0.7" />
@@ -26,12 +53,6 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
-    <Folder Include="wwwroot\images\Llantas\" />
-    <Folder Include="wwwroot\images\Categorias\" />
-    <Folder Include="wwwroot\images\Perfiles\" />
-    <Folder Include="wwwroot\images\Servicios\" />
-    <Folder Include="wwwroot\images\Promociones\" />
-    <Folder Include="wwwroot\images\Productos\" />
   </ItemGroup>
 
 </Project>
