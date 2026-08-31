@@ -1,0 +1,52 @@
+@model IEnumerable<Llanteria.Models.Inventario>
+@{
+    Layout = null;
+    var inventarios = Model ?? new List<Llanteria.Models.Inventario>();
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <style>
+        body { font-family: 'Arial', sans-serif; font-size: 12px; color: #333; margin: 25px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px; border: 1px solid #eaeaea; }
+        th { background: #C92B0A; color: white; }
+        .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 9px; color: #999; }
+    </style>
+</head>
+<body>
+    <h2 style="color: #C92B0A;">Reporte de Inventario</h2>
+    <p>Generado: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Código</th>
+                <th>Stock Actual</th>
+                <th>Stock Mínimo</th>
+                <th>Cantidad Ingresada</th>
+                <th>Bodega</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in inventarios.OrderBy(i => i.Id))
+            {
+                <tr>
+                    <td>@item.IdProductoNavigation?.Nombre ?? "-"</td>
+                    <td>@item.Codigo</td>
+                    <td>@(item.StockActual?.ToString() ?? "-")</td>
+                    <td>@(item.StockMinimo?.ToString() ?? "-")</td>
+                    <td>@item.CantidadIngresada</td>
+                    <td>@item.IdBodegaNavigation?.NombreBodega ?? "-"</td>
+                    <td>@item.IdEstadoNavigation?.Nombre ?? "-"</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="footer">Documento oficial - Llantería Valledupar</div>
+</body>
+</html>
