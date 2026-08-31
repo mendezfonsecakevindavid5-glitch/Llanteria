@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Montaje y Balanceo";
+}
+
+<div class="container py-5">
+
+    <div class="row g-5">
+        <!-- Detalle del Servicio -->
+        <div class="col-lg-7">
+            <div class="d-flex items-center gap-3 mb-3">
+                <div class="bg-danger text-white p-3 rounded-3">
+                    <i class="fa-solid fa-compact-disc fa-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="fw-black text-uppercase m-0">Montaje y Balanceo</h1>
+                    <p class="text-muted m-0">Precisión computarizada para una conducción suave</p>
+                </div>
+            </div>
+
+            <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1000&q=80" class="img-fluid rounded-4 shadow-sm mb-4" alt="Montaje y Balanceo">
+
+            <h4 class="fw-bold mb-3">¿En qué consiste el servicio?</h4>
+            <p class="text-muted leading-relaxed">
+                El montaje profesional garantiza el acople perfecto entre la llanta y el rin sin dañar las pestañas ni los sensores de presión. Complementado con un balanceo computarizado de alta precisión, distribuimos el peso de forma equitativa en la rueda para asegurar una rodadura suave.
+            </p>
+
+            <div class="row g-3 my-4">
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 bg-white shadow-sm">
+                        <i class="fa-solid fa-car-side text-danger mb-2 fa-lg"></i>
+                        <h6 class="fw-bold">Conducción Suave</h6>
+                        <p class="small text-muted m-0">Elimina vibraciones molestas en el volante y el pedal.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 bg-white shadow-sm">
+                        <i class="fa-solid fa-arrows-spin text-danger mb-2 fa-lg"></i>
+                        <h6 class="fw-bold">Desgaste Uniforme</h6>
+                        <p class="small text-muted m-0">Evita deformaciones irregulares en la banda de rodamiento.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario Sticky -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-lg p-4 rounded-4 sticky-top" style="top: 20px;">
+                <h4 class="fw-bold mb-1">Solicita este servicio</h4>
+                <p class="small text-muted mb-4">Ingresa tus datos y te contactaremos para agendar tu cita.</p>
+
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Servicio</label>
+                        <input type="text" class="form-value form-control bg-light fw-bold" value="Montaje y Balanceo" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Nombre Completo</label>
+                        <input type="text" class="form-control" placeholder="Ej. Ana Mercedes" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">E-mail</label>
+                        <input type="email" class="form-control" placeholder="correo@ejemplo.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Teléfono de contacto</label>
+                        <input type="tel" class="form-control" placeholder="Ej. 300 123 4567" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Mensaje / Vehículo</label>
+                        <textarea class="form-control" rows="3" placeholder="Detalles de tu vehículo..."></textarea>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="checkTerms" required>
+                        <label class="form-check-label small text-muted" for="checkTerms">
+                            Declaro haber leído y aceptado los Términos y Condiciones.
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-danger w-100 py-3 fw-bold text-uppercase">Enviar Solicitud</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
