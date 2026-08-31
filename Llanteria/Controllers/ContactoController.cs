@@ -19,17 +19,16 @@ public class ContactoController : Controller
         try
         {
             var tuCorreoDestino = "mendezfonsecakevindavid5@gmail.com";
-            var passwordAplicacion = "tuup ydch lglq rwwa"; // Clave de aplicación generada en tu cuenta
+            var passwordAplicacion = "eodb uysa gfjq ojmo"; // Reemplazar con una clave nueva si la anterior expiró
 
-            var smtpClient = new SmtpClient("smtp.gmail.com")
+            using (var smtpClient = new SmtpClient("smtp.gmail.com"))
             {
-                Port = 587,
-                Credentials = new NetworkCredential(tuCorreoDestino, passwordAplicacion),
-                EnableSsl = true,
-            };
+                smtpClient.Port = 587;
+                smtpClient.UseDefaultCredentials = false; // Requiere agregarse antes de Credentials
+                smtpClient.Credentials = new NetworkCredential(tuCorreoDestino, passwordAplicacion);
+                smtpClient.EnableSsl = true;
 
-            // Estructura HTML del correo impecable...
-            string cuerpoHtml = $@"
+                string cuerpoHtml = $@"
             <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;'>
                 <div style='background-color: #C92B0A; color: white; padding: 20px; text-align: center;'>
                     <h2 style='margin: 0; text-transform: uppercase;'>Nuevo Mensaje de Contacto</h2>
@@ -64,31 +63,27 @@ public class ContactoController : Controller
                 </div>
             </div>";
 
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(tuCorreoDestino, "Portal Llantería"),
-                Subject = $"[Web Contacto] {Asunto} - {Nombre}",
-                Body = cuerpoHtml,
-                IsBodyHtml = true,
-            };
+                using (var mailMessage = new MailMessage())
+                {
+                    mailMessage.From = new MailAddress(tuCorreoDestino, "Portal Llantería");
+                    mailMessage.Subject = $"[Web Contacto] {Asunto} - {Nombre}";
+                    mailMessage.Body = cuerpoHtml;
+                    mailMessage.IsBodyHtml = true;
 
-            mailMessage.ReplyToList.Add(new MailAddress(Correo));
-            mailMessage.To.Add(tuCorreoDestino);
+                    mailMessage.ReplyToList.Add(new MailAddress(Correo));
+                    mailMessage.To.Add(tuCorreoDestino);
 
-            await smtpClient.SendMailAsync(mailMessage);
+                    await smtpClient.SendMailAsync(mailMessage);
+                }
+            }
 
-            // ✅ Asignamos el TempData de éxito
             TempData["MensajeEnviado"] = "true";
-
-            // 🔄 REDIRECCIÓN CORREGIDA: Volvemos a la misma vista de Contacto
             return RedirectToAction(nameof(Index));
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // ✅ CORRECCIÓN: Cambiamos ViewBag por TempData para que sobreviva a la redirección
+            // Puedes poner un punto de interrupción aquí en Visual Studio para leer ex.Message
             TempData["ErrorCorreo"] = "true";
-
-            // 🔄 REDIRECCIÓN CORREGIDA
             return RedirectToAction(nameof(Index));
         }
     }
