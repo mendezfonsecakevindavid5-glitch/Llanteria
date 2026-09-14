@@ -1,13 +1,13 @@
 ﻿@{
     ViewData["Title"] = "Montaje y Balanceo";
+    bool isAuthenticated = User.Identity != null && User.Identity.IsAuthenticated;
 }
 
 <div class="container py-5">
-
     <div class="row g-5">
-        <!-- Detalle del Servicio -->
+        <!-- Detalle del Servicio (Información General) -->
         <div class="col-lg-7">
-            <div class="d-flex items-center gap-3 mb-3">
+            <div class="d-flex align-items-center gap-3 mb-3">
                 <div class="bg-danger text-white p-3 rounded-3">
                     <i class="fa-solid fa-compact-disc fa-2xl"></i>
                 </div>
@@ -17,7 +17,8 @@
                 </div>
             </div>
 
-            <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1000&q=80" class="img-fluid rounded-4 shadow-sm mb-4" alt="Montaje y Balanceo">
+            <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1000&q=80"
+                 class="img-fluid rounded-4 shadow-sm mb-4" alt="Montaje y Balanceo">
 
             <h4 class="fw-bold mb-3">¿En qué consiste el servicio?</h4>
             <p class="text-muted leading-relaxed">
@@ -40,43 +41,125 @@
                     </div>
                 </div>
             </div>
+
+            @if (isAuthenticated)
+            {
+                <!-- Información adicional puntual exclusiva para clientes registrados -->
+                <div class="alert alert-light border-start border-danger border-4 shadow-sm p-4 rounded-3 mt-4">
+                    <h5 class="fw-bold text-dark mb-2">
+                        <i class="fa-solid fa-circle-info text-danger me-2"></i>Información importante para tu cita
+                    </h5>
+                    <ul class="mb-0 text-muted small ps-3">
+                        <li><strong>Tiempo estimado del servicio:</strong> 45 a 60 minutos.</li>
+                        <li><strong>Garantía:</strong> 30 días o 1,000 km de alineación/balanceo.</li>
+                        <li><strong>Recomendación:</strong> Por favor llega 10 minutos antes del horario reservado.</li>
+                    </ul>
+                </div>
+            }
         </div>
 
-        <!-- Formulario Sticky -->
+        <!-- Panel Lateral (Formulario / Agendamiento) -->
         <div class="col-lg-5">
             <div class="card border-0 shadow-lg p-4 rounded-4 sticky-top" style="top: 20px;">
-                <h4 class="fw-bold mb-1">Solicita este servicio</h4>
-                <p class="small text-muted mb-4">Ingresa tus datos y te contactaremos para agendar tu cita.</p>
+                @if (isAuthenticated)
+                {
+                    <!-- ESTADO 1: USUARIO AUTENTICADO (Agendamiento rápido) -->
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="fw-bold m-0">Agendar Cita</h4>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                            <i class="fa-solid fa-user-check me-1"></i>Cliente Registrado
+                        </span>
+                    </div>
+                    <p class="small text-muted mb-4">
+                        Hola, <strong>@User.Identity.Name</strong>. Selecciona la fecha y hora para apartar tu servicio.
+                    </p>
 
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">Servicio</label>
-                        <input type="text" class="form-value form-control bg-light fw-bold" value="Montaje y Balanceo" readonly>
+                    <form asp-controller="Citas" asp-action="Agendar" method="post">
+                        <input type="hidden" name="ServicioNombre" value="Montaje y Balanceo" />
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Fecha del servicio</label>
+                            <input type="date" name="Fecha" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Horario disponible</label>
+                            <select name="Hora" class="form-select" required>
+                                <option value="" selected disabled>-- Selecciona un horario --</option>
+                                <option value="08:00">08:00 AM</option>
+                                <option value="09:30">09:30 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="14:00">02:00 PM</option>
+                                <option value="15:30">03:30 PM</option>
+                                <option value="17:00">05:00 PM</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Placa o Detalle del Vehículo</label>
+                            <input type="text" name="Vehiculo" class="form-control" placeholder="Ej. ABC-123 / Toyota Hilux" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Notas adicionales (Opcional)</label>
+                            <textarea name="Notas" class="form-control" rows="2" placeholder="Observaciones sobre la llanta o rin..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger w-100 py-3 fw-bold text-uppercase shadow-sm">
+                            <i class="fa-solid fa-calendar-check me-2"></i>Apartar Servicio
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <!-- ESTADO 2: USUARIO NO REGISTRADO (Informativo y Formulario Sencillo) -->
+                    <h4 class="fw-bold mb-1">Solicita este servicio</h4>
+                    <p class="small text-muted mb-4">Ingresa tus datos de contacto o inicia sesión para agendar directamente.</p>
+
+                    <form asp-controller="Servicios" asp-action="SolicitarContacto" method="post">
+                        <input type="hidden" name="ServicioNombre" value="Montaje y Balanceo" />
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Servicio</label>
+                            <input type="text" class="form-control bg-light fw-bold" value="Montaje y Balanceo" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Nombre Completo</label>
+                            <input type="text" name="Nombre" class="form-control" placeholder="Ej. Juan Pérez" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">E-mail</label>
+                            <input type="email" name="Correo" class="form-control" placeholder="correo@ejemplo.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Teléfono de contacto</label>
+                            <input type="tel" name="Telefono" class="form-control" placeholder="Ej. 300 123 4567" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Mensaje / Vehículo</label>
+                            <textarea name="Mensaje" class="form-control" rows="2" placeholder="Detalles de tu vehículo..."></textarea>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="checkTerms" required>
+                            <label class="form-check-label small text-muted" for="checkTerms">
+                                Acepto los Términos y Condiciones.
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-outline-danger w-100 py-2 fw-bold text-uppercase mb-3">
+                            Enviar Solicitud Informativa
+                        </button>
+                    </form>
+
+                    <hr class="my-3">
+
+                    <div class="text-center bg-light p-3 rounded-3 border">
+                        <p class="small text-muted mb-2">¿Ya tienes una cuenta?</p>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-danger btn-sm w-100 fw-bold">
+                            <i class="fa-solid fa-right-to-bracket me-1"></i>Iniciar Sesión para Reservar
+                        </a>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Nombre Completo</label>
-                        <input type="text" class="form-control" placeholder="Ej. Ana Mercedes" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">E-mail</label>
-                        <input type="email" class="form-control" placeholder="correo@ejemplo.com" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Teléfono de contacto</label>
-                        <input type="tel" class="form-control" placeholder="Ej. 300 123 4567" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Mensaje / Vehículo</label>
-                        <textarea class="form-control" rows="3" placeholder="Detalles de tu vehículo..."></textarea>
-                    </div>
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="checkTerms" required>
-                        <label class="form-check-label small text-muted" for="checkTerms">
-                            Declaro haber leído y aceptado los Términos y Condiciones.
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-danger w-100 py-3 fw-bold text-uppercase">Enviar Solicitud</button>
-                </form>
+                }
             </div>
         </div>
     </div>
