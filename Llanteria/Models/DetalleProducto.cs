@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Llanteria.Models;
 
@@ -19,6 +20,7 @@ public partial class DetalleProducto
 
     public string? IndiceCarga { get; set; }
 
+
     public string? IndiceVelocidad { get; set; }
 
     public string? Viscosidad { get; set; }
@@ -27,7 +29,7 @@ public partial class DetalleProducto
 
     public int? GarantiaMeses { get; set; }
 
-    public virtual Marca IdMarcaNavigation { get; set; } = null!;
+    public virtual Marca? IdMarcaNavigation { get; set; } = null!;
 
-    public virtual Producto IdProductoNavigation { get; set; } = null!;
+    public virtual Producto? IdProductoNavigation { get; set; } = null!;
 }

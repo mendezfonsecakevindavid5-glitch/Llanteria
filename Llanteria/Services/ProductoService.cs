@@ -27,6 +27,7 @@ public class ProductoService
     {
         return _context.Productos
             .Include(p => p.IdProveedorNavigation)
+            .Include(p => p.DetalleProducto)          // ← AGREGAR ESTA LÍNEA
             .FirstOrDefault(p => p.Id == id);
     }
 
@@ -40,7 +41,42 @@ public class ProductoService
     // Actualizar un producto existente
     public void UpdateProducto(Producto obj)
     {
-        _context.Productos.Update(obj);
+        var existente = _context.Productos
+            .Include(p => p.DetalleProducto)
+            .FirstOrDefault(p => p.Id == obj.Id);
+
+        if (existente == null) return;
+
+        // Actualizar datos del producto
+        existente.Nombre = obj.Nombre;
+        existente.Descripcion = obj.Descripcion;
+        existente.PrecioCompra = obj.PrecioCompra;
+        existente.PrecioVenta = obj.PrecioVenta;
+        existente.IdProveedor = obj.IdProveedor;
+        existente.IdBodega = obj.IdBodega;
+        existente.Categoria = obj.Categoria;
+        existente.RutaImagen = obj.RutaImagen;
+
+        // Actualizar o crear DetalleProducto
+        // Actualizar o crear DetalleProducto
+        if (obj.DetalleProducto != null && obj.DetalleProducto.IdMarca > 0)
+        {
+            if (existente.DetalleProducto == null)
+            {
+                obj.DetalleProducto.IdProducto = existente.Id;
+                existente.DetalleProducto = obj.DetalleProducto;
+            }
+            else
+            {
+                existente.DetalleProducto.IdMarca = obj.DetalleProducto.IdMarca;
+                existente.DetalleProducto.Ancho = obj.DetalleProducto.Ancho;
+                existente.DetalleProducto.Perfil = obj.DetalleProducto.Perfil;
+                existente.DetalleProducto.Diametro = obj.DetalleProducto.Diametro;
+                existente.DetalleProducto.Viscosidad = obj.DetalleProducto.Viscosidad;
+                existente.DetalleProducto.GarantiaMeses = obj.DetalleProducto.GarantiaMeses;
+            }
+        }
+
         _context.SaveChanges();
     }
 

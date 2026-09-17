@@ -19,7 +19,6 @@
                 --glass-nav-bg: rgba(201, 43, 10, 0.95);
             }
 
-            /* Configuración para forzar el footer al final de la pantalla */
             html, body {
                 height: 100%;
                 margin: 0;
@@ -33,7 +32,6 @@
                 flex-direction: column;
             }
 
-            /* BARRA DE NAVEGACIÓN PREMIUM ESTILO MICHELIN PERFORMANCE */
             .michelin-nav-global {
                 position: fixed;
                 top: 0;
@@ -63,26 +61,26 @@
                 position: relative;
             }
 
-                .nav-matrix-link:hover {
-                    background-color: transparent !important;
-                }
+            .nav-matrix-link:hover {
+                background-color: transparent !important;
+            }
 
-                .nav-matrix-link::after {
-                    content: '';
-                    position: absolute;
-                    bottom: 0;
-                    left: 0;
-                    width: 0;
-                    height: 2px;
-                    background: #FFFFFF;
-                    transition: width 0.2s ease-out;
-                }
+            .nav-matrix-link::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: #FFFFFF;
+                transition: width 0.2s ease-out;
+            }
 
-                .nav-matrix-link:hover::after {
-                    width: 100%;
-                }
+            .nav-matrix-link:hover::after {
+                width: 100%;
+            }
 
-            /* Estilos del Botón con Brillo */
+            /* Estilos del Botón con Brillo Ligero y Nítido */
             .btn-matrix-action {
                 background: #000000 !important;
                 color: #FFFFFF !important;
@@ -91,50 +89,39 @@
                 position: relative;
                 overflow: hidden;
                 cursor: pointer;
-                transition: all 0.3s ease;
             }
 
-                /* Forzar colores constantes al hacer clic */
-                .btn-matrix-action:active,
-                .btn-matrix-action:focus,
-                .btn-matrix-action:visited {
-                    background: #000000 !important;
-                    border-color: #000000 !important;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-                    transform: none !important;
-                }
+            .btn-matrix-action:active,
+            .btn-matrix-action:focus,
+            .btn-matrix-action:visited {
+                background: #000000 !important;
+                border-color: #000000 !important;
+            }
 
-                .btn-matrix-action:hover {
-                    background: #1a1a1c !important;
-                    transform: translateY(-2px);
-                }
-
-                /* Animación de Brillo */
-                .btn-matrix-action::before {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: -100%;
-                    width: 50%;
-                    height: 100%;
-                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-                    transform: skewX(-25deg);
-                    z-index: 1;
-                    pointer-events: none;
-                }
+            /* Animación de Brillo Rápida e Imperceptible */
+            .btn-matrix-action::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -150%;
+                width: 40%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+                transform: skewX(-20deg);
+                z-index: 1;
+                pointer-events: none;
+            }
 
             .animate-shine::before {
-                animation: shine-slide 0.6s ease-in-out forwards;
+                animation: shine-slide 0.25s linear forwards;
             }
 
-            /* CORRECCIÓN: Arroba escapada para Razor */
             @@keyframes shine-slide {
                 0% {
-                    left: -100%;
+                    left: -150%;
                 }
-
                 100% {
-                    left: 200%;
+                    left: 250%;
                 }
             }
 
@@ -144,14 +131,12 @@
                 cursor: not-allowed !important;
             }
 
-            /* Contenedor principal flex para empujar el footer */
             .main-matrix-container {
                 margin-top: 85px;
                 flex: 1 0 auto;
                 padding-bottom: 2rem;
             }
 
-            /* Estilos del Footer Oscuro */
             .matrix-footer {
                 flex-shrink: 0;
                 background: #000000;
@@ -172,14 +157,13 @@
                 list-style: none;
             }
 
-                .footer-links li {
-                    margin-bottom: 0.8rem;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
+            .footer-links li {
+                margin-bottom: 0.8rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
 
-            /* CORRECCIÓN: Arroba escapada para Razor */
             @@media (min-width: 768px) {
                 .footer-links li {
                     justify-content: flex-start;
@@ -224,7 +208,7 @@
                     <ul class="navbar-nav ms-auto align-items-center gap-3 mt-3 mt-lg-0">
                         @if (!User.Identity.IsAuthenticated)
                         {
-                            <!-- 🔓 ENLACES VISIBLES PARA USUARIOS VISITANTES -->
+                            <!-- 🔓 VISIBLE SOLO PARA VISITANTES -->
                             <li class="nav-item">
                                 <a class="nav-link nav-matrix-link header-interactable" asp-controller="Account" asp-action="Register">Puntos</a>
                             </li>
@@ -236,10 +220,19 @@
                         }
                         else
                         {
-                            <!-- 🔒 ENLACES VISIBLES SOLO CUANDO YA ESTÁ LOGUEADO -->
+                            var fotoClaim = User.FindFirst("Foto")?.Value;
+                            var username = User.Identity.Name ?? "Usuario";
+                            var defaultAvatar = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(username)}&background=09090B&color=fff&rounded=true";
+                            var avatarUrl = !string.IsNullOrEmpty(fotoClaim) ? fotoClaim : defaultAvatar;
+
                             <li class="nav-item">
                                 <a class="nav-link nav-matrix-link header-interactable text-white fw-bold" asp-controller="Dashboard" asp-action="Index">
                                     <i class="fa-solid fa-star text-warning me-1"></i> Mis Puntos
+                                </a>
+                            </li>
+                            <li class="nav-item d-flex align-items-center me-1">
+                                <a asp-controller="Account" asp-action="MiPerfil" title="Mi Perfil" class="header-interactable">
+                                    <img src="@avatarUrl" alt="Foto de perfil" class="rounded-circle border border-2 border-white shadow-sm" style="width: 42px; height: 42px; object-fit: cover;" />
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -334,7 +327,7 @@
                         setTimeout(() => {
                             this.classList.remove("click-disabled");
                             this.classList.remove("animate-shine");
-                        }, 800);
+                        }, 400);
                     });
                 });
             });

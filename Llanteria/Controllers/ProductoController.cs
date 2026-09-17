@@ -8,7 +8,6 @@ using System.IO;
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
-// Importaciones necesarias para ImageSharp
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Formats.Webp;
@@ -20,13 +19,20 @@ namespace Llanteria.Controllers
         private readonly ProductoService ser;
         private readonly ProveedoreService provSer;
         private readonly MarcaService marcSer;
+        private readonly BodegaService bodSer;          // ← NUEVO
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductoController(ProductoService productoService, ProveedoreService proveedoreService, MarcaService marcaService, IWebHostEnvironment webHostEnvironment)
+        public ProductoController(
+            ProductoService productoService,
+            ProveedoreService proveedoreService,
+            MarcaService marcaService,
+            BodegaService bodegaService,               // ← NUEVO
+            IWebHostEnvironment webHostEnvironment)
         {
             ser = productoService;
             provSer = proveedoreService;
             marcSer = marcaService;
+            bodSer = bodegaService;                    // ← NUEVO
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -38,7 +44,7 @@ namespace Llanteria.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            CargarCombos(); // Carga las listas de Proveedores y Marcas en el ViewBag
+            CargarCombos();
             return View();
         }
 
@@ -51,7 +57,7 @@ namespace Llanteria.Controllers
                 return NotFound();
             }
 
-            CargarCombos(); // Carga las listas de Proveedores y Marcas para la edición
+            CargarCombos();
             return View(producto);
         }
 
@@ -62,7 +68,6 @@ namespace Llanteria.Controllers
                 .Select(p => new {
                     nombre = p.Nombre,
                     precio = p.PrecioVenta.ToString("C0"),
-                    // Se unifica la ruta a "productos" en minúscula para evitar fallos de rutas
                     img = "/images/productos/" + (string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen),
                     categoria = p.Categoria,
                     detalles = p.DetalleProducto != null ? new
@@ -84,12 +89,25 @@ namespace Llanteria.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Producto p)
         {
+            // === DIAGNÓSTICO ===
+            if (!ModelState.IsValid)
+            {
+                var errores = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => $"{x.Key}: {string.Join(" | ", x.Value.Errors.Select(e => e.ErrorMessage))}")
+                    .ToList();
+
+                ViewBag.Errores = string.Join("<br>", errores);
+            }
+            // ===================
+
             if (ModelState.IsValid)
             {
                 p.RutaImagen = ProcesarImagen(p.ImagenArchivo);
                 ser.AddProducto(p);
                 return RedirectToAction(nameof(Index));
             }
+
             CargarCombos();
             return View(p);
         }
@@ -100,40 +118,36 @@ namespace Llanteria.Controllers
         {
             if (ModelState.IsValid)
             {
-                var original = ser.GetProducto(id);
-
+                // Si subieron una imagen nueva
                 if (ob.ImagenArchivo != null)
                 {
+                    var original = ser.GetProducto(id);
                     EliminarImagen(original?.RutaImagen);
                     ob.RutaImagen = ProcesarImagen(ob.ImagenArchivo);
-                }
-                else
-                {
-                    ob.RutaImagen = original?.RutaImagen;
                 }
 
                 ser.UpdateProducto(ob);
                 return RedirectToAction(nameof(Index));
             }
+
             CargarCombos();
             return View(ob);
         }
 
-        // --- MÉTODOS AUXILIARES OPTIMIZADOS ---
+        // --- MÉTODOS AUXILIARES ---
 
         private string ProcesarImagen(IFormFile? archivo)
         {
             if (archivo == null) return "default-producto.png";
 
-            string carpeta = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productos");
+            // ← Aquí cambiamos a "productoos"
+            string carpeta = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productoos");
             if (!Directory.Exists(carpeta)) Directory.CreateDirectory(carpeta);
 
-            // Nombre limpio terminado en .webp
             string nombreBase = Path.GetFileNameWithoutExtension(archivo.FileName).ToLower().Replace(" ", "-");
             string nombreWebp = nombreBase + ".webp";
             string ruta = Path.Combine(carpeta, nombreWebp);
 
-            // Redimensionamiento y optimización a WebP
             using (Image image = Image.Load(archivo.OpenReadStream()))
             {
                 image.Mutate(x => x.Resize(new ResizeOptions
@@ -148,16 +162,12 @@ namespace Llanteria.Controllers
             return nombreWebp;
         }
 
-        private void EmptyImagen(string? nombreArchivo) // Alias por claridad interna si fuera necesario
-        {
-            EliminarImagen(nombreArchivo);
-        }
-
         private void EliminarImagen(string? nombreArchivo)
         {
             if (string.IsNullOrEmpty(nombreArchivo) || nombreArchivo == "default-producto.png") return;
 
-            string ruta = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productos", nombreArchivo);
+            // ← También aquí
+            string ruta = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productoos", nombreArchivo);
             if (System.IO.File.Exists(ruta)) System.IO.File.Delete(ruta);
         }
 
@@ -165,6 +175,7 @@ namespace Llanteria.Controllers
         {
             ViewBag.IdProveedor = new SelectList(provSer.GetProveedores(), "Id", "NombreEmpresa");
             ViewBag.IdMarca = new SelectList(marcSer.GetMarcas(), "Id", "Nombre");
+            ViewBag.IdBodega = new SelectList(bodSer.GetBodegas(), "Id", "NombreBodega"); // ← corregido
         }
     }
-}
+ }

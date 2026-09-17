@@ -12,44 +12,125 @@
         <h2 class="fw-black text-dark text-uppercase m-0">Registrar Nuevo Producto</h2>
     </div>
 
+    <!-- MENSAJE DE ERRORES -->
+    @if (ViewBag.Errores != null)
+    {
+        <div class="alert alert-danger mb-4">
+            <strong>Errores que impiden guardar:</strong><br />
+            @Html.Raw(ViewBag.Errores)
+        </div>
+    }
+
     <div class="card border-0 shadow-sm rounded-xl overflow-hidden">
         <div class="card-body p-4 p-md-5 bg-white">
             <form asp-action="Create" method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
                 <div class="row g-4">
+                    <!-- Preview -->
                     <div class="col-12 d-flex align-items-center gap-3 bg-light p-3 rounded-3 border">
                         <div class="rounded-3 border bg-white shadow-sm d-flex align-items-center justify-content-center overflow-hidden" style="width: 80px; height: 80px;">
-                            <img id="previewImagen" src="/images/Productos/default-producto.png" class="w-100 h-100 object-fit-cover" />
+                            <img id="previewImagen" src="/images/productoos/default-producto.png" class="w-100 h-100 object-fit-cover" />
                         </div>
                         <h6 class="m-0 fw-bold text-dark" id="previewNombre">Esperando nombre...</h6>
                     </div>
 
-                    <div class="col-md-8"><div class="form-floating"><input asp-for="Nombre" id="inputNombre" class="form-control" required /><label>Nombre del Producto</label></div></div>
-                    <div class="col-md-4"><div class="form-floating"><select asp-for="IdProveedor" class="form-select" asp-items="ViewBag.IdProveedor"></select><label>Proveedor</label></div></div>
+                    <!-- Nombre + Proveedor + Bodega -->
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="Nombre" id="inputNombre" class="form-control" required />
+                            <label>Nombre del Producto</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select asp-for="IdProveedor" class="form-select" asp-items="ViewBag.IdProveedor" required>
+                                <option value="">Seleccione Proveedor</option>
+                            </select>
+                            <label>Proveedor</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select asp-for="IdBodega" class="form-select" asp-items="ViewBag.IdBodega" required>
+                                <option value="">Seleccione Bodega</option>
+                            </select>
+                            <label>Bodega</label>
+                        </div>
+                    </div>
 
+                    <!-- Detalles Técnicos -->
                     <div class="col-12">
                         <div class="card bg-light border-0">
                             <div class="card-body">
-                                <h6 class="text-muted text-uppercase mb-3"><i class="fa-solid fa-gears"></i> Detalles Técnicos (Llantas/Aceites)</h6>
+                                <h6 class="text-muted text-uppercase mb-3">
+                                    <i class="fa-solid fa-gears"></i> Detalles Técnicos (Llantas/Aceites)
+                                </h6>
                                 <div class="row g-2">
-                                    <div class="col-md-2"><div class="form-floating"><input asp-for="DetalleProducto.Ancho" class="form-control" placeholder="Ancho" /><label>Ancho</label></div></div>
-                                    <div class="col-md-2"><div class="form-floating"><input asp-for="DetalleProducto.Perfil" class="form-control" placeholder="Perfil" /><label>Perfil</label></div></div>
-                                    <div class="col-md-2"><div class="form-floating"><input asp-for="DetalleProducto.Diametro" class="form-control" placeholder="Diam" /><label>Diám</label></div></div>
-                                    <div class="col-md-3"><div class="form-floating"><input asp-for="DetalleProducto.Viscosidad" class="form-control" placeholder="Visc" /><label>Viscosidad</label></div></div>
-                                    <div class="col-md-3"><div class="form-floating"><input asp-for="DetalleProducto.GarantiaMeses" class="form-control" placeholder="Garantía" /><label>Garantía (Meses)</label></div></div>
+                                    <!-- MARCA -->
+                                    <div class="col-md-3">
+                                        <div class="form-floating">
+                                            <select asp-for="DetalleProducto.IdMarca" class="form-select" asp-items="ViewBag.IdMarca" required>
+                                                <option value="">Seleccione Marca</option>
+                                            </select>
+                                            <label>Marca</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-floating">
+                                            <input asp-for="DetalleProducto.Ancho" class="form-control" placeholder="Ancho" />
+                                            <label>Ancho</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-floating">
+                                            <input asp-for="DetalleProducto.Perfil" class="form-control" placeholder="Perfil" />
+                                            <label>Perfil</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-floating">
+                                            <input asp-for="DetalleProducto.Diametro" class="form-control" placeholder="Diam" />
+                                            <label>Diám</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-floating">
+                                            <input asp-for="DetalleProducto.Viscosidad" class="form-control" placeholder="Visc" />
+                                            <label>Viscosidad</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-floating">
+                                            <input asp-for="DetalleProducto.GarantiaMeses" class="form-control" placeholder="Garantía" />
+                                            <label>Garantía (Meses)</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-4"><div class="form-floating"><input asp-for="PrecioCompra" type="number" step="0.01" class="form-control" required /><label>Precio Compra</label></div></div>
-                    <div class="col-md-4"><div class="form-floating"><input asp-for="PrecioVenta" type="number" step="0.01" class="form-control" required /><label>Precio Venta</label></div></div>
+                    <!-- Precios + Imagen -->
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input asp-for="PrecioCompra" type="number" step="0.01" class="form-control" required />
+                            <label>Precio Compra</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input asp-for="PrecioVenta" type="number" step="0.01" class="form-control" required />
+                            <label>Precio Venta</label>
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <label class="small text-muted">Imagen</label>
                         <input asp-for="ImagenArchivo" id="inputImagenFile" type="file" class="form-control" accept="image/*" />
                     </div>
 
+                    <!-- Botón -->
                     <div class="col-12 pt-3 border-top d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary px-5">Guardar Producto</button>
                     </div>
@@ -66,10 +147,13 @@
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) { preview.src = event.target.result; }
+                reader.onload = function(event) {
+                    preview.src = event.target.result;
+                }
                 reader.readAsDataURL(file);
             }
         });
+
         document.getElementById("inputNombre").addEventListener("input", function(e) {
             document.getElementById("previewNombre").innerText = e.target.value || "Esperando nombre...";
         });

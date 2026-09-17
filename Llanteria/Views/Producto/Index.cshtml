@@ -43,10 +43,10 @@
                             <tr>
                                 <td class="ps-4 text-center">
                                     <div class="rounded-3 overflow-hidden border bg-light shadow-sm d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                                        <img src="@Url.Content("~/images/productos/" + (string.IsNullOrEmpty(item.Categoria) || item.Categoria.Contains(" ") ? "default-producto.png" : item.Categoria))"
+                                        <img src="@Url.Content("~/images/productoos/" + (string.IsNullOrEmpty(item.RutaImagen) ? "default-producto.png" : item.RutaImagen))"
                                              class="w-100 h-100 object-fit-cover"
                                              alt="@item.Nombre"
-                                             onerror="this.src='/images/productos/default-producto.png';" />
+                                             onerror="this.src='/images/productoos/default-producto.png';" />
                                     </div>
                                 </td>
 
@@ -117,9 +117,9 @@
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-        .transition-transform:hover {
-            transform: translateY(-2px);
-        }
+    .transition-transform:hover {
+        transform: translateY(-2px);
+    }
 
     .object-fit-cover {
         object-fit: cover;

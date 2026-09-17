@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema; // 👈 Obligatorio
 using Microsoft.AspNetCore.Http; // 👈 Obligatorio para IFormFile
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Llanteria.Models;
 
@@ -23,11 +24,12 @@ public partial class Producto
     public string? Categoria { get; set; }
     public string? RutaImagen { get; set; }
 
+
     public virtual ICollection<DetalleFactura> DetalleFacturas { get; set; } = new List<DetalleFactura>();
 
     public virtual DetalleProducto? DetalleProducto { get; set; }
 
-    public virtual Proveedore IdProveedorNavigation { get; set; } = null!;
+    public virtual Proveedore? IdProveedorNavigation { get; set; } = null!;
 
     public virtual ICollection<Inventario> Inventarios { get; set; } = new List<Inventario>();
 

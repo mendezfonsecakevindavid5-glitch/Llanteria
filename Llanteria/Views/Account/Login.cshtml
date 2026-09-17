@@ -1,6 +1,7 @@
 ﻿@{
-    ViewData["Title"] = "Ingreso al Sistema";
+    ViewData["Title"] = "Formulario de Ingreso";
 }
+
 <style>
     .login-container-wrapper {
         display: flex;
@@ -11,15 +12,8 @@
     }
 
     @@keyframes slideUpEntrance {
-        0% {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        100% {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        0% { opacity: 0; transform: translateY(30px); }
+        100% { opacity: 1; transform: translateY(0); }
     }
 
     .entrance-login-card {
@@ -31,16 +25,6 @@
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
         animation: slideUpEntrance 0.6s ease-out forwards;
         opacity: 0;
-    }
-
-    .icon-header-circle {
-        width: 70px;
-        height: 70px;
-        border: 2px solid #C92B0A;
-        background-color: #fff5f5;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
     }
 
     .form-main-title {
@@ -62,10 +46,6 @@
         margin-bottom: 2rem;
     }
 
-    .form-description {
-        margin-top: 1rem;
-    }
-
     .input-wrapper {
         position: relative;
         display: flex;
@@ -73,13 +53,32 @@
         width: 100%;
     }
 
-        .input-wrapper i.internal-icon {
-            position: absolute;
-            left: 15px;
-            color: #000000;
-            font-size: 1.1rem;
-            z-index: 2;
-        }
+    .input-wrapper i.internal-icon {
+        position: absolute;
+        left: 15px;
+        color: #6c757d;
+        font-size: 1.1rem;
+        z-index: 2;
+    }
+
+    .password-toggle-btn {
+        position: absolute;
+        left: 15px;
+        background: transparent;
+        border: none;
+        color: #6c757d;
+        font-size: 1.1rem;
+        cursor: pointer;
+        z-index: 5;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .password-toggle-btn:hover {
+        color: #000000;
+    }
 
     .custom-input {
         height: 55px;
@@ -88,21 +87,6 @@
         border: 1px solid #ced4da;
         border-radius: 0.5rem;
         width: 100%;
-    }
-
-    .password-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .password-toggle-btn {
-        background: transparent;
-        border: none;
-        color: #000000;
-        font-size: 1.4rem;
-        cursor: pointer;
-        transition: opacity 0.3s ease;
     }
 
     .btn-login-submit {
@@ -115,15 +99,15 @@
         transition: filter 0.3s ease, background-color 0.3s ease;
     }
 
-        .btn-login-submit:disabled {
-            background-color: #8B0000 !important;
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+    .btn-login-submit:disabled {
+        background-color: #8B0000 !important;
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 
-        .btn-login-submit:hover {
-            filter: brightness(0.85);
-        }
+    .btn-login-submit:hover {
+        filter: brightness(0.85);
+    }
 
     .custom-error-text {
         color: var(--llanteria-primary, #C92B0A);
@@ -131,6 +115,12 @@
         font-size: 0.95rem;
         margin-top: 0.8rem;
         display: block;
+    }
+
+    .partial-divider {
+        width: 60%;
+        margin: 1.2rem auto;
+        border-top: 1px solid #dee2e6;
     }
 </style>
 
@@ -142,9 +132,6 @@
                 <i class="fa-solid fa-circle-user text-dark me-3" style="font-size: 2.5rem;"></i>
                 <h2 class="form-main-title m-0 fw-bold">Iniciar sesión</h2>
             </div>
-            <p class="form-description text-muted">
-                Por favor, ingresa tus credenciales para acceder al sistema.
-            </p>
         </div>
 
         <form id="loginForm" asp-action="Login" method="post">
@@ -152,20 +139,17 @@
                 <label class="custom-field-label">Usuario</label>
                 <div class="input-wrapper">
                     <i class="fa-regular fa-user internal-icon"></i>
-                    <input type="text" name="username" class="form-control custom-input" required />
+                    <input type="text" name="username" class="form-control custom-input" placeholder="Ingresa tu usuario" required />
                 </div>
             </div>
 
             <div class="mb-2">
                 <label class="custom-field-label">Contraseña</label>
-                <div class="password-wrapper">
-                    <button type="button" id="togglePasswordBtn" class="password-toggle-btn">
+                <div class="input-wrapper">
+                    <button type="button" id="togglePasswordBtn" class="password-toggle-btn" title="Mostrar/Ocultar contraseña">
                         <i id="eyeIcon" class="fa-regular fa-eye-slash"></i>
                     </button>
-                    <div class="input-wrapper flex-grow-1">
-                        <i class="fa-solid fa-lock internal-icon"></i>
-                        <input type="password" id="passwordInput" name="password" class="form-control custom-input" required />
-                    </div>
+                    <input type="password" id="passwordInput" name="password" class="form-control custom-input" placeholder="Ingresa tu contraseña" required />
                 </div>
             </div>
 
@@ -182,7 +166,13 @@
                 </button>
             </div>
 
-            <div class="text-center mt-4 border-top pt-3">
+            <div class="text-center mt-4">
+                <a asp-controller="Account" asp-action="ForgotPassword" class="text-danger fw-bold text-decoration-none" style="font-size: 0.95rem;">
+                    Recuperar contraseña
+                </a>
+                
+                <div class="partial-divider"></div>
+
                 <span class="text-muted">¿No tienes cuenta?</span>
                 <a asp-controller="Account" asp-action="Register" class="text-danger fw-bold text-decoration-none ms-2">Regístrate aquí</a>
             </div>
@@ -210,14 +200,12 @@
                 }
 
                 isCooldownActivo = true;
-                toggleBtn.style.opacity = '0.4';
                 toggleBtn.style.cursor = 'wait';
 
                 setTimeout(() => {
                     isCooldownActivo = false;
-                    toggleBtn.style.opacity = '1';
                     toggleBtn.style.cursor = 'pointer';
-                }, 7000);
+                }, 1000);
             });
 
             document.getElementById('loginForm').addEventListener('submit', function (e) {
