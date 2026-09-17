@@ -68,9 +68,7 @@ public partial class LlanteriaDbContext : DbContext
 
     // ❌ BORRADO: Se eliminó el DbSet<Conductore> de aquí.
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=LlanteriaDB;Trusted_Connection=True;");
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -134,6 +132,7 @@ public partial class LlanteriaDbContext : DbContext
             entity.Property(e => e.NumeroDocumento).HasMaxLength(20);
             entity.Property(e => e.PuntosAcumulados).HasDefaultValue(0);
             entity.Property(e => e.Telefono).HasMaxLength(20);
+            entity.Property(e => e.Foto).HasMaxLength(255); // ✅ Configuración del campo Foto
 
             entity.HasOne(d => d.IdDocumentoNavigation).WithMany(p => p.Clientes)
                 .HasForeignKey(d => d.IdDocumento)
@@ -304,6 +303,7 @@ public partial class LlanteriaDbContext : DbContext
                 .HasConstraintName("FK_Inventario_Producto");
         });
 
+
         modelBuilder.Entity<LogActividad>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__LogActiv__3214EC078ACEF574");
@@ -423,6 +423,12 @@ public partial class LlanteriaDbContext : DbContext
             entity.ToTable("Sexo");
 
             entity.Property(e => e.Nombre).HasMaxLength(50);
+
+            entity.HasData(
+                new Sexo { Id = 1, Nombre = "Masculino" },
+                new Sexo { Id = 2, Nombre = "Femenino" },
+                new Sexo { Id = 3, Nombre = "Otro" }
+            );
         });
 
         modelBuilder.Entity<TipoDocumento>(entity =>
@@ -432,6 +438,15 @@ public partial class LlanteriaDbContext : DbContext
             entity.ToTable("TipoDocumento");
 
             entity.Property(e => e.Nombre).HasMaxLength(40);
+            entity.Property(e => e.SiglasPresentacion).HasMaxLength(10);
+
+            entity.HasData(
+                new TipoDocumento { Id = 1, Nombre = "Cédula de Ciudadanía", SiglasPresentacion = "C.C." },
+                new TipoDocumento { Id = 2, Nombre = "Tarjeta de Identidad", SiglasPresentacion = "T.I." },
+                new TipoDocumento { Id = 3, Nombre = "Cédula de Extranjería", SiglasPresentacion = "C.E." },
+                new TipoDocumento { Id = 4, Nombre = "NIT", SiglasPresentacion = "NIT" },
+                new TipoDocumento { Id = 5, Nombre = "Pasaporte", SiglasPresentacion = "PAS" }
+            );
         });
 
         modelBuilder.Entity<TipoServicio>(entity =>

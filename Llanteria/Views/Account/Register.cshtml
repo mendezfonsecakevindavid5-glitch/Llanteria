@@ -14,15 +14,8 @@
     }
 
     @@keyframes slideUpEntrance {
-        0% {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        100% {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        0% { opacity: 0; transform: translateY(30px); }
+        100% { opacity: 1; transform: translateY(0); }
     }
 
     .entrance-register-card {
@@ -31,7 +24,7 @@
         max-width: 650px;
         border-radius: 1.5rem;
         padding: 2.5rem;
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
         animation: slideUpEntrance 0.6s ease-out forwards;
     }
 
@@ -40,15 +33,19 @@
         text-align: center;
     }
 
-    .form-description {
-        margin-top: 1rem;
+    .form-main-title {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: #000000;
     }
 
     .custom-field-label {
-        font-weight: 700;
-        margin-bottom: 0.5rem;
         display: block;
-        color: #212529;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #000000;
+        margin-bottom: 0.5rem;
+        text-align: left;
     }
 
     .custom-input {
@@ -58,6 +55,8 @@
         border-radius: 0.5rem;
         width: 100%;
         padding-left: 15px;
+        padding-right: 15px;
+        background-color: #fff;
     }
 
     .unified-document-group {
@@ -70,10 +69,10 @@
         background-color: #fff;
     }
 
-        .unified-document-group:focus-within {
-            border-color: #86b7fe;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-        }
+    .unified-document-group:focus-within {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
 
     .doc-type-selector {
         display: flex;
@@ -111,9 +110,9 @@
         margin-right: 8px;
     }
 
-        .doc-arrow.rotate {
-            transform: rotate(-180deg);
-        }
+    .doc-arrow.rotate {
+        transform: rotate(-180deg);
+    }
 
     .doc-acronym {
         color: #000000;
@@ -124,13 +123,13 @@
 
     .custom-dropdown-menu {
         position: absolute;
-        bottom: calc(100% + 10px);
+        top: calc(100% + 5px);
         left: 0;
-        width: 200px;
+        width: 220px;
         background: #ffffff;
         border: 1px solid #ced4da;
         border-radius: 0.5rem;
-        box-shadow: 0 -8px 16px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         padding: 0;
         list-style: none;
         display: none;
@@ -139,32 +138,8 @@
         overflow-y: auto;
     }
 
-        .custom-dropdown-menu::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 20px;
-            border-width: 8px;
-            border-style: solid;
-            border-color: #ffffff transparent transparent transparent;
-            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
-        }
-
-        .custom-dropdown-menu.show {
-            display: block;
-            animation: fadeUpIn 0.2s ease-out forwards;
-        }
-
-    @@keyframes fadeUpIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .custom-dropdown-menu.show {
+        display: block;
     }
 
     .custom-dropdown-item {
@@ -172,15 +147,16 @@
         cursor: pointer;
         transition: background-color 0.2s;
         border-bottom: 1px solid #f1f1f1;
+        font-size: 0.95rem;
     }
 
-        .custom-dropdown-item:last-child {
-            border-bottom: none;
-        }
+    .custom-dropdown-item:last-child {
+        border-bottom: none;
+    }
 
-        .custom-dropdown-item:hover {
-            background-color: #f8f9fa;
-        }
+    .custom-dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
 
     .custom-error-text {
         color: var(--llanteria-primary, #C92B0A);
@@ -200,15 +176,15 @@
         transition: filter 0.3s ease;
     }
 
-        .btn-register-submit:hover {
-            filter: brightness(0.85);
-        }
+    .btn-register-submit:hover {
+        filter: brightness(0.85);
+    }
 
     .back-link-hover {
         color: #6c757d;
         text-decoration: none;
-        font-size: 1.15rem;
-        font-weight: 500;
+        font-size: 1.1rem;
+        font-weight: 600;
         position: relative;
         display: inline-block;
         padding-bottom: 2px;
@@ -216,91 +192,15 @@
         cursor: pointer;
     }
 
-        .back-link-hover::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: #000000;
-            transition: width 0.2s ease-out;
-        }
-
-        .back-link-hover:hover {
-            color: #000000;
-        }
-
-            .back-link-hover:hover::after {
-                width: 100%;
-            }
-
-    .upload-box {
-        background-color: #f4f5f7;
-        border-radius: 1.5rem;
-        height: 220px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        margin: 1.5rem auto;
-        max-width: 450px;
-        user-select: none;
-    }
-
-        .upload-box:active {
-            transform: scale(0.93);
-        }
-
-    .upload-icon {
-        font-size: 3.5rem;
-        color: #212529;
-    }
-
-    .file-state {
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-
-    .file-type-icon {
-        font-size: 3.5rem;
-        color: #dc3545;
-        margin-bottom: 0.8rem;
-    }
-
-    .file-name-text {
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: #495057;
-        word-break: break-all;
-        padding: 0 15px;
-    }
-
-    .remove-file-btn {
-        position: absolute;
-        top: 15px;
-        right: 20px;
-        font-size: 1.5rem;
+    .back-link-hover:hover {
         color: #000000;
-        cursor: pointer;
-        z-index: 10;
-        transition: transform 0.2s;
     }
-
-        .remove-file-btn:hover {
-            transform: scale(1.1);
-        }
 
     .otp-wrapper {
         display: flex;
         justify-content: center;
         gap: 10px;
-        margin: 1.5rem 0;
+        margin: 1.5rem 0 0.5rem 0;
     }
 
     .otp-input {
@@ -317,10 +217,10 @@
         transition: border-color 0.2s ease, transform 0.1s ease;
     }
 
-        .otp-input:focus {
-            border-color: var(--llanteria-primary, #C92B0A);
-            transform: translateY(-2px);
-        }
+    .otp-input:focus {
+        border-color: var(--llanteria-primary, #C92B0A);
+        transform: translateY(-2px);
+    }
 
     .timer-display {
         font-size: 1.5rem;
@@ -328,7 +228,15 @@
         color: #dc3545;
         text-align: center;
         display: block;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .expired-text-notice {
+        color: #dc3545;
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: none;
+        margin-bottom: 0.5rem;
     }
 </style>
 
@@ -339,9 +247,6 @@
                 <i id="headerIcon" class="fa-solid fa-user-plus text-dark me-3" style="font-size: 2.5rem;"></i>
                 <h2 id="mainTitle" class="form-main-title m-0 fw-bold">Crear cuenta</h2>
             </div>
-            <p id="mainDescription" class="form-description text-muted">
-                Por favor, ingresa tus datos para registrarte en el sistema.
-            </p>
         </div>
 
         <form asp-controller="Account" asp-action="Register" method="post" id="registerForm" novalidate>
@@ -354,17 +259,21 @@
                             <div class="unified-document-group">
                                 <input type="hidden" id="hiddenIdDocumento" name="IdDocumento" required />
                                 <div class="doc-type-selector" id="docSelectorToggle">
-                                    <i class="fa-solid fa-chevron-up doc-arrow" id="docArrowIcon"></i>
+                                    <i class="fa-solid fa-chevron-down doc-arrow" id="docArrowIcon"></i>
                                     <span class="doc-acronym" id="docAcronymText">---</span>
                                 </div>
                                 <div class="doc-divider"></div>
-                                <input asp-for="NumeroDocumento" class="doc-number-input" type="text" id="NumeroDocumento" autocomplete="off" required />
+                                <input asp-for="NumeroDocumento" class="doc-number-input" type="text" id="NumeroDocumento" autocomplete="off" placeholder="Ingresa el número de tu documento" required />
                                 <ul class="custom-dropdown-menu" id="docDropdownMenu">
                                     @if (ViewBag.TiposDocumento != null)
                                     {
-                                        foreach (var tipo in ViewBag.TiposDocumento)
+                                        foreach (var tipo in (IEnumerable<Llanteria.Models.TipoDocumento>)ViewBag.TiposDocumento)
                                         {
-                                            <li class="custom-dropdown-item" data-id="@tipo.Id" data-siglas="@(string.IsNullOrEmpty(tipo.SiglasPresentacion) ? tipo.Nombre.Substring(0, 3).ToUpper() : tipo.SiglasPresentacion)">
+                                            string siglas = !string.IsNullOrEmpty(tipo.SiglasPresentacion) 
+                                                ? tipo.SiglasPresentacion 
+                                                : (tipo.Nombre.Length >= 3 ? tipo.Nombre.Substring(0, 3).ToUpper() : tipo.Nombre.ToUpper());
+
+                                            <li class="custom-dropdown-item" data-id="@tipo.Id" data-siglas="@siglas">
                                                 @tipo.Nombre
                                             </li>
                                         }
@@ -375,12 +284,26 @@
 
                         <div class="col-md-6">
                             <label asp-for="Nombres" class="custom-field-label">Nombres</label>
-                            <input asp-for="Nombres" class="form-control custom-input" type="text" id="Nombres" required />
+                            <input asp-for="Nombres" class="form-control custom-input" type="text" id="Nombres" placeholder="Ingresa tus nombres" required />
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="Apellidos" class="custom-field-label">Apellidos</label>
-                            <input asp-for="Apellidos" class="form-control custom-input" type="text" id="Apellidos" required />
+                            <input asp-for="Apellidos" class="form-control custom-input" type="text" id="Apellidos" placeholder="Ingresa tus apellidos" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="IdSexo" class="custom-field-label">Sexo</label>
+                            <select asp-for="IdSexo" class="form-select custom-input" id="IdSexo" required>
+                                <option value="" disabled selected>Selecciona tu sexo</option>
+                                @if (ViewBag.Sexos != null)
+                                {
+                                    foreach (var sexo in (IEnumerable<Llanteria.Models.Sexo>)ViewBag.Sexos)
+                                    {
+                                        <option value="@sexo.Id">@sexo.Nombre</option>
+                                    }
+                                }
+                            </select>
                         </div>
 
                         <div class="col-md-6">
@@ -388,7 +311,7 @@
                             <input asp-for="Telefono" class="form-control custom-input" type="text" id="Telefono" required />
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <label asp-for="Correo" class="custom-field-label">Correo electrónico</label>
                             <input asp-for="Correo" class="form-control custom-input" type="email" id="emailInput" required />
                         </div>
@@ -405,22 +328,11 @@
                             <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
                             <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
                         </div>
-                        <span class="timer-display" id="timerText">01:10</span>
+                        <span class="timer-display" id="timerText">60s</span>
+                        <div id="otpExpiredNotice" class="expired-text-notice">
+                            <i class="fa-solid fa-clock-rotate-left me-1"></i> Este código ya está vencido. Por favor, regresa y solicita uno nuevo.
+                        </div>
                         <input type="hidden" id="TokenCompleto" name="TokenVerificacion" />
-                    </div>
-                </div>
-
-                <div id="etapa3" style="display: none;">
-                    <div class="upload-box" id="uploadBox">
-                        <input type="file" id="fileInput" name="DocumentoAdjunto" accept=".pdf, .jpg, .jpeg" style="display: none;" />
-                        <div id="initialState">
-                            <i class="fa-solid fa-paperclip upload-icon"></i>
-                        </div>
-                        <div id="fileLoadedState" class="file-state">
-                            <i class="fa-solid fa-xmark remove-file-btn" id="removeFileBtn"></i>
-                            <i class="fa-solid fa-file file-type-icon" id="dynamicFileIcon"></i>
-                            <span class="file-name-text" id="displayFileName"></span>
-                        </div>
                     </div>
                 </div>
 
@@ -445,20 +357,20 @@
         document.addEventListener('DOMContentLoaded', function () {
             const etapa1 = document.getElementById('etapa1');
             const etapa2 = document.getElementById('etapa2');
-            const etapa3 = document.getElementById('etapa3');
             const btnRegresar = document.getElementById('btnRegresar');
             const mainTitle = document.getElementById('mainTitle');
-            const mainDescription = document.getElementById('mainDescription');
             const headerIcon = document.getElementById('headerIcon');
             const registerForm = document.getElementById('registerForm');
             const btnSiguiente = document.getElementById('btnSiguiente');
             const errorContainer = document.getElementById('generalError');
+            const otpExpiredNotice = document.getElementById('otpExpiredNotice');
             const otpInputs = document.querySelectorAll('.otp-input');
             const timerText = document.getElementById('timerText');
             const docInput = document.getElementById('NumeroDocumento');
             const telInput = document.getElementById('Telefono');
             const nombresInput = document.getElementById('Nombres');
             const apellidosInput = document.getElementById('Apellidos');
+            const sexoInput = document.getElementById('IdSexo');
             const emailInput = document.getElementById('emailInput');
             const hiddenInput = document.getElementById('hiddenIdDocumento');
             const toggleBtn = document.getElementById('docSelectorToggle');
@@ -466,13 +378,6 @@
             const arrowIcon = document.getElementById('docArrowIcon');
             const acronymText = document.getElementById('docAcronymText');
             const dropdownItems = document.querySelectorAll('.custom-dropdown-item');
-            const uploadBox = document.getElementById('uploadBox');
-            const fileInput = document.getElementById('fileInput');
-            const initialState = document.getElementById('initialState');
-            const fileLoadedState = document.getElementById('fileLoadedState');
-            const displayFileName = document.getElementById('displayFileName');
-            const removeFileBtn = document.getElementById('removeFileBtn');
-            const dynamicFileIcon = document.getElementById('dynamicFileIcon');
 
             let countdownInterval;
             let currentStep = 1;
@@ -486,6 +391,7 @@
             btnRegresar.addEventListener('click', function (e) {
                 e.preventDefault();
                 errorContainer.style.display = 'none';
+                otpExpiredNotice.style.display = 'none';
 
                 if (currentStep === 1) {
                     window.location.href = '@Url.Action("Login", "Account")';
@@ -494,30 +400,20 @@
                     etapa2.style.display = 'none';
                     etapa1.style.display = 'block';
                     mainTitle.innerHTML = 'Crear cuenta';
-                    mainDescription.innerHTML = 'Por favor, ingresa tus datos para registrarte en el sistema.';
                     headerIcon.className = 'fa-solid fa-user-plus text-dark me-3';
                     clearInterval(countdownInterval);
                     btnSiguiente.innerHTML = 'Siguiente';
-                } else if (currentStep === 3) {
-                    currentStep = 2;
-                    etapa3.style.display = 'none';
-                    etapa2.style.display = 'block';
-                    mainTitle.innerHTML = 'Verificar correo';
-                    mainDescription.innerHTML = 'Ingresa el código que hemos enviado a tu bandeja de entrada.';
-                    headerIcon.className = 'fa-solid fa-envelope-circle-check text-dark me-3';
-                    btnSiguiente.innerHTML = 'Siguiente';
-                    iniciarTemporizador(70);
                 }
             });
 
-            registerForm.addEventListener('submit', function(e) {
+            registerForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 errorContainer.style.display = 'none';
                 errorContainer.innerHTML = '';
                 let errorMessage = "";
 
                 if (currentStep === 1) {
-                    if (!hiddenInput.value || !docInput.value || !nombresInput.value || !apellidosInput.value || !telInput.value || !emailInput.value) {
+                    if (!hiddenInput.value || !docInput.value || !nombresInput.value || !apellidosInput.value || !sexoInput.value || !telInput.value || !emailInput.value) {
                         errorMessage = "&bull; Por favor, completa todos los campos para continuar.";
                     } else {
                         const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
@@ -529,16 +425,41 @@
                     if (errorMessage !== "") {
                         errorContainer.innerHTML = errorMessage;
                         errorContainer.style.display = 'block';
-                    } else {
-                        currentStep = 2;
-                        etapa1.style.display = 'none';
-                        etapa2.style.display = 'block';
-                        mainTitle.innerHTML = 'Verificar correo';
-                        mainDescription.innerHTML = 'Ingresa el código que hemos enviado a tu bandeja de entrada.';
-                        headerIcon.className = 'fa-solid fa-envelope-circle-check text-dark me-3';
-                        iniciarTemporizador(70);
-                        otpInputs[0].focus();
+                        return;
                     }
+
+                    btnSiguiente.disabled = true;
+                    btnSiguiente.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Enviando correo...';
+
+                    try {
+                        const response = await fetch('@Url.Action("EnviarCodigoOtp", "Account")', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ correo: emailInput.value, nombre: nombresInput.value })
+                        });
+
+                        const resData = await response.json();
+
+                        if (resData.success) {
+                            currentStep = 2;
+                            etapa1.style.display = 'none';
+                            etapa2.style.display = 'block';
+                            mainTitle.innerHTML = 'Verificar correo';
+                            headerIcon.className = 'fa-solid fa-envelope-circle-check text-dark me-3';
+                            btnSiguiente.innerHTML = 'Verificar y Registrar';
+                            iniciarTemporizador(60);
+                            otpInputs[0].focus();
+                        } else {
+                            errorContainer.innerHTML = "&bull; " + (resData.message || "No se pudo enviar el correo de verificación.");
+                            errorContainer.style.display = 'block';
+                        }
+                    } catch (err) {
+                        errorContainer.innerHTML = "&bull; Ocurrió un error al conectar con el servidor.";
+                        errorContainer.style.display = 'block';
+                    } finally {
+                        btnSiguiente.disabled = false;
+                    }
+
                 } else if (currentStep === 2) {
                     const token = document.getElementById('TokenCompleto').value;
                     if (token.length < 6) {
@@ -547,58 +468,32 @@
                         return;
                     }
 
-                    currentStep = 3;
-                    etapa2.style.display = 'none';
-                    etapa3.style.display = 'block';
-                    clearInterval(countdownInterval);
-                    mainTitle.innerHTML = 'Verificar identidad';
-                    mainDescription.innerHTML = 'Adjunta tu documento de identidad para verificar de forma confiable tu identidad y asegurar que coincida con los datos proporcionados.';
-                    headerIcon.className = 'fa-solid fa-id-card text-dark me-3';
-                    btnSiguiente.innerHTML = 'Finalizar Registro';
-                } else if (currentStep === 3) {
-                    if (fileInput.files.length === 0) {
-                        errorContainer.innerHTML = "&bull; Por favor adjunta tu documento para finalizar.";
-                        errorContainer.style.display = 'block';
-                        return;
-                    }
-
                     btnSiguiente.disabled = true;
-                    btnSiguiente.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
-                    registerForm.submit();
-                }
-            });
+                    btnSiguiente.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Verificando e ingresando...';
 
-            uploadBox.addEventListener('click', function(e) {
-                if (e.target !== removeFileBtn) {
-                    fileInput.click();
-                }
-            });
+                    try {
+                        const response = await fetch('@Url.Action("VerificarToken", "Account")', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(token)
+                        });
 
-            fileInput.addEventListener('change', function() {
-                if (this.files && this.files.length > 0) {
-                    const file = this.files[0];
-                    const extension = file.name.split('.').pop().toLowerCase();
+                        const resData = await response.json();
 
-                    displayFileName.textContent = file.name;
-                    if (extension === 'pdf') {
-                        dynamicFileIcon.className = 'fa-solid fa-file-pdf file-type-icon';
-                    } else if (extension === 'jpg' || extension === 'jpeg') {
-                        dynamicFileIcon.className = 'fa-solid fa-file-image file-type-icon';
-                    } else {
-                        dynamicFileIcon.className = 'fa-solid fa-file file-type-icon';
+                        if (resData.success) {
+                            clearInterval(countdownInterval);
+                            registerForm.submit();
+                        } else {
+                            errorContainer.innerHTML = "&bull; " + (resData.message || "Código incorrecto.");
+                            errorContainer.style.display = 'block';
+                        }
+                    } catch (err) {
+                        errorContainer.innerHTML = "&bull; Ocurrió un error al verificar el código.";
+                        errorContainer.style.display = 'block';
+                    } finally {
+                        btnSiguiente.disabled = false;
                     }
-
-                    initialState.style.display = 'none';
-                    fileLoadedState.style.display = 'flex';
-                    errorContainer.style.display = 'none';
                 }
-            });
-
-            removeFileBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                fileInput.value = '';
-                fileLoadedState.style.display = 'none';
-                initialState.style.display = 'block';
             });
 
             function forceNumericOnly(element) {
@@ -659,18 +554,16 @@
 
             function iniciarTemporizador(segundos) {
                 clearInterval(countdownInterval);
+                otpExpiredNotice.style.display = 'none';
                 let tiempoRestante = segundos;
 
                 countdownInterval = setInterval(() => {
-                    let minutos = Math.floor(tiempoRestante / 60);
-                    let segs = tiempoRestante % 60;
-                    timerText.textContent = `${minutos.toString().padStart(2, '0')}:${segs.toString().padStart(2, '0')}`;
+                    timerText.textContent = `${tiempoRestante}s`;
 
                     if (tiempoRestante <= 0) {
                         clearInterval(countdownInterval);
-                        timerText.textContent = "00:00";
-                        errorContainer.innerHTML = "&bull; El código ha expirado. Por favor, solicita uno nuevo.";
-                        errorContainer.style.display = 'block';
+                        timerText.textContent = "0s";
+                        otpExpiredNotice.style.display = 'block';
                     }
                     tiempoRestante--;
                 }, 1000);
