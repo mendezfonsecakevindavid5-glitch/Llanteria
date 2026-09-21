@@ -12,7 +12,6 @@ namespace Llanteria.Controllers
     {
         private readonly IPerfilService _perfilService;
 
-        // Solo dependemos de IPerfilService para mantener el código limpio
         public UserController(IPerfilService perfilService)
         {
             _perfilService = perfilService;
@@ -22,40 +21,62 @@ namespace Llanteria.Controllers
         [HttpGet]
         public async Task<IActionResult> Perfil()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // Intentar obtener el ID desde NameIdentifier o Name
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                           ?? User.FindFirst(ClaimTypes.Name)?.Value;
 
-            if (string.IsNullOrEmpty(userIdClaim))
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int usuarioId))
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            int usuarioId = int.Parse(userIdClaim);
             var model = await _perfilService.ObtenerPerfilPorUsuarioIdAsync(usuarioId);
 
+            // CORRECCIÓN: Si el perfil aún no existe en la BD, creamos una instancia con el Id del usuario
             if (model == null)
             {
-                return NotFound("No se encontró el perfil para el usuario especificado.");
+                model = new PerfilUsuarioViewModel
+                {
+                    Id = usuarioId
+                };
             }
 
             return View(model);
         }
 
-        // POST: /User/ActualizarPerfil
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ActualizarPerfil(PerfilUsuarioViewModel model)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                           ?? User.FindFirst(ClaimTypes.Name)?.Value;
+
+            if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out int usuarioId))
+            {
+                model.Id = usuarioId;
+            }
+
+            // Ignorar colecciones o campos que no provocan inconsistencias
+            ModelState.Remove("FacturasRecientes");
+
             if (!ModelState.IsValid)
             {
+                var perfilRefrescado = await _perfilService.ObtenerPerfilPorUsuarioIdAsync(model.Id);
+                model.FacturasRecientes = perfilRefrescado.FacturasRecientes;
                 return View("Perfil", model);
             }
 
-            var guardadoExitoso = await _perfilService.ActualizarPerfilAsync(model);
+            var actualizado = await _perfilService.ActualizarPerfilAsync(model);
 
-            if (guardadoExitoso)
-                TempData["SuccessMessage"] = "¡Tu perfil se ha actualizado con éxito!";
+            if (actualizado)
+            {
+                // Mensaje de éxito que se mostrará en pantalla y notificará sobre el correo
+                TempData["SuccessMessage"] = $"¡Tus cambios han sido guardados con éxito! Se ha enviado un mensaje de confirmación a <b>{model.Correo}</b>.";
+            }
             else
-                TempData["ErrorMessage"] = "No se pudieron guardar los cambios. Inténtalo de nuevo.";
+            {
+                TempData["ErrorMessage"] = "No se pudieron guardar los cambios en la base de datos. Inténtalo de nuevo.";
+            }
 
             return RedirectToAction(nameof(Perfil));
         }
@@ -65,13 +86,14 @@ namespace Llanteria.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CambiarPassword(string actual, string nueva)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                           ?? User.FindFirst(ClaimTypes.Name)?.Value;
 
-            if (string.IsNullOrEmpty(userIdClaim)) return RedirectToAction("Login", "Account");
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-            int userId = int.Parse(userIdClaim);
-
-            // Usamos el método asíncrono que definimos en el servicio
             bool exito = await _perfilService.ActualizarPasswordAsync(userId, actual, nueva);
 
             if (exito)

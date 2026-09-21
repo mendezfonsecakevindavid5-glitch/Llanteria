@@ -14,11 +14,12 @@ public class ProductoService
         _context = context;
     }
 
-    // Obtener todos los productos (incluyendo el Proveedor si es necesario)
+    // Obtener todos los productos (incluyendo Proveedor y DetalleProducto)
     public List<Producto> GetProductos()
     {
         return _context.Productos
             .Include(p => p.IdProveedorNavigation)
+            .Include(p => p.DetalleProducto) // ← Incluimos el detalle para que cargue Ancho, Perfil y Diámetro
             .ToList();
     }
 
@@ -27,7 +28,7 @@ public class ProductoService
     {
         return _context.Productos
             .Include(p => p.IdProveedorNavigation)
-            .Include(p => p.DetalleProducto)          // ← AGREGAR ESTA LÍNEA
+            .Include(p => p.DetalleProducto)
             .FirstOrDefault(p => p.Id == id);
     }
 
@@ -57,7 +58,6 @@ public class ProductoService
         existente.Categoria = obj.Categoria;
         existente.RutaImagen = obj.RutaImagen;
 
-        // Actualizar o crear DetalleProducto
         // Actualizar o crear DetalleProducto
         if (obj.DetalleProducto != null && obj.DetalleProducto.IdMarca > 0)
         {

@@ -1,10 +1,10 @@
 ﻿@model Llanteria.Models.PerfilUsuarioViewModel
 @{
     ViewData["Title"] = "Mi Perfil Profesional";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";   // ← Esta línea es obligatoria
 }
 
 <style>
-    /* Estilos Premium para la gestión del Perfil */
     .avatar-wrapper {
         position: relative;
         width: 150px;
@@ -16,9 +16,7 @@
         width: 100%;
         height: 100%;
         border-radius: 50%;
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: center;
+        object-fit: cover;
         border: 4px solid #ffffff;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
         transition: transform 0.3s ease;
@@ -45,10 +43,10 @@
         transition: all 0.2s ease;
     }
 
-        .avatar-upload-btn:hover {
-            background-color: #C92B0A;
-            transform: scale(1.1);
-        }
+    .avatar-upload-btn:hover {
+        background-color: #C92B0A;
+        transform: scale(1.1);
+    }
 
     .card-profile-premium {
         border: none;
@@ -71,10 +69,10 @@
         border: 1px solid #dee2e6;
     }
 
-        .form-control-custom:focus {
-            border-color: #C92B0A;
-            box-shadow: 0 0 0 0.25rem rgba(201, 43, 10, 0.15);
-        }
+    .form-control-custom:focus {
+        border-color: #C92B0A;
+        box-shadow: 0 0 0 0.25rem rgba(201, 43, 10, 0.15);
+    }
 
     .btn-security {
         background: transparent;
@@ -84,17 +82,22 @@
         transition: all 0.3s ease;
     }
 
-        .btn-security:hover {
-            background: #f8f9fa;
-            color: #C92B0A;
-            border-color: #C92B0A;
-        }
+    .btn-security:hover {
+        background: #f8f9fa;
+        color: #C92B0A;
+        border-color: #C92B0A;
+    }
 </style>
 
 <div class="container py-5">
     <form asp-controller="User" asp-action="ActualizarPerfil" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
+
+        <!-- CAMPOS OCULTOS ESENCIALES PARA MANTENER LA IDENTIDAD DEL USUARIO -->
         <input type="hidden" asp-for="Id" />
+
+        <!-- Resumen de validaciones si algún campo falla -->
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4" role="alert"></div>
 
         <div class="row g-4">
             <div class="col-lg-4">
@@ -112,7 +115,7 @@
                     </div>
 
                     <h4 class="fw-bold text-dark mb-0">@Model.Nombre</h4>
-                    <span class="badge bg-light text-muted px-3 py-2 rounded-pill mb-4 mt-1 border">Cliente Digital</span>
+                    <span class="badge bg-light text-muted px-3 py-2 rounded-pill mb-4 mt-1 border">Perfil Activo</span>
 
                     <div class="p-3 rounded-3 text-white text-start shadow-sm mb-3" style="background: linear-gradient(135deg, #000000 0%, #222222 100%); border-left: 5px solid #C92B0A;">
                         <div class="d-flex align-items-center justify-content-between">
@@ -155,24 +158,26 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label-custom">Nombre Completo</label>
-                            <input asp-for="Nombre" class="form-control form-control-custom" placeholder="Ej. Juan Pérez" />
+                            <input asp-for="Nombre" class="form-control form-control-custom" placeholder="Ej. Juan Pérez" required />
                             <span asp-validation-for="Nombre" class="text-danger small"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label-custom">Correo Electrónico</label>
-                            <input asp-for="Correo" class="form-control form-control-custom bg-light" readonly />
+                            <input asp-for="Correo" type="email" class="form-control form-control-custom" placeholder="ejemplo@correo.com" required />
+                            <span asp-validation-for="Correo" class="text-danger small"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label-custom">Teléfono / WhatsApp</label>
-                            <input asp-for="Telefono" class="form-control form-control-custom" placeholder="Ej. 3001234567" />
+                            <input asp-for="Telefono" class="form-control form-control-custom" placeholder="Ej. 3001234567" required />
                             <span asp-validation-for="Telefono" class="text-danger small"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label-custom">Dirección de Residencia</label>
                             <input asp-for="Direccion" class="form-control form-control-custom" placeholder="Calle, Carrera, Barrio" />
+                            <span asp-validation-for="Direccion" class="text-danger small"></span>
                         </div>
 
                         <div class="col-md-6">
@@ -181,11 +186,13 @@
                                 <option value="Light">Claro (Predeterminado)</option>
                                 <option value="Dark">Oscuro Premium</option>
                             </select>
+                            <span asp-validation-for="TemaPreferencia" class="text-danger small"></span>
                         </div>
 
                         <div class="col-12">
                             <label class="form-label-custom">Notas del Vehículo / Biografía</label>
                             <textarea asp-for="Bio" class="form-control form-control-custom" rows="3" placeholder="Ej: Tengo una camioneta Hilux 4x4, prefiero llantas A/T para terreno difícil..."></textarea>
+                            <span asp-validation-for="Bio" class="text-danger small"></span>
                         </div>
 
                         <div class="col-12 mt-3">
@@ -194,53 +201,55 @@
                                     <i class="fa-solid fa-bell text-warning me-2"></i>Alertas de Promociones
                                 </label>
                                 <input class="form-check-input ms-0" type="checkbox" asp-for="NotificacionesActivas" style="width: 2.5em; height: 1.25em; cursor: pointer;">
-                                </div>
-                                <small class="text-muted d-block mt-1 ms-1">Te avisaremos inmediatamente cuando las llantas que buscas bajen de precio en Valledupar.</small>
                             </div>
+                            <small class="text-muted d-block mt-1 ms-1">Te avisaremos inmediatamente cuando las llantas que buscas bajen de precio en Valledupar.</small>
                         </div>
+                    </div>
 
-                        <div class="text-end mt-4">
-                            <button type="submit" class="btn text-white px-5 py-2.5 fw-bold text-uppercase shadow-sm" style="background-color: #C92B0A; border-radius: 8px;">
-                                <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Configuración
-                            </button>
-                        </div>
+                    <div class="text-end mt-4">
+                        <button type="submit" class="btn text-white px-5 py-2.5 fw-bold text-uppercase shadow-sm" style="background-color: #C92B0A; border-radius: 8px;">
+                            <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Configuración
+                        </button>
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
+    </form>
 
-        <div class="row g-4 mt-3">
-            <div class="col-12">
-                <div class="card card-profile-premium p-4 bg-white">
-                    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
-                        <div class="d-flex align-items-center">
-                            <div class="p-2 rounded-3 me-3 text-white" style="background-color: #000000;">
-                                <i class="fa-solid fa-file-invoice-dollar fa-lg"></i>
-                            </div>
-                            <div>
-                                <h4 class="fw-bold text-dark m-0">Historial de Servicios y Facturas</h4>
-                                <p class="text-muted small m-0">Consulta tus mantenimientos anteriores, compras de llantas y montos pagados.</p>
-                            </div>
+    <div class="row g-4 mt-3">
+        <div class="col-12">
+            <div class="card card-profile-premium p-4 bg-white">
+                <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+                    <div class="d-flex align-items-center">
+                        <div class="p-2 rounded-3 me-3 text-white" style="background-color: #000000;">
+                            <i class="fa-solid fa-file-invoice-dollar fa-lg"></i>
                         </div>
-                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-bold" style="color: #C92B0A !important; background-color: rgba(201, 43, 10, 0.1) !important;">
-                            @Model.FacturasRecientes.Count Servicios Registrados
-                        </span>
+                        <div>
+                            <h4 class="fw-bold text-dark m-0">Historial de Servicios y Facturas</h4>
+                            <p class="text-muted small m-0">Consulta tus mantenimientos anteriores, compras de llantas y montos pagados.</p>
+                        </div>
                     </div>
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill fw-bold" style="color: #C92B0A !important; background-color: rgba(201, 43, 10, 0.1) !important;">
+                        @(Model.FacturasRecientes != null ? Model.FacturasRecientes.Count : 0) Servicios Registrados
+                    </span>
+                </div>
 
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light text-uppercase fs-7" style="font-size: 0.75rem; letter-spacing: 0.5px;">
-                                <tr>
-                                    <th class="ps-3 text-secondary">N° Factura</th>
-                                    <th class="text-secondary">Fecha</th>
-                                    <th class="text-secondary">Servicio Principal</th>
-                                    <th class="text-secondary">Detalle de Compra</th>
-                                    <th class="text-secondary">Total</th>
-                                    <th class="text-secondary text-center">Estado</th>
-                                    <th class="text-secondary text-end pe-3">Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-uppercase fs-7" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                            <tr>
+                                <th class="ps-3 text-secondary">N° Factura</th>
+                                <th class="text-secondary">Fecha</th>
+                                <th class="text-secondary">Servicio Principal</th>
+                                <th class="text-secondary">Detalle de Compra</th>
+                                <th class="text-secondary">Total</th>
+                                <th class="text-secondary text-center">Estado</th>
+                                <th class="text-secondary text-end pe-3">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.FacturasRecientes != null && Model.FacturasRecientes.Any())
+                            {
                                 @foreach (var factura in Model.FacturasRecientes)
                                 {
                                     <tr>
@@ -269,90 +278,97 @@
                                         </td>
                                     </tr>
                                 }
-                            </tbody>
-                        </table>
-                    </div>
-
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">No hay historial de servicios disponible.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
+
             </div>
         </div>
     </div>
+</div>
 
-    <div class="modal fade" id="modalPass" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
-                <form asp-controller="User" asp-action="CambiarPassword" method="post">
-                    @Html.AntiForgeryToken()
-                    <div class="modal-header border-0 pb-0 pt-4 px-4">
-                        <h5 class="modal-title fw-bold text-dark">
-                            <i class="fa-solid fa-shield-halved text-danger me-2"></i>Seguridad de Cuenta
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal fade" id="modalPass" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <form asp-controller="User" asp-action="CambiarPassword" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header border-0 pb-0 pt-4 px-4">
+                    <h5 class="modal-title fw-bold text-dark">
+                        <i class="fa-solid fa-shield-halved text-danger me-2"></i>Seguridad de Cuenta
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body px-4 pt-3">
+                    <p class="text-muted small mb-3">Para cambiar tus credenciales de acceso de forma segura, ingresa la clave actual registrada en el sistema.</p>
+
+                    <div class="mb-3">
+                        <label class="form-label-custom">Contraseña Actual</label>
+                        <input type="password" name="actual" class="form-control form-control-custom" placeholder="••••••••" required />
                     </div>
-                    <div class="modal-body px-4 pt-3">
-                        <p class="text-muted small mb-3">Para cambiar tus credenciales de acceso de forma segura, ingresa la clave actual registrada en el sistema.</p>
-                    
-                        <div class="mb-3">
-                            <label class="form-label-custom">Contraseña Actual</label>
-                            <input type="password" name="actual" class="form-control form-control-custom" placeholder="••••••••" required />
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label-custom">Nueva Contraseña</label>
-                            <input type="password" name="nueva" class="form-control form-control-custom" placeholder="Mínimo 6 caracteres" required />
-                        </div>
+                    <div class="mb-2">
+                        <label class="form-label-custom">Nueva Contraseña</label>
+                        <input type="password" name="nueva" class="form-control form-control-custom" placeholder="Mínimo 6 caracteres" required />
                     </div>
-                    <div class="modal-footer border-0 px-4 pb-4 pt-2">
-                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal" style="border-radius: 8px;">Cancelar</button>
-                        <button type="submit" class="btn text-white px-4 fw-bold shadow-sm" style="background-color: #C92B0A; border-radius: 8px;">
-                            Actualizar Clave
-                        </button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4 pt-2">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal" style="border-radius: 8px;">Cancelar</button>
+                    <button type="submit" class="btn text-white px-4 fw-bold shadow-sm" style="background-color: #C92B0A; border-radius: 8px;">
+                        Actualizar Clave
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    @section Scripts {
-        <script>
-            function previewImage(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function() {
-                        const output = document.getElementById('previewFoto');
-                        output.src = reader.result;
-                    };
-                    reader.readAsDataURL(file);
-                }
+@section Scripts {
+    <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    const output = document.getElementById('previewFoto');
+                    output.src = reader.result;
+                };
+                reader.readAsDataURL(file);
             }
-        </script>
+        }
+    </script>
 
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    Swal.fire({
-                        title: '¡Excelente!',
-                        text: '@Html.Raw(TempData["SuccessMessage"])',
-                        icon: 'success',
-                        confirmButtonColor: '#C92B0A',
-                        confirmButtonText: 'Entendido'
-                    });
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: '¡Perfil Actualizado!',
+                    html: '@Html.Raw(TempData["SuccessMessage"])',
+                    icon: 'success',
+                    confirmButtonColor: '#C92B0A',
+                    confirmButtonText: 'Entendido'
                 });
-            </script>
-        }
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    Swal.fire({
-                        title: 'Hubo un problema',
-                        text: '@Html.Raw(TempData["ErrorMessage"])',
-                        icon: 'error',
-                        confirmButtonColor: '#000000',
-                        confirmButtonText: 'Reintentar'
-                    });
-                });
-            </script>
-        }
+            });
+        </script>
     }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: 'Hubo un problema',
+                    html: '@Html.Raw(TempData["ErrorMessage"])',
+                    icon: 'error',
+                    confirmButtonColor: '#000000',
+                    confirmButtonText: 'Reintentar'
+                });
+            });
+        </script>
+    }
+}

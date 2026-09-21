@@ -1,13 +1,10 @@
 ﻿@model IEnumerable<Llanteria.Models.Factura>
-
 @{
     ViewData["Title"] = "Panel de Control";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-
 <style>
     :root {
         --color-premium-red: #C92B0A;
@@ -15,23 +12,18 @@
         --color-premium-gray: #1A1A1E;
         --color-premium-border: #E5E7EB;
     }
-
     body {
         background-color: #F8FAFC;
         font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
-
-    /* Contenedor de Pantalla Completa Maximizada */
     .dashboard-wrapper {
         min-height: 100vh;
         width: 100%;
     }
-
-    /* Panel Lateral Persistente Premium (El que te gusta) */
     .sidebar-persistent {
         position: sticky;
-        top: 24px;
-        height: calc(100vh - 48px);
+        top: 80px;
+        height: calc(100vh - 96px);
         background: #FFFFFF;
         border: 1px solid var(--color-premium-border);
         border-radius: 20px;
@@ -40,15 +32,12 @@
         flex-direction: column;
         overflow-y: auto;
     }
-
-    /* Foto de Perfil del Colaborador */
     .admin-avatar-wrapper {
         position: relative;
         width: 90px;
         height: 90px;
         margin: 0 auto;
     }
-
     .admin-avatar {
         width: 100%;
         height: 100%;
@@ -57,7 +46,6 @@
         border: 3px solid #FFFFFF;
         box-shadow: 0 4px 15px rgba(201, 43, 10, 0.2);
     }
-
     .status-indicator {
         position: absolute;
         bottom: 2px;
@@ -68,8 +56,6 @@
         border: 2.5px solid #FFFFFF;
         border-radius: 50%;
     }
-
-    /* Navegación del Menú Lateral */
     .nav-custom-link {
         display: flex;
         align-items: center;
@@ -81,29 +67,23 @@
         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         margin-bottom: 0.25rem;
     }
-
     .nav-custom-link i {
         width: 24px;
         font-size: 1.1rem;
         transition: transform 0.25s ease;
     }
-
     .nav-custom-link:hover {
         background-color: rgba(201, 43, 10, 0.06);
         color: var(--color-premium-red);
     }
-
     .nav-custom-link:hover i {
         transform: scale(1.15);
     }
-
     .nav-custom-link.active-premium {
         background: linear-gradient(135deg, var(--color-premium-dark) 0%, #222222 100%);
         color: #FFFFFF !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
-
-    /* Slider Cinemático */
     .dashboard-slider {
         width: 100%;
         height: 280px;
@@ -111,12 +91,10 @@
         overflow: hidden;
         box-shadow: 0 10px 30px rgba(0,0,0,0.06);
     }
-
     .swiper-slide {
         position: relative;
         overflow: hidden;
     }
-
     .swiper-slide img {
         width: 100%;
         height: 100%;
@@ -124,7 +102,6 @@
         animation: zoomCinematic 20s infinite alternate;
         will-change: transform;
     }
-
     .slide-overlay {
         position: absolute;
         inset: 0;
@@ -135,8 +112,6 @@
         color: #ffffff;
         z-index: 2;
     }
-
-    /* Tarjetas de Indicadores (KPIs) */
     .card-kpi-premium {
         background: #FFFFFF;
         border: 1px solid var(--color-premium-border);
@@ -146,12 +121,10 @@
         overflow: hidden;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-
     .card-kpi-premium:hover {
         transform: translateY(-4px);
         box-shadow: 0 12px 25px rgba(0,0,0,0.05);
     }
-
     .card-kpi-premium::before {
         content: '';
         position: absolute;
@@ -160,20 +133,16 @@
         width: 100%;
         height: 4px;
     }
-
     .kpi-ingresos::before { background-color: #10B981; }
     .kpi-clientes::before { background-color: #3B82F6; }
     .kpi-bodegas::before { background-color: #6B7280; }
     .kpi-egresos::before { background-color: #EF4444; }
-
-    /* Estilos de Tablas y Listas */
     .card-table-premium {
         background: #FFFFFF;
         border: 1px solid var(--color-premium-border);
         border-radius: 20px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.01);
     }
-
     .table-premium thead th {
         font-size: 0.75rem;
         text-transform: uppercase;
@@ -183,21 +152,16 @@
         border-bottom: 1px solid var(--color-premium-border);
         padding: 1rem;
     }
-
     .table-premium tbody td {
         padding: 1rem;
         border-bottom: 1px solid #F1F5F9;
     }
-
     .rounded-xl { border-radius: 16px !important; }
     .fw-black { font-weight: 900 !important; }
-
-    /* Doble @@ para evitar error de Razor */
     @@keyframes zoomCinematic {
         from { transform: scale(1); }
         to { transform: scale(1.08); }
     }
-
     .sidebar-persistent::-webkit-scrollbar {
         width: 5px;
     }
@@ -210,12 +174,16 @@
 <div class="container-fluid py-4 px-lg-4 dashboard-wrapper">
     <div class="row g-4">
         
+        <!-- ==================== SIDEBAR ==================== -->
         <div class="col-md-4 col-xl-3 col-xxl-2">
             <div class="sidebar-persistent p-3">
                 
+                <!-- Avatar y Nombre -->
                 <div class="text-center my-3">
                     <div class="admin-avatar-wrapper mb-2">
-                        <img src="@(User.IsInRole("Administrador") ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" : "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80")" 
+                        <img src="@(User.IsInRole("Administrador") 
+                            ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" 
+                            : "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80")" 
                              class="admin-avatar" alt="Avatar Colaborador" />
                         <div class="status-indicator"></div>
                     </div>
@@ -228,51 +196,88 @@
                 
                 <hr class="text-muted opacity-25 my-2">
                 
+                <!-- MENÚ LATERAL COMPLETO -->
                 <div class="nav flex-column gap-1 flex-grow-1">
+
                     <a class="nav-custom-link active-premium" asp-controller="Dashboard" asp-action="Index">
                         <i class="fa-solid fa-chart-pie me-3"></i>Inicio Panel
                     </a>
 
+                    <!-- Mi Perfil -->
+                    <a class="nav-custom-link" asp-controller="User" asp-action="Perfil">
+                        <i class="fa-solid fa-user me-3"></i>Mi Perfil
+                    </a>
+
                     @if (User.IsInRole("Administrador"))
                     {
+                        <!-- Inventario y Stock -->
                         <a class="nav-custom-link" asp-controller="Producto" asp-action="Index">
                             <i class="fa-solid fa-box me-3"></i>Inventario
                         </a>
                         <a class="nav-custom-link" asp-controller="Bodega" asp-action="Index">
                             <i class="fa-solid fa-warehouse me-3"></i>Bodegas
                         </a>
-                        <a class="nav-custom-link" asp-controller="Proveedore" asp-action="Index">
-                            <i class="fa-solid fa-industry me-3"></i>Proveedores
-                        </a>
                         <a class="nav-custom-link" asp-controller="Marca" asp-action="Index">
                             <i class="fa-solid fa-tags me-3"></i>Marcas
                         </a>
-                        <a class="nav-custom-link" asp-controller="Log" asp-action="Index">
-                            <i class="fa-solid fa-clipboard-list me-3"></i>Logs Actividad
+                        <a class="nav-custom-link" asp-controller="Proveedore" asp-action="Index">
+                            <i class="fa-solid fa-industry me-3"></i>Proveedores
                         </a>
+
+                        <!-- Finanzas -->
+                        <a class="nav-custom-link" asp-controller="Gasto" asp-action="Index">
+                            <i class="fa-solid fa-money-bill-wave me-3"></i>Gastos
+                        </a>
+
+                        <!-- Personal y Seguridad -->
                         <a class="nav-custom-link" asp-controller="Empleado" asp-action="Index">
                             <i class="fa-solid fa-id-card me-3"></i>Empleados
                         </a>
+                        <a class="nav-custom-link" asp-controller="Usuario" asp-action="Index">
+                            <i class="fa-solid fa-user-gear me-3"></i>Usuarios
+                        </a>
+                        <a class="nav-custom-link" asp-controller="Log" asp-action="Index">
+                            <i class="fa-solid fa-clipboard-list me-3"></i>Logs de Actividad
+                        </a>
+
+                        <!-- Extras -->
+                        <a class="nav-custom-link" asp-controller="CatalogoIncentivo" asp-action="Index">
+                            <i class="fa-solid fa-gift me-3"></i>Incentivos / Puntos
+                        </a>
+                        <a class="nav-custom-link" asp-controller="TipoServicio" asp-action="Index">
+                            <i class="fa-solid fa-screwdriver-wrench me-3"></i>Tipos de Servicio
+                        </a>
                     }
 
+                    <!-- Visible para Admin y Empleado -->
                     <a class="nav-custom-link" asp-controller="Factura" asp-action="Index">
                         <i class="fa-solid fa-file-invoice-dollar me-3"></i>Ventas
                     </a>
                     <a class="nav-custom-link" asp-controller="Cliente" asp-action="Index">
                         <i class="fa-solid fa-users me-3"></i>Clientes
                     </a>
+                    <a class="nav-custom-link" asp-controller="Vehiculo" asp-action="Index">
+                        <i class="fa-solid fa-car me-3"></i>Vehículos
+                    </a>
+                    <a class="nav-custom-link" asp-controller="Servicios" asp-action="Index">
+                        <i class="fa-solid fa-gears me-3"></i>Servicios
+                    </a>
                 </div>
 
+                <!-- Cerrar Sesión -->
                 <div class="mt-auto pt-3 border-top border-light">
-                    <a class="nav-custom-link text-danger mb-0" style="background-color: rgba(239, 68, 68, 0.05);" asp-controller="Account" asp-action="Logout">
+                    <a class="nav-custom-link text-danger mb-0" style="background-color: rgba(239, 68, 68, 0.05);" 
+                       asp-controller="Account" asp-action="Logout">
                         <i class="fa-solid fa-arrow-right-from-bracket me-3"></i>Cerrar Sesión
                     </a>
                 </div>
             </div>
         </div>
 
+        <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
         <div class="col-md-8 col-xl-9 col-xxl-10">
             
+            <!-- Título -->
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                 <div>
                     <h2 class="fw-black text-dark m-0 animate__animated animate__fadeInDown" style="letter-spacing: -1px;">Consola de Operaciones</h2>
@@ -280,10 +285,13 @@
                 </div>
                 <div class="bg-white px-3 py-2 rounded-3 border text-end shadow-sm">
                     <small class="text-uppercase text-muted fw-bold d-block" style="font-size: 0.6rem; letter-spacing: 0.5px;">Centro de Monitoreo</small>
-                    <span class="fw-bold text-dark fs-7" style="font-size: 0.9rem;"><i class="fa-solid fa-shield-halved text-danger me-1"></i> Valledupar Protegido</span>
+                    <span class="fw-bold text-dark" style="font-size: 0.9rem;">
+                        <i class="fa-solid fa-shield-halved text-danger me-1"></i> Valledupar Protegido
+                    </span>
                 </div>
             </div>
 
+            <!-- Slider -->
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="swiper dashboard-slider">
@@ -314,6 +322,7 @@
                 </div>
             </div>
 
+            <!-- KPIs (solo Admin) -->
             @if (User.IsInRole("Administrador"))
             {
                 <div class="row g-3 mb-4">
@@ -372,12 +381,17 @@
                 </div>
             }
 
+            <!-- Tabla de Facturas + Alertas -->
             <div class="row g-4 mb-4">
                 <div class="col-lg-8">
                     <div class="card border-0 shadow-sm rounded-xl bg-white card-table-premium">
                         <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center rounded-top-xl">
-                            <h5 class="fw-bold m-0 text-dark" style="font-size: 1.05rem;"><i class="fa-solid fa-receipt text-muted me-2"></i>Historial de Facturación Reciente</h5>
-                            <a asp-controller="Reporte" asp-action="GenerarIndividual" asp-route-tipo="Factura" class="btn btn-dark btn-sm shadow-sm fw-bold px-3 py-1.5 rounded-3" style="background-color: var(--color-premium-red); border: none;">
+                            <h5 class="fw-bold m-0 text-dark" style="font-size: 1.05rem;">
+                                <i class="fa-solid fa-receipt text-muted me-2"></i>Historial de Facturación Reciente
+                            </h5>
+                            <a asp-controller="Reporte" asp-action="GenerarIndividual" asp-route-tipo="Factura" 
+                               class="btn btn-dark btn-sm shadow-sm fw-bold px-3 py-1.5 rounded-3" 
+                               style="background-color: var(--color-premium-red); border: none;">
                                 <i class="fa-solid fa-file-pdf me-1"></i> Exportar Auditoría
                             </a>
                         </div>
@@ -399,7 +413,8 @@
                                             <td class="text-muted">@(venta.Fecha?.ToString("dd/MM/yyyy") ?? "N/A")</td>
                                             <td class="text-end fw-bold text-success">$@venta.TotalPagar.ToString("N2")</td>
                                             <td class="text-center">
-                                                <a asp-controller="Factura" asp-action="Edit" asp-route-id="@venta.Id" class="btn btn-light btn-sm rounded-3 px-2.5 py-1.5 border">
+                                                <a asp-controller="Factura" asp-action="Edit" asp-route-id="@venta.Id" 
+                                                   class="btn btn-light btn-sm rounded-3 px-2.5 py-1.5 border">
                                                     <i class="fa-solid fa-arrow-right text-muted"></i>
                                                 </a>
                                             </td>
@@ -413,13 +428,16 @@
                 
                 <div class="col-lg-4">
                     <div class="card border-0 shadow-sm rounded-xl p-4 bg-white border mb-4" style="border-left: 5px solid #EAB308 !important;">
-                        <h6 class="fw-bold mb-3 text-warning"><i class="fa-solid fa-triangle-exclamation me-2"></i>Nivel Crítico de Inventario</h6>
+                        <h6 class="fw-bold mb-3 text-warning">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>Nivel Crítico de Inventario
+                        </h6>
                         <div class="alert alert-warning border-0 bg-warning bg-opacity-10 small rounded-3 text-dark mb-3">
                             Actualmente se detectan <strong>@ViewBag.ProductosBajos</strong> referencias de llantas por debajo del umbral mínimo configurado.
                         </div>
-                        <a asp-controller="Producto" asp-action="Index" class="btn btn-outline-warning btn-sm w-100 fw-bold py-2 rounded-3">Aprovisionar Almacén</a>
+                        <a asp-controller="Producto" asp-action="Index" class="btn btn-outline-warning btn-sm w-100 fw-bold py-2 rounded-3">
+                            Aprovisionar Almacén
+                        </a>
                     </div>
-
                     <div class="card border-0 shadow-sm rounded-xl p-3 bg-white border">
                         <h6 class="fw-bold text-dark mb-2" style="font-size: 0.9rem;">Eficiencia de Atención</h6>
                         <div id="chartMiniOperaciones"></div>
@@ -427,6 +445,7 @@
                 </div>
             </div>
 
+            <!-- Gráfico de Ventas -->
             <div class="row">
                 <div class="col-12">
                     <div class="card border-0 shadow-sm p-4 bg-white rounded-xl card-table-premium">
@@ -438,14 +457,12 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         

@@ -225,23 +225,25 @@
                             var defaultAvatar = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(username)}&background=09090B&color=fff&rounded=true";
                             var avatarUrl = !string.IsNullOrEmpty(fotoClaim) ? fotoClaim : defaultAvatar;
 
-                            <li class="nav-item">
-                                <a class="nav-link nav-matrix-link header-interactable text-white fw-bold" asp-controller="Dashboard" asp-action="Index">
-                                    <i class="fa-solid fa-star text-warning me-1"></i> Mis Puntos
-                                </a>
-                            </li>
-                            <li class="nav-item d-flex align-items-center me-1">
-                                <a asp-controller="Account" asp-action="MiPerfil" title="Mi Perfil" class="header-interactable">
-                                    <img src="@avatarUrl" alt="Foto de perfil" class="rounded-circle border border-2 border-white shadow-sm" style="width: 42px; height: 42px; object-fit: cover;" />
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-outline-light btn-sm rounded-pill px-3 header-interactable">
-                                        <i class="fa-solid fa-right-from-bracket me-1"></i> Salir
-                                    </button>
-                                </form>
-                            </li>
+                                               <li class="nav-item">
+                        <!-- Redirige al controlador de Puntos (o ajusta asp-controller al correspondiente si usas otro) -->
+                        <a class="nav-link nav-matrix-link header-interactable text-white fw-bold" asp-controller="Puntos" asp-action="Index">
+                            <i class="fa-solid fa-star text-warning me-1"></i> Mis Puntos
+                        </a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center me-1">
+                        <!-- Redirige a UserController/Perfil para evitar el error 404 -->
+                        <a asp-controller="User" asp-action="Perfil" title="Mi Perfil" class="header-interactable">
+                            <img src="@avatarUrl" alt="Foto de perfil" class="rounded-circle border border-2 border-white shadow-sm" style="width: 42px; height: 42px; object-fit: cover;" />
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-outline-light btn-sm rounded-pill px-3 header-interactable">
+                                <i class="fa-solid fa-right-from-bracket me-1"></i> Salir
+                            </button>
+                        </form>
+                    </li>       
                         }
                     </ul>
                 </div>

@@ -211,6 +211,7 @@
                     </div>
 
                     <!-- SELECT DIÁMETRO -->
+                    <!-- SELECT DIÁMETRO -->
                     <div class="col-md-3">
                         <div class="form-floating form-floating-dark">
                             <select class="form-select" id="diametroSelect">
@@ -219,7 +220,7 @@
                                 {
                                     foreach (var diametro in ViewBag.Diametros)
                                     {
-                                        <option value="@diametro">R@diametro</option>
+                                        <option value="@diametro">R@(diametro)</option>
                                     }
                                 }
                             </select>
@@ -255,31 +256,92 @@
 <partial name="~/Views/Servicios/Index.cshtml" />
 <partial name="~/Views/Promociones/Index.cshtml" />
 
+<!-- Encabezado de gama almacenada -->
 <section id="productos" class="py-5 bg-white">
     <div class="container" data-aos="fade-up">
-        <div class="text-center mb-5">
+        <!-- Encabezado de la Sección -->
+        <div class="text-center mb-4">
             <h2 class="fw-black text-uppercase m-0">Gama Almacenada</h2>
             <hr class="mx-auto accent-bar mt-3">
         </div>
-        <div class="row g-4">
-            @if (Model != null) {
-                @foreach (var p in Model.Take(3)) {
-                    <div class="col-md-4" data-aos="zoom-in-up">
+
+        <!-- Filtros de Categorías Dinámicos -->
+        <div class="d-flex justify-content-center gap-2 mb-5 flex-wrap">
+            <button type="button" class="btn btn-dark rounded-pill px-4 fw-bold filter-btn active" data-filter="todos">
+                <i class="fa-solid fa-boxes-stacked me-2"></i>Todos
+            </button>
+            <button type="button" class="btn btn-outline-dark rounded-pill px-4 fw-bold filter-btn" data-filter="Llantas">
+                <i class="fa-solid fa-compact-disc me-2"></i>Llantas
+            </button>
+            <button type="button" class="btn btn-outline-dark rounded-pill px-4 fw-bold filter-btn" data-filter="Aceites">
+                <i class="fa-solid fa-oil-can me-2"></i>Aceites
+            </button>
+        </div>
+
+        <!-- Grilla de Productos -->
+        <div class="row g-4" id="gridCatalogoProductos">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var p in Model)
+                {
+                    var categoria = string.IsNullOrEmpty(p.Categoria) ? "Llantas" : p.Categoria;
+
+                    <div class="col-md-4 item-producto" data-categoria="@categoria" data-aos="zoom-in-up">
                         <div class="premium-product-card h-100 d-flex flex-column">
                             <div class="overflow-hidden position-relative">
-                                <img src="/images/productoos/@(string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen)" class="img-fluid w-100" style="height: 250px; object-fit: cover; transition: 0.5s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                                <!-- Etiqueta de Categoría -->
+                                <span class="badge bg-dark position-absolute top-0 start-0 m-3 z-2 px-3 py-2 text-uppercase">
+                                    @categoria
+                                </span>
+
+                                <img src="/images/productoos/@(string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen)"
+                                     class="img-fluid w-100"
+                                     style="height: 250px; object-fit: cover; transition: 0.5s;"
+                                     onmouseover="this.style.transform='scale(1.06)'"
+                                     onmouseout="this.style.transform='scale(1)'"
+                                     alt="@p.Nombre">
                             </div>
-                            <div class="p-4 text-center mt-auto">
+
+                            <div class="p-4 text-center mt-auto d-flex flex-column flex-grow-1">
                                 <h6 class="fw-bold text-uppercase text-dark mb-2" style="letter-spacing: 0.5px;">@p.Nombre</h6>
-                                <div class="fs-5 fw-black text-danger">@p.PrecioVenta.ToString("C0")</div>
+
+                                <!-- Detalles según el tipo de producto -->
+                                @if (p.DetalleProducto != null)
+                                {
+                                    <p class="text-muted small mb-2">
+                                        @if (p.DetalleProducto.Ancho != null && p.DetalleProducto.Perfil != null && p.DetalleProducto.Diametro != null)
+                                        {
+                                            <span>Medida: @p.DetalleProducto.Ancho / @p.DetalleProducto.Perfil R@(p.DetalleProducto.Diametro)</span>
+                                        }
+                                        else if (!string.IsNullOrEmpty(p.DetalleProducto.Viscosidad))
+                                        {
+                                            <span>Viscosidad: @p.DetalleProducto.Viscosidad (@p.DetalleProducto.TipoAceite)</span>
+                                        }
+                                    </p>
+                                }
+
+                                <div class="fs-5 fw-black text-danger mb-3 mt-auto">@p.PrecioVenta.ToString("C0")</div>
+
+                                <a href="#contacto" class="btn btn-hyper-action w-100 py-2.5 text-uppercase btn-sm">
+                                    Cotizar Producto
+                                </a>
                             </div>
                         </div>
                     </div>
                 }
             }
+            else
+            {
+                <div class="col-12 text-center py-5">
+                    <div class="text-muted"><i class="fa-solid fa-box-open fa-3x mb-3 text-secondary"></i></div>
+                    <h5 class="fw-bold text-dark">No hay productos disponibles</h5>
+                    <p class="text-muted small">No se encontraron ítems almacenados en el inventario actual.</p>
+                </div>
+            }
         </div>
     </div>
 </section>
+
 
 <partial name="~/Views/Contacto/Index.cshtml" />
 
@@ -300,6 +362,37 @@
                 fadeEffect: { crossFade: true },
                 autoplay: { delay: 6500, disableOnInteraction: false },
                 speed: 1500
+            });
+        });
+
+        // Motor de filtrado por categoría en la Gama Almacenada
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                // Actualizar estados visuales de los botones
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('active', 'btn-dark');
+                    b.classList.add('btn-outline-dark');
+                });
+
+                this.classList.add('active', 'btn-dark');
+                this.classList.remove('btn-outline-dark');
+
+                const filtro = this.getAttribute('data-filter').toLowerCase();
+                const productos = document.querySelectorAll('.item-producto');
+
+                // Mostrar u ocultar las tarjetas según la categoría
+                productos.forEach(prod => {
+                    const categoriaProducto = prod.getAttribute('data-categoria').toLowerCase();
+
+                    if (filtro === 'todos' || categoriaProducto === filtro) {
+                        prod.style.display = 'block';
+                    } else {
+                        prod.style.display = 'none';
+                    }
+                });
+
+                // Refrescar las animaciones AOS al ocultar/mostrar elementos
+                if (typeof AOS !== 'undefined') AOS.refresh();
             });
         });
 

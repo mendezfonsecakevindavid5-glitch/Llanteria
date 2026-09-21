@@ -3,21 +3,159 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Admin</title>
+    <title>@ViewData["Title"] - Llantería Valledupar Admin</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
-            body {
-                background-color: #F8FAFC;
-                margin: 0;
-                padding: 0;
-            }
-            /* Eliminamos la barra fija y los márgenes viejos para que el Index use todo el ancho */
+        :root {
+            --premium-red: #C92B0A;
+            --premium-dark: #0F0F11;
+            --premium-gray: #1A1A1E;
+            --border: #E5E7EB;
+        }
+
+        body {
+            background-color: #F8FAFC;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        /* ========== TOP NAVBAR ADMIN (solo logo + perfil) ========== */
+        .admin-topbar {
+            background: linear-gradient(90deg, #C92B0A 0%, #A02208 100%);
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.75rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+        }
+
+        .admin-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .admin-brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+        }
+
+        .admin-brand-text strong {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-brand-text small {
+            font-size: 0.7rem;
+            opacity: 0.9;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .admin-user-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-user-info {
+            text-align: right;
+            color: white;
+            line-height: 1.2;
+        }
+
+        .admin-user-info .name {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .admin-user-info .role {
+            font-size: 0.7rem;
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-avatar-top {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.4);
+        }
+
+        .btn-logout-admin {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-logout-admin:hover {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Espacio para el contenido */
+        main {
+            min-height: calc(100vh - 64px);
+        }
     </style>
 </head>
 <body>
+    <!-- TOPBAR ADMIN - Solo logo + perfil + salir -->
+    <header class="admin-topbar">
+        <a href="@Url.Action("Index", "Dashboard")" class="admin-brand">
+            <div class="admin-brand-text">
+                <strong>LLANTERÍA</strong>
+                <small>VALLEDUPAR</small>
+            </div>
+        </a>
 
-    <main class="w-100">
+        <div class="admin-user-area">
+            <!-- Avatar y nombre clickeables → van a Mi Perfil -->
+            <a asp-controller="User" asp-action="Perfil" class="d-flex align-items-center gap-3 text-decoration-none">
+                <div class="admin-user-info d-none d-md-block">
+                    <div class="name">@User.Identity?.Name</div>
+                    <div class="role">
+                        @(User.IsInRole("Administrador") ? "Administrador" : "Empleado")
+                    </div>
+                </div>
+
+                <img src="@(User.IsInRole("Administrador") 
+                    ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" 
+                    : "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80")" 
+                     class="admin-avatar-top" alt="Avatar" />
+            </a>
+
+            <a asp-controller="Account" asp-action="Logout" class="btn-logout-admin">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span class="d-none d-sm-inline">Salir</span>
+            </a>
+        </div>
+    </header>
+
+    <main>
         @RenderBody()
     </main>
 

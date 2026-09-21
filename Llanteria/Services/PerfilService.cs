@@ -2,9 +2,9 @@
 using Llanteria.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.IO;
 
 namespace Llanteria.Services
 {
@@ -20,26 +20,29 @@ namespace Llanteria.Services
         public async Task<PerfilUsuarioViewModel> ObtenerPerfilPorUsuarioIdAsync(int usuarioId)
         {
             var perfil = await _context.PerfilUsuarios
-                .Include(p => p.IdUsuarioNavigation)
-                    .ThenInclude(u => u.IdEmpleadoNavigation)
                 .FirstOrDefaultAsync(p => p.IdUsuario == usuarioId);
 
-            if (perfil == null) return null;
+            // Obtener los datos del empleado/usuario relacionado
+            var usuario = await _context.Usuarios
+                .Include(u => u.IdEmpleadoNavigation)
+                .FirstOrDefaultAsync(u => u.Id == usuarioId);
 
-            var empleado = perfil.IdUsuarioNavigation.IdEmpleadoNavigation;
+            var empleado = usuario?.IdEmpleadoNavigation;
 
             return new PerfilUsuarioViewModel
             {
-                Id = perfil.Id,
-                Nombre = empleado != null ? $"{empleado.Nombres} {empleado.Apellidos}" : "Usuario",
-                Correo = empleado?.Correo ?? "Sin correo",
+                Id = usuarioId, // Mantenemos el IdUsuario como referencia principal
+                Nombre = empleado != null ? $"{empleado.Nombres} {empleado.Apellidos}".Trim() : "Usuario",
+                Correo = empleado?.Correo ?? "",
                 Telefono = empleado?.Telefono ?? "",
-                Bio = perfil.Bio ?? "",
-                TemaPreferencia = perfil.TemaPreferencia ?? "Light",
-                NotificacionesActivas = perfil.NotificacionesActivas ?? false,
-                FotoBase64 = perfil.FotoCircular != null ? Convert.ToBase64String(perfil.FotoCircular) : null,
+                Bio = perfil?.Bio ?? "",
+                TemaPreferencia = perfil?.TemaPreferencia ?? "Light",
+                NotificacionesActivas = perfil?.NotificacionesActivas ?? false,
+                FotoBase64 = perfil?.FotoCircular != null
+                    ? $"data:image/png;base64,{Convert.ToBase64String(perfil.FotoCircular)}"
+                    : null,
                 FacturasRecientes = await _context.Facturas
-                    .Where(f => f.IdCliente == perfil.IdUsuario)
+                    .Where(f => f.IdCliente == usuarioId)
                     .OrderByDescending(f => f.Fecha)
                     .Take(5)
                     .Select(f => new FacturaViewModel
@@ -55,23 +58,59 @@ namespace Llanteria.Services
 
         public async Task<bool> ActualizarPerfilAsync(PerfilUsuarioViewModel model)
         {
+            // 1. Buscar o crear el perfil en la tabla PerfilUsuarios
             var perfil = await _context.PerfilUsuarios
-                .Include(p => p.IdUsuarioNavigation)
-                .ThenInclude(u => u.IdEmpleadoNavigation)
-                .FirstOrDefaultAsync(p => p.Id == model.Id);
+                .FirstOrDefaultAsync(p => p.IdUsuario == model.Id);
 
-            if (perfil == null) return false;
-
-            perfil.Bio = model.Bio;
-            perfil.NotificacionesActivas = model.NotificacionesActivas;
-            perfil.TemaPreferencia = model.TemaPreferencia;
-
-            var empleado = perfil.IdUsuarioNavigation?.IdEmpleadoNavigation;
-            if (empleado != null)
+            if (perfil == null)
             {
-                empleado.Telefono = model.Telefono;
+                perfil = new PerfilUsuario
+                {
+                    IdUsuario = model.Id,
+                    Bio = model.Bio,
+                    NotificacionesActivas = model.NotificacionesActivas,
+                    TemaPreferencia = model.TemaPreferencia ?? "Light"
+                };
+                _context.PerfilUsuarios.Add(perfil);
+            }
+            else
+            {
+                perfil.Bio = model.Bio;
+                perfil.NotificacionesActivas = model.NotificacionesActivas;
+                perfil.TemaPreferencia = model.TemaPreferencia;
             }
 
+            // 2. Actualizar Nombre, Teléfono y Correo en la entidad Empleados/Usuarios
+            var usuario = await _context.Usuarios
+                .Include(u => u.IdEmpleadoNavigation)
+                .FirstOrDefaultAsync(u => u.Id == model.Id);
+
+            if (usuario?.IdEmpleadoNavigation != null)
+            {
+                // Separar el nombre completo en Nombres y Apellidos
+                if (!string.IsNullOrWhiteSpace(model.Nombre))
+                {
+                    var partes = model.Nombre.Trim().Split(' ');
+                    if (partes.Length > 1)
+                    {
+                        usuario.IdEmpleadoNavigation.Nombres = partes[0];
+                        usuario.IdEmpleadoNavigation.Apellidos = string.Join(" ", partes.Skip(1));
+                    }
+                    else
+                    {
+                        usuario.IdEmpleadoNavigation.Nombres = model.Nombre;
+                    }
+                }
+
+                usuario.IdEmpleadoNavigation.Telefono = model.Telefono;
+
+                if (!string.IsNullOrWhiteSpace(model.Correo))
+                {
+                    usuario.IdEmpleadoNavigation.Correo = model.Correo;
+                }
+            }
+
+            // 3. Procesar foto si subió una nueva
             if (model.NuevaFoto != null && model.NuevaFoto.Length > 0)
             {
                 using (var ms = new MemoryStream())
@@ -83,7 +122,8 @@ namespace Llanteria.Services
 
             try
             {
-                return await _context.SaveChangesAsync() > 0;
+                await _context.SaveChangesAsync();
+                return true;
             }
             catch (Exception)
             {
@@ -91,20 +131,17 @@ namespace Llanteria.Services
             }
         }
 
-        // --- NUEVO MÉTODO PARA EL CAMBIO DE CONTRASEÑA ---
         public async Task<bool> ActualizarPasswordAsync(int usuarioId, string passwordActual, string nuevaPassword)
         {
             var usuario = await _context.Usuarios.FindAsync(usuarioId);
 
             if (usuario == null) return false;
 
-            // Validación: ¿La contraseña actual es correcta?
             if (usuario.PasswordHash != passwordActual)
             {
                 return false;
             }
 
-            // Actualizamos la contraseña
             usuario.PasswordHash = nuevaPassword;
 
             try
