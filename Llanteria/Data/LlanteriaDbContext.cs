@@ -465,15 +465,20 @@ public partial class LlanteriaDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Usuarios__3214EC07440B1D54");
 
             entity.HasIndex(e => e.Username, "UQ__Usuarios__536C85E49A6A20E7").IsUnique();
-
             entity.HasIndex(e => e.IdEmpleado, "UQ__Usuarios__CE6D8B9F67398071").IsUnique();
+
+            entity.Property(e => e.Correo)
+                .HasMaxLength(100)
+                .IsRequired();
 
             entity.Property(e => e.Estado)
                 .HasMaxLength(20)
                 .HasDefaultValue("Activo");
+
             entity.Property(e => e.FechaCreacion)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+
             entity.Property(e => e.FechaFinBaneo).HasColumnType("datetime");
             entity.Property(e => e.MotivoSancion).HasMaxLength(255);
             entity.Property(e => e.UltimaConexion).HasColumnType("datetime");

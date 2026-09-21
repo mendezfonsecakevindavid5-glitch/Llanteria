@@ -16,6 +16,12 @@ public partial class Usuario
     [Display(Name = "Nombre de Usuario")]
     public string Username { get; set; } = null!;
 
+    [Required(ErrorMessage = "El correo electrónico es obligatorio.")]
+    [EmailAddress(ErrorMessage = "Formato de correo electrónico no válido.")]
+    [StringLength(100, ErrorMessage = "El correo no puede exceder los 100 caracteres.")]
+    [Display(Name = "Correo Electrónico")]
+    public string Correo { get; set; } = null!;
+
     [Required(ErrorMessage = "La contraseña es obligatoria.")]
     [DataType(DataType.Password)]
     [Display(Name = "Contraseña")]

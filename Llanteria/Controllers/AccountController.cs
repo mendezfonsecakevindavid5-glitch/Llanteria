@@ -148,7 +148,7 @@ namespace Llanteria.Controllers
 
             HttpContext.Session.SetString("CodigoRegistro", otp);
 
-            bool enviado = await _emailSer.EnviarTokenVerificacionAsync(dto.Correo, dto.Nombre, otp);
+            bool enviado = await _emailSer.EnviarTokenRecuperacionAsync(dto.Correo, otp);
 
             if (enviado)
             {
@@ -220,6 +220,75 @@ namespace Llanteria.Controllers
         }
 
         public IActionResult Welcome() => View();
+
+
+        [HttpGet]
+        public IActionResult ReestablecerContra()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EnviarCodigoRecuperacion([FromBody] SolicitudOtpDto dto)
+        {
+            if (string.IsNullOrEmpty(dto.Correo))
+                return Json(new { success = false, message = "El correo es requerido." });
+
+            // Aquí deberías verificar si el correo existe en _userSer o _clienteSer
+            var userExists = true; // Reemplazar con lógica real: _clienteSer.GetClientes().Any(c => c.Correo == dto.Correo);
+
+            if (!userExists)
+                return Json(new { success = false, message = "Este correo no se encuentra registrado." });
+
+            Random random = new Random();
+            string otp = random.Next(100000, 999999).ToString();
+
+            HttpContext.Session.SetString("CodigoRecuperacion", otp);
+            HttpContext.Session.SetString("CorreoRecuperacion", dto.Correo);
+
+            bool enviado = await _emailSer.EnviarTokenRecuperacionAsync(dto.Correo, otp);
+
+            if (enviado)
+                return Json(new { success = true });
+
+            return Json(new { success = false, message = "Error al enviar el correo." });
+        }
+
+        [HttpPost]
+        public IActionResult VerificarTokenRecuperacion([FromBody] string tokenIngresado)
+        {
+            string tokenGuardado = HttpContext.Session.GetString("CodigoRecuperacion");
+
+            if (string.IsNullOrEmpty(tokenGuardado))
+                return Json(new { success = false, message = "El código expiró. Solicita uno nuevo." });
+
+            if (tokenGuardado == tokenIngresado)
+                return Json(new { success = true });
+
+            return Json(new { success = false, message = "El código es incorrecto." });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ProcesarReestablecimiento(string NuevaContrasena)
+        {
+            string correoUsuario = HttpContext.Session.GetString("CorreoRecuperacion");
+
+            if (string.IsNullOrEmpty(correoUsuario))
+                return RedirectToAction("ReestablecerContra");
+
+            // Lógica para actualizar la contraseña en la base de datos
+            // var usuario = _userSer.GetUsuarios().FirstOrDefault(u => u.Username == correoUsuario);
+            // usuario.PasswordHash = NuevaContrasena;
+            // _userSer.UpdateUsuario(usuario);
+
+            // Limpiar sesión
+            HttpContext.Session.Remove("CodigoRecuperacion");
+            HttpContext.Session.Remove("CorreoRecuperacion");
+
+            // Redireccionar al login o enviar a página de éxito
+            return RedirectToAction("Login");
+        }
     }
 
     public class SolicitudOtpDto

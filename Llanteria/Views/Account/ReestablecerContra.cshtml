@@ -1,0 +1,383 @@
+﻿@{
+    ViewData["Title"] = "Reestablecer contraseña";
+}
+<style>
+    /* Estilos base combinados de Login y Register */
+    .register-container-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 250px);
+        padding: 2rem 1rem;
+    }
+
+    @@keyframes slideUpEntrance {
+        0% { opacity: 0; transform: translateY(30px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .entrance-register-card {
+        background-color: #ffffff;
+        width: 100%;
+        max-width: 480px;
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
+        animation: slideUpEntrance 0.6s ease-out forwards;
+    }
+
+    .header-group {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .form-main-title {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: #000000;
+    }
+
+    .custom-field-label {
+        display: block;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #000000;
+        margin-bottom: 0.5rem;
+        text-align: left;
+    }
+
+    .custom-input {
+        height: 55px;
+        font-size: 1.1rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.5rem;
+        width: 100%;
+        padding-left: 15px;
+        padding-right: 15px;
+        background-color: #fff;
+    }
+
+    .custom-error-text {
+        color: var(--llanteria-primary, #C92B0A);
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-top: 0.8rem;
+        display: none;
+    }
+
+    .btn-register-submit {
+        background-color: var(--llanteria-primary, #C92B0A) !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-size: 1.1rem;
+        padding: 1rem;
+        font-weight: 700;
+        transition: filter 0.3s ease;
+    }
+
+    .btn-register-submit:hover {
+        filter: brightness(0.85);
+    }
+
+    .back-link-hover {
+        color: #6c757d;
+        text-decoration: none;
+        font-size: 1.1rem;
+        font-weight: 600;
+        position: relative;
+        display: inline-block;
+        padding-bottom: 2px;
+        transition: color 0.2s ease;
+        cursor: pointer;
+    }
+
+    .back-link-hover:hover {
+        color: #000000;
+    }
+
+    /* Estilos Etapa 2: OTP */
+    .otp-wrapper {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 1.5rem 0 0.5rem 0;
+    }
+
+    .otp-input {
+        width: 50px;
+        height: 60px;
+        border: 2px solid #000000;
+        background-color: transparent;
+        border-radius: 0.5rem;
+        text-align: center;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #212529;
+        outline: none;
+        transition: border-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .otp-input:focus {
+        border-color: var(--llanteria-primary, #C92B0A);
+        transform: translateY(-2px);
+    }
+
+    .timer-display {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #dc3545;
+        text-align: center;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .expired-text-notice {
+        color: #dc3545;
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: none;
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+<div class="register-container-wrapper">
+    <div class="entrance-register-card">
+        <div class="header-group">
+            <h2 id="mainTitle" class="form-main-title m-0 fw-bold">Reestablecer contraseña</h2>
+        </div>
+
+        <form asp-controller="Account" asp-action="ProcesarReestablecimiento" method="post" id="resetForm" novalidate>
+            @Html.AntiForgeryToken()
+            <div class="row g-3">
+                
+                <!-- ETAPA 1: Correo -->
+                <div id="etapa1">
+                    <div class="col-12">
+                        <label class="custom-field-label">Correo electrónico</label>
+                        <input type="email" name="Correo" id="emailInput" class="form-control custom-input" placeholder="Dirección de correo electrónico" required />
+                    </div>
+                </div>
+
+                <!-- ETAPA 2: OTP -->
+                <div id="etapa2" style="display: none;">
+                    <div class="text-center">
+                        <div class="otp-wrapper" id="otpContainer">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
+                        </div>
+                        <span class="timer-display" id="timerText">60s</span>
+                        <div id="otpExpiredNotice" class="expired-text-notice">
+                            <i class="fa-solid fa-clock-rotate-left me-1"></i> Este código ya está vencido. Por favor, regresa y solicita uno nuevo.
+                        </div>
+                        <input type="hidden" id="TokenCompleto" name="TokenVerificacion" />
+                    </div>
+                </div>
+
+                <!-- ETAPA 3: Nueva Contraseña -->
+                <div id="etapa3" style="display: none;">
+                    <div class="col-12 mb-4">
+                        <label class="custom-field-label">Nueva contraseña</label>
+                        <input type="password" name="NuevaContrasena" id="pass1" class="form-control custom-input" placeholder="Escriba una contraseña" required />
+                    </div>
+                    <div class="col-12">
+                        <label class="custom-field-label">Nueva contraseña</label>
+                        <input type="password" id="pass2" class="form-control custom-input" placeholder="Escriba nuevamente la contraseña" required />
+                    </div>
+                </div>
+
+                <div id="generalError" class="custom-error-text text-center mt-3"></div>
+
+                <div class="d-grid mt-4">
+                    <button type="submit" id="btnSiguiente" class="btn btn-register-submit text-uppercase rounded-3">
+                        Siguiente
+                    </button>
+                </div>
+
+                <div class="text-center mt-4 border-top pt-3">
+                    <a id="btnRegresar" class="back-link-hover">Regresar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const etapa1 = document.getElementById('etapa1');
+            const etapa2 = document.getElementById('etapa2');
+            const etapa3 = document.getElementById('etapa3');
+            const btnRegresar = document.getElementById('btnRegresar');
+            const resetForm = document.getElementById('resetForm');
+            const btnSiguiente = document.getElementById('btnSiguiente');
+            const errorContainer = document.getElementById('generalError');
+            const otpExpiredNotice = document.getElementById('otpExpiredNotice');
+            const otpInputs = document.querySelectorAll('.otp-input');
+            const timerText = document.getElementById('timerText');
+            const emailInput = document.getElementById('emailInput');
+            const pass1 = document.getElementById('pass1');
+            const pass2 = document.getElementById('pass2');
+
+            let countdownInterval;
+            let currentStep = 1;
+
+            btnRegresar.addEventListener('click', function (e) {
+                e.preventDefault();
+                errorContainer.style.display = 'none';
+                otpExpiredNotice.style.display = 'none';
+
+                if (currentStep === 1) {
+                    window.location.href = '@Url.Action("Login", "Account")';
+                } else if (currentStep === 2) {
+                    currentStep = 1;
+                    etapa2.style.display = 'none';
+                    etapa1.style.display = 'block';
+                    clearInterval(countdownInterval);
+                    btnSiguiente.innerHTML = 'Siguiente';
+                } else if (currentStep === 3) {
+                    currentStep = 2;
+                    etapa3.style.display = 'none';
+                    etapa2.style.display = 'block';
+                    btnSiguiente.innerHTML = 'Siguiente';
+                }
+            });
+
+            resetForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                errorContainer.style.display = 'none';
+                errorContainer.innerHTML = '';
+
+                if (currentStep === 1) {
+                    if (!emailInput.value) {
+                        errorContainer.innerHTML = "&bull; Por favor, ingresa tu correo electrónico.";
+                        errorContainer.style.display = 'block';
+                        return;
+                    }
+
+                    btnSiguiente.disabled = true;
+                    btnSiguiente.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Enviando código...';
+
+                    try {
+                        const response = await fetch('@Url.Action("EnviarCodigoRecuperacion", "Account")', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ correo: emailInput.value })
+                        });
+                        const resData = await response.json();
+
+                        if (resData.success) {
+                            currentStep = 2;
+                            etapa1.style.display = 'none';
+                            etapa2.style.display = 'block';
+                            btnSiguiente.innerHTML = 'Siguiente';
+                            iniciarTemporizador(60);
+                            otpInputs[0].focus();
+                        } else {
+                            errorContainer.innerHTML = "&bull; " + (resData.message || "Correo no registrado.");
+                            errorContainer.style.display = 'block';
+                        }
+                    } catch (err) {
+                        errorContainer.innerHTML = "&bull; Error de conexión.";
+                        errorContainer.style.display = 'block';
+                    } finally {
+                        btnSiguiente.disabled = false;
+                    }
+
+                } else if (currentStep === 2) {
+                    const token = document.getElementById('TokenCompleto').value;
+                    if (token.length < 6) {
+                        errorContainer.innerHTML = "&bull; Debes ingresar los 6 dígitos completos.";
+                        errorContainer.style.display = 'block';
+                        return;
+                    }
+
+                    btnSiguiente.disabled = true;
+                    btnSiguiente.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Verificando...';
+
+                    try {
+                        const response = await fetch('@Url.Action("VerificarTokenRecuperacion", "Account")', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(token)
+                        });
+                        const resData = await response.json();
+
+                        if (resData.success) {
+                            clearInterval(countdownInterval);
+                            currentStep = 3;
+                            etapa2.style.display = 'none';
+                            etapa3.style.display = 'block';
+                            btnSiguiente.innerHTML = 'Finalizar';
+                        } else {
+                            errorContainer.innerHTML = "&bull; " + (resData.message || "Código incorrecto.");
+                            errorContainer.style.display = 'block';
+                        }
+                    } catch (err) {
+                        errorContainer.innerHTML = "&bull; Error al verificar.";
+                        errorContainer.style.display = 'block';
+                    } finally {
+                        btnSiguiente.disabled = false;
+                    }
+                } else if (currentStep === 3) {
+                    if (!pass1.value || !pass2.value) {
+                        errorContainer.innerHTML = "&bull; Por favor, completa ambos campos de contraseña.";
+                        errorContainer.style.display = 'block';
+                        return;
+                    }
+
+                    if (pass1.value !== pass2.value) {
+                        errorContainer.innerHTML = "&bull; Las contraseñas no coinciden. Intenta nuevamente.";
+                        errorContainer.style.display = 'block';
+                        return;
+                    }
+
+                    btnSiguiente.disabled = true;
+                    btnSiguiente.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Procesando...';
+                    resetForm.submit();
+                }
+            });
+
+            // Lógica de los inputs OTP (igual a Register)
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    if (this.value !== '') {
+                        if (index < otpInputs.length - 1) otpInputs[index + 1].focus();
+                    }
+                    compilarToken();
+                });
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && this.value === '') {
+                        if (index > 0) otpInputs[index - 1].focus();
+                    }
+                });
+            });
+
+            function compilarToken() {
+                let token = '';
+                otpInputs.forEach(input => token += input.value);
+                document.getElementById('TokenCompleto').value = token;
+            }
+
+            function iniciarTemporizador(segundos) {
+                clearInterval(countdownInterval);
+                otpExpiredNotice.style.display = 'none';
+                let tiempoRestante = segundos;
+
+                countdownInterval = setInterval(() => {
+                    timerText.textContent = `${tiempoRestante}s`;
+                    if (tiempoRestante <= 0) {
+                        clearInterval(countdownInterval);
+                        timerText.textContent = "0s";
+                        otpExpiredNotice.style.display = 'block';
+                    }
+                    tiempoRestante--;
+                }, 1000);
+            }
+        });
+    </script>
+}

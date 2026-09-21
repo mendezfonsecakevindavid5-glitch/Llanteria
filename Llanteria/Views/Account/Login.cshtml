@@ -1,8 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Formulario de Ingreso";
 }
-
 <style>
+    /* Se mantienen los estilos originales, ajustando el input sin icono */
     .login-container-wrapper {
         display: flex;
         align-items: center;
@@ -12,8 +12,15 @@
     }
 
     @@keyframes slideUpEntrance {
-        0% { opacity: 0; transform: translateY(30px); }
-        100% { opacity: 1; transform: translateY(0); }
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .entrance-login-card {
@@ -31,6 +38,7 @@
         font-size: 1.7rem;
         font-weight: 800;
         color: #000000;
+        text-align: center;
     }
 
     .custom-field-label {
@@ -53,14 +61,6 @@
         width: 100%;
     }
 
-    .input-wrapper i.internal-icon {
-        position: absolute;
-        left: 15px;
-        color: #6c757d;
-        font-size: 1.1rem;
-        z-index: 2;
-    }
-
     .password-toggle-btn {
         position: absolute;
         left: 15px;
@@ -76,17 +76,21 @@
         justify-content: center;
     }
 
-    .password-toggle-btn:hover {
-        color: #000000;
-    }
+        .password-toggle-btn:hover {
+            color: #000000;
+        }
 
     .custom-input {
         height: 55px;
-        padding-left: 45px !important;
         font-size: 1.1rem;
         border: 1px solid #ced4da;
         border-radius: 0.5rem;
         width: 100%;
+        padding-left: 15px; /* Ajustado al quitar el icono del usuario */
+    }
+
+    .custom-input-password {
+        padding-left: 45px !important; /* Mantiene el espacio para el botón del ojo */
     }
 
     .btn-login-submit {
@@ -99,15 +103,15 @@
         transition: filter 0.3s ease, background-color 0.3s ease;
     }
 
-    .btn-login-submit:disabled {
-        background-color: #8B0000 !important;
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
+        .btn-login-submit:disabled {
+            background-color: #8B0000 !important;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
 
-    .btn-login-submit:hover {
-        filter: brightness(0.85);
-    }
+        .btn-login-submit:hover {
+            filter: brightness(0.85);
+        }
 
     .custom-error-text {
         color: var(--llanteria-primary, #C92B0A);
@@ -128,18 +132,14 @@
     <div class="entrance-login-card">
 
         <div class="header-group">
-            <div class="d-flex align-items-center justify-content-center">
-                <i class="fa-solid fa-circle-user text-dark me-3" style="font-size: 2.5rem;"></i>
-                <h2 class="form-main-title m-0 fw-bold">Iniciar sesión</h2>
-            </div>
+            <h2 class="form-main-title m-0 fw-bold">Iniciar sesión</h2>
         </div>
 
         <form id="loginForm" asp-action="Login" method="post">
             <div class="mb-4">
                 <label class="custom-field-label">Usuario</label>
                 <div class="input-wrapper">
-                    <i class="fa-regular fa-user internal-icon"></i>
-                    <input type="text" name="username" class="form-control custom-input" placeholder="Ingresa tu usuario" required />
+                    <input type="text" name="username" class="form-control custom-input" placeholder="Usuario" required />
                 </div>
             </div>
 
@@ -149,7 +149,7 @@
                     <button type="button" id="togglePasswordBtn" class="password-toggle-btn" title="Mostrar/Ocultar contraseña">
                         <i id="eyeIcon" class="fa-regular fa-eye-slash"></i>
                     </button>
-                    <input type="password" id="passwordInput" name="password" class="form-control custom-input" placeholder="Ingresa tu contraseña" required />
+                    <input type="password" id="passwordInput" name="password" class="form-control custom-input custom-input-password" placeholder="Contraseña" required />
                 </div>
             </div>
 
@@ -167,10 +167,10 @@
             </div>
 
             <div class="text-center mt-4">
-                <a asp-controller="Account" asp-action="ForgotPassword" class="text-danger fw-bold text-decoration-none" style="font-size: 0.95rem;">
-                    Recuperar contraseña
+                <a asp-controller="Account" asp-action="ReestablecerContra" class="text-danger fw-bold text-decoration-none" style="font-size: 0.95rem;">
+                    Reestablecer contraseña
                 </a>
-                
+
                 <div class="partial-divider"></div>
 
                 <span class="text-muted">¿No tienes cuenta?</span>
@@ -182,6 +182,7 @@
 
 @section Scripts {
     <script>
+        // Lógica del Login sin cambios
         document.addEventListener('DOMContentLoaded', function () {
             const toggleBtn = document.getElementById('togglePasswordBtn');
             const passwordInput = document.getElementById('passwordInput');
