@@ -4,62 +4,113 @@
     ViewData["Title"] = "Historial de Ventas";
 }
 
-<div class="container py-5" style="max-width: 1200px;">
+<div class="container-fluid catalogo-container">
 
-    <!-- ENCABEZADO -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- Encabezado -->
+    <div class="catalogo-header">
         <div>
-            <a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none small fw-bold d-inline-flex align-items-center gap-2 mb-2 transition-transform hover-left">
-                <i class="fa-solid fa-arrow-left"></i> Volver al Panel
+            <a asp-controller="Dashboard" asp-action="Index" class="volver-panel">
+                <i class="fa-solid fa-arrow-left me-2"></i>Volver al Panel
             </a>
-            <h2 class="fw-black text-dark text-uppercase m-0">
-                <i class="fa-solid fa-file-invoice-dollar text-success"></i> Facturas de Ventas
-            </h2>
-            <p class="text-muted small m-0">Historial de transacciones, clientes atendidos y totales generados.</p>
+
+            <div class="titulo-con-icono">
+                <div class="icono-catalogo">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                </div>
+
+                <div>
+                    <h1>FACTURAS DE VENTAS</h1>
+                    <p>Historial de transacciones, clientes atendidos y totales generados.</p>
+                </div>
+            </div>
         </div>
-        <a asp-action="Create" class="btn btn-success fw-bold px-4 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2 transition-transform">
-            <i class="fa-solid fa-plus"></i> Nueva Venta
+
+        <a asp-action="Create" class="btn-nueva-venta">
+            <i class="fa-solid fa-plus me-2"></i>Nueva Venta
         </a>
     </div>
 
-    <!-- TABLA CON ESPACIADO PROFESIONAL -->
-    <div class="card border-0 shadow-sm rounded-xl overflow-hidden">
+    <!-- Tabla -->
+    <div class="tabla-wrapper">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-dark text-uppercase small tracking-wider">
+            <table class="tabla-facturas">
+                <thead>
                     <tr>
-                        <th class="ps-4 py-3">Nro. Factura</th>
-                        <th class="py-3">Fecha</th>
-                        <th class="py-3">Cliente</th>
-                        <th class="text-end py-3">Subtotal</th>
-                        <th class="text-end py-3">IVA</th>
-                        <th class="text-end py-3">Total a Pagar</th>
-                        <th class="text-center py-3 pe-4">Acciones</th>
+                        <th class="col-factura">NRO. FACTURA</th>
+                        <th class="col-fecha">FECHA</th>
+                        <th class="col-cliente">CLIENTE</th>
+                        <th class="col-subtotal text-end">SUBTOTAL</th>
+                        <th class="col-iva text-end">IVA</th>
+                        <th class="col-total text-end">TOTAL A PAGAR</th>
+                        <th class="col-acciones text-center">ACCIONES</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white">
+
+                <tbody>
                     @foreach (var item in Model)
                     {
-                        <tr style="height: 70px;">
-                            <td class="ps-4">
-                                <span class="badge bg-light text-dark border font-monospace px-2"># @item.Id</span>
-                            </td>
-                            <td class="text-muted small">
-                                <i class="fa-regular fa-calendar me-1"></i> @(item.Fecha?.ToString("dd/MM/yyyy") ?? "N/A")
-                            </td>
+                        var nombreCliente = $"{item.IdClienteNavigation?.Nombres} {item.IdClienteNavigation?.Apellidos}".Trim();
+
+                        <tr>
                             <td>
-                                <div class="fw-bold text-dark">@item.IdClienteNavigation?.Nombres @item.IdClienteNavigation?.Apellidos</div>
+                                <span class="factura-numero">
+                                    <i class="fa-solid fa-receipt me-2"></i># @item.Id
+                                </span>
                             </td>
-                            <td class="text-end text-muted">$ @item.TotalBruto.ToString("N0")</td>
-                            <td class="text-end text-muted">$ @item.Iva.ToString("N0")</td>
-                            <td class="text-end fw-bold text-success pe-3 fs-6">$ @item.TotalPagar.ToString("N0")</td>
-                            <td class="text-center pe-4">
-                                <div class="d-flex justify-content-center gap-1">
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info rounded-2" title="Detalles">
+
+                            <td>
+                                <span class="fecha-factura">
+                                    <i class="fa-regular fa-calendar-days me-2"></i>
+                                    @(item.Fecha?.ToString("dd/MM/yyyy") ?? "N/A")
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="cliente-factura">
+                                    <div class="cliente-icono">
+                                        <i class="fa-solid fa-user"></i>
+                                    </div>
+
+                                    <span>
+                                        @(string.IsNullOrWhiteSpace(nombreCliente)
+                                            ? "Cliente no registrado"
+                                            : nombreCliente)
+                                    </span>
+                                </div>
+                            </td>
+
+                            <td class="text-end">
+                                <span class="valor-secundario">
+                                    $ @item.TotalBruto.ToString("N0")
+                                </span>
+                            </td>
+
+                            <td class="text-end">
+                                <span class="valor-secundario">
+                                    $ @item.Iva.ToString("N0")
+                                </span>
+                            </td>
+
+                            <td class="text-end">
+                                <span class="total-factura">
+                                    $ @item.TotalPagar.ToString("N0")
+                                </span>
+                            </td>
+
+                            <td class="text-center">
+                                <div class="acciones">
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.Id"
+                                       class="btn-accion btn-detalle"
+                                       title="Ver detalles de la factura">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning rounded-2" title="Editar">
-                                        <i class="fa-solid fa-pen"></i>
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.Id"
+                                       class="btn-accion btn-editar"
+                                       title="Editar factura">
+                                        <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
                                 </div>
                             </td>
@@ -72,19 +123,287 @@
 </div>
 
 <style>
-    .table td {
-        padding: 15px !important;
+    body {
+        background: #f7f8fa;
+        color: #222;
     }
 
-    .rounded-xl {
-        border-radius: 12px !important;
+    .catalogo-container {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 22px 28px 40px;
     }
 
-    .transition-transform {
-        transition: 0.2s;
+    .catalogo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 25px;
     }
 
-        .transition-transform:hover {
-            transform: translateY(-2px);
+    .volver-panel {
+        display: inline-block;
+        margin-bottom: 10px;
+        color: #555;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color .2s ease;
+    }
+
+    .volver-panel:hover {
+        color: #c9250c;
+    }
+
+    .titulo-con-icono {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .icono-catalogo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        color: #c9250c;
+        font-size: 31px;
+    }
+
+    .titulo-con-icono h1 {
+        margin: 0;
+        color: #20252b;
+        font-size: 31px;
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    .titulo-con-icono p {
+        margin: 2px 0 0;
+        color: #777;
+        font-size: 14px;
+    }
+
+    .btn-nueva-venta {
+        display: inline-flex;
+        align-items: center;
+        padding: 11px 23px;
+        border-radius: 8px;
+        background: #c9250c;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 3px 7px rgba(201, 37, 12, .20);
+        transition: all .2s ease;
+    }
+
+    .btn-nueva-venta:hover {
+        background: #a91d09;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .tabla-wrapper {
+        overflow: hidden;
+        border: 1px solid #d9d9d9;
+        border-radius: 15px 15px 0 0;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+    }
+
+    .tabla-facturas {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+    .tabla-facturas thead {
+        background: #fff;
+    }
+
+    .tabla-facturas th {
+        padding: 13px 17px;
+        border-bottom: 1px solid #d8d8d8;
+        color: #20252b;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1.25px;
+        white-space: nowrap;
+    }
+
+    .tabla-facturas td {
+        min-height: 80px;
+        padding: 11px 17px;
+        border-bottom: 1px solid #dedede;
+        vertical-align: middle;
+        font-size: 14px;
+    }
+
+    .tabla-facturas tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .tabla-facturas tbody tr:hover {
+        background: #fffaf8;
+    }
+
+    .col-factura {
+        width: 13%;
+    }
+
+    .col-fecha {
+        width: 14%;
+    }
+
+    .col-cliente {
+        width: 25%;
+    }
+
+    .col-subtotal {
+        width: 13%;
+    }
+
+    .col-iva {
+        width: 11%;
+    }
+
+    .col-total {
+        width: 15%;
+    }
+
+    .col-acciones {
+        width: 9%;
+    }
+
+    .factura-numero {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 10px;
+        border: 1px solid #d9dee2;
+        border-radius: 6px;
+        background: #f7f8f9;
+        color: #363b40;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 13px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .factura-numero i {
+        color: #c9250c;
+    }
+
+    .fecha-factura {
+        color: #5e656b;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .fecha-factura i {
+        color: #777e84;
+    }
+
+    .cliente-factura {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #252a30;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .cliente-icono {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+        border-radius: 8px;
+        background: #fff1ed;
+        color: #c9250c;
+        font-size: 15px;
+    }
+
+    .valor-secundario {
+        color: #697078;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .total-factura {
+        color: #c9250c;
+        font-size: 15px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .acciones {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .btn-accion {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 33px;
+        height: 33px;
+        border: 1px solid;
+        border-radius: 8px;
+        background: #fff;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all .2s ease;
+    }
+
+    .btn-detalle {
+        border-color: #0f8ca8;
+        color: #0f8ca8;
+    }
+
+    .btn-editar {
+        border-color: #252525;
+        color: #252525;
+    }
+
+    .btn-detalle:hover {
+        background: #0f8ca8;
+        color: #fff;
+    }
+
+    .btn-editar:hover {
+        background: #252525;
+        color: #fff;
+    }
+
+    @@media (max-width: 992px) {
+        .catalogo-container {
+            padding: 18px 12px 30px;
         }
+
+        .catalogo-header {
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .btn-nueva-venta {
+            align-self: stretch;
+            justify-content: center;
+        }
+
+        .titulo-con-icono h1 {
+            font-size: 25px;
+        }
+
+        .tabla-facturas th,
+        .tabla-facturas td {
+            padding: 10px 12px;
+        }
+    }
 </style>

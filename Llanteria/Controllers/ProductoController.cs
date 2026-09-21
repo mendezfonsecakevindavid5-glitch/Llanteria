@@ -19,27 +19,54 @@ namespace Llanteria.Controllers
         private readonly ProductoService ser;
         private readonly ProveedoreService provSer;
         private readonly MarcaService marcSer;
-        private readonly BodegaService bodSer;          // ← NUEVO
+        private readonly BodegaService bodSer;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
         public ProductoController(
             ProductoService productoService,
             ProveedoreService proveedoreService,
             MarcaService marcaService,
-            BodegaService bodegaService,               // ← NUEVO
+            BodegaService bodegaService,
             IWebHostEnvironment webHostEnvironment)
         {
             ser = productoService;
             provSer = proveedoreService;
             marcSer = marcaService;
-            bodSer = bodegaService;                    // ← NUEVO
+            bodSer = bodegaService;
             _webHostEnvironment = webHostEnvironment;
         }
 
         // --- VISTAS Y LOGICA (MÉTODOS GET) ---
 
         [HttpGet]
-        public ActionResult Index() => View(ser.GetProductos());
+        public ActionResult Index()
+        {
+            var productos = ser.GetProductos();
+
+            // Extraer medidas únicas registradas en los productos de la BD
+            ViewBag.Anchos = productos
+                .Where(p => p.DetalleProducto?.Ancho != null)
+                .Select(p => p.DetalleProducto.Ancho)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToList();
+
+            ViewBag.Perfiles = productos
+                .Where(p => p.DetalleProducto?.Perfil != null)
+                .Select(p => p.DetalleProducto.Perfil)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToList();
+
+            ViewBag.Diametros = productos
+                .Where(p => p.DetalleProducto?.Diametro != null)
+                .Select(p => p.DetalleProducto.Diametro)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToList();
+
+            return View(productos);
+        }
 
         [HttpGet]
         public ActionResult Create()
@@ -68,7 +95,7 @@ namespace Llanteria.Controllers
                 .Select(p => new {
                     nombre = p.Nombre,
                     precio = p.PrecioVenta.ToString("C0"),
-                    img = "/images/productos/" + (string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen),
+                    img = "/images/productoos/" + (string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen),
                     categoria = p.Categoria,
                     detalles = p.DetalleProducto != null ? new
                     {
@@ -83,13 +110,54 @@ namespace Llanteria.Controllers
             return Json(productos);
         }
 
+        // Endpoint de filtrado dinámico por medidas
+        public JsonResult GetLlantasJson(string? ancho, string? perfil, string? diametro)
+        {
+            var query = ser.GetProductos().AsQueryable();
+
+            // 1. Filtrado por Ancho
+            if (!string.IsNullOrEmpty(ancho))
+            {
+                query = query.Where(p => p.DetalleProducto != null
+                                      && p.DetalleProducto.Ancho != null
+                                      && p.DetalleProducto.Ancho.ToString() == ancho);
+            }
+
+            // 2. Filtrado por Perfil
+            if (!string.IsNullOrEmpty(perfil))
+            {
+                query = query.Where(p => p.DetalleProducto != null
+                                      && p.DetalleProducto.Perfil != null
+                                      && p.DetalleProducto.Perfil.ToString() == perfil);
+            }
+
+            // 3. Filtrado por Diametro
+            if (!string.IsNullOrEmpty(diametro))
+            {
+                query = query.Where(p => p.DetalleProducto != null
+                                      && p.DetalleProducto.Diametro != null
+                                      && p.DetalleProducto.Diametro.ToString() == diametro);
+            }
+
+            // 4. Proyección de datos
+            // Usamos .AsEnumerable() antes de dar formato de moneda a la cadena,
+            // ya que .ToString("C0") no puede ser traducido a SQL por Entity Framework.
+            var resultados = query.AsEnumerable().Select(p => new
+            {
+                nombre = p.Nombre,
+                precio = p.PrecioVenta.ToString("C0"),
+                img = "/images/productoos/" + (string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen)
+            }).ToList();
+
+            return Json(resultados);
+        }
+
         // --- PROCESAMIENTO DE FORMULARIOS (MÉTODOS POST) ---
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Producto p)
         {
-            // === DIAGNÓSTICO ===
             if (!ModelState.IsValid)
             {
                 var errores = ModelState
@@ -99,7 +167,6 @@ namespace Llanteria.Controllers
 
                 ViewBag.Errores = string.Join("<br>", errores);
             }
-            // ===================
 
             if (ModelState.IsValid)
             {
@@ -118,7 +185,6 @@ namespace Llanteria.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Si subieron una imagen nueva
                 if (ob.ImagenArchivo != null)
                 {
                     var original = ser.GetProducto(id);
@@ -140,7 +206,6 @@ namespace Llanteria.Controllers
         {
             if (archivo == null) return "default-producto.png";
 
-            // ← Aquí cambiamos a "productoos"
             string carpeta = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productoos");
             if (!Directory.Exists(carpeta)) Directory.CreateDirectory(carpeta);
 
@@ -166,7 +231,6 @@ namespace Llanteria.Controllers
         {
             if (string.IsNullOrEmpty(nombreArchivo) || nombreArchivo == "default-producto.png") return;
 
-            // ← También aquí
             string ruta = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productoos", nombreArchivo);
             if (System.IO.File.Exists(ruta)) System.IO.File.Delete(ruta);
         }
@@ -175,7 +239,7 @@ namespace Llanteria.Controllers
         {
             ViewBag.IdProveedor = new SelectList(provSer.GetProveedores(), "Id", "NombreEmpresa");
             ViewBag.IdMarca = new SelectList(marcSer.GetMarcas(), "Id", "Nombre");
-            ViewBag.IdBodega = new SelectList(bodSer.GetBodegas(), "Id", "NombreBodega"); // ← corregido
+            ViewBag.IdBodega = new SelectList(bodSer.GetBodegas(), "Id", "NombreBodega");
         }
     }
- }
+}

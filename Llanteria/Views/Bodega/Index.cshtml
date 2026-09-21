@@ -1,50 +1,99 @@
 ﻿@model IEnumerable<Llanteria.Models.Bodega>
+
 @{
     ViewData["Title"] = "Gestión de Bodegas";
 }
 
-<div class="container-fluid pt-4">
-    <div class="card border-0 shadow-sm rounded-xl p-4 bg-white">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h4 class="fw-bold m-0 text-dark">
-                    <i class="fa-solid fa-warehouse text-primary me-2"></i>Bodegas
-                </h4>
-                <small class="text-muted">Administración de ubicaciones físicas</small>
-            </div>
-            <a asp-action="Create" class="btn btn-primary fw-bold rounded-pill px-4">
-                <i class="fa-solid fa-plus me-2"></i>Nueva Bodega
+<div class="container-fluid catalogo-container">
+
+    <!-- Encabezado -->
+    <div class="catalogo-header">
+        <div>
+            <a asp-controller="Home" asp-action="Index" class="volver-panel">
+                <i class="fa-solid fa-arrow-left me-2"></i>Volver al Panel
             </a>
+
+            <div class="titulo-con-icono">
+                <div class="icono-catalogo">
+                    <i class="fa-solid fa-warehouse"></i>
+                </div>
+
+                <div>
+                    <h1>BODEGAS</h1>
+                    <p>Administración de ubicaciones físicas</p>
+                </div>
+            </div>
         </div>
 
+        <a asp-action="Create" class="btn-nueva-bodega">
+            <i class="fa-solid fa-plus me-2"></i>Nueva Bodega
+        </a>
+    </div>
+
+    <!-- Tabla -->
+    <div class="tabla-wrapper">
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
+            <table class="tabla-bodegas">
+                <thead>
                     <tr>
-                        <th>Bodega</th>
-                        <th>Ubicación</th>
-                        <th class="text-center">Capacidad Máx.</th>
-                        <th class="text-center">Acciones</th>
+                        <th class="col-bodega">BODEGA</th>
+                        <th class="col-ubicacion">UBICACIÓN</th>
+                        <th class="col-capacidad text-center">CAPACIDAD MÁX.</th>
+                        <th class="col-acciones text-center">ACCIONES</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td><span class="fw-bold text-dark">@item.NombreBodega</span></td>
-                            <td><span class="text-muted">@(item.Ubicacion ?? "No especificada")</span></td>
+                            <td>
+                                <div class="nombre-bodega">
+                                    <div class="bodega-imagen">
+                                        <i class="fa-solid fa-warehouse"></i>
+                                    </div>
+
+                                    <span>@item.NombreBodega</span>
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="ubicacion">
+                                    <i class="fa-solid fa-location-dot me-2"></i>
+                                    @(item.Ubicacion ?? "No especificada")
+                                </span>
+                            </td>
+
                             <td class="text-center">
-                                <span class="badge bg-info bg-opacity-10 text-dark fw-bold px-3 py-2 rounded-pill">
+                                <span class="capacidad-badge">
+                                    <i class="fa-solid fa-boxes-stacked me-2"></i>
                                     @(item.CapacidadMaxima?.ToString() ?? "N/A")
                                 </span>
                             </td>
+
                             <td class="text-center">
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-light btn-sm rounded-2 text-warning">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </a>
-                                <button type="button" class="btn btn-light btn-sm rounded-2 text-danger" onclick="confirmarEliminar(@item.Id, '@item.NombreBodega')">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
+                                <div class="acciones">
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.Id"
+                                       class="btn-accion btn-editar"
+                                       title="Editar">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+
+                                    <button type="button"
+                                            class="btn-accion btn-ver"
+                                            title="Ver detalles"
+                                            onclick="verBodega('@item.NombreBodega', '@item.Ubicacion', '@(item.CapacidadMaxima?.ToString() ?? "N/A")')">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn-accion btn-eliminar"
+                                            title="Eliminar"
+                                            onclick="confirmarEliminar(@item.Id, '@item.NombreBodega')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -62,15 +111,320 @@
                 text: `Estás a punto de eliminar la bodega: ${nombre}. Esta acción no se puede deshacer.`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#dc3545',
+                confirmButtonColor: '#c9250c',
+                cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Sí, eliminar',
                 cancelButtonText: 'Cancelar',
-                customClass: { popup: 'rounded-xl' }
+                customClass: {
+                    popup: 'rounded-xl'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = '@Url.Action("Delete", "Bodega")/' + id;
+                    window.location.href =
+                        '@Url.Action("Delete", "Bodega")/' + id;
                 }
-            })
+            });
+        }
+
+        function verBodega(nombre, ubicacion, capacidad) {
+            Swal.fire({
+                title: nombre,
+                html: `
+                    <div class="text-start">
+                        <p><strong>Ubicación:</strong> ${ubicacion}</p>
+                        <p><strong>Capacidad máxima:</strong> ${capacidad}</p>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonColor: '#c9250c',
+                confirmButtonText: 'Cerrar',
+                customClass: {
+                    popup: 'rounded-xl'
+                }
+            });
         }
     </script>
 }
+
+<style>
+    body {
+        background: #f7f8fa;
+        color: #222;
+    }
+
+    .catalogo-container {
+        padding: 22px 28px 40px;
+        max-width: 1500px;
+        margin: 0 auto;
+    }
+
+    .catalogo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 25px;
+    }
+
+    .volver-panel {
+        display: inline-block;
+        margin-bottom: 10px;
+        color: #555;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+        .volver-panel:hover {
+            color: #c9250c;
+        }
+
+    .titulo-con-icono {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .icono-catalogo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 38px;
+        height: 38px;
+        color: #c9250c;
+        font-size: 31px;
+    }
+
+    .titulo-con-icono h1 {
+        margin: 0;
+        color: #20252b;
+        font-size: 31px;
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    .titulo-con-icono p {
+        margin: 2px 0 0;
+        color: #777;
+        font-size: 14px;
+    }
+
+    .btn-nueva-bodega {
+        display: inline-flex;
+        align-items: center;
+        padding: 11px 23px;
+        border-radius: 8px;
+        background: #c9250c;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 3px 7px rgba(201, 37, 12, .2);
+        transition: all .2s ease;
+    }
+
+        .btn-nueva-bodega:hover {
+            background: #a91d09;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+    .tabla-wrapper {
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #d9d9d9;
+        border-radius: 15px 15px 0 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+    }
+
+    .tabla-bodegas {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+        .tabla-bodegas thead {
+            background: #fff;
+        }
+
+        .tabla-bodegas th {
+            padding: 13px 18px;
+            border-bottom: 1px solid #d8d8d8;
+            color: #20252b;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            white-space: nowrap;
+        }
+
+        .tabla-bodegas td {
+            height: 82px;
+            padding: 10px 18px;
+            border-bottom: 1px solid #dedede;
+            vertical-align: middle;
+            font-size: 15px;
+        }
+
+        .tabla-bodegas tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .tabla-bodegas tbody tr:hover {
+            background: #fffaf8;
+        }
+
+    .col-bodega {
+        width: 32%;
+    }
+
+    .col-ubicacion {
+        width: 34%;
+    }
+
+    .col-capacidad {
+        width: 18%;
+    }
+
+    .col-acciones {
+        width: 16%;
+    }
+
+    .nombre-bodega {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        color: #20252b;
+        font-weight: 700;
+    }
+
+    .bodega-imagen {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 60px;
+        height: 60px;
+        flex-shrink: 0;
+        overflow: hidden;
+        border: 1px solid #d9d9d9;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #272b30, #5d6268);
+        color: #fff;
+        font-size: 28px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, .12);
+    }
+
+    .ubicacion {
+        display: inline-flex;
+        align-items: center;
+        color: #555;
+        font-weight: 500;
+    }
+
+        .ubicacion i {
+            color: #c9250c;
+        }
+
+    .capacidad-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 13px;
+        border: 1px solid #dfe3e6;
+        border-radius: 6px;
+        background: #f5f6f7;
+        color: #4e555b;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .capacidad-badge i {
+            color: #687078;
+        }
+
+    .acciones {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .btn-accion {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 33px;
+        height: 33px;
+        border: 1px solid;
+        border-radius: 8px;
+        background: #fff;
+        font-size: 15px;
+        transition: all .2s ease;
+    }
+
+    .btn-editar {
+        border-color: #252525;
+        color: #252525;
+    }
+
+    .btn-ver {
+        border-color: #8b9399;
+        color: #687078;
+    }
+
+    .btn-eliminar {
+        border-color: #c9250c;
+        color: #c9250c;
+    }
+
+    .btn-accion:hover {
+        color: #fff;
+    }
+
+    .btn-editar:hover {
+        background: #252525;
+    }
+
+    .btn-ver:hover {
+        background: #687078;
+    }
+
+    .btn-eliminar:hover {
+        background: #c9250c;
+    }
+
+    .rounded-xl {
+        border-radius: 15px !important;
+    }
+
+    @@media (max-width: 768px) {
+        .catalogo-container {
+            padding: 18px 12px 30px;
+        }
+
+        .catalogo-header {
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .btn-nueva-bodega {
+            align-self: stretch;
+            justify-content: center;
+        }
+
+        .titulo-con-icono h1 {
+            font-size: 25px;
+        }
+
+        .tabla-bodegas th,
+        .tabla-bodegas td {
+            padding: 10px 12px;
+        }
+
+        .bodega-imagen {
+            width: 48px;
+            height: 48px;
+            font-size: 22px;
+        }
+
+        .nombre-bodega {
+            gap: 10px;
+        }
+    }
+</style>

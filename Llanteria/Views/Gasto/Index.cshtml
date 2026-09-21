@@ -2,73 +2,140 @@
 
 @{
     ViewData["Title"] = "Control de Egresos";
+    var fechaActual = DateOnly.FromDateTime(DateTime.Now);
 }
 
-<div class="container py-5" style="max-width: 1200px;">
+<div class="container-fluid catalogo-container">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- Encabezado -->
+    <div class="catalogo-header">
         <div>
-            <a asp-controller="Dashboard" asp-action="Index" class="text-muted text-decoration-none small fw-bold d-inline-flex align-items-center gap-2 mb-2 transition-transform hover-left">
-                <i class="fa-solid fa-arrow-left"></i> Volver al Panel
+            <a asp-controller="Dashboard" asp-action="Index" class="volver-panel">
+                <i class="fa-solid fa-arrow-left me-2"></i>Volver al Panel
             </a>
-            <h2 class="fw-black text-dark text-uppercase m-0">
-                <i class="fa-solid fa-file-invoice-dollar text-danger"></i> Control de Egresos
-            </h2>
-            <p class="text-muted small m-0">Gestión de gastos operativos, vencimientos y soportes de pago.</p>
+
+            <div class="titulo-con-icono">
+                <div class="icono-catalogo">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                </div>
+
+                <div>
+                    <h1>CONTROL DE EGRESOS</h1>
+                    <p>Gestión de gastos operativos, vencimientos y soportes de pago.</p>
+                </div>
+            </div>
         </div>
-        <a asp-action="Create" class="btn btn-danger fw-bold px-4 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2 transition-transform">
-            <i class="fa-solid fa-plus-circle"></i> Nuevo Gasto
+
+        <a asp-action="Create" class="btn-nuevo-gasto">
+            <i class="fa-solid fa-plus me-2"></i>Nuevo Gasto
         </a>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-xl overflow-hidden">
+    <!-- Tabla -->
+    <div class="tabla-wrapper">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-dark text-uppercase small tracking-wider">
+            <table class="tabla-gastos">
+                <thead>
                     <tr>
-                        <th class="ps-4 py-3">Categoría / Detalle</th>
-                        <th class="py-3">Vencimiento</th>
-                        <th class="text-end py-3">Monto</th>
-                        <th class="text-center py-3">Estado</th>
-                        <th class="text-center py-3">Soporte</th>
-                        <th class="text-center py-3 pe-4">Acciones</th>
+                        <th class="col-detalle">CATEGORÍA / DETALLE</th>
+                        <th class="col-vencimiento">VENCIMIENTO</th>
+                        <th class="col-monto text-end">MONTO</th>
+                        <th class="col-estado text-center">ESTADO</th>
+                        <th class="col-soporte text-center">SOPORTE</th>
+                        <th class="col-acciones text-center">ACCIONES</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white">
+
+                <tbody>
                     @foreach (var item in Model)
                     {
-                        <tr style="height: 70px;">
-                            <td class="ps-4">
-                                <div class="fw-bold text-dark">@item.IdCategoriaNavigation?.Nombre</div>
-                                <div class="text-muted small" style="margin-top: 2px;">@item.Descripcion</div>
-                            </td>
+                        var estaVencido = item.FechaVencimiento < fechaActual &&
+                                          item.Estado != "Pagado";
+
+                        <tr>
                             <td>
-                                <span class="@(item.FechaVencimiento < DateOnly.FromDateTime(DateTime.Now) && item.Estado != "Pagado" ? "text-danger fw-bold" : "text-dark")">
-                                    <i class="fa-regular fa-calendar-alt me-1"></i> @item.FechaVencimiento.ToString("dd/MM/yyyy")
+                                <div class="detalle-gasto">
+                                    <div class="gasto-icono">
+                                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                                    </div>
+
+                                    <div>
+                                        <div class="categoria-gasto">
+                                            @(item.IdCategoriaNavigation?.Nombre ?? "Sin categoría")
+                                        </div>
+
+                                        <div class="descripcion-gasto">
+                                            @(string.IsNullOrWhiteSpace(item.Descripcion)
+                                                ? "Sin descripción"
+                                                : item.Descripcion)
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="fecha-gasto @(estaVencido ? "fecha-vencida" : "")">
+                                    <i class="fa-regular fa-calendar-days me-2"></i>
+                                    @item.FechaVencimiento.ToString("dd/MM/yyyy")
+                                </span>
+
+                                @if (estaVencido)
+                                {
+                                    <span class="texto-vencido">Vencido</span>
+                                }
+                            </td>
+
+                            <td class="text-end">
+                                <span class="monto-gasto">
+                                    $ @item.Monto.ToString("N0")
                                 </span>
                             </td>
-                            <td class="text-end fw-bold text-danger pe-3">
-                                $ @item.Monto.ToString("N0")
-                            </td>
+
                             <td class="text-center">
-                                <span class="badge @(item.Estado == "Pagado" ? "bg-success" : "bg-warning text-dark") px-3 py-2 rounded-pill">
-                                    @item.Estado
-                                </span>
+                                @if (item.Estado == "Pagado")
+                                {
+                                    <span class="estado-badge estado-pagado">
+                                        <i class="fa-solid fa-circle-check me-1"></i>Pagado
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="estado-badge estado-pendiente">
+                                        <i class="fa-solid fa-clock me-1"></i>
+                                        @(string.IsNullOrWhiteSpace(item.Estado) ? "Pendiente" : item.Estado)
+                                    </span>
+                                }
                             </td>
+
                             <td class="text-center">
                                 @if (!string.IsNullOrEmpty(item.ArchivoSupport))
                                 {
-                                    <a href="~/uploads/gastos/@item.ArchivoSupport" target="_blank" class="btn btn-outline-info btn-sm rounded-2">
+                                    <a href="~/uploads/gastos/@item.ArchivoSupport"
+                                       target="_blank"
+                                       class="btn-accion btn-soporte"
+                                       title="Ver soporte">
                                         <i class="fa-solid fa-file-pdf"></i>
                                     </a>
                                 }
+                                else
+                                {
+                                    <span class="sin-soporte">Sin archivo</span>
+                                }
                             </td>
-                            <td class="text-center pe-4">
-                                <div class="d-flex justify-content-center gap-1">
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary rounded-2">
-                                        <i class="fa-solid fa-pen"></i>
+
+                            <td class="text-center">
+                                <div class="acciones">
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.Id"
+                                       class="btn-accion btn-editar"
+                                       title="Editar gasto">
+                                        <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-2" onclick="confirmarEliminar(@item.Id, '@item.Descripcion')">
+
+                                    <button type="button"
+                                            class="btn-accion btn-eliminar"
+                                            title="Eliminar gasto"
+                                            onclick="confirmarEliminar(@item.Id, '@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(item.Descripcion ?? "Sin descripción"))')">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </div>
@@ -82,39 +149,419 @@
 </div>
 
 <style>
-    /* "Aire" para la tabla: aumenta la distancia entre filas */
-    .table td {
-        padding: 15px !important;
+    body {
+        background: #f7f8fa;
+        color: #222;
+    }
+
+    .catalogo-container {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 22px 28px 40px;
+    }
+
+    .catalogo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 25px;
+    }
+
+    .volver-panel {
+        display: inline-block;
+        margin-bottom: 10px;
+        color: #555;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color .2s ease;
+    }
+
+    .volver-panel:hover {
+        color: #c9250c;
+    }
+
+    .titulo-con-icono {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .icono-catalogo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        color: #c9250c;
+        font-size: 31px;
+    }
+
+    .titulo-con-icono h1 {
+        margin: 0;
+        color: #20252b;
+        font-size: 31px;
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    .titulo-con-icono p {
+        margin: 2px 0 0;
+        color: #777;
+        font-size: 14px;
+    }
+
+    .btn-nuevo-gasto {
+        display: inline-flex;
+        align-items: center;
+        padding: 11px 23px;
+        border-radius: 8px;
+        background: #c9250c;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 3px 7px rgba(201, 37, 12, .20);
+        transition: all .2s ease;
+    }
+
+    .btn-nuevo-gasto:hover {
+        background: #a91d09;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .tabla-wrapper {
+        overflow: hidden;
+        border: 1px solid #d9d9d9;
+        border-radius: 15px 15px 0 0;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+    }
+
+    .tabla-gastos {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+    .tabla-gastos thead {
+        background: #fff;
+    }
+
+    .tabla-gastos th {
+        padding: 13px 18px;
+        border-bottom: 1px solid #d8d8d8;
+        color: #20252b;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1.4px;
+        white-space: nowrap;
+    }
+
+    .tabla-gastos td {
+        min-height: 84px;
+        padding: 11px 18px;
+        border-bottom: 1px solid #dedede;
+        vertical-align: middle;
+        font-size: 14px;
+    }
+
+    .tabla-gastos tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .tabla-gastos tbody tr:hover {
+        background: #fffaf8;
+    }
+
+    .col-detalle {
+        width: 34%;
+    }
+
+    .col-vencimiento {
+        width: 17%;
+    }
+
+    .col-monto {
+        width: 14%;
+    }
+
+    .col-estado {
+        width: 14%;
+    }
+
+    .col-soporte {
+        width: 10%;
+    }
+
+    .col-acciones {
+        width: 11%;
+    }
+
+    .detalle-gasto {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .gasto-icono {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 55px;
+        height: 55px;
+        flex-shrink: 0;
+        border: 1px solid #d9d9d9;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #252a30, #5c6268);
+        color: #fff;
+        font-size: 24px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, .12);
+    }
+
+    .categoria-gasto {
+        color: #20252b;
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .descripcion-gasto {
+        max-width: 330px;
+        margin-top: 3px;
+        overflow: hidden;
+        color: #747a80;
+        font-size: 13px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .fecha-gasto {
+        color: #3f454b;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .fecha-vencida {
+        color: #c9250c;
+        font-weight: 800;
+    }
+
+    .texto-vencido {
+        display: block;
+        margin-top: 3px;
+        color: #c9250c;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .monto-gasto {
+        color: #c9250c;
+        font-size: 15px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .estado-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .estado-pagado {
+        border: 1px solid #a5d6b5;
+        background: #e9f8ee;
+        color: #21743b;
+    }
+
+    .estado-pendiente {
+        border: 1px solid #f3d28c;
+        background: #fff6df;
+        color: #9a6800;
+    }
+
+    .sin-soporte {
+        color: #9aa0a6;
+        font-size: 12px;
+        font-style: italic;
+    }
+
+    .acciones {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .btn-accion {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 33px;
+        height: 33px;
+        border: 1px solid;
+        border-radius: 8px;
+        background: #fff;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all .2s ease;
+    }
+
+    .btn-editar {
+        border-color: #252525;
+        color: #252525;
+    }
+
+    .btn-soporte {
+        border-color: #0f8ca8;
+        color: #0f8ca8;
+    }
+
+    .btn-eliminar {
+        border-color: #c9250c;
+        color: #c9250c;
+    }
+
+    .btn-editar:hover {
+        background: #252525;
+        color: #fff;
+    }
+
+    .btn-soporte:hover {
+        background: #0f8ca8;
+        color: #fff;
+    }
+
+    .btn-eliminar:hover {
+        background: #c9250c;
+        color: #fff;
     }
 
     .rounded-xl {
-        border-radius: 12px !important;
+        border-radius: 15px !important;
     }
 
-    .transition-transform {
-        transition: 0.2s;
-    }
-
-        .transition-transform:hover {
-            transform: translateY(-2px);
+    @@media (max-width: 992px) {
+        .catalogo-container {
+            padding: 18px 12px 30px;
         }
+
+        .catalogo-header {
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .btn-nuevo-gasto {
+            align-self: stretch;
+            justify-content: center;
+        }
+
+        .titulo-con-icono h1 {
+            font-size: 25px;
+        }
+
+        .tabla-gastos th,
+        .tabla-gastos td {
+            padding: 10px 12px;
+        }
+    }
 </style>
 
 @section Scripts {
     <script>
-        function confirmarEliminar(id, desc) {
+        function confirmarEliminar(id, descripcion) {
             Swal.fire({
-                title: '¿Eliminar registro?',
-                text: "Se borrará el gasto: " + desc,
+                title: '¿Eliminar gasto?',
+                html: `
+                    <p class="mb-2">Estás a punto de eliminar este registro:</p>
+                    <strong>${descripcion}</strong>
+                    <p class="mt-3 mb-0 text-danger small">
+                        Esta acción no se puede deshacer.
+                    </p>
+                `,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'Sí, eliminar'
+                confirmButtonColor: '#c9250c',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fa-solid fa-trash me-1"></i>Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+                focusCancel: true,
+                customClass: {
+                    popup: 'rounded-xl',
+                    confirmButton: 'px-3',
+                    cancelButton: 'px-3'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = '/Gasto/Delete/' + id;
+                    eliminarGasto(id);
+                }
+            });
+        }
+
+        function eliminarGasto(id) {
+            Swal.fire({
+                title: 'Eliminando gasto...',
+                text: 'Por favor espera un momento.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                customClass: {
+                    popup: 'rounded-xl'
+                }
+            });
+
+            fetch('/Gasto/Delete/' + id, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('No se pudo eliminar el gasto.');
+                }
+
+                return response.json().catch(() => ({ success: true }));
+            })
+            .then(data => {
+                if (data.success === false) {
+                    throw new Error(data.message || 'No se pudo eliminar el gasto.');
+                }
+
+                return Swal.fire({
+                    title: '¡Gasto eliminado!',
+                    text: 'El registro fue eliminado correctamente.',
+                    icon: 'success',
+                    confirmButtonColor: '#c9250c',
+                    confirmButtonText: 'Aceptar',
+                    customClass: {
+                        popup: 'rounded-xl'
+                    }
+                });
+            })
+            .then(() => {
+                window.location.reload();
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'No se pudo eliminar',
+                    text: error.message || 'Ocurrió un error al intentar eliminar el gasto.',
+                    icon: 'error',
+                    confirmButtonColor: '#c9250c',
+                    confirmButtonText: 'Entendido',
+                    customClass: {
+                        popup: 'rounded-xl'
+                    }
+                });
+            });
         }
     </script>
 }

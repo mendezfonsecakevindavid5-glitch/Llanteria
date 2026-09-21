@@ -4,26 +4,307 @@
     ViewData["Title"] = "Nueva Marca";
 }
 
-<div class="row justify-content-center mt-4">
-    <div class="col-md-5">
-        <div class="card shadow border-0">
-            <div class="card-header bg-primary text-white text-center">
-                <h5 class="mb-0">Registrar Fabricante</h5>
+<div class="container-fluid formulario-container">
+
+    <!-- Encabezado -->
+    <div class="formulario-header">
+        <div>
+            <a asp-action="Index" class="volver-panel">
+                <i class="fa-solid fa-arrow-left me-2"></i>Volver al listado
+            </a>
+
+            <div class="titulo-con-icono">
+                <div class="icono-formulario">
+                    <i class="fa-solid fa-copyright"></i>
+                </div>
+
+                <div>
+                    <h1>NUEVA MARCA</h1>
+                    <p>Registra un nuevo fabricante para tus productos</p>
+                </div>
             </div>
-            <div class="card-body">
-                <form asp-action="Create">
-                    <div class="mb-3">
-                        <label asp-for="Nombre" class="form-label fw-bold">Nombre de la Marca</label>
-                        <input asp-for="Nombre" class="form-control" placeholder="Ej: Michelin, Goodyear..." required />
-                        <span asp-validation-for="Nombre" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Formulario -->
+    <div class="row">
+        <div class="col-12 col-lg-7 col-xl-6">
+            <div class="formulario-card">
+
+                <div class="formulario-card-header">
+                    <div class="header-icono">
+                        <i class="fa-solid fa-pen-to-square"></i>
                     </div>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Guardar Marca</button>
-                        <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
+                    <div>
+                        <h5>Información de la marca</h5>
+                        <span>Completa el nombre del fabricante</span>
+                    </div>
+                </div>
+
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-4">
+                        <label asp-for="Nombre" class="form-label label-formulario">
+                            Nombre de la Marca
+                        </label>
+
+                        <div class="input-con-icono">
+                            <i class="fa-solid fa-copyright"></i>
+
+                            <input asp-for="Nombre"
+                                   class="form-control input-formulario"
+                                   placeholder="Ej: Michelin, Goodyear, Bridgestone..."
+                                   autocomplete="off"
+                                   required />
+                        </div>
+
+                        <span asp-validation-for="Nombre" class="text-danger small"></span>
+                    </div>
+
+                    <div class="formulario-acciones">
+                        <a asp-action="Index" class="btn-cancelar">
+                            <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+                        </a>
+
+                        <button type="submit" class="btn-guardar">
+                            <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Marca
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    body {
+        background: #f7f8fa;
+        color: #222;
+    }
+
+    .formulario-container {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 22px 28px 40px;
+    }
+
+    .formulario-header {
+        margin-bottom: 27px;
+    }
+
+    .volver-panel {
+        display: inline-block;
+        margin-bottom: 10px;
+        color: #555;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color .2s ease;
+    }
+
+    .volver-panel:hover {
+        color: #c9250c;
+    }
+
+    .titulo-con-icono {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .icono-formulario {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        color: #c9250c;
+        font-size: 31px;
+    }
+
+    .titulo-con-icono h1 {
+        margin: 0;
+        color: #20252b;
+        font-size: 31px;
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    .titulo-con-icono p {
+        margin: 2px 0 0;
+        color: #777;
+        font-size: 14px;
+    }
+
+    .formulario-card {
+        overflow: hidden;
+        padding: 0;
+        border: 1px solid #d9d9d9;
+        border-radius: 15px;
+        background: #fff;
+        box-shadow: 0 2px 9px rgba(0, 0, 0, .05);
+    }
+
+    .formulario-card-header {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 20px 24px;
+        border-bottom: 1px solid #e2e2e2;
+        background: #fff;
+    }
+
+    .header-icono {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 39px;
+        height: 39px;
+        border-radius: 9px;
+        background: #fff1ed;
+        color: #c9250c;
+        font-size: 17px;
+    }
+
+    .formulario-card-header h5 {
+        margin: 0;
+        color: #252525;
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .formulario-card-header span {
+        display: block;
+        margin-top: 2px;
+        color: #808080;
+        font-size: 13px;
+    }
+
+    .formulario-card form {
+        padding: 25px 24px;
+    }
+
+    .label-formulario {
+        margin-bottom: 8px;
+        color: #30343a;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .input-con-icono {
+        position: relative;
+    }
+
+    .input-con-icono > i {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        z-index: 2;
+        color: #808890;
+        font-size: 15px;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    .input-formulario {
+        height: 46px;
+        padding-left: 43px;
+        border: 1px solid #d4d8dc;
+        border-radius: 8px;
+        color: #292d32;
+        font-size: 14px;
+        box-shadow: none;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .input-formulario::placeholder {
+        color: #a0a5aa;
+    }
+
+    .input-formulario:focus {
+        border-color: #c9250c;
+        box-shadow: 0 0 0 .2rem rgba(201, 37, 12, .10);
+    }
+
+    .formulario-acciones {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        padding-top: 5px;
+    }
+
+    .btn-cancelar,
+    .btn-guardar {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 42px;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all .2s ease;
+    }
+
+    .btn-cancelar {
+        border: 1px solid #b8bec4;
+        background: #fff;
+        color: #5e646a;
+    }
+
+    .btn-cancelar:hover {
+        border-color: #80878e;
+        background: #f4f5f6;
+        color: #30343a;
+    }
+
+    .btn-guardar {
+        border: 1px solid #c9250c;
+        background: #c9250c;
+        color: #fff;
+        box-shadow: 0 3px 7px rgba(201, 37, 12, .18);
+    }
+
+    .btn-guardar:hover {
+        border-color: #a91d09;
+        background: #a91d09;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    @@media (max-width: 768px) {
+        .formulario-container {
+            padding: 18px 12px 30px;
+        }
+
+        .titulo-con-icono h1 {
+            font-size: 25px;
+        }
+
+        .formulario-card-header,
+        .formulario-card form {
+            padding-right: 18px;
+            padding-left: 18px;
+        }
+
+        .formulario-acciones {
+            flex-direction: column-reverse;
+            align-items: stretch;
+        }
+
+        .btn-cancelar,
+        .btn-guardar {
+            width: 100%;
+        }
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

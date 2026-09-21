@@ -91,6 +91,11 @@
         border-radius: 12px;
     }
 
+    .form-floating-dark .form-select option {
+        background-color: var(--llanteria-dark-surface);
+        color: var(--llanteria-light);
+    }
+
     .form-floating-dark .form-select:focus {
         border-color: var(--llanteria-primary);
         box-shadow: 0 0 0 4px rgba(201, 43, 10, 0.25);
@@ -139,10 +144,6 @@
         border-radius: 2px;
     }
 
-    @@keyframes kenBurnsEffect {
-        from { transform: scale(1); }
-        to { transform: scale(1.07); }
-    }
 </style>
 
 <section id="inicio" class="swiper hero-swiper">
@@ -169,41 +170,64 @@
     <div class="swiper-pagination-hero"></div>
 </section>
 
+<!-- PANEL DE BÚSQUEDA DINÁMICO -->
 <div class="container position-relative" style="z-index: 100; margin-top: -100px;">
     <div class="row justify-content-center">
         <div class="col-lg-10" data-aos="fade-up">
             <div class="search-matrix-panel">
                 <div class="row g-3">
+                    <!-- SELECT ANCHO -->
                     <div class="col-md-3">
                         <div class="form-floating form-floating-dark">
                             <select class="form-select" id="anchoSelect">
                                 <option value="">Cualquiera</option>
-                                <option value="185">185</option>
-                                <option value="205">205</option>
+                                @if (ViewBag.Anchos != null)
+                                {
+                                    foreach (var ancho in ViewBag.Anchos)
+                                    {
+                                        <option value="@ancho">@ancho</option>
+                                    }
+                                }
                             </select>
                             <label>Ancho (mm)</label>
                         </div>
                     </div>
+
+                    <!-- SELECT PERFIL -->
                     <div class="col-md-3">
                         <div class="form-floating form-floating-dark">
                             <select class="form-select" id="perfilSelect">
                                 <option value="">Cualquiera</option>
-                                <option value="65">65</option>
-                                <option value="55">55</option>
+                                @if (ViewBag.Perfiles != null)
+                                {
+                                    foreach (var perfil in ViewBag.Perfiles)
+                                    {
+                                        <option value="@perfil">@perfil</option>
+                                    }
+                                }
                             </select>
                             <label>Perfil (%)</label>
                         </div>
                     </div>
+
+                    <!-- SELECT DIÁMETRO -->
                     <div class="col-md-3">
                         <div class="form-floating form-floating-dark">
                             <select class="form-select" id="diametroSelect">
                                 <option value="">Cualquiera</option>
-                                <option value="15">R15</option>
-                                <option value="16">R16</option>
+                                @if (ViewBag.Diametros != null)
+                                {
+                                    foreach (var diametro in ViewBag.Diametros)
+                                    {
+                                        <option value="@diametro">R@diametro</option>
+                                    }
+                                }
                             </select>
                             <label>Diámetro (In)</label>
                         </div>
                     </div>
+
+                    <!-- BOTÓN ESCANEAR -->
                     <div class="col-md-3 d-flex align-items-center">
                         <button type="button" id="btnBuscarLlantas" class="btn btn-hyper-action w-100 py-3 text-uppercase">
                             <i class="fa-solid fa-radar me-2"></i>Escanear Medidas
@@ -243,7 +267,7 @@
                     <div class="col-md-4" data-aos="zoom-in-up">
                         <div class="premium-product-card h-100 d-flex flex-column">
                             <div class="overflow-hidden position-relative">
-                                <img src="/images/Productos/@(string.IsNullOrEmpty(p.RutaImagen) ? "default.png" : p.RutaImagen)" class="img-fluid w-100" style="height: 250px; object-fit: cover; transition: 0.5s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                                <img src="/images/productoos/@(string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen)" class="img-fluid w-100" style="height: 250px; object-fit: cover; transition: 0.5s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
                             </div>
                             <div class="p-4 text-center mt-auto">
                                 <h6 class="fw-bold text-uppercase text-dark mb-2" style="letter-spacing: 0.5px;">@p.Nombre</h6>
@@ -269,7 +293,7 @@
             // Inicializar animaciones de scroll
             AOS.init({ duration: 1000, once: true });
 
-            // Inicializar Swiper de fondo con disolución cruzada premium
+            // Inicializar Swiper de fondo
             const heroSwiper = new Swiper('.hero-swiper', {
                 loop: true,
                 effect: 'fade',
@@ -279,59 +303,63 @@
             });
         });
 
-        // Motor de búsqueda JSON optimizado estéticamente
+        // Motor de búsqueda JSON
         document.getElementById("btnBuscarLlantas").addEventListener("click", async function () {
             const ancho = document.getElementById("anchoSelect").value;
             const perfil = document.getElementById("perfilSelect").value;
             const diametro = document.getElementById("diametroSelect").value;
 
-            if (!ancho || !perfil || !diametro) {
+            if (!ancho && !perfil && !diametro) {
                 Swal.fire({ 
-                    title: 'Especificaciones Incompletas', 
-                    text: 'Por favor asigna todas las variables métricas para el escaneo.', 
+                    title: 'Selección Incompleta', 
+                    text: 'Por favor selecciona al menos un parámetro para realizar el escaneo.', 
                     icon: 'info',
                     confirmButtonColor: '#C92B0A'
                 });
                 return;
             }
 
-            const url = `/Producto/GetLlantasJson?ancho=${ancho}&perfil=${perfil}&diametro=${diametro}`;
-            const response = await fetch(url);
-            const resultados = await response.json();
+            const url = `/Producto/GetLlantasJson?ancho=${encodeURIComponent(ancho)}&perfil=${encodeURIComponent(perfil)}&diametro=${encodeURIComponent(diametro)}`;
+            
+            try {
+                const response = await fetch(url);
+                const resultados = await response.json();
 
-            const contenedor = document.getElementById("contenedorTarjetas");
-            contenedor.innerHTML = "";
-            
-            if (resultados.length > 0) {
-                resultados.forEach(llanta => {
-                    const imgUrl = llanta.img.startsWith('/') ? llanta.img : `/images/Llantas/${llanta.img}`;
-                    
-                    contenedor.innerHTML += `
-                        <div class="col-md-4" data-aos="fade-up">
-                            <div class="premium-product-card h-100 bg-white">
-                                <div class="overflow-hidden">
-                                    <img src="${imgUrl}" class="img-fluid w-100" style="height: 230px; object-fit: cover; transition: 0.4s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                const contenedor = document.getElementById("contenedorTarjetas");
+                contenedor.innerHTML = "";
+                
+                if (resultados.length > 0) {
+                    resultados.forEach(llanta => {
+                        contenedor.innerHTML += `
+                            <div class="col-md-4" data-aos="fade-up">
+                                <div class="premium-product-card h-100 bg-white d-flex flex-column">
+                                    <div class="overflow-hidden">
+                                        <img src="${llanta.img}" class="img-fluid w-100" style="height: 230px; object-fit: cover; transition: 0.4s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                    </div>
+                                    <div class="p-4 d-flex flex-column flex-grow-1 text-center">
+                                        <h5 class="fw-bold text-dark text-uppercase fs-6 mb-2" style="letter-spacing:0.5px;">${llanta.nombre}</h5>
+                                        <p class="text-danger fw-black fs-5 mb-3">${llanta.precio}</p>
+                                        <a href="#contacto" class="btn btn-hyper-action w-100 py-2.5 text-uppercase btn-sm mt-auto">Cotizar Dimensión</a>
+                                    </div>
                                 </div>
-                                <div class="p-4">
-                                    <h5 class="fw-bold text-dark text-uppercase fs-6" style="letter-spacing:0.5px;">${llanta.nombre}</h5>
-                                    <p class="text-danger fw-black fs-5 mb-3">${llanta.precio}</p>
-                                    <a href="#contacto" class="btn btn-hyper-action w-100 py-2.5 text-uppercase btn-sm">Cotizar Dimensión</a>
-                                </div>
-                            </div>
+                            </div>`;
+                    });
+                } else {
+                    contenedor.innerHTML = `
+                        <div class="col-12 text-center py-5">
+                            <div class="text-muted"><i class="fa-solid fa-ban fa-3x mb-3 text-danger"></i></div>
+                            <h5 class="fw-bold text-dark">Sin Coincidencias en el Almacén</h5>
+                            <p class="text-muted small">No hay stock disponible para las dimensiones ingresadas actualmente.</p>
                         </div>`;
-                });
-            } else {
-                contenedor.innerHTML = `
-                    <div class="col-12 text-center py-5">
-                        <div class="text-muted"><i class="fa-solid fa-ban fa-3x mb-3 text-danger"></i></div>
-                        <h5 class="fw-bold text-dark">Sin Coincidencias en el Almacén</h5>
-                        <p class="text-muted small">No hay stock disponible para las dimensiones ingresadas actualmente.</p>
-                    </div>`;
+                }
+                
+                document.getElementById("resultadosBusqueda").classList.remove("d-none");
+                if (typeof AOS !== 'undefined') AOS.refresh(); 
+                document.getElementById("resultadosBusqueda").scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                console.error("Error al consultar productos:", error);
             }
-            
-            document.getElementById("resultadosBusqueda").classList.remove("d-none");
-            AOS.refresh(); 
-            document.getElementById("resultadosBusqueda").scrollIntoView({ behavior: 'smooth' });
         });
     </script>
 }

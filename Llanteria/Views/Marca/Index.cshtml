@@ -4,38 +4,79 @@
     ViewData["Title"] = "Gestión de Marcas";
 }
 
-<div class="card shadow-sm mt-4">
-    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-        <h4 class="mb-0"><i class="fa-solid fa-copyright"></i> Marcas Registradas</h4>
-        <a asp-action="Create" class="btn btn-primary btn-sm">
-            <i class="fa-solid fa-plus"></i> Nueva Marca
+<div class="container-fluid catalogo-container">
+
+    <!-- Encabezado -->
+    <div class="catalogo-header">
+        <div>
+            <a asp-controller="Home" asp-action="Index" class="volver-panel">
+                <i class="fa-solid fa-arrow-left me-2"></i>Volver al Panel
+            </a>
+
+            <div class="titulo-con-icono">
+                <div class="icono-catalogo">
+                    <i class="fa-solid fa-copyright"></i>
+                </div>
+
+                <div>
+                    <h1>MARCAS</h1>
+                    <p>Gestiona las marcas registradas en el sistema</p>
+                </div>
+            </div>
+        </div>
+
+        <a asp-action="Create" class="btn-nueva-marca">
+            <i class="fa-solid fa-plus me-2"></i>Nueva Marca
         </a>
     </div>
-    <div class="card-body">
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Nombre de la Marca</th>
-                    <th class="text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
+
+    <!-- Tabla -->
+    <div class="tabla-wrapper">
+        <div class="table-responsive">
+            <table class="tabla-marcas">
+                <thead>
                     <tr>
-                        <td><strong>@item.Nombre</strong></td>
-                        <td class="text-center">
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmarEliminar(@item.Id, '@item.Nombre')">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </td>
+                        <th>MARCA</th>
+                        <th class="text-center">ACCIONES</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="nombre-marca">
+                                    <div class="marca-icono">
+                                        <i class="fa-solid fa-copyright"></i>
+                                    </div>
+
+                                    <span>@item.Nombre</span>
+                                </div>
+                            </td>
+
+                            <td class="text-center">
+                                <div class="acciones">
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.Id"
+                                       class="btn-accion btn-editar"
+                                       title="Editar marca">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+
+                                    <button type="button"
+                                            class="btn-accion btn-eliminar"
+                                            title="Eliminar marca"
+                                            onclick="confirmarEliminar(@item.Id, '@item.Nombre')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -47,14 +88,256 @@
                 text: "Se borrará: " + nombre + ". Asegúrate de que no tenga productos vinculados.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
+                confirmButtonColor: '#c9250c',
+                cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
+                cancelButtonText: 'Cancelar',
+                customClass: {
+                    popup: 'rounded-xl'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = '/Marca/Delete/' + id;
                 }
-            })
+            });
         }
     </script>
 }
+
+<style>
+    body {
+        background: #f7f8fa;
+        color: #222;
+    }
+
+    .catalogo-container {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 22px 28px 40px;
+    }
+
+    .catalogo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 25px;
+    }
+
+    .volver-panel {
+        display: inline-block;
+        margin-bottom: 10px;
+        color: #555;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color .2s ease;
+    }
+
+    .volver-panel:hover {
+        color: #c9250c;
+    }
+
+    .titulo-con-icono {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .icono-catalogo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        color: #c9250c;
+        font-size: 31px;
+    }
+
+    .titulo-con-icono h1 {
+        margin: 0;
+        color: #20252b;
+        font-size: 31px;
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    .titulo-con-icono p {
+        margin: 2px 0 0;
+        color: #777;
+        font-size: 14px;
+    }
+
+    .btn-nueva-marca {
+        display: inline-flex;
+        align-items: center;
+        padding: 11px 23px;
+        border-radius: 8px;
+        background: #c9250c;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 3px 7px rgba(201, 37, 12, .20);
+        transition: all .2s ease;
+    }
+
+    .btn-nueva-marca:hover {
+        background: #a91d09;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .tabla-wrapper {
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #d9d9d9;
+        border-radius: 15px 15px 0 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+    }
+
+    .tabla-marcas {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+    .tabla-marcas thead {
+        background: #fff;
+    }
+
+    .tabla-marcas th {
+        padding: 13px 28px;
+        border-bottom: 1px solid #d8d8d8;
+        color: #20252b;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+    }
+
+    .tabla-marcas th:last-child {
+        width: 190px;
+    }
+
+    .tabla-marcas td {
+        height: 82px;
+        padding: 10px 28px;
+        border-bottom: 1px solid #dedede;
+        vertical-align: middle;
+        font-size: 15px;
+    }
+
+    .tabla-marcas tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .tabla-marcas tbody tr:hover {
+        background: #fffaf8;
+    }
+
+    .nombre-marca {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        color: #20252b;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .marca-icono {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 58px;
+        height: 58px;
+        flex-shrink: 0;
+        border: 1px solid #d9d9d9;
+        border-radius: 9px;
+        background: linear-gradient(135deg, #252a30, #5c6268);
+        color: #fff;
+        font-size: 27px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, .12);
+    }
+
+    .acciones {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .btn-accion {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 33px;
+        height: 33px;
+        border: 1px solid;
+        border-radius: 8px;
+        background: #fff;
+        font-size: 15px;
+        transition: all .2s ease;
+    }
+
+    .btn-editar {
+        border-color: #252525;
+        color: #252525;
+    }
+
+    .btn-eliminar {
+        border-color: #c9250c;
+        color: #c9250c;
+    }
+
+    .btn-editar:hover {
+        background: #252525;
+        color: #fff;
+    }
+
+    .btn-eliminar:hover {
+        background: #c9250c;
+        color: #fff;
+    }
+
+    .rounded-xl {
+        border-radius: 15px !important;
+    }
+
+    @@media (max-width: 768px) {
+        .catalogo-container {
+            padding: 18px 12px 30px;
+        }
+
+        .catalogo-header {
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .btn-nueva-marca {
+            align-self: stretch;
+            justify-content: center;
+        }
+
+        .titulo-con-icono h1 {
+            font-size: 25px;
+        }
+
+        .tabla-marcas th,
+        .tabla-marcas td {
+            padding: 10px 14px;
+        }
+
+        .tabla-marcas th:last-child {
+            width: 115px;
+        }
+
+        .marca-icono {
+            width: 48px;
+            height: 48px;
+            font-size: 22px;
+        }
+
+        .nombre-marca {
+            gap: 10px;
+            font-size: 14px;
+        }
+    }
+</style>

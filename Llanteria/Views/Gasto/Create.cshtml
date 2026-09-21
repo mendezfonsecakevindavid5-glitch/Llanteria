@@ -4,115 +4,488 @@
     ViewData["Title"] = "Nuevo Gasto";
 }
 
-<div class="container py-5" style="max-width: 800px;">
+<div class="container-fluid formulario-container">
 
-    <!-- ENCABEZADO -->
-    <div class="mb-4 animate__animated animate__fadeIn">
-        <a asp-action="Index" class="text-muted text-decoration-none small fw-bold d-inline-flex align-items-center gap-2 mb-2 transition-transform hover-left">
-            <i class="fa-solid fa-arrow-left"></i> Volver a la Lista
-        </a>
-        <h2 class="fw-black text-dark text-uppercase m-0 d-flex align-items-center gap-2">
-            <i class="fa-solid fa-plus-circle text-danger"></i> Registrar Egreso Operativo
-        </h2>
-        <p class="text-muted small m-0">Ingresa los detalles de un nuevo gasto, su vencimiento y adjunta el soporte correspondiente.</p>
+    <!-- Encabezado -->
+    <div class="formulario-header">
+        <div>
+            <a asp-action="Index" class="volver-panel">
+                <i class="fa-solid fa-arrow-left me-2"></i>Volver a la lista
+            </a>
+
+            <div class="titulo-con-icono">
+                <div class="icono-formulario">
+                    <i class="fa-solid fa-file-circle-plus"></i>
+                </div>
+
+                <div>
+                    <h1>NUEVO GASTO</h1>
+                    <p>Registra un egreso operativo, su vencimiento y el soporte correspondiente.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- TARJETA DEL FORMULARIO -->
-    <div class="card border-0 shadow-sm rounded-xl overflow-hidden animate__animated animate__fadeInUp">
-        <div class="card-body p-4 p-md-5 bg-white">
+    <!-- Formulario -->
+    <div class="row">
+        <div class="col-12 col-xl-9">
+            <div class="formulario-card">
 
-            <form asp-action="Create" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
-
-                <div class="row g-3">
-
-                    <!-- Categoría y Monto -->
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select asp-for="IdCategoria" class="form-select" asp-items="ViewBag.IdCategoria" required></select>
-                            <label asp-for="IdCategoria" class="fw-semibold text-muted">Categoría del Gasto</label>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input asp-for="Monto" type="number" step="0.01" class="form-control text-end fw-bold text-danger" placeholder="0" required />
-                            <label asp-for="Monto" class="fw-semibold text-danger">Monto Total ($)</label>
-                        </div>
+                <div class="formulario-card-header">
+                    <div class="header-icono">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
                     </div>
 
-                    <!-- Descripción -->
-                    <div class="col-12">
-                        <div class="form-floating">
-                            <input asp-for="Descripcion" class="form-control" placeholder="Concepto" required />
-                            <label asp-for="Descripcion" class="fw-semibold text-muted">Concepto o Descripción</label>
-                        </div>
-                    </div>
-
-                    <!-- Fechas y Estado -->
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input asp-for="FechaVencimiento" type="date" class="form-control" required />
-                            <label asp-for="FechaVencimiento" class="fw-semibold text-danger">Vencimiento</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input asp-for="FechaPago" type="date" class="form-control" />
-                            <label asp-for="FechaPago" class="fw-semibold text-success">Fecha de Pago</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <select asp-for="Estado" class="form-select">
-                                <option value="Pendiente">Pendiente</option>
-                                <option value="Pagado">Pagado</option>
-                                <option value="Vencido">Vencido</option>
-                            </select>
-                            <label asp-for="Estado" class="fw-semibold text-muted">Estado</label>
-                        </div>
-                    </div>
-
-                    <!-- Archivo -->
-                    <div class="col-12">
-                        <label class="form-label small fw-bold text-muted ps-1">Adjuntar Comprobante (PDF/Imagen)</label>
-                        <input type="file" name="Archivo" class="form-control py-3" />
-                    </div>
-
-                    <!-- BOTONES -->
-                    <div class="col-12 pt-3 border-top d-flex justify-content-end gap-2">
-                        <a asp-action="Index" class="btn btn-light fw-bold px-4 py-2 rounded-3 border">
-                            Cancelar
-                        </a>
-                        <button type="submit" class="btn btn-danger fw-bold px-4 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2 transition-transform">
-                            <i class="fa-solid fa-floppy-disk"></i> Registrar Gasto
-                        </button>
+                    <div>
+                        <h5>Información del egreso</h5>
+                        <span>Completa los datos del gasto antes de registrarlo.</span>
                     </div>
                 </div>
-            </form>
 
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                    <div class="row g-4">
+
+                        <!-- Categoría -->
+                        <div class="col-md-6">
+                            <label asp-for="IdCategoria" class="form-label label-formulario">
+                                Categoría del gasto
+                            </label>
+
+                            <div class="input-con-icono">
+                                <i class="fa-solid fa-tags"></i>
+
+                                <select asp-for="IdCategoria"
+                                        class="form-select input-formulario input-select"
+                                        asp-items="ViewBag.IdCategoria"
+                                        required>
+                                </select>
+                            </div>
+
+                            <span asp-validation-for="IdCategoria" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Monto -->
+                        <div class="col-md-6">
+                            <label asp-for="Monto" class="form-label label-formulario">
+                                Monto total
+                            </label>
+
+                            <div class="input-con-icono input-monto">
+                                <i class="fa-solid fa-dollar-sign"></i>
+
+                                <input asp-for="Monto"
+                                       type="number"
+                                       step="0.01"
+                                       class="form-control input-formulario monto-input"
+                                       placeholder="0"
+                                       inputmode="decimal"
+                                       required />
+                            </div>
+
+                            <span asp-validation-for="Monto" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="col-12">
+                            <label asp-for="Descripcion" class="form-label label-formulario">
+                                Concepto o descripción
+                            </label>
+
+                            <div class="input-con-icono">
+                                <i class="fa-solid fa-align-left"></i>
+
+                                <input asp-for="Descripcion"
+                                       class="form-control input-formulario"
+                                       placeholder="Ej: Pago de energía eléctrica, arriendo, nómina..."
+                                       autocomplete="off"
+                                       required />
+                            </div>
+
+                            <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Fecha vencimiento -->
+                        <div class="col-md-4">
+                            <label asp-for="FechaVencimiento" class="form-label label-formulario">
+                                Vencimiento
+                            </label>
+
+                            <div class="input-con-icono">
+                                <i class="fa-regular fa-calendar-days"></i>
+
+                                <input asp-for="FechaVencimiento"
+                                       type="date"
+                                       class="form-control input-formulario"
+                                       required />
+                            </div>
+
+                            <span asp-validation-for="FechaVencimiento" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Fecha pago -->
+                        <div class="col-md-4">
+                            <label asp-for="FechaPago" class="form-label label-formulario">
+                                Fecha de pago
+                            </label>
+
+                            <div class="input-con-icono">
+                                <i class="fa-solid fa-calendar-check"></i>
+
+                                <input asp-for="FechaPago"
+                                       type="date"
+                                       class="form-control input-formulario" />
+                            </div>
+
+                            <span asp-validation-for="FechaPago" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="col-md-4">
+                            <label asp-for="Estado" class="form-label label-formulario">
+                                Estado
+                            </label>
+
+                            <div class="input-con-icono">
+                                <i class="fa-solid fa-circle-check"></i>
+
+                                <select asp-for="Estado" class="form-select input-formulario input-select">
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="Pagado">Pagado</option>
+                                    <option value="Vencido">Vencido</option>
+                                </select>
+                            </div>
+
+                            <span asp-validation-for="Estado" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Archivo -->
+                        <div class="col-12">
+                            <div class="archivo-seccion">
+                                <label for="Archivo" class="form-label label-formulario">
+                                    Adjuntar comprobante
+                                </label>
+
+                                <span class="archivo-ayuda">
+                                    Puedes adjuntar un comprobante en formato PDF o imagen.
+                                </span>
+
+                                <div class="archivo-input-wrapper">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                                    <input type="file"
+                                           id="Archivo"
+                                           name="Archivo"
+                                           class="form-control archivo-input"
+                                           accept=".pdf,image/*" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="col-12">
+                            <div class="formulario-acciones">
+                                <a asp-action="Index" class="btn-cancelar">
+                                    <i class="fa-solid fa-xmark me-2"></i>Cancelar
+                                </a>
+
+                                <button type="submit" class="btn-guardar">
+                                    <i class="fa-solid fa-floppy-disk me-2"></i>Registrar Gasto
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-    .rounded-xl {
-        border-radius: 12px !important;
+    body {
+        background: #f7f8fa;
+        color: #222;
     }
 
-    .hover-left:hover {
-        transform: translateX(-4px);
+    .formulario-container {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 22px 28px 40px;
     }
 
-    .transition-transform {
-        transition: 0.2s;
+    .formulario-header {
+        margin-bottom: 27px;
     }
 
-        .transition-transform:hover {
-            transform: translateY(-2px);
+    .volver-panel {
+        display: inline-block;
+        margin-bottom: 10px;
+        color: #555;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color .2s ease;
+    }
+
+    .volver-panel:hover {
+        color: #c9250c;
+    }
+
+    .titulo-con-icono {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .icono-formulario {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        color: #c9250c;
+        font-size: 31px;
+    }
+
+    .titulo-con-icono h1 {
+        margin: 0;
+        color: #20252b;
+        font-size: 31px;
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    .titulo-con-icono p {
+        margin: 2px 0 0;
+        color: #777;
+        font-size: 14px;
+    }
+
+    .formulario-card {
+        overflow: hidden;
+        border: 1px solid #d9d9d9;
+        border-radius: 15px;
+        background: #fff;
+        box-shadow: 0 2px 9px rgba(0, 0, 0, .05);
+    }
+
+    .formulario-card-header {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 20px 24px;
+        border-bottom: 1px solid #e2e2e2;
+        background: #fff;
+    }
+
+    .header-icono {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 39px;
+        height: 39px;
+        border-radius: 9px;
+        background: #fff1ed;
+        color: #c9250c;
+        font-size: 17px;
+    }
+
+    .formulario-card-header h5 {
+        margin: 0;
+        color: #252525;
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .formulario-card-header span {
+        display: block;
+        margin-top: 2px;
+        color: #808080;
+        font-size: 13px;
+    }
+
+    .formulario-card form {
+        padding: 25px 24px;
+    }
+
+    .label-formulario {
+        margin-bottom: 8px;
+        color: #30343a;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .input-con-icono {
+        position: relative;
+    }
+
+    .input-con-icono > i {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        z-index: 2;
+        color: #808890;
+        font-size: 15px;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    .input-formulario {
+        height: 46px;
+        padding-left: 43px;
+        border: 1px solid #d4d8dc;
+        border-radius: 8px;
+        color: #292d32;
+        font-size: 14px;
+        box-shadow: none;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .input-formulario::placeholder {
+        color: #a0a5aa;
+    }
+
+    .input-formulario:focus {
+        border-color: #c9250c;
+        box-shadow: 0 0 0 .2rem rgba(201, 37, 12, .10);
+    }
+
+    .input-select {
+        padding-right: 38px;
+    }
+
+    .monto-input {
+        padding-right: 14px;
+        color: #c9250c;
+        font-size: 15px;
+        font-weight: 800;
+        text-align: right;
+    }
+
+    .input-monto > i {
+        color: #c9250c;
+    }
+
+    .archivo-seccion {
+        padding: 18px;
+        border: 1px dashed #c8ced3;
+        border-radius: 10px;
+        background: #fafbfc;
+    }
+
+    .archivo-ayuda {
+        display: block;
+        margin: -3px 0 12px;
+        color: #7c838a;
+        font-size: 12px;
+    }
+
+    .archivo-input-wrapper {
+        position: relative;
+    }
+
+    .archivo-input-wrapper > i {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        z-index: 2;
+        color: #808890;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    .archivo-input {
+        min-height: 46px;
+        padding: 10px 12px 10px 42px;
+        border: 1px solid #d4d8dc;
+        border-radius: 8px;
+        font-size: 13px;
+    }
+
+    .archivo-input:focus {
+        border-color: #c9250c;
+        box-shadow: 0 0 0 .2rem rgba(201, 37, 12, .10);
+    }
+
+    .formulario-acciones {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        padding-top: 20px;
+        border-top: 1px solid #e3e5e7;
+    }
+
+    .btn-cancelar,
+    .btn-guardar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all .2s ease;
+    }
+
+    .btn-cancelar {
+        border: 1px solid #b8bec4;
+        background: #fff;
+        color: #5e646a;
+    }
+
+    .btn-cancelar:hover {
+        border-color: #80878e;
+        background: #f4f5f6;
+        color: #30343a;
+    }
+
+    .btn-guardar {
+        border: 1px solid #c9250c;
+        background: #c9250c;
+        color: #fff;
+        box-shadow: 0 3px 7px rgba(201, 37, 12, .18);
+    }
+
+    .btn-guardar:hover {
+        border-color: #a91d09;
+        background: #a91d09;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    @@media (max-width: 768px) {
+        .formulario-container {
+            padding: 18px 12px 30px;
         }
 
-    .form-control:focus, .form-select:focus {
-        border-color: #dc3545;
-        box-shadow: 0 0 0 0.25px rgba(220, 53, 69, 0.25);
+        .titulo-con-icono h1 {
+            font-size: 25px;
+        }
+
+        .formulario-card-header,
+        .formulario-card form {
+            padding-right: 18px;
+            padding-left: 18px;
+        }
+
+        .formulario-acciones {
+            flex-direction: column-reverse;
+            align-items: stretch;
+        }
+
+        .btn-cancelar,
+        .btn-guardar {
+            width: 100%;
+        }
     }
 </style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

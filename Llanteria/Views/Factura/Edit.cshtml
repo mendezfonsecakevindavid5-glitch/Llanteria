@@ -4,110 +4,525 @@
     ViewData["Title"] = "Editar Factura";
 }
 
-<div class="container py-5" style="max-width: 900px;">
+<div class="container-fluid formulario-container">
 
-    <!-- ENCABEZADO -->
-    <div class="mb-4 animate__animated animate__fadeIn">
-        <a asp-action="Index" class="text-muted text-decoration-none small fw-bold d-inline-flex align-items-center gap-2 mb-2 transition-transform hover-left">
-            <i class="fa-solid fa-arrow-left"></i> Volver al Historial
-        </a>
-        <h2 class="fw-black text-dark text-uppercase m-0 d-flex align-items-center gap-2">
-            <i class="fa-solid fa-file-pen text-warning"></i> Editar Factura #@Model.Id
-        </h2>
-        <p class="text-muted small m-0">Ajusta los valores financieros, el cliente asignado o las observaciones del documento.</p>
+    <!-- Encabezado -->
+    <div class="formulario-header">
+        <div>
+            <a asp-action="Index" class="volver-panel">
+                <i class="fa-solid fa-arrow-left me-2"></i>Volver al historial
+            </a>
+
+            <div class="titulo-con-icono">
+                <div class="icono-formulario">
+                    <i class="fa-solid fa-file-pen"></i>
+                </div>
+
+                <div>
+                    <h1>EDITAR FACTURA #@Model.Id</h1>
+                    <p>Ajusta los valores financieros, cliente y observaciones del documento.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- TARJETA DEL FORMULARIO -->
-    <div class="card border-0 shadow-sm rounded-xl overflow-hidden animate__animated animate__fadeInUp">
-        <div class="card-body p-4 p-md-5 bg-white">
-            <form asp-action="Edit">
-                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
-                <input type="hidden" asp-for="Id" />
+    <!-- Formulario -->
+    <div class="row">
+        <div class="col-12 col-xl-9">
+            <div class="formulario-card">
 
-                <div class="row g-3">
-                    <!-- Cliente y Fecha -->
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select asp-for="IdCliente" class="form-select" asp-items="ViewBag.IdCliente" required></select>
-                            <label asp-for="IdCliente" class="fw-semibold text-muted">Seleccionar Cliente</label>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input asp-for="Fecha" class="form-control" type="date" required />
-                            <label asp-for="Fecha" class="fw-semibold text-muted">Fecha de Factura</label>
-                        </div>
+                <div class="formulario-card-header">
+                    <div class="header-icono">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
                     </div>
 
-                    <!-- Valores Financieros -->
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input asp-for="TotalBruto" class="form-control text-end fw-bold" type="number" step="0.01" required />
-                            <label asp-for="TotalBruto" class="fw-semibold text-muted">Subtotal ($)</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input asp-for="Iva" class="form-control text-end fw-bold" type="number" step="0.01" required />
-                            <label asp-for="Iva" class="fw-semibold text-muted">IVA ($)</label>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-floating">
-                            <input asp-for="RteFte" class="form-control text-end fw-bold" type="number" step="0.01" />
-                            <label asp-for="RteFte" class="fw-semibold text-muted">Retención ($)</label>
-                        </div>
-                    </div>
-
-                    <!-- Total Final -->
-                    <div class="col-12">
-                        <div class="form-floating">
-                            <input asp-for="TotalPagar" class="form-control text-end fw-bold text-success fs-5" type="number" step="0.01" required />
-                            <label asp-for="TotalPagar" class="fw-semibold text-success">Total a Pagar ($)</label>
-                        </div>
-                    </div>
-
-                    <!-- Observaciones -->
-                    <div class="col-12">
-                        <div class="form-floating">
-                            <textarea asp-for="Observaciones" class="form-control" style="height: 100px;" placeholder="Detalles"></textarea>
-                            <label asp-for="Observaciones" class="fw-semibold text-muted">Observaciones Adicionales</label>
-                        </div>
-                    </div>
-
-                    <!-- BOTONES -->
-                    <div class="col-12 pt-3 border-top d-flex justify-content-end gap-2">
-                        <a asp-action="Index" class="btn btn-light fw-bold px-4 py-2 rounded-3 border">Cancelar</a>
-                        <button type="submit" class="btn btn-warning fw-bold px-4 py-2 rounded-3 shadow-sm d-flex align-items-center gap-2 transition-transform text-dark">
-                            <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
-                        </button>
+                    <div>
+                        <h5>Información de la factura</h5>
+                        <span>Verifica los datos antes de guardar los cambios.</span>
                     </div>
                 </div>
-            </form>
+
+                <form asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="row g-4">
+
+                        <!-- Cliente -->
+                        <div class="col-md-6">
+                            <label asp-for="IdCliente" class="form-label label-formulario">
+                                Cliente
+                            </label>
+
+                            <div class="input-con-icono">
+                                <i class="fa-solid fa-user"></i>
+
+                                <select asp-for="IdCliente"
+                                        class="form-select input-formulario input-select"
+                                        asp-items="ViewBag.IdCliente"
+                                        required>
+                                </select>
+                            </div>
+
+                            <span asp-validation-for="IdCliente" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Fecha -->
+                        <div class="col-md-6">
+                            <label asp-for="Fecha" class="form-label label-formulario">
+                                Fecha de factura
+                            </label>
+
+                            <div class="input-con-icono">
+                                <i class="fa-regular fa-calendar-days"></i>
+
+                                <input asp-for="Fecha"
+                                       type="date"
+                                       class="form-control input-formulario"
+                                       required />
+                            </div>
+
+                            <span asp-validation-for="Fecha" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Subtotal -->
+                        <div class="col-md-4">
+                            <label asp-for="TotalBruto" class="form-label label-formulario">
+                                Subtotal
+                            </label>
+
+                            <div class="input-con-icono input-dinero">
+                                <i class="fa-solid fa-dollar-sign"></i>
+
+                                <input asp-for="TotalBruto"
+                                       type="number"
+                                       step="0.01"
+                                       class="form-control input-formulario dinero-input"
+                                       inputmode="decimal"
+                                       required />
+                            </div>
+
+                            <span asp-validation-for="TotalBruto" class="text-danger small"></span>
+                        </div>
+
+                        <!-- IVA -->
+                        <div class="col-md-4">
+                            <label asp-for="Iva" class="form-label label-formulario">
+                                IVA
+                            </label>
+
+                            <div class="input-con-icono input-dinero">
+                                <i class="fa-solid fa-percent"></i>
+
+                                <input asp-for="Iva"
+                                       type="number"
+                                       step="0.01"
+                                       class="form-control input-formulario dinero-input"
+                                       inputmode="decimal"
+                                       required />
+                            </div>
+
+                            <span asp-validation-for="Iva" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Retención -->
+                        <div class="col-md-4">
+                            <label asp-for="RteFte" class="form-label label-formulario">
+                                Retención
+                            </label>
+
+                            <div class="input-con-icono input-dinero">
+                                <i class="fa-solid fa-minus"></i>
+
+                                <input asp-for="RteFte"
+                                       type="number"
+                                       step="0.01"
+                                       class="form-control input-formulario dinero-input"
+                                       inputmode="decimal" />
+                            </div>
+
+                            <span asp-validation-for="RteFte" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Total -->
+                        <div class="col-12">
+                            <div class="total-seccion">
+                                <div class="total-header">
+                                    <div>
+                                        <span class="total-titulo">Total a pagar</span>
+                                        <span class="total-subtitulo">
+                                            Valor final que se registrará en la factura.
+                                        </span>
+                                    </div>
+
+                                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                                </div>
+
+                                <div class="input-con-icono input-total">
+                                    <i class="fa-solid fa-dollar-sign"></i>
+
+                                    <input asp-for="TotalPagar"
+                                           type="number"
+                                           step="0.01"
+                                           class="form-control input-formulario total-input"
+                                           inputmode="decimal"
+                                           required />
+                                </div>
+
+                                <span asp-validation-for="TotalPagar" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Observaciones -->
+                        <div class="col-12">
+                            <label asp-for="Observaciones" class="form-label label-formulario">
+                                Observaciones adicionales
+                            </label>
+
+                            <div class="textarea-con-icono">
+                                <i class="fa-solid fa-message"></i>
+
+                                <textarea asp-for="Observaciones"
+                                          class="form-control textarea-formulario"
+                                          placeholder="Escribe aquí detalles adicionales de la factura..."
+                                          rows="4"></textarea>
+                            </div>
+
+                            <span asp-validation-for="Observaciones" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Acciones -->
+                        <div class="col-12">
+                            <div class="formulario-acciones">
+                                <a asp-action="Index" class="btn-cancelar">
+                                    <i class="fa-solid fa-xmark me-2"></i>Cancelar
+                                </a>
+
+                                <button type="submit" class="btn-guardar">
+                                    <i class="fa-solid fa-floppy-disk me-2"></i>Guardar Cambios
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-    .rounded-xl {
-        border-radius: 12px !important;
+    body {
+        background: #f7f8fa;
+        color: #222;
     }
 
-    .hover-left:hover {
-        transform: translateX(-4px);
+    .formulario-container {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 22px 28px 40px;
     }
 
-    .transition-transform {
-        transition: 0.2s;
+    .formulario-header {
+        margin-bottom: 27px;
     }
 
-        .transition-transform:hover {
-            transform: translateY(-2px);
+    .volver-panel {
+        display: inline-block;
+        margin-bottom: 10px;
+        color: #555;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color .2s ease;
+    }
+
+    .volver-panel:hover {
+        color: #c9250c;
+    }
+
+    .titulo-con-icono {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .icono-formulario {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        color: #c9250c;
+        font-size: 31px;
+    }
+
+    .titulo-con-icono h1 {
+        margin: 0;
+        color: #20252b;
+        font-size: 31px;
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    .titulo-con-icono p {
+        margin: 2px 0 0;
+        color: #777;
+        font-size: 14px;
+    }
+
+    .formulario-card {
+        overflow: hidden;
+        border: 1px solid #d9d9d9;
+        border-radius: 15px;
+        background: #fff;
+        box-shadow: 0 2px 9px rgba(0, 0, 0, .05);
+    }
+
+    .formulario-card-header {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 20px 24px;
+        border-bottom: 1px solid #e2e2e2;
+        background: #fff;
+    }
+
+    .header-icono {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 39px;
+        height: 39px;
+        border-radius: 9px;
+        background: #fff1ed;
+        color: #c9250c;
+        font-size: 17px;
+    }
+
+    .formulario-card-header h5 {
+        margin: 0;
+        color: #252525;
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .formulario-card-header span {
+        display: block;
+        margin-top: 2px;
+        color: #808080;
+        font-size: 13px;
+    }
+
+    .formulario-card form {
+        padding: 25px 24px;
+    }
+
+    .label-formulario {
+        margin-bottom: 8px;
+        color: #30343a;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .input-con-icono {
+        position: relative;
+    }
+
+    .input-con-icono > i {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        z-index: 2;
+        color: #808890;
+        font-size: 15px;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    .input-formulario {
+        height: 46px;
+        padding-left: 43px;
+        border: 1px solid #d4d8dc;
+        border-radius: 8px;
+        color: #292d32;
+        font-size: 14px;
+        box-shadow: none;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .input-formulario:focus {
+        border-color: #c9250c;
+        box-shadow: 0 0 0 .2rem rgba(201, 37, 12, .10);
+    }
+
+    .input-select {
+        padding-right: 38px;
+    }
+
+    .dinero-input {
+        padding-right: 13px;
+        font-weight: 800;
+        text-align: right;
+    }
+
+    .input-dinero > i {
+        color: #c9250c;
+    }
+
+    .total-seccion {
+        padding: 18px;
+        border: 1px solid #f1c7bd;
+        border-radius: 11px;
+        background: #fff8f6;
+    }
+
+    .total-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 13px;
+    }
+
+    .total-header > i {
+        color: #c9250c;
+        font-size: 24px;
+    }
+
+    .total-titulo,
+    .total-subtitulo {
+        display: block;
+    }
+
+    .total-titulo {
+        color: #3c2a26;
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .total-subtitulo {
+        margin-top: 2px;
+        color: #8a7069;
+        font-size: 12px;
+    }
+
+    .input-total > i {
+        color: #c9250c;
+    }
+
+    .total-input {
+        height: 51px;
+        border-color: #dfaaa0;
+        background: #fff;
+        color: #c9250c;
+        font-size: 18px;
+        font-weight: 800;
+        text-align: right;
+    }
+
+    .textarea-con-icono {
+        position: relative;
+    }
+
+    .textarea-con-icono > i {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        z-index: 2;
+        color: #808890;
+        font-size: 15px;
+        pointer-events: none;
+    }
+
+    .textarea-formulario {
+        min-height: 105px;
+        padding: 13px 14px 13px 43px;
+        resize: vertical;
+        border: 1px solid #d4d8dc;
+        border-radius: 8px;
+        color: #292d32;
+        font-size: 14px;
+        box-shadow: none;
+    }
+
+    .textarea-formulario:focus {
+        border-color: #c9250c;
+        box-shadow: 0 0 0 .2rem rgba(201, 37, 12, .10);
+    }
+
+    .formulario-acciones {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        padding-top: 20px;
+        border-top: 1px solid #e3e5e7;
+    }
+
+    .btn-cancelar,
+    .btn-guardar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all .2s ease;
+    }
+
+    .btn-cancelar {
+        border: 1px solid #b8bec4;
+        background: #fff;
+        color: #5e646a;
+    }
+
+    .btn-cancelar:hover {
+        border-color: #80878e;
+        background: #f4f5f6;
+        color: #30343a;
+    }
+
+    .btn-guardar {
+        border: 1px solid #c9250c;
+        background: #c9250c;
+        color: #fff;
+        box-shadow: 0 3px 7px rgba(201, 37, 12, .18);
+    }
+
+    .btn-guardar:hover {
+        border-color: #a91d09;
+        background: #a91d09;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    @@media (max-width: 768px) {
+        .formulario-container {
+            padding: 18px 12px 30px;
         }
 
-    .form-control:focus, .form-select:focus {
-        border-color: #ffc107;
-        box-shadow: 0 0 0 0.25px rgba(255, 193, 7, 0.25);
+        .titulo-con-icono h1 {
+            font-size: 24px;
+        }
+
+        .formulario-card-header,
+        .formulario-card form {
+            padding-right: 18px;
+            padding-left: 18px;
+        }
+
+        .formulario-acciones {
+            flex-direction: column-reverse;
+            align-items: stretch;
+        }
+
+        .btn-cancelar,
+        .btn-guardar {
+            width: 100%;
+        }
     }
 </style>
 
