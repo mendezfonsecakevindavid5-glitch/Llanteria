@@ -2,45 +2,209 @@
     ViewData["Title"] = "Contacto - Llantería";
 }
 
-<section class="py-5" style="background-color: #f8f9fa; min-height: 80vh;">
-    <div class="container py-5">
+<style>
+    .contacto-section {
+        background-color: #F8F9FA;
+        position: relative;
+        min-height: 85vh;
+    }
+
+    /* Tarjeta de Información (Izquierda) */
+    .contact-info-card {
+        background: #FFFFFF;
+        border: 1px solid #E4E4E7;
+        border-radius: 24px;
+        padding: 2.5rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.04);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .contact-info-title {
+        font-family: 'Orbitron', sans-serif, system-ui;
+        font-weight: 900;
+        color: #C92B0A;
+        letter-spacing: 1px;
+    }
+
+    .contact-info-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1.75rem;
+    }
+
+        .contact-info-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .contact-info-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(201, 43, 10, 0.08);
+        color: #C92B0A;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        margin-right: 1.25rem;
+        transition: transform 0.3s ease;
+    }
+
+    .contact-info-card:hover .contact-info-icon {
+        transform: scale(1.08);
+    }
+
+    .contact-info-text label {
+        font-weight: 800;
+        color: #09090B;
+        display: block;
+        margin-bottom: 2px;
+        font-size: 0.95rem;
+    }
+
+    .contact-info-text p,
+    .contact-info-text a {
+        margin: 0;
+        color: #52525B;
+        font-size: 0.92rem;
+        text-decoration: none;
+        line-height: 1.5;
+    }
+
+        .contact-info-text a:hover {
+            color: #C92B0A;
+        }
+
+    /* Tarjeta de Formulario Oscura (Derecha) */
+    .contact-form-card {
+        background: #09090B;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 2.5rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .contact-form-input {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #FFFFFF !important;
+        border-radius: 12px;
+        padding: 0.9rem 1.1rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+        .contact-form-input:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #C92B0A;
+            box-shadow: 0 0 0 4px rgba(201, 43, 10, 0.25);
+            outline: none;
+        }
+
+        .contact-form-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+    .btn-contact-submit {
+        background: linear-gradient(135deg, #C92B0A 0%, #911F07 100%);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 12px;
+        padding: 0.9rem 2.2rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 15px rgba(201, 43, 10, 0.3);
+    }
+
+        .btn-contact-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(201, 43, 10, 0.5);
+            color: #FFFFFF;
+        }
+</style>
+
+<section class="contacto-section py-5">
+    <div class="container py-4">
+        <!-- Encabezado de Sección -->
         <div class="text-center mb-5">
             <h2 class="fw-black text-uppercase text-dark m-0">Ponte en Contacto</h2>
-            <p class="text-muted">Escríbenos tus dudas o sugerencias y te responderemos al correo de inmediato.</p>
+            <p class="text-muted mt-2">Escríbenos tus dudas o sugerencias y te responderemos al correo de inmediato.</p>
         </div>
 
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card border-0 shadow p-4 rounded-3 bg-white">
+        <div class="row g-4 align-items-stretch justify-content-center">
+            <!-- Columna Izquierda: Datos de Contacto -->
+            <div class="col-lg-5 col-md-6">
+                <div class="contact-info-card">
+                    <h3 class="contact-info-title fs-3 mb-4 text-uppercase">Información</h3>
+
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fa-solid fa-phone"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <label>Teléfono Directo</label>
+                            <a href="tel:+573117723978">+57 311 772 3978</a>
+                        </div>
+                    </div>
+
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <label>Atención por Correo</label>
+                            <a href="mailto:superllantasmedellinsas@hotmail.com">superllantasmedellinsas@hotmail.com</a>
+                        </div>
+                    </div>
+
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <label>Horario de Atención</label>
+                            <p>Lunes a viernes de 7:30 a.m. a 5:30 p.m.</p>
+                            <p>Sábado de 8:00 a.m. a 4:00 p.m.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Formulario de Contacto -->
+            <div class="col-lg-7 col-md-6">
+                <div class="contact-form-card">
                     <form asp-controller="Contacto" asp-action="EnviarMensaje" method="post">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="formName" name="Nombre" placeholder="Tu nombre" required />
-                                    <label for="formName">Nombre Completo</label>
-                                </div>
+                                <input type="text" class="form-control contact-form-input" id="formName" name="Nombre" placeholder="Nombre Completo" required />
                             </div>
+
                             <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="email" class="form-control" id="formEmail" name="Correo" placeholder="correo@ejemplo.com" required />
-                                    <label for="formEmail">Correo Electrónico</label>
-                                </div>
+                                <input type="email" class="form-control contact-form-input" id="formEmail" name="Correo" placeholder="Correo Electrónico" required />
                             </div>
+
                             <div class="col-12">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="formSubject" name="Asunto" placeholder="Asunto" required />
-                                    <label for="formSubject">Asunto o Vehículo</label>
-                                </div>
+                                <input type="text" class="form-control contact-form-input" id="formSubject" name="Asunto" placeholder="Asunto o Vehículo" required />
                             </div>
+
                             <div class="col-12">
-                                <div class="form-floating">
-                                    <textarea class="form-control" id="formMessage" name="Mensaje" placeholder="Tu mensaje aquí" style="height: 150px;" required></textarea>
-                                    <label for="formMessage">¿En qué podemos ayudarte?</label>
-                                </div>
+                                <textarea class="form-control contact-form-input" id="formMessage" name="Mensaje" rows="5" placeholder="¿En qué podemos ayudarte?" required></textarea>
                             </div>
-                            <div class="col-12 text-end">
-                                <button type="submit" class="btn btn-dark px-5 py-3 fw-bold text-uppercase shadow-sm" style="background-color: #C92B0A; border: none;">
-                                    Enviar Mensaje Profesional
+
+                            <div class="col-12 text-end pt-2">
+                                <button type="submit" class="btn btn-contact-submit w-100 w-md-auto">
+                                    Enviar Mensaje Profesional <i class="fa-solid fa-paper-plane ms-2"></i>
                                 </button>
                             </div>
                         </div>

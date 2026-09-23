@@ -1,13 +1,61 @@
 ﻿@{
-    ViewData["Title"] = "Baterías";
+    ViewData["Title"] = "Venta e Instalación de Baterías";
+    bool isAuthenticated = User.Identity != null && User.Identity.IsAuthenticated;
 }
 
-<div class="container py-5">
+<style>
+    /* Estilos personalizados con la identidad de marca #C92B0A */
+    .bg-llanteria-primary {
+        background-color: var(--llanteria-primary, #C92B0A) !important;
+    }
 
-    <div class="row g-5">
+    .text-llanteria-primary {
+        color: var(--llanteria-primary, #C92B0A) !important;
+    }
+
+    .border-llanteria-primary {
+        border-color: var(--llanteria-primary, #C92B0A) !important;
+    }
+
+    .btn-llanteria-primary {
+        background-color: var(--llanteria-primary, #C92B0A) !important;
+        border-color: var(--llanteria-primary, #C92B0A) !important;
+        color: #FFFFFF !important;
+        transition: filter 0.2s ease-in-out;
+    }
+
+    .btn-llanteria-primary:hover {
+        filter: brightness(0.9);
+        color: #FFFFFF !important;
+    }
+
+    .btn-outline-llanteria-primary {
+        background-color: transparent !important;
+        border-color: var(--llanteria-primary, #C92B0A) !important;
+        color: var(--llanteria-primary, #C92B0A) !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-outline-llanteria-primary:hover {
+        background-color: var(--llanteria-primary, #C92B0A) !important;
+        color: #FFFFFF !important;
+    }
+
+    .badge-llanteria-subtle {
+        background-color: rgba(201, 43, 10, 0.1) !important;
+        color: #C92B0A !important;
+        border: 1px solid rgba(201, 43, 10, 0.2) !important;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row g-5 align-items-start">
+
+        <!-- COLUMNA IZQUIERDA: Detalle del Servicio e Información Relevante -->
         <div class="col-lg-7">
-            <div class="d-flex items-center gap-3 mb-3">
-                <div class="bg-danger text-white p-3 rounded-3">
+            <!-- Encabezado del Servicio -->
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="bg-llanteria-primary text-white p-3 rounded-3 shadow-sm">
                     <i class="fa-solid fa-car-battery fa-2xl"></i>
                 </div>
                 <div>
@@ -16,60 +64,252 @@
                 </div>
             </div>
 
-            <img src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=1000&q=80" class="img-fluid rounded-4 shadow-sm mb-4" alt="Baterías">
+            <img src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=1000&auto=format&fit=crop"
+                 onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?q=80&w=1000&auto=format&fit=crop';"
+                 class="img-fluid rounded-4 shadow-sm mb-4 w-100" style="max-height: 380px; object-fit: cover;" alt="Venta e Instalación de Baterías">
 
             <h4 class="fw-bold mb-3">¿En qué consiste el servicio?</h4>
             <p class="text-muted leading-relaxed">
-                Realizamos la revisión digital del estado del acumulador y del sistema de carga de tu vehículo (alternador). Contamos con baterías de alta potencia y respaldo de marcas líderes del mercado.
+                Realizamos la revisión digital del estado del acumulador y del sistema de carga de tu vehículo (alternador y motor de arranque). Contamos con baterías de alta potencia, selladas y de libre mantenimiento con respaldo directo de las marcas líderes del mercado.
             </p>
 
             <div class="row g-3 my-4">
                 <div class="col-md-6">
-                    <div class="p-3 border rounded-3 bg-white shadow-sm">
-                        <i class="fa-solid fa-award text-danger mb-2 fa-lg"></i>
+                    <div class="p-3 border rounded-3 bg-white shadow-sm h-100">
+                        <i class="fa-solid fa-award text-llanteria-primary mb-2 fa-lg"></i>
                         <h6 class="fw-bold">Garantía Nacional</h6>
-                        <p class="small text-muted m-0">Respaldo directo y soporte ante cualquier eventualidad.</p>
+                        <p class="small text-muted m-0">Respaldo directo con garantía escrita y soporte ante cualquier eventualidad.</p>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="p-3 border rounded-3 bg-white shadow-sm">
-                        <i class="fa-solid fa-screwdriver-wrench text-danger mb-2 fa-lg"></i>
+                    <div class="p-3 border rounded-3 bg-white shadow-sm h-100">
+                        <i class="fa-solid fa-screwdriver-wrench text-llanteria-primary mb-2 fa-lg"></i>
                         <h6 class="fw-bold">Instalación Gratis</h6>
-                        <p class="small text-muted m-0">Montaje sin costo adicional al adquirir la batería.</p>
+                        <p class="small text-muted m-0">Montaje técnico y comprobación de voltaje sin costo adicional al adquirir tu batería.</p>
                     </div>
                 </div>
             </div>
+
+            <!-- BLOQUE INFORMATIVO SIMÉTRICO SEGÚN EL ESTADO -->
+            @if (isAuthenticated)
+            {
+                <!-- Info Exclusiva para Usuario Registrado -->
+                <div class="alert alert-light border-start border-llanteria-primary border-4 shadow-sm p-4 rounded-4 mt-4">
+                    <h5 class="fw-bold text-dark mb-2">
+                        <i class="fa-solid fa-circle-info text-llanteria-primary me-2"></i>Información importante para tu cita
+                    </h5>
+                    <ul class="mb-0 text-muted small ps-3">
+                        <li class="mb-1"><strong>Tiempo estimado de instalación:</strong> 15 a 20 minutos.</li>
+                        <li class="mb-1"><strong>Diagnóstico incluido:</strong> Prueba electrónica de capacidad de arranque y lectura del alternador.</li>
+                        <li><strong>Retorno de batería usada:</strong> Recibimos tu batería anterior y te otorgamos un descuento de retoma directo.</li>
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <!-- Info Motivacional para Usuario No Registrado -->
+                <div class="alert alert-light border-start border-llanteria-primary border-4 shadow-sm p-4 rounded-4 mt-4">
+                    <h5 class="fw-bold text-dark mb-2">
+                        <i class="fa-solid fa-shield-halved text-llanteria-primary me-2"></i>¿Dudas sobre la batería adecuada?
+                    </h5>
+                    <p class="small text-muted mb-2">
+                        Cada vehículo requiere un amperaje y tamaño de caja específico (BNC/DIN). Indícanos la marca y modelo de tu auto para darte la referencia exacta.
+                    </p>
+                    <div class="d-flex align-items-center gap-3 pt-2">
+                        <span class="badge badge-llanteria-subtle px-2 py-1 small">
+                            <i class="fa-solid fa-clock me-1"></i>Respuesta en &lt; 15 min
+                        </span>
+                        <span class="badge bg-secondary-subtle text-dark border px-2 py-1 small">
+                            <i class="fa-solid fa-file-invoice-dollar me-1"></i>Cotización sin compromiso
+                        </span>
+                    </div>
+                </div>
+            }
         </div>
 
+        <!-- COLUMNA DERECHA: Formulario Lateral -->
         <div class="col-lg-5">
             <div class="card border-0 shadow-lg p-4 rounded-4 sticky-top" style="top: 20px;">
-                <h4 class="fw-bold mb-1">Solicita este servicio</h4>
-                <p class="small text-muted mb-4">Ingresa tus datos y te contactaremos para agendar tu cita.</p>
+                @if (isAuthenticated)
+                {
+                    <!-- ESTADO 1: USUARIO REGISTRADO (Agendamiento) -->
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="fw-bold m-0">Agendar Cita</h4>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                            <i class="fa-solid fa-user-check me-1"></i>Cliente Registrado
+                        </span>
+                    </div>
+                    <p class="small text-muted mb-3">
+                        Hola, <strong>@User.Identity.Name</strong>. Selecciona la fecha, hora y método de pago para reservar tu turno.
+                    </p>
 
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">Servicio</label>
-                        <input type="text" class="form-control bg-light fw-bold" value="Baterías" readonly>
+                    <form asp-controller="Citas" asp-action="Agendar" method="post">
+                        <input type="hidden" name="ServicioNombre" value="Venta e Instalación de Baterías" />
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Fecha del servicio</label>
+                            <input type="date" name="Fecha" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Horario disponible</label>
+                            <select name="Hora" class="form-select" required>
+                                <option value="" selected disabled>-- Selecciona un horario --</option>
+                                <option value="08:00">08:00 AM</option>
+                                <option value="09:30">09:30 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="14:00">02:00 PM</option>
+                                <option value="15:30">03:30 PM</option>
+                                <option value="17:00">05:00 PM</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Placa o Detalle del Vehículo</label>
+                            <input type="text" name="Vehiculo" class="form-control" placeholder="Ej. ABC-123 / Mazda 3" required>
+                        </div>
+
+                        <!-- Forma de Pago -->
+                        <div class="border rounded-3 p-3 bg-light mb-3">
+                            <label class="form-label small fw-bold text-dark d-block mb-2">
+                                <i class="fa-solid fa-wallet text-llanteria-primary me-1"></i>Forma de Pago
+                            </label>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="FormaPago" id="pagoEfectivo" value="Efectivo" checked>
+                                <label class="form-check-label small" for="pagoEfectivo">
+                                    <i class="fa-solid fa-money-bill-wave text-success me-1"></i>Pago en Serviteca (Efectivo)
+                                </label>
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="FormaPago" id="pagoTarjeta" value="Tarjeta">
+                                <label class="form-check-label small" for="pagoTarjeta">
+                                    <i class="fa-regular fa-credit-card text-primary me-1"></i>Datáfono en punto (Débito/Crédito)
+                                </label>
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="FormaPago" id="pagoDigital" value="Transferencia">
+                                <label class="form-check-label small" for="pagoDigital">
+                                    <i class="fa-solid fa-mobile-screen-button text-warning me-1"></i>Nequi / Daviplata / Transferencia
+                                </label>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                                <span class="small fw-bold text-muted">Precio estimado desde:</span>
+                                <span class="fw-black text-llanteria-primary fs-5">$240.000 COP</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Notas adicionales (Opcional)</label>
+                            <textarea name="Notas" class="form-control" rows="2" placeholder="Marca preferida de batería o fallas presentadas..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-llanteria-primary w-100 py-3 fw-bold text-uppercase shadow-sm">
+                            <i class="fa-solid fa-calendar-check me-2"></i>Confirmar y Reservar
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <!-- ESTADO 2: USUARIO NO REGISTRADO (Cotización + Formulario Directo) -->
+                    <div class="bg-llanteria-primary text-white p-3 rounded-3 mb-3 shadow-sm">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <i class="fa-solid fa-tags fa-lg"></i>
+                            <h5 class="fw-bold m-0">Cotiza tu Batería</h5>
+                        </div>
+                        <p class="small m-0 text-white-50">
+                            Recibe asesoría técnica sobre la capacidad y amperaje ideal para tu vehículo.
+                        </p>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Nombre Completo</label>
-                        <input type="text" class="form-control" placeholder="Ej. Ana Mercedes" required>
+
+                    <p class="small text-muted mb-3">
+                        Completa tus datos y un asesor te enviará disponibilidad y precios exactos en marcas homologadas.
+                    </p>
+
+                    <form asp-controller="Servicios" asp-action="SolicitarContacto" method="post">
+                        <input type="hidden" name="ServicioNombre" value="Venta e Instalación de Baterías" />
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Servicio Seleccionado</label>
+                            <input type="text" class="form-control bg-light fw-bold" value="Venta e Instalación de Baterías" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Nombre Completo</label>
+                            <input type="text" name="Nombre" class="form-control" placeholder="Ej. Ana Mercedes" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">E-mail</label>
+                            <input type="email" name="Correo" class="form-control" placeholder="correo@ejemplo.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Teléfono / WhatsApp</label>
+                            <input type="tel" name="Telefono" class="form-control" placeholder="Ej. 300 123 4567" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Detalle del Vehículo / Batería actual</label>
+                            <textarea name="Mensaje" class="form-control" rows="2" placeholder="Ej. Toyota Hilux 2019 - Batería de 800 Amperios"></textarea>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="checkTerms" required>
+                            <label class="form-check-label small text-muted" for="checkTerms">
+                                Acepto los Términos y Autorizo el tratamiento de datos.
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-llanteria-primary w-100 py-3 fw-bold text-uppercase shadow-sm mb-3">
+                            <i class="fa-solid fa-paper-plane me-2"></i>Enviar Solicitud Informativa
+                        </button>
+                    </form>
+
+                    <!-- Incentivo para Registrarse -->
+                    <div class="p-3 bg-light rounded-3 border text-center">
+                        <h6 class="fw-bold mb-1"><i class="fa-solid fa-bolt text-warning me-1"></i>¿Quieres agendar directamente?</h6>
+                        <p class="small text-muted mb-2">Inicia sesión o regístrate para apartar tu turno directamente en el sistema.</p>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-llanteria-primary btn-sm w-100 fw-bold">
+                            <i class="fa-solid fa-right-to-bracket me-1"></i>Iniciar Sesión / Registrarme
+                        </a>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">E-mail</label>
-                        <input type="email" class="form-control" placeholder="correo@ejemplo.com" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Teléfono de contacto</label>
-                        <input type="tel" class="form-control" placeholder="Ej. 300 123 4567" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Mensaje / Vehículo</label>
-                        <textarea class="form-control" rows="3" placeholder="Detalles de tu vehículo..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-danger w-100 py-3 fw-bold text-uppercase">Enviar Solicitud</button>
-                </form>
+                }
             </div>
         </div>
+
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (TempData["MensajeEnviado"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: '¡Solicitud Enviada!',
+                    text: 'Recibimos tus datos. Un asesor se comunicará contigo para confirmar el modelo exacto de batería.',
+                    icon: 'success',
+                    confirmButtonColor: '#C92B0A',
+                    confirmButtonText: 'Entendido'
+                });
+            });
+        </script>
+    }
+
+    @if (TempData["ErrorCorreo"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: 'Error al enviar',
+                    text: 'Ocurrió un inconveniente al procesar tu solicitud. Por favor intenta de nuevo.',
+                    icon: 'error',
+                    confirmButtonColor: '#000000',
+                    confirmButtonText: 'Reintentar'
+                });
+            });
+        </script>
+    }
+}
