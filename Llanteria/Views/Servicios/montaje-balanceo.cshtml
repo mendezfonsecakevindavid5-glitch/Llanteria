@@ -3,12 +3,59 @@
     bool isAuthenticated = User.Identity != null && User.Identity.IsAuthenticated;
 }
 
+<style>
+    /* Aplicación del color de marca #C92B0A */
+    .bg-llanteria-primary {
+        background-color: var(--llanteria-primary, #C92B0A) !important;
+    }
+
+    .text-llanteria-primary {
+        color: var(--llanteria-primary, #C92B0A) !important;
+    }
+
+    .border-llanteria-primary {
+        border-color: var(--llanteria-primary, #C92B0A) !important;
+    }
+
+    .btn-llanteria-primary {
+        background-color: var(--llanteria-primary, #C92B0A) !important;
+        border-color: var(--llanteria-primary, #C92B0A) !important;
+        color: #FFFFFF !important;
+        transition: filter 0.2s ease-in-out;
+    }
+
+    .btn-llanteria-primary:hover {
+        filter: brightness(0.9);
+        color: #FFFFFF !important;
+    }
+
+    .btn-outline-llanteria-primary {
+        background-color: transparent !important;
+        border-color: var(--llanteria-primary, #C92B0A) !important;
+        color: var(--llanteria-primary, #C92B0A) !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-outline-llanteria-primary:hover {
+        background-color: var(--llanteria-primary, #C92B0A) !important;
+        color: #FFFFFF !important;
+    }
+
+    .badge-llanteria-subtle {
+        background-color: rgba(201, 43, 10, 0.1) !important;
+        color: #C92B0A !important;
+        border: 1px solid rgba(201, 43, 10, 0.2) !important;
+    }
+</style>
+
 <div class="container py-5">
-    <div class="row g-5">
-        <!-- Detalle del Servicio (Información General) -->
+    <div class="row g-5 align-items-start">
+
+        <!-- COLUMNA IZQUIERDA: Detalle del Servicio e Información Relevante -->
         <div class="col-lg-7">
+            <!-- Encabezado del Servicio -->
             <div class="d-flex align-items-center gap-3 mb-3">
-                <div class="bg-danger text-white p-3 rounded-3">
+                <div class="bg-llanteria-primary text-white p-3 rounded-3 shadow-sm">
                     <i class="fa-solid fa-compact-disc fa-2xl"></i>
                 </div>
                 <div>
@@ -18,7 +65,7 @@
             </div>
 
             <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1000&q=80"
-                 class="img-fluid rounded-4 shadow-sm mb-4" alt="Montaje y Balanceo">
+                 class="img-fluid rounded-4 shadow-sm mb-4 w-100" style="max-height: 380px; object-fit: cover;" alt="Montaje y Balanceo">
 
             <h4 class="fw-bold mb-3">¿En qué consiste el servicio?</h4>
             <p class="text-muted leading-relaxed">
@@ -27,51 +74,72 @@
 
             <div class="row g-3 my-4">
                 <div class="col-md-6">
-                    <div class="p-3 border rounded-3 bg-white shadow-sm">
-                        <i class="fa-solid fa-car-side text-danger mb-2 fa-lg"></i>
+                    <div class="p-3 border rounded-3 bg-white shadow-sm h-100">
+                        <i class="fa-solid fa-car-side text-llanteria-primary mb-2 fa-lg"></i>
                         <h6 class="fw-bold">Conducción Suave</h6>
                         <p class="small text-muted m-0">Elimina vibraciones molestas en el volante y el pedal.</p>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="p-3 border rounded-3 bg-white shadow-sm">
-                        <i class="fa-solid fa-arrows-spin text-danger mb-2 fa-lg"></i>
+                    <div class="p-3 border rounded-3 bg-white shadow-sm h-100">
+                        <i class="fa-solid fa-arrows-spin text-llanteria-primary mb-2 fa-lg"></i>
                         <h6 class="fw-bold">Desgaste Uniforme</h6>
                         <p class="small text-muted m-0">Evita deformaciones irregulares en la banda de rodamiento.</p>
                     </div>
                 </div>
             </div>
 
+            <!-- BLOQUE INFORMATIVO SEGÚN EL ESTADO -->
             @if (isAuthenticated)
             {
-                <!-- Información adicional puntual exclusiva para clientes registrados -->
-                <div class="alert alert-light border-start border-danger border-4 shadow-sm p-4 rounded-3 mt-4">
+                <!-- Info Exclusiva para Usuario Registrado -->
+                <div class="alert alert-light border-start border-llanteria-primary border-4 shadow-sm p-4 rounded-4 mt-4">
                     <h5 class="fw-bold text-dark mb-2">
-                        <i class="fa-solid fa-circle-info text-danger me-2"></i>Información importante para tu cita
+                        <i class="fa-solid fa-circle-info text-llanteria-primary me-2"></i>Información importante para tu cita
                     </h5>
                     <ul class="mb-0 text-muted small ps-3">
-                        <li><strong>Tiempo estimado del servicio:</strong> 45 a 60 minutos.</li>
-                        <li><strong>Garantía:</strong> 30 días o 1,000 km de alineación/balanceo.</li>
+                        <li class="mb-1"><strong>Tiempo estimado del servicio:</strong> 45 a 60 minutos.</li>
+                        <li class="mb-1"><strong>Garantía:</strong> 30 días o 1,000 km de alineación/balanceo.</li>
                         <li><strong>Recomendación:</strong> Por favor llega 10 minutos antes del horario reservado.</li>
                     </ul>
                 </div>
             }
+            else
+            {
+                <!-- Info Motivacional para Usuario No Registrado -->
+                <div class="alert alert-light border-start border-llanteria-primary border-4 shadow-sm p-4 rounded-4 mt-4">
+                    <h5 class="fw-bold text-dark mb-2">
+                        <i class="fa-solid fa-shield-halved text-llanteria-primary me-2"></i>¿Por qué solicitar información hoy?
+                    </h5>
+                    <p class="small text-muted mb-2">
+                        Si notas vibraciones al conducir a más de 60 km/h o vas a realizar un viaje, una revisión preventiva evita daños costosos en la suspensión y llantas.
+                    </p>
+                    <div class="d-flex align-items-center gap-3 pt-2">
+                        <span class="badge badge-llanteria-subtle px-2 py-1 small">
+                            <i class="fa-solid fa-clock me-1"></i>Respuesta en &lt; 15 min
+                        </span>
+                        <span class="badge bg-secondary-subtle text-dark border px-2 py-1 small">
+                            <i class="fa-solid fa-file-invoice-dollar me-1"></i>Sin compromiso
+                        </span>
+                    </div>
+                </div>
+            }
         </div>
 
-        <!-- Panel Lateral (Formulario / Agendamiento) -->
+        <!-- COLUMNA DERECHA: Formulario Lateral -->
         <div class="col-lg-5">
             <div class="card border-0 shadow-lg p-4 rounded-4 sticky-top" style="top: 20px;">
                 @if (isAuthenticated)
                 {
-                    <!-- ESTADO 1: USUARIO AUTENTICADO (Agendamiento rápido) -->
+                    <!-- ESTADO 1: USUARIO REGISTRADO (Agendamiento) -->
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h4 class="fw-bold m-0">Agendar Cita</h4>
                         <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
                             <i class="fa-solid fa-user-check me-1"></i>Cliente Registrado
                         </span>
                     </div>
-                    <p class="small text-muted mb-4">
-                        Hola, <strong>@User.Identity.Name</strong>. Selecciona la fecha y hora para apartar tu servicio.
+                    <p class="small text-muted mb-3">
+                        Hola, <strong>@User.Identity.Name</strong>. Selecciona la fecha, hora y medio de pago para confirmar tu cita.
                     </p>
 
                     <form asp-controller="Citas" asp-action="Agendar" method="post">
@@ -100,67 +168,147 @@
                             <input type="text" name="Vehiculo" class="form-control" placeholder="Ej. ABC-123 / Toyota Hilux" required>
                         </div>
 
+                        <!-- Forma de Pago -->
+                        <div class="border rounded-3 p-3 bg-light mb-3">
+                            <label class="form-label small fw-bold text-dark d-block mb-2">
+                                <i class="fa-solid fa-wallet text-llanteria-primary me-1"></i>Forma de Pago
+                            </label>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="FormaPago" id="pagoEfectivo" value="Efectivo" checked>
+                                <label class="form-check-label small" for="pagoEfectivo">
+                                    <i class="fa-solid fa-money-bill-wave text-success me-1"></i>Pago en Serviteca (Efectivo)
+                                </label>
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="FormaPago" id="pagoTarjeta" value="Tarjeta">
+                                <label class="form-check-label small" for="pagoTarjeta">
+                                    <i class="fa-regular fa-credit-card text-primary me-1"></i>Datáfono en punto (Débito/Crédito)
+                                </label>
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="FormaPago" id="pagoDigital" value="Transferencia">
+                                <label class="form-check-label small" for="pagoDigital">
+                                    <i class="fa-solid fa-mobile-screen-button text-warning me-1"></i>Nequi / Daviplata / Transferencia
+                                </label>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                                <span class="small fw-bold text-muted">Total estimado:</span>
+                                <span class="fw-black text-llanteria-primary fs-5">$40.000 COP</span>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Notas adicionales (Opcional)</label>
                             <textarea name="Notas" class="form-control" rows="2" placeholder="Observaciones sobre la llanta o rin..."></textarea>
                         </div>
 
-                        <button type="submit" class="btn btn-danger w-100 py-3 fw-bold text-uppercase shadow-sm">
-                            <i class="fa-solid fa-calendar-check me-2"></i>Apartar Servicio
+                        <button type="submit" class="btn btn-llanteria-primary w-100 py-3 fw-bold text-uppercase shadow-sm">
+                            <i class="fa-solid fa-calendar-check me-2"></i>Confirmar y Reservar
                         </button>
                     </form>
                 }
                 else
                 {
-                    <!-- ESTADO 2: USUARIO NO REGISTRADO (Informativo y Formulario Sencillo) -->
-                    <h4 class="fw-bold mb-1">Solicita este servicio</h4>
-                    <p class="small text-muted mb-4">Ingresa tus datos de contacto o inicia sesión para agendar directamente.</p>
+                    <!-- ESTADO 2: USUARIO NO REGISTRADO (Cotización + Formulario Directo) -->
+                    <div class="bg-llanteria-primary text-white p-3 rounded-3 mb-3 shadow-sm">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <i class="fa-solid fa-tags fa-lg"></i>
+                            <h5 class="fw-bold m-0">¡Cotiza Gratis y Sin Compromiso!</h5>
+                        </div>
+                        <p class="small m-0 text-white-50">
+                            Recibe atención prioritaria y asesoría técnica para el cuidado de tu vehículo.
+                        </p>
+                    </div>
+
+                    <p class="small text-muted mb-3">
+                        Déjanos tus datos de contacto y un técnico especializado te responderá en minutos con la disponibilidad de agenda y tarifa exacta.
+                    </p>
 
                     <form asp-controller="Servicios" asp-action="SolicitarContacto" method="post">
                         <input type="hidden" name="ServicioNombre" value="Montaje y Balanceo" />
 
                         <div class="mb-3">
-                            <label class="form-label small fw-bold text-muted">Servicio</label>
+                            <label class="form-label small fw-bold text-muted">Servicio Seleccionado</label>
                             <input type="text" class="form-control bg-light fw-bold" value="Montaje y Balanceo" readonly>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Nombre Completo</label>
-                            <input type="text" name="Nombre" class="form-control" placeholder="Ej. Juan Pérez" required>
+                            <input type="text" name="Nombre" class="form-control" placeholder="Ej. Ana Mercedes" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small fw-bold">E-mail</label>
                             <input type="email" name="Correo" class="form-control" placeholder="correo@ejemplo.com" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-bold">Teléfono de contacto</label>
+                            <label class="form-label small fw-bold">Teléfono / WhatsApp</label>
                             <input type="tel" name="Telefono" class="form-control" placeholder="Ej. 300 123 4567" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-bold">Mensaje / Vehículo</label>
-                            <textarea name="Mensaje" class="form-control" rows="2" placeholder="Detalles de tu vehículo..."></textarea>
+                            <label class="form-label small fw-bold">Detalle o Modelo del Vehículo</label>
+                            <textarea name="Mensaje" class="form-control" rows="2" placeholder="Ej. Toyota Hilux 2022 - Balanceo para 4 ruedas"></textarea>
                         </div>
+
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" id="checkTerms" required>
                             <label class="form-check-label small text-muted" for="checkTerms">
-                                Acepto los Términos y Condiciones.
+                                Acepto los Términos y Autorizo el tratamiento de datos.
                             </label>
                         </div>
 
-                        <button type="submit" class="btn btn-outline-danger w-100 py-2 fw-bold text-uppercase mb-3">
-                            Enviar Solicitud Informativa
+                        <button type="submit" class="btn btn-llanteria-primary w-100 py-3 fw-bold text-uppercase shadow-sm mb-3">
+                            <i class="fa-solid fa-paper-plane me-2"></i>Enviar Solicitud Informativa
                         </button>
                     </form>
 
-                    <hr class="my-3">
-
-                    <div class="text-center bg-light p-3 rounded-3 border">
-                        <p class="small text-muted mb-2">¿Ya tienes una cuenta?</p>
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-danger btn-sm w-100 fw-bold">
-                            <i class="fa-solid fa-right-to-bracket me-1"></i>Iniciar Sesión para Reservar
+                    <!-- Incentivo para Registrarse -->
+                    <div class="p-3 bg-light rounded-3 border text-center">
+                        <h6 class="fw-bold mb-1"><i class="fa-solid fa-bolt text-warning me-1"></i>¿Quieres agendar directamente?</h6>
+                        <p class="small text-muted mb-2">Inicia sesión o regístrate para ver la agenda en tiempo real y apartar tu turno.</p>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-llanteria-primary btn-sm w-100 fw-bold">
+                            <i class="fa-solid fa-right-to-bracket me-1"></i>Iniciar Sesión / Registrarme
                         </a>
                     </div>
                 }
             </div>
         </div>
+
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @if (TempData["MensajeEnviado"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: '¡Solicitud Enviada!',
+                    text: 'Recibimos tus datos. Un asesor te responderá al correo o WhatsApp en breves minutos.',
+                    icon: 'success',
+                    confirmButtonColor: '#C92B0A',
+                    confirmButtonText: 'Entendido'
+                });
+            });
+        </script>
+    }
+
+    @if (TempData["ErrorCorreo"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: 'Error al enviar',
+                    text: 'No se pudo despachar el correo. Verifica tu configuración SMTP.',
+                    icon: 'error',
+                    confirmButtonColor: '#000000',
+                    confirmButtonText: 'Reintentar'
+                });
+            });
+        </script>
+    }
+}
