@@ -12,150 +12,109 @@
     <link rel="stylesheet" href="~/Llanteria.styles.css" asp-append-version="true" />
 
     <style>
-            :root {
-                --llanteria-primary: #C92B0A;
-                --llanteria-dark: #09090B;
-                --llanteria-light: #FFFFFF;
-                --glass-nav-bg: rgba(201, 43, 10, 0.95);
-            }
+        :root {
+            --llanteria-primary: #C92B0A;
+            --llanteria-dark: #09090B;
+            --llanteria-light: #FFFFFF;
+            --glass-nav-bg: rgba(201, 43, 10, 0.95);
+        }
 
-            html, body {
-                height: 100%;
-                margin: 0;
-            }
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
 
-            body {
-                font-family: 'Plus Jakarta Sans', sans-serif;
-                background-color: #F8F9FA;
-                color: var(--llanteria-dark);
-                display: flex;
-                flex-direction: column;
-            }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F8F9FA;
+            color: var(--llanteria-dark);
+            display: flex;
+            flex-direction: column;
+        }
 
-            .michelin-nav-global {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                z-index: 1100;
-                background: var(--glass-nav-bg);
-                backdrop-filter: blur(16px);
-                padding: 1.25rem 0;
-                box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-            }
+        .michelin-nav-global {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1100;
+            background: var(--glass-nav-bg);
+            backdrop-filter: blur(16px);
+            padding: 1.25rem 0;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
 
-            .brand-matrix {
-                font-family: 'Orbitron', sans-serif;
-                font-weight: 900;
-                text-transform: uppercase;
-                text-decoration: none;
-                cursor: pointer;
-            }
+        .brand-matrix {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+        }
 
-            .nav-matrix-link {
-                color: #FFFFFF !important;
-                font-weight: 600;
-                font-size: 1.05rem;
-                padding: 0.5rem 0.65rem !important;
-                cursor: pointer;
-                position: relative;
-            }
+        .nav-matrix-link {
+            color: #FFFFFF !important;
+            font-weight: 600;
+            font-size: 1.05rem;
+            padding: 0.5rem 0.65rem !important;
+            cursor: pointer;
+            position: relative;
+        }
 
-            .nav-matrix-link:hover {
-                background-color: transparent !important;
-            }
+        .nav-matrix-link:hover {
+            background-color: transparent !important;
+        }
 
-            .nav-matrix-link::after {
-                content: '';
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 0;
-                height: 2px;
-                background: #FFFFFF;
-                transition: width 0.2s ease-out;
-            }
+        .nav-matrix-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #FFFFFF;
+            transition: width 0.2s ease-out;
+        }
 
-            .nav-matrix-link:hover::after {
-                width: 100%;
-            }
+        .nav-matrix-link:hover::after {
+            width: 100%;
+        }
 
-            /* Estilos del Botón con Brillo Ligero y Nítido */
-            .btn-matrix-action {
-                background: #000000 !important;
-                color: #FFFFFF !important;
-                border: 1px solid #000000 !important;
-                padding: 0.4rem 1.4rem;
-                position: relative;
-                overflow: hidden;
-                cursor: pointer;
-            }
+        .btn-matrix-action {
+            background: #000000 !important;
+            color: #FFFFFF !important;
+            border: 1px solid #000000 !important;
+            padding: 0.4rem 1.4rem;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
 
-            .btn-matrix-action:active,
-            .btn-matrix-action:focus,
-            .btn-matrix-action:visited {
-                background: #000000 !important;
-                border-color: #000000 !important;
-            }
+        .main-matrix-container {
+            margin-top: 85px;
+            flex: 1 0 auto;
+            padding-bottom: 2rem;
+        }
 
-            /* Animación de Brillo Rápida e Imperceptible */
-            .btn-matrix-action::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -150%;
-                width: 40%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-                transform: skewX(-20deg);
-                z-index: 1;
-                pointer-events: none;
-            }
+        .matrix-footer {
+            flex-shrink: 0;
+            background: #000000;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--llanteria-light);
+        }
 
-            .animate-shine::before {
-                animation: shine-slide 0.25s linear forwards;
-            }
+        .footer-heading {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #FFFFFF;
+            margin-bottom: 1.2rem;
+        }
 
-            @@keyframes shine-slide {
-                0% {
-                    left: -150%;
-                }
-                100% {
-                    left: 250%;
-                }
-            }
-
-            .click-disabled {
-                pointer-events: none !important;
-                opacity: 0.8;
-                cursor: not-allowed !important;
-            }
-
-            .main-matrix-container {
-                margin-top: 85px;
-                flex: 1 0 auto;
-                padding-bottom: 2rem;
-            }
-
-            .matrix-footer {
-                flex-shrink: 0;
-                background: #000000;
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
-                color: var(--llanteria-light);
-            }
-
-            .footer-heading {
-                font-family: 'Orbitron', sans-serif;
-                font-weight: 700;
-                font-size: 1.4rem;
-                color: #FFFFFF;
-                margin-bottom: 1.2rem;
-            }
-
-            .footer-links {
-                padding: 0;
-                list-style: none;
-            }
+        .footer-links {
+            padding: 0;
+            list-style: none;
+        }
 
             .footer-links li {
                 margin-bottom: 0.8rem;
@@ -164,17 +123,17 @@
                 justify-content: center;
             }
 
-            @@media (min-width: 768px) {
-                .footer-links li {
-                    justify-content: flex-start;
-                }
+        @@media (min-width: 768px) {
+            .footer-links li {
+                justify-content: flex-start;
             }
+        }
 
-            .footer-links span {
-                color: #FFFFFF;
-                font-weight: 500;
-                font-size: 0.95rem;
-            }
+        .footer-links span {
+            color: #FFFFFF;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
     </style>
 </head>
 <body>
@@ -208,10 +167,6 @@
                     <ul class="navbar-nav ms-auto align-items-center gap-3 mt-3 mt-lg-0">
                         @if (!User.Identity.IsAuthenticated)
                         {
-                            <!-- 🔓 VISIBLE SOLO PARA VISITANTES -->
-                            <li class="nav-item">
-                                <a class="nav-link nav-matrix-link header-interactable" asp-controller="Account" asp-action="Register">Puntos</a>
-                            </li>
                             <li class="nav-item">
                                 <a class="btn btn-matrix-action rounded-pill header-interactable" asp-controller="Account" asp-action="Login">
                                     Iniciar sesión
@@ -222,28 +177,21 @@
                         {
                             var fotoClaim = User.FindFirst("Foto")?.Value;
                             var username = User.Identity.Name ?? "Usuario";
-                            var defaultAvatar = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(username)}&background=09090B&color=fff&rounded=true";
+                            var defaultAvatar = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(username)}&background=C92B0A&color=fff&rounded=true";
                             var avatarUrl = !string.IsNullOrEmpty(fotoClaim) ? fotoClaim : defaultAvatar;
 
-                                               <li class="nav-item">
-                        <!-- Redirige al controlador de Puntos (o ajusta asp-controller al correspondiente si usas otro) -->
-                        <a class="nav-link nav-matrix-link header-interactable text-white fw-bold" asp-controller="Puntos" asp-action="Index">
-                            <i class="fa-solid fa-star text-warning me-1"></i> Mis Puntos
-                        </a>
-                    </li>
-                    <li class="nav-item d-flex align-items-center me-1">
-                        <!-- Redirige a UserController/Perfil para evitar el error 404 -->
-                        <a asp-controller="User" asp-action="Perfil" title="Mi Perfil" class="header-interactable">
-                            <img src="@avatarUrl" alt="Foto de perfil" class="rounded-circle border border-2 border-white shadow-sm" style="width: 42px; height: 42px; object-fit: cover;" />
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-outline-light btn-sm rounded-pill px-3 header-interactable">
-                                <i class="fa-solid fa-right-from-bracket me-1"></i> Salir
-                            </button>
-                        </form>
-                    </li>       
+                            <li class="nav-item d-flex align-items-center me-1">
+                                <a asp-controller="User" asp-action="Perfil" title="Mi Perfil" class="header-interactable">
+                                    <img src="@avatarUrl" alt="Foto de perfil" class="rounded-circle border border-2 border-white shadow-sm" style="width: 42px; height: 42px; object-fit: cover;" />
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-light btn-sm rounded-pill px-3 header-interactable">
+                                        <i class="fa-solid fa-right-from-bracket me-1"></i> Salir
+                                    </button>
+                                </form>
+                            </li>
                         }
                     </ul>
                 </div>
@@ -309,31 +257,6 @@
         </div>
     </footer>
 
-    <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const interactables = document.querySelectorAll('.header-interactable');
-
-                interactables.forEach(element => {
-                    element.addEventListener("click", function (e) {
-                        if (this.classList.contains("click-disabled")) {
-                            e.preventDefault();
-                            return;
-                        }
-
-                        this.classList.add("click-disabled");
-
-                        if (this.classList.contains("btn-matrix-action")) {
-                            this.classList.add("animate-shine");
-                        }
-
-                        setTimeout(() => {
-                            this.classList.remove("click-disabled");
-                            this.classList.remove("animate-shine");
-                        }, 400);
-                    });
-                });
-            });
-    </script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)

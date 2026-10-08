@@ -11,7 +11,7 @@ public partial class Usuario
     public int Id { get; set; }
 
     [Required(ErrorMessage = "El nombre de usuario es obligatorio.")]
-    [StringLength(50, MinimumLength = 4, ErrorMessage = "El Username debe tener entre 4 y 50 caracteres.")]
+    [StringLength(50, MinimumLength = 9, ErrorMessage = "El Username debe tener entre 9 y 50 caracteres.")]
     [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "El Username solo puede contener letras, números y guiones bajos.")]
     [Display(Name = "Nombre de Usuario")]
     public string Username { get; set; } = null!;
@@ -29,7 +29,7 @@ public partial class Usuario
 
     [Required(ErrorMessage = "Debe asociar un empleado.")]
     [Display(Name = "Empleado")]
-    public int IdEmpleado { get; set; }
+    public int? IdEmpleado { get; set; }
 
     [Required(ErrorMessage = "El rol es obligatorio.")]
     [Display(Name = "Rol de Usuario")]
@@ -57,7 +57,6 @@ public partial class Usuario
     public int? IdTipoDocumento { get; set; }
 
     // --- Relaciones y Navegación ---
-
     public virtual ICollection<CanjeIncentivo> CanjeIncentivos { get; set; } = new List<CanjeIncentivo>();
 
     [ForeignKey("IdEmpleado")]
@@ -72,8 +71,6 @@ public partial class Usuario
     public virtual TipoDocumento? IdTipoDocumentoNavigation { get; set; }
 
     public virtual ICollection<LogActividad> LogActividads { get; set; } = new List<LogActividad>();
-
     public virtual PerfilUsuario? PerfilUsuario { get; set; }
-
     public virtual ICollection<RecuperacionCuenta> RecuperacionCuenta { get; set; } = new List<RecuperacionCuenta>();
 }

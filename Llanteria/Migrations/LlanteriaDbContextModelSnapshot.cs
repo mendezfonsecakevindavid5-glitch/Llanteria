@@ -17,7 +17,7 @@ namespace Llanteria.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -149,6 +149,10 @@ namespace Llanteria.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Foto")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("IdDocumento")
                         .HasColumnType("int");
@@ -626,6 +630,51 @@ namespace Llanteria.Migrations
                     b.ToTable("Ofertas");
                 });
 
+            modelBuilder.Entity("Llanteria.Models.Pais", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CodigoISO")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Prefijo")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.HasKey("Id")
+                        .HasName("PK__Pais__3214EC07");
+
+                    b.ToTable("Pais", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CodigoISO = "CO",
+                            Nombre = "Colombia",
+                            Prefijo = "+57"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CodigoISO = "US",
+                            Nombre = "Estados Unidos",
+                            Prefijo = "+1"
+                        });
+                });
+
             modelBuilder.Entity("Llanteria.Models.PerfilUsuario", b =>
                 {
                     b.Property<int>("Id")
@@ -805,6 +854,23 @@ namespace Llanteria.Migrations
                         .HasName("PK__Sexo__3214EC0792275EF0");
 
                     b.ToTable("Sexo", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nombre = "Masculino"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nombre = "Femenino"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Nombre = "Otro"
+                        });
                 });
 
             modelBuilder.Entity("Llanteria.Models.TipoDocumento", b =>
@@ -820,10 +886,46 @@ namespace Llanteria.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
+                    b.Property<string>("SiglasPresentacion")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
                     b.HasKey("Id")
                         .HasName("PK__TipoDocu__3214EC07071BF407");
 
                     b.ToTable("TipoDocumento", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nombre = "Cédula de Ciudadanía",
+                            SiglasPresentacion = "C.C."
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nombre = "Tarjeta de Identidad",
+                            SiglasPresentacion = "T.I."
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Nombre = "Cédula de Extranjería",
+                            SiglasPresentacion = "C.E."
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Nombre = "NIT",
+                            SiglasPresentacion = "NIT"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Nombre = "Pasaporte",
+                            SiglasPresentacion = "PAS"
+                        });
                 });
 
             modelBuilder.Entity("Llanteria.Models.TipoServicio", b =>
@@ -860,6 +962,11 @@ namespace Llanteria.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Correo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Estado")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
@@ -878,6 +985,9 @@ namespace Llanteria.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("IdRol")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IdTipoDocumento")
                         .HasColumnType("int");
 
                     b.Property<string>("MotivoSancion")
@@ -900,6 +1010,8 @@ namespace Llanteria.Migrations
                         .HasName("PK__Usuarios__3214EC07440B1D54");
 
                     b.HasIndex("IdRol");
+
+                    b.HasIndex("IdTipoDocumento");
 
                     b.HasIndex(new[] { "Username" }, "UQ__Usuarios__536C85E49A6A20E7")
                         .IsUnique();
@@ -1177,9 +1289,15 @@ namespace Llanteria.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_Usuarios_Rol");
 
+                    b.HasOne("Llanteria.Models.TipoDocumento", "IdTipoDocumentoNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdTipoDocumento");
+
                     b.Navigation("IdEmpleadoNavigation");
 
                     b.Navigation("IdRolNavigation");
+
+                    b.Navigation("IdTipoDocumentoNavigation");
                 });
 
             modelBuilder.Entity("Llanteria.Models.Vehiculo", b =>

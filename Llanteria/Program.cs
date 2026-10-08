@@ -36,6 +36,8 @@ builder.Services.AddScoped<TipoServicioService>();
 builder.Services.AddScoped<CatalogoIncentivoService>();
 builder.Services.AddTransient<EmailService>();
 builder.Services.AddScoped<Llanteria.Services.IPerfilService, Llanteria.Services.PerfilService>();
+builder.Services.AddScoped<PaisService>();
+builder.Services.AddScoped<CredentialGenerationService>();
 
 Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath);
 

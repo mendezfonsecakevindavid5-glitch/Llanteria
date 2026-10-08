@@ -66,7 +66,7 @@ public partial class LlanteriaDbContext : DbContext
 
     public virtual DbSet<Vehiculo> Vehiculos { get; set; }
 
-    // ❌ BORRADO: Se eliminó el DbSet<Conductore> de aquí.
+    public virtual DbSet<Pais> Paises { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
 
@@ -508,6 +508,23 @@ public partial class LlanteriaDbContext : DbContext
                 .HasForeignKey(d => d.IdCliente)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Vehiculos_Cliente");
+        });
+
+        modelBuilder.Entity<Pais>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Pais__3214EC07");
+
+            entity.ToTable("Pais");
+
+            entity.Property(e => e.Nombre).HasMaxLength(50);
+            entity.Property(e => e.Prefijo).HasMaxLength(10);
+            entity.Property(e => e.CodigoISO).HasMaxLength(5);
+
+            // Datos iniciales de prueba (puedes agregar más países si lo deseas)
+            entity.HasData(
+                new Pais { Id = 1, Nombre = "Colombia", Prefijo = "+57", CodigoISO = "CO" },
+                new Pais { Id = 2, Nombre = "Estados Unidos", Prefijo = "+1", CodigoISO = "US" }
+            );
         });
 
         OnModelCreatingPartial(modelBuilder);

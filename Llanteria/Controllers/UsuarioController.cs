@@ -1,106 +1,148 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Llanteria.Models;
+﻿using Llanteria.Models;
 using Llanteria.Services;
-
+using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace Llanteria.Controllers;
 
 public class UsuarioController : Controller
 {
     private readonly UsuarioService ser;
-
-    // Inyección del servicio de usuarios
     public UsuarioController(UsuarioService usuarioService)
     {
         ser = usuarioService;
     }
 
-    // --- SECCIÓN DE ACCESO (LOGIN) ---
-
-    // Muestra la pantalla de inicio de sesión
     public IActionResult Login()
     {
         return View();
     }
 
-    // Procesa las credenciales de acceso
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Login(string username, string password)
+    public IActionResult IniciarAutenticacion(string username, string password)
     {
-        // Buscamos el usuario que coincida con el Username y PasswordHash
+        // Buscar el usuario solo por nombre o correo
         var user = ser.GetUsuarios()
-            .FirstOrDefault(u => u.Username == username && u.PasswordHash == password);
+        .FirstOrDefault(u => u.Username == username || u.Correo == username);
 
-        if (user != null)
+        // Verificar si existe y si la contraseña combinada coincide utilizando el Helper
+        if (user == null || !Llanteria.Services.SecurityService.VerificarPassword(password, user.PasswordHash))
         {
-            // Validamos que el estado sea 'Activo'
-            if (user.Estado == "Activo")
+            return Json(new { success = false, message = "Nombre de usuario o contraseña incorrectos." });
+        }
+
+        if (user.Estado != "Activo")
+        {
+            return Json(new { success = false, message = "Su cuenta se encuentra: " + user.Estado });
+        }
+
+        // Verifica si el correo está vacío, nulo o contiene el correo por defecto de migración
+        bool sinCorreoValido = string.IsNullOrWhiteSpace(user.Correo) || user.Correo == "sin_correo@llanteria.com";
+
+        if (sinCorreoValido)
+        {
+            // PRIMERA VEZ: UltimaConexion es null -> Ingresa por única vez
+            if (user.UltimaConexion == null)
             {
-                // Actualizamos la fecha de última conexión (opcional)
-                user.UltimaConexion = DateTime.Now;
+                user.UltimaConexion = DateTime.Now; // Se registra el ingreso para invalidar futuros intentos sin correo
                 ser.UpdateUsuario(user);
 
-                return RedirectToAction("Index", "Home");
+                HttpContext.Session.SetString("UsuarioId", user.Id.ToString());
+
+                return Json(new
+                {
+                    success = true,
+                    esUsuarioLegacy = true,
+                    redirectUrl = Url.Action("Index", "Home")
+                });
             }
 
-            ViewBag.Error = "Su cuenta se encuentra: " + user.Estado;
-            return View();
+            // SEGUNDA VEZ EN ADELANTE: UltimaConexion ya no es null -> Se bloquea el inicio de sesión
+            return Json(new
+            {
+                success = false,
+                message = "Acceso denegado. No tiene un correo electrónico registrado para completar la verificación en dos pasos (2FA). Contacte al administrador para vincular su correo."
+            });
         }
 
-        ViewBag.Error = "Nombre de usuario o contraseña incorrectos";
-        return View();
+        // Flujo Estándar: Generación y envío del código 2FA
+        string codigoVerificacion = new Random().Next(100000, 999999).ToString();
+        HttpContext.Session.SetString($"2FA_Code_{username}", codigoVerificacion);
+        HttpContext.Session.SetString($"2FA_UserPending", username);
+
+
+
+        // Lógica de envío de correo omitida para brevedad de servicio SMTP
+
+
+
+        return Json(new { success = true, esUsuarioLegacy = false });
+
     }
 
-    // --- SECCIÓN DE GESTIÓN (CRUD) ---
 
-    // Lista todos los usuarios registrados
-    public IActionResult Index()
-    {
-        return View(ser.GetUsuarios());
-    }
-
-    // Vista para el registro de nuevos usuarios
-    public IActionResult Create()
-    {
-        return View();
-    }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Create(Usuario u)
+
+    public IActionResult VerificarCodigo(string username, string code)
+
     {
-        if (ModelState.IsValid)
+
+        string? codigoGuardado = HttpContext.Session.GetString($"2FA_Code_{username}");
+
+
+
+        if (!string.IsNullOrEmpty(codigoGuardado) && codigoGuardado == code)
+
         {
-            ser.AddUsuario(u);
-            return RedirectToAction(nameof(Index));
+
+            var user = ser.GetUsuarios().FirstOrDefault(u => u.Username == username);
+
+            if (user != null)
+
+            {
+
+                user.UltimaConexion = DateTime.Now;
+
+                ser.UpdateUsuario(user);
+
+                HttpContext.Session.SetString("UsuarioId", user.Id.ToString());
+
+            }
+
+
+
+            HttpContext.Session.Remove($"2FA_Code_{username}");
+
+            return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
+
         }
-        return View(u);
+
+
+
+        return Json(new { success = false, message = "El código ingresado es incorrecto o ha expirado." });
+
     }
 
-    // Vista para editar un usuario existente
-    public IActionResult Edit(int id)
-    {
-        var u = ser.GetUsuario(id);
-        if (u == null) return NotFound();
-        return View(u);
-    }
+
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Edit(int id, Usuario u)
+
+    public IActionResult ReenviarCodigo(string username)
+
     {
-        if (ModelState.IsValid)
-        {
-            ser.UpdateUsuario(u);
-            return RedirectToAction(nameof(Index));
-        }
-        return View(u);
+
+        string nuevoCodigo = new Random().Next(100000, 999999).ToString();
+
+        HttpContext.Session.SetString($"2FA_Code_{username}", nuevoCodigo);
+
+
+
+        // Lógica de reenvío por correo SMTP
+
+
+
+        return Json(new { success = true });
+
     }
 
-    // Acción para eliminar un usuario
-    public IActionResult Delete(int id)
-    {
-        ser.DeleteUsuario(id);
-        return RedirectToAction(nameof(Index));
-    }
 }

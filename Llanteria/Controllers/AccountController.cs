@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Llanteria.Models;
 using Llanteria.Services;
-using Llanteria.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -22,34 +21,35 @@ namespace Llanteria.Controllers
         private readonly SexoService _sexoSer;
         private readonly TipoDocumentoService _docSer;
         private readonly EmailService _emailSer;
+        private readonly PaisService _paisSer;
+        private readonly CredentialGenerationService _credSer;
 
         public AccountController(
             UsuarioService userSer,
             ClienteService clienteSer,
             SexoService sexoSer,
             TipoDocumentoService docSer,
-            EmailService emailSer)
+            EmailService emailSer,
+            PaisService paisSer,
+            CredentialGenerationService credSer)
         {
             _userSer = userSer;
             _clienteSer = clienteSer;
             _sexoSer = sexoSer;
             _docSer = docSer;
             _emailSer = emailSer;
+            _paisSer = paisSer;
+            _credSer = credSer;
         }
-
-        // --- ACCIONES DE LOGIN ---
 
         [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
+        public IActionResult Login() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string username, string password)
         {
-            var user = _userSer.GetUsuarios().FirstOrDefault(u => u.Username == username);
+            var user = _userSer.GetUsuarios().FirstOrDefault(u => u.Username == username || u.Correo == username);
 
             if (user == null)
             {
@@ -57,7 +57,8 @@ namespace Llanteria.Controllers
                 return View();
             }
 
-            if (user.PasswordHash != password)
+            bool passwordValido = SecurityService.VerificarPassword(password, user.PasswordHash);
+            if (!passwordValido)
             {
                 ViewBag.Error = "Esta contraseña no corresponde a este usuario";
                 return View();
@@ -70,8 +71,6 @@ namespace Llanteria.Controllers
             }
 
             string nombreRol = user.IdRolNavigation?.NombreRol ?? "Cliente";
-
-            // Buscar foto asignada al cliente/usuario si existe
             var cliente = _clienteSer.GetClientes().FirstOrDefault(c => c.Correo == user.Username || c.NumeroDocumento == user.Username);
             string fotoPath = cliente?.Foto ?? "";
 
@@ -80,7 +79,7 @@ namespace Llanteria.Controllers
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Role, nombreRol),
-                new Claim("Foto", fotoPath) // ✅ Claim con la ruta de la foto
+                new Claim("Foto", fotoPath)
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -99,86 +98,123 @@ namespace Llanteria.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // --- ACCIONES DE REGISTRO ---
-
         [HttpGet]
         public IActionResult Register()
         {
-            // ✅ Carga de Sexos para la vista
-            ViewBag.Sexos = _sexoSer.GetSexos().ToList();
-            ViewBag.IdSexo = new SelectList(_sexoSer.GetSexos(), "Id", "Nombre");
-            ViewBag.IdDocumento = new SelectList(_docSer.GetTipoDocumentos(), "Id", "Nombre");
-            ViewBag.TiposDocumento = _docSer.GetTipoDocumentos().ToList();
+            CargarCombosViewBag();
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(Cliente cliente)
+        public async Task<IActionResult> Register(Cliente cliente, string Username, string Password, string? FotoBase64)
         {
             ModelState.Remove("IdDocumentoNavigation");
             ModelState.Remove("IdSexoNavigation");
 
-            if (ModelState.IsValid)
+            if (_clienteSer.GetClientes().Any(c => c.Correo == cliente.Correo) || _userSer.GetUsuarios().Any(u => u.Correo == cliente.Correo))
             {
-                cliente.PuntosAcumulados = 50;
-                _clienteSer.AddCliente(cliente);
-                return RedirectToAction("Welcome");
+                ModelState.AddModelError("Correo", "Ya existe una cuenta registrada con este correo electrónico.");
             }
 
-            // ✅ Recarga de Sexos en caso de error en POST
-            ViewBag.Sexos = _sexoSer.GetSexos().ToList();
-            ViewBag.IdSexo = new SelectList(_sexoSer.GetSexos(), "Id", "Nombre", cliente.IdSexo);
-            ViewBag.IdDocumento = new SelectList(_docSer.GetTipoDocumentos(), "Id", "Nombre", cliente.IdDocumento);
-            ViewBag.TiposDocumento = _docSer.GetTipoDocumentos().ToList();
-            return View(cliente);
+            if (_userSer.GetUsuarios().Any(u => u.Username == Username))
+            {
+                ModelState.AddModelError("Username", "El nombre de usuario ya se encuentra en uso.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (!string.IsNullOrEmpty(FotoBase64))
+                    {
+                        cliente.Foto = FotoBase64;
+                    }
+                    else
+                    {
+                        cliente.Foto = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(cliente.Correo ?? Username)}&background=C92B0A&color=fff&rounded=true";
+                    }
+
+                    cliente.PuntosAcumulados = 50;
+                    _clienteSer.AddCliente(cliente);
+
+                    Usuario nuevoUsuario = new Usuario
+                    {
+                        Username = Username,
+                        Correo = cliente.Correo,
+                        PasswordHash = SecurityService.GenerarPasswordAleatorio(Password),
+                        IdRol = 2,
+                        IdEmpleado = null,
+                        Estado = "Activo",
+                        FechaCreacion = DateTime.Now
+                    };
+
+                    _userSer.AddUsuario(nuevoUsuario);
+
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, nuevoUsuario.Username),
+                        new Claim(ClaimTypes.NameIdentifier, nuevoUsuario.Id.ToString()),
+                        new Claim(ClaimTypes.Role, "Cliente"),
+                        new Claim("Foto", cliente.Foto)
+                    };
+
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+                    return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
+                }
+                catch (Exception ex)
+                {
+                    string mensajeError = ex.InnerException?.Message ?? ex.Message;
+                    return Json(new { success = false, message = "Error en base de datos: " + mensajeError });
+                }
+            }
+
+            var primerError = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).FirstOrDefault() ?? "Por favor, verifique los datos ingresados.";
+            return Json(new { success = false, message = primerError });
         }
 
-        // --- ENVIAR CÓDIGO OTP POR CORREO ---
+        private void CargarCombosViewBag()
+        {
+            ViewBag.Sexos = _sexoSer.GetSexos().ToList();
+            ViewBag.IdSexo = new SelectList(_sexoSer.GetSexos(), "Id", "Nombre");
+            ViewBag.IdDocumento = new SelectList(_docSer.GetTipoDocumentos(), "Id", "Nombre");
+            ViewBag.TiposDocumento = _docSer.GetTipoDocumentos().ToList();
+            ViewBag.Paises = _paisSer.GetPaises().ToList();
+        }
+
         [HttpPost]
         public async Task<IActionResult> EnviarCodigoOtp([FromBody] SolicitudOtpDto dto)
         {
             if (string.IsNullOrEmpty(dto.Correo))
-            {
                 return Json(new { success = false, message = "El correo es requerido." });
-            }
+
+            if (_clienteSer.GetClientes().Any(c => c.Correo == dto.Correo) || _userSer.GetUsuarios().Any(u => u.Correo == dto.Correo))
+                return Json(new { success = false, message = "Ya existe una cuenta asociada a este correo electrónico." });
 
             Random random = new Random();
             string otp = random.Next(100000, 999999).ToString();
-
             HttpContext.Session.SetString("CodigoRegistro", otp);
 
             bool enviado = await _emailSer.EnviarTokenRecuperacionAsync(dto.Correo, otp);
-
-            if (enviado)
-            {
-                return Json(new { success = true });
-            }
+            if (enviado) return Json(new { success = true });
 
             return Json(new { success = false, message = "No se pudo enviar el correo de verificación." });
         }
-
-        // --- LÓGICA VERIFICAR TOKEN --- 
 
         [HttpPost]
         public IActionResult VerificarToken([FromBody] string tokenIngresado)
         {
             string tokenGuardado = HttpContext.Session.GetString("CodigoRegistro");
-
             if (string.IsNullOrEmpty(tokenGuardado))
-            {
                 return Json(new { success = false, message = "El código expiró. Solicita uno nuevo." });
-            }
 
             if (tokenGuardado == tokenIngresado)
-            {
                 return Json(new { success = true });
-            }
 
             return Json(new { success = false, message = "El código es incorrecto." });
         }
-
-        // --- FUNCIONES DE PERFIL ---
 
         [Authorize]
         [HttpGet]
@@ -188,7 +224,6 @@ namespace Llanteria.Controllers
             if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login");
 
             var cliente = _clienteSer.GetClientes().FirstOrDefault(c => c.Id.ToString() == userId);
-
             if (cliente == null) return NotFound();
 
             ViewBag.Sexos = _sexoSer.GetSexos().ToList();
@@ -221,12 +256,8 @@ namespace Llanteria.Controllers
 
         public IActionResult Welcome() => View();
 
-
         [HttpGet]
-        public IActionResult ReestablecerContra()
-        {
-            return View();
-        }
+        public IActionResult ReestablecerContra() => View();
 
         [HttpPost]
         public async Task<IActionResult> EnviarCodigoRecuperacion([FromBody] SolicitudOtpDto dto)
@@ -234,11 +265,9 @@ namespace Llanteria.Controllers
             if (string.IsNullOrEmpty(dto.Correo))
                 return Json(new { success = false, message = "El correo es requerido." });
 
-            // Aquí deberías verificar si el correo existe en _userSer o _clienteSer
-            var userExists = true; // Reemplazar con lógica real: _clienteSer.GetClientes().Any(c => c.Correo == dto.Correo);
-
+            bool userExists = _userSer.GetUsuarios().Any(u => u.Correo == dto.Correo) || _clienteSer.GetClientes().Any(c => c.Correo == dto.Correo);
             if (!userExists)
-                return Json(new { success = false, message = "Este correo no se encuentra registrado." });
+                return Json(new { success = false, message = "Este correo no se encuentra registrado en ninguna cuenta." });
 
             Random random = new Random();
             string otp = random.Next(100000, 999999).ToString();
@@ -247,9 +276,7 @@ namespace Llanteria.Controllers
             HttpContext.Session.SetString("CorreoRecuperacion", dto.Correo);
 
             bool enviado = await _emailSer.EnviarTokenRecuperacionAsync(dto.Correo, otp);
-
-            if (enviado)
-                return Json(new { success = true });
+            if (enviado) return Json(new { success = true });
 
             return Json(new { success = false, message = "Error al enviar el correo." });
         }
@@ -258,12 +285,10 @@ namespace Llanteria.Controllers
         public IActionResult VerificarTokenRecuperacion([FromBody] string tokenIngresado)
         {
             string tokenGuardado = HttpContext.Session.GetString("CodigoRecuperacion");
-
             if (string.IsNullOrEmpty(tokenGuardado))
                 return Json(new { success = false, message = "El código expiró. Solicita uno nuevo." });
 
-            if (tokenGuardado == tokenIngresado)
-                return Json(new { success = true });
+            if (tokenGuardado == tokenIngresado) return Json(new { success = true });
 
             return Json(new { success = false, message = "El código es incorrecto." });
         }
@@ -273,22 +298,24 @@ namespace Llanteria.Controllers
         public IActionResult ProcesarReestablecimiento(string NuevaContrasena)
         {
             string correoUsuario = HttpContext.Session.GetString("CorreoRecuperacion");
-
             if (string.IsNullOrEmpty(correoUsuario))
                 return RedirectToAction("ReestablecerContra");
 
-            // Lógica para actualizar la contraseña en la base de datos
-            // var usuario = _userSer.GetUsuarios().FirstOrDefault(u => u.Username == correoUsuario);
-            // usuario.PasswordHash = NuevaContrasena;
-            // _userSer.UpdateUsuario(usuario);
+            var usuario = _userSer.GetUsuarios().FirstOrDefault(u => u.Correo == correoUsuario);
+            if (usuario != null)
+            {
+                usuario.PasswordHash = SecurityService.GenerarPasswordAleatorio(NuevaContrasena);
+                _userSer.UpdateUsuario(usuario);
+            }
 
-            // Limpiar sesión
             HttpContext.Session.Remove("CodigoRecuperacion");
             HttpContext.Session.Remove("CorreoRecuperacion");
 
-            // Redireccionar al login o enviar a página de éxito
-            return RedirectToAction("Login");
+            return RedirectToAction("Login", "Account");
         }
+
+        [HttpGet]
+        public IActionResult BloqueoSeguridad() => View();
     }
 
     public class SolicitudOtpDto
