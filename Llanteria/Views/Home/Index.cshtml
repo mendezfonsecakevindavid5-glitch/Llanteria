@@ -1,457 +1,158 @@
-﻿@using System.Linq
 @model IEnumerable<Llanteria.Models.Producto>
 
 @{
     ViewData["Title"] = "Inicio";
+    var productos = Model.ToList();
 }
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-
-<style>
-    :root {
-        --llanteria-primary: #C92B0A;
-        --llanteria-dark: #09090B;
-        --llanteria-dark-surface: #121214;
-        --llanteria-light: #FFFFFF;
-        --glass-bg: rgba(9, 9, 11, 0.75);
-        --glass-border: rgba(255, 255, 255, 0.08);
-    }
-
-    body { 
-        background-color: var(--llanteria-light); 
-        color: var(--llanteria-dark);
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        overflow-x: hidden;
-    }
-
-    /* Clases de Utilidad de Color */
-    .bg-primary-llanteria {
-        background-color: var(--llanteria-primary) !important;
-    }
-
-    /* HERO SLIDER CINEMÁTICO AVANZADO */
-    .hero-swiper {
-        width: 100%;
-        height: 85vh;
-        background-color: var(--llanteria-dark);
-    }
-
-    .swiper-slide-hero {
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-    }
-
-    .swiper-slide-hero img {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        z-index: 1;
-        will-change: transform;
-    }
-
-    /* Efecto Ken Burns Ultra-Suave */
-    .swiper-slide-active img {
-        animation: kenBurnsEffect 8s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-    .hero-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(9,9,11,0.4) 0%, rgba(9,9,11,0.8) 100%);
-        z-index: 2;
-    }
-
-    .hero-content-wrapper {
-        position: relative;
-        z-index: 3;
-        color: var(--llanteria-light);
-    }
-
-    /* PANEL DE MATRIZ DE BÚSQUEDA (Glassmorphism de Alta Ingeniería) */
-    .search-matrix-panel {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--glass-border);
-        border-radius: 24px;
-        padding: 2rem;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-    }
-
-    .form-floating-dark .form-select {
-        background-color: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: var(--llanteria-light);
-        border-radius: 12px;
-    }
-
-    .form-floating-dark .form-select option {
-        background-color: var(--llanteria-dark-surface);
-        color: var(--llanteria-light);
-    }
-
-    .form-floating-dark .form-select:focus {
-        border-color: var(--llanteria-primary);
-        box-shadow: 0 0 0 4px rgba(201, 43, 10, 0.25);
-    }
-
-    .form-floating-dark label {
-        color: rgba(255, 255, 255, 0.5);
-    }
-
-    .btn-hyper-action {
-        background: linear-gradient(135deg, var(--llanteria-primary) 0%, #911F07 100%);
-        color: var(--llanteria-light);
-        border: none;
-        border-radius: 12px;
-        font-weight: 800;
-        letter-spacing: 1px;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        box-shadow: 0 4px 15px rgba(201, 43, 10, 0.3);
-    }
-
-    .btn-hyper-action:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(201, 43, 10, 0.5);
-        color: var(--llanteria-light);
-    }
-
-    /* CARDS DE PRODUCTOS - NEO-ESTÉTICA */
-    .premium-product-card {
-        background: #FFFFFF;
-        border: 1px solid #E4E4E7;
-        border-radius: 20px;
-        overflow: hidden;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .premium-product-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-        border-color: var(--llanteria-primary);
-    }
-
-    .accent-bar { 
-        width: 50px; 
-        height: 4px; 
-        background-color: var(--llanteria-primary); 
-        border-radius: 2px;
-    }
-
-</style>
-
-<section id="inicio" class="swiper hero-swiper">
-    <div class="swiper-wrapper">
-        <div class="swiper-slide swiper-slide-hero">
-            <div class="hero-overlay"></div>
-            <img src="/images/Section-Image.avif" alt="High-End Track">
-            <div class="container hero-content-wrapper text-center">
-                <span class="badge bg-primary-llanteria text-uppercase px-3 py-2 rounded-pill fw-bold mb-3 animate__animated animate__fadeInDown">Tecnología de Competición</span>
-                <h1 class="display-2 fw-black text-uppercase tracking-tight animate__animated animate__zoomIn">Desempeño Absoluto</h1>
-                <p class="lead max-width-600 mx-auto text-white-50">Equipamiento premium para el control total sobre el asfalto.</p>
-            </div>
-        </div>
-        <div class="swiper-slide swiper-slide-hero">
-            <div class="hero-overlay"></div>
-            <img src="/images/banner.jpg" alt="Motorsport Performance">
-            <div class="container hero-content-wrapper text-center">
-                <span class="badge bg-primary-llanteria text-uppercase px-3 py-2 rounded-pill fw-bold mb-3">Ingeniería Avanzada</span>
-                <h1 class="display-2 fw-black text-uppercase tracking-tight">Seguridad en cada Curva</h1>
-                <p class="lead max-width-600 mx-auto text-white-50">Encuentra los neumáticos oficiales de las marcas líderes a nivel mundial.</p>
-            </div>
-        </div>
+<section id="inicio" class="hero">
+    <div class="container">
+        <span class="eyebrow text-white-50">Valledupar, Cesar</span>
+        <h1 class="display-4 mt-2 mb-3">Llantas, aceites y servicio<br />para tu vehículo</h1>
+        <p class="lead mb-4">Encuentra la medida que necesitas y agenda tu servicio sin filas.</p>
+        <a href="#productos" class="btn btn-hyper-action px-4 py-2 me-2">Ver productos</a>
+        <a href="#servicios" class="btn btn-outline-light px-4 py-2">Servicios</a>
     </div>
-    <div class="swiper-pagination-hero"></div>
 </section>
 
-<!-- PANEL DE BÚSQUEDA DINÁMICO -->
-<div class="container position-relative" style="z-index: 100; margin-top: -100px;">
-    <div class="row justify-content-center">
-        <div class="col-lg-10" data-aos="fade-up">
-            <div class="search-matrix-panel">
-                <div class="row g-3">
-                    <!-- SELECT ANCHO -->
-                    <div class="col-md-3">
-                        <div class="form-floating form-floating-dark">
-                            <select class="form-select" id="anchoSelect">
-                                <option value="">Cualquiera</option>
-                                @if (ViewBag.Anchos != null)
-                                {
-                                    foreach (var ancho in ViewBag.Anchos)
-                                    {
-                                        <option value="@ancho">@ancho</option>
-                                    }
-                                }
-                            </select>
-                            <label>Ancho (mm)</label>
-                        </div>
-                    </div>
-
-                    <!-- SELECT PERFIL -->
-                    <div class="col-md-3">
-                        <div class="form-floating form-floating-dark">
-                            <select class="form-select" id="perfilSelect">
-                                <option value="">Cualquiera</option>
-                                @if (ViewBag.Perfiles != null)
-                                {
-                                    foreach (var perfil in ViewBag.Perfiles)
-                                    {
-                                        <option value="@perfil">@perfil</option>
-                                    }
-                                }
-                            </select>
-                            <label>Perfil (%)</label>
-                        </div>
-                    </div>
-
-                    <!-- SELECT DIÁMETRO -->
-                    <!-- SELECT DIÁMETRO -->
-                    <div class="col-md-3">
-                        <div class="form-floating form-floating-dark">
-                            <select class="form-select" id="diametroSelect">
-                                <option value="">Cualquiera</option>
-                                @if (ViewBag.Diametros != null)
-                                {
-                                    foreach (var diametro in ViewBag.Diametros)
-                                    {
-                                        <option value="@diametro">R@(diametro)</option>
-                                    }
-                                }
-                            </select>
-                            <label>Diámetro (In)</label>
-                        </div>
-                    </div>
-
-                    <!-- BOTÓN ESCANEAR -->
-                    <div class="col-md-3 d-flex align-items-center">
-                        <button type="button" id="btnBuscarLlantas" class="btn btn-hyper-action w-100 py-3 text-uppercase">
-                            <i class="fa-solid fa-radar me-2"></i>Escanear Medidas
-                        </button>
-                    </div>
-                </div>
+<div class="container search-wrap">
+    <div class="search-matrix-panel">
+        <h2 class="h6 text-white text-uppercase mb-3" style="letter-spacing:.8px">Buscar llantas por medida</h2>
+        <div class="row g-3 form-floating-dark">
+            <div class="col-md-3">
+                <label class="small text-white-50" for="anchoSelect">Ancho</label>
+                <select id="anchoSelect" class="form-select">
+                    <option value="">Todos</option>
+                    @foreach (var a in (List<string>)ViewBag.Anchos) { <option value="@a">@a</option> }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="small text-white-50" for="perfilSelect">Perfil</label>
+                <select id="perfilSelect" class="form-select">
+                    <option value="">Todos</option>
+                    @foreach (var p in (List<string>)ViewBag.Perfiles) { <option value="@p">@p</option> }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="small text-white-50" for="diametroSelect">Rin</label>
+                <select id="diametroSelect" class="form-select">
+                    <option value="">Todos</option>
+                    @foreach (var d in (List<string>)ViewBag.Diametros) { <option value="@d">@d</option> }
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="button" id="btnBuscarLlantas" class="btn btn-hyper-action w-100 py-2">Buscar</button>
             </div>
         </div>
     </div>
 </div>
 
-<section id="resultadosBusqueda" class="py-5 d-none" style="background-color: #F4F4F5; margin-top: 50px;">
+<section id="resultadosBusqueda" class="section pb-0 d-none">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-black text-uppercase m-0">Resultados del Escaneo</h2>
-            <hr class="mx-auto accent-bar mt-3">
-        </div>
-        <div class="row g-4 justify-content-center" id="contenedorTarjetas"></div>
+        <h2 class="section-title mb-3">Resultados de la búsqueda</h2>
+        <div class="row g-3" id="contenedorTarjetas"></div>
     </div>
 </section>
 
-<section id="categorias" class="py-2"><div class="container"></div></section>
+<partial name="_Nosotros" />
+<partial name="_Servicios" />
+<partial name="_Promociones" />
 
-<partial name="~/Views/Nosotros/Index.cshtml" />
-<partial name="~/Views/Servicios/Index.cshtml" />
-<partial name="~/Views/Promociones/Index.cshtml" />
-
-<!-- Encabezado de gama almacenada -->
-<section id="productos" class="py-5 bg-white">
-    <div class="container" data-aos="fade-up">
-        <!-- Encabezado de la Sección -->
-        <div class="text-center mb-4">
-            <h2 class="fw-black text-uppercase m-0">Gama Almacenada</h2>
-            <hr class="mx-auto accent-bar mt-3">
+<section id="productos" class="section">
+    <div class="container">
+        <div class="mb-4">
+            <span class="eyebrow">Catálogo</span>
+            <h2 class="section-title mt-1">Productos disponibles</h2>
         </div>
 
-        <!-- Filtros de Categorías Dinámicos -->
-        <div class="d-flex justify-content-center gap-2 mb-5 flex-wrap">
-            <button type="button" class="btn btn-dark rounded-pill px-4 fw-bold filter-btn active" data-filter="todos">
-                <i class="fa-solid fa-boxes-stacked me-2"></i>Todos
-            </button>
-            <button type="button" class="btn btn-outline-dark rounded-pill px-4 fw-bold filter-btn" data-filter="Llantas">
-                <i class="fa-solid fa-compact-disc me-2"></i>Llantas
-            </button>
-            <button type="button" class="btn btn-outline-dark rounded-pill px-4 fw-bold filter-btn" data-filter="Aceites">
-                <i class="fa-solid fa-oil-can me-2"></i>Aceites
-            </button>
+        <div class="d-flex gap-2 mb-4 flex-wrap">
+            <button type="button" class="btn btn-outline-dark filter-btn active" data-filter="todos">Todos</button>
+            <button type="button" class="btn btn-outline-dark filter-btn" data-filter="Llantas">Llantas</button>
+            <button type="button" class="btn btn-outline-dark filter-btn" data-filter="Aceites">Aceites</button>
         </div>
 
-        <!-- Grilla de Productos -->
-        <div class="row g-4" id="gridCatalogoProductos">
-            @if (Model != null && Model.Any())
+        <div class="row g-3" id="gridCatalogoProductos">
+            @foreach (var p in productos)
             {
-                foreach (var p in Model)
-                {
-                    var categoria = string.IsNullOrEmpty(p.Categoria) ? "Llantas" : p.Categoria;
-
-                    <div class="col-md-4 item-producto" data-categoria="@categoria" data-aos="zoom-in-up">
-                        <div class="premium-product-card h-100 d-flex flex-column">
-                            <div class="overflow-hidden position-relative">
-                                <!-- Etiqueta de Categoría -->
-                                <span class="badge bg-dark position-absolute top-0 start-0 m-3 z-2 px-3 py-2 text-uppercase">
-                                    @categoria
-                                </span>
-
-                                <img src="/images/productoos/@(string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen)"
-                                     class="img-fluid w-100"
-                                     style="height: 250px; object-fit: cover; transition: 0.5s;"
-                                     onmouseover="this.style.transform='scale(1.06)'"
-                                     onmouseout="this.style.transform='scale(1)'"
-                                     alt="@p.Nombre">
-                            </div>
-
-                            <div class="p-4 text-center mt-auto d-flex flex-column flex-grow-1">
-                                <h6 class="fw-bold text-uppercase text-dark mb-2" style="letter-spacing: 0.5px;">@p.Nombre</h6>
-
-                                <!-- Detalles según el tipo de producto -->
-                                @if (p.DetalleProducto != null)
-                                {
-                                    <p class="text-muted small mb-2">
-                                        @if (p.DetalleProducto.Ancho != null && p.DetalleProducto.Perfil != null && p.DetalleProducto.Diametro != null)
-                                        {
-                                            <span>Medida: @p.DetalleProducto.Ancho / @p.DetalleProducto.Perfil R@(p.DetalleProducto.Diametro)</span>
-                                        }
-                                        else if (!string.IsNullOrEmpty(p.DetalleProducto.Viscosidad))
-                                        {
-                                            <span>Viscosidad: @p.DetalleProducto.Viscosidad (@p.DetalleProducto.TipoAceite)</span>
-                                        }
-                                    </p>
-                                }
-
-                                <div class="fs-5 fw-black text-danger mb-3 mt-auto">@p.PrecioVenta.ToString("C0")</div>
-
-                                <a href="#contacto" class="btn btn-hyper-action w-100 py-2.5 text-uppercase btn-sm">
-                                    Cotizar Producto
-                                </a>
-                            </div>
+                var categoria = string.IsNullOrEmpty(p.Categoria) ? "Llantas" : p.Categoria;
+                var d = p.DetalleProducto;
+                <div class="col-sm-6 col-lg-4 item-producto" data-categoria="@categoria">
+                    <div class="premium-product-card h-100 d-flex flex-column">
+                        <img class="product-img" src="~/images/productoos/@(string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen)" alt="@p.Nombre" loading="lazy" />
+                        <div class="p-3 d-flex flex-column flex-grow-1">
+                            <span class="small text-muted text-uppercase">@categoria</span>
+                            <h3 class="h6 fw-bold mb-1">@p.Nombre</h3>
+                            @if (d != null && !string.IsNullOrEmpty(d.Ancho) && !string.IsNullOrEmpty(d.Perfil) && !string.IsNullOrEmpty(d.Diametro))
+                            {
+                                <div class="small text-muted">Medida: @d.Ancho/@d.Perfil R@(d.Diametro)</div>
+                            }
+                            else if (d != null && !string.IsNullOrEmpty(d.Viscosidad))
+                            {
+                                <div class="small text-muted">Viscosidad: @d.Viscosidad @d.TipoAceite</div>
+                            }
+                            <div class="fs-5 fw-bold text-llanteria-primary mt-2 mb-3">@p.PrecioVenta.ToString("C0")</div>
+                            <a asp-controller="Contacto" asp-action="Index" class="btn btn-hyper-action btn-sm mt-auto">Cotizar</a>
                         </div>
                     </div>
-                }
-            }
-            else
-            {
-                <div class="col-12 text-center py-5">
-                    <div class="text-muted"><i class="fa-solid fa-box-open fa-3x mb-3 text-secondary"></i></div>
-                    <h5 class="fw-bold text-dark">No hay productos disponibles</h5>
-                    <p class="text-muted small">No se encontraron ítems almacenados en el inventario actual.</p>
                 </div>
+            }
+            @if (!productos.Any())
+            {
+                <div class="col-12 text-center text-muted py-5">Pronto publicaremos nuestro catálogo.</div>
             }
         </div>
     </div>
 </section>
 
-
-<partial name="~/Views/Contacto/Index.cshtml" />
-
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Inicializar animaciones de scroll
-            AOS.init({ duration: 1000, once: true });
-
-            // Inicializar Swiper de fondo
-            const heroSwiper = new Swiper('.hero-swiper', {
-                loop: true,
-                effect: 'fade',
-                fadeEffect: { crossFade: true },
-                autoplay: { delay: 6500, disableOnInteraction: false },
-                speed: 1500
-            });
-        });
-
-        // Motor de filtrado por categoría en la Gama Almacenada
-        document.querySelectorAll('.filter-btn').forEach(btn => {
+        // Filtro por categoría
+        document.querySelectorAll('.filter-btn').forEach(function (btn) {
             btn.addEventListener('click', function () {
-                // Actualizar estados visuales de los botones
-                document.querySelectorAll('.filter-btn').forEach(b => {
-                    b.classList.remove('active', 'btn-dark');
-                    b.classList.add('btn-outline-dark');
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const f = btn.dataset.filter;
+                document.querySelectorAll('.item-producto').forEach(function (el) {
+                    el.style.display = (f === 'todos' || el.dataset.categoria === f) ? '' : 'none';
                 });
-
-                this.classList.add('active', 'btn-dark');
-                this.classList.remove('btn-outline-dark');
-
-                const filtro = this.getAttribute('data-filter').toLowerCase();
-                const productos = document.querySelectorAll('.item-producto');
-
-                // Mostrar u ocultar las tarjetas según la categoría
-                productos.forEach(prod => {
-                    const categoriaProducto = prod.getAttribute('data-categoria').toLowerCase();
-
-                    if (filtro === 'todos' || categoriaProducto === filtro) {
-                        prod.style.display = 'block';
-                    } else {
-                        prod.style.display = 'none';
-                    }
-                });
-
-                // Refrescar las animaciones AOS al ocultar/mostrar elementos
-                if (typeof AOS !== 'undefined') AOS.refresh();
             });
         });
 
-        // Motor de búsqueda JSON
-        document.getElementById("btnBuscarLlantas").addEventListener("click", async function () {
-            const ancho = document.getElementById("anchoSelect").value;
-            const perfil = document.getElementById("perfilSelect").value;
-            const diametro = document.getElementById("diametroSelect").value;
+        function esc(t) {
+            const d = document.createElement('div');
+            d.textContent = t == null ? '' : String(t);
+            return d.innerHTML;
+        }
 
+        // Búsqueda por medida
+        document.getElementById('btnBuscarLlantas').addEventListener('click', async function () {
+            const ancho = document.getElementById('anchoSelect').value;
+            const perfil = document.getElementById('perfilSelect').value;
+            const diametro = document.getElementById('diametroSelect').value;
             if (!ancho && !perfil && !diametro) {
-                Swal.fire({ 
-                    title: 'Selección Incompleta', 
-                    text: 'Por favor selecciona al menos un parámetro para realizar el escaneo.', 
-                    icon: 'info',
-                    confirmButtonColor: '#C92B0A'
-                });
+                Swal.fire({ icon: 'info', title: 'Elige una medida', text: 'Selecciona al menos un valor para buscar.', confirmButtonColor: '#C92B0A' });
                 return;
             }
 
-            const url = `/Producto/GetLlantasJson?ancho=${encodeURIComponent(ancho)}&perfil=${encodeURIComponent(perfil)}&diametro=${encodeURIComponent(diametro)}`;
-            
+            const url = '@Url.Action("BuscarLlantas", "Home")' + '?ancho=' + encodeURIComponent(ancho) +
+                '&perfil=' + encodeURIComponent(perfil) + '&diametro=' + encodeURIComponent(diametro);
+            const contenedor = document.getElementById('contenedorTarjetas');
             try {
-                const response = await fetch(url);
-                const resultados = await response.json();
-
-                const contenedor = document.getElementById("contenedorTarjetas");
-                contenedor.innerHTML = "";
-                
-                if (resultados.length > 0) {
-                    resultados.forEach(llanta => {
-                        contenedor.innerHTML += `
-                            <div class="col-md-4" data-aos="fade-up">
-                                <div class="premium-product-card h-100 bg-white d-flex flex-column">
-                                    <div class="overflow-hidden">
-                                        <img src="${llanta.img}" class="img-fluid w-100" style="height: 230px; object-fit: cover; transition: 0.4s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                                    </div>
-                                    <div class="p-4 d-flex flex-column flex-grow-1 text-center">
-                                        <h5 class="fw-bold text-dark text-uppercase fs-6 mb-2" style="letter-spacing:0.5px;">${llanta.nombre}</h5>
-                                        <p class="text-danger fw-black fs-5 mb-3">${llanta.precio}</p>
-                                        <a href="#contacto" class="btn btn-hyper-action w-100 py-2.5 text-uppercase btn-sm mt-auto">Cotizar Dimensión</a>
-                                    </div>
-                                </div>
-                            </div>`;
-                    });
-                } else {
-                    contenedor.innerHTML = `
-                        <div class="col-12 text-center py-5">
-                            <div class="text-muted"><i class="fa-solid fa-ban fa-3x mb-3 text-danger"></i></div>
-                            <h5 class="fw-bold text-dark">Sin Coincidencias en el Almacén</h5>
-                            <p class="text-muted small">No hay stock disponible para las dimensiones ingresadas actualmente.</p>
-                        </div>`;
-                }
-                
-                document.getElementById("resultadosBusqueda").classList.remove("d-none");
-                if (typeof AOS !== 'undefined') AOS.refresh(); 
-                document.getElementById("resultadosBusqueda").scrollIntoView({ behavior: 'smooth' });
-
-            } catch (error) {
-                console.error("Error al consultar productos:", error);
+                const r = await fetch(url);
+                if (!r.ok) throw new Error(r.status);
+                const lista = await r.json();
+                contenedor.innerHTML = lista.length ? lista.map(function (l) {
+                    return '<div class="col-sm-6 col-lg-4"><div class="premium-product-card h-100 d-flex flex-column">' +
+                        '<img class="product-img" src="' + esc(l.img) + '" alt="">' +
+                        '<div class="p-3 d-flex flex-column flex-grow-1"><h3 class="h6 fw-bold">' + esc(l.nombre) + '</h3>' +
+                        '<div class="fs-5 fw-bold text-llanteria-primary mb-3">' + esc(l.precio) + '</div>' +
+                        '<a href="@Url.Action("Index", "Contacto")" class="btn btn-hyper-action btn-sm mt-auto">Cotizar</a></div></div></div>';
+                }).join('') : '<div class="col-12 text-muted">No encontramos llantas con esa medida. Escríbenos y las conseguimos.</div>';
+                const seccion = document.getElementById('resultadosBusqueda');
+                seccion.classList.remove('d-none');
+                seccion.scrollIntoView({ behavior: 'smooth' });
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'No se pudo buscar', text: 'Inténtalo de nuevo en un momento.', confirmButtonColor: '#212529' });
             }
         });
     </script>

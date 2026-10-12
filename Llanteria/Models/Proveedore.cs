@@ -1,4 +1,5 @@
-﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema; // 👈 Obligatorio
 using Microsoft.AspNetCore.Http; // 👈 Obligatorio para IFormFile
@@ -8,6 +9,10 @@ namespace Llanteria.Models;
 public partial class Proveedore
 {
     public int Id { get; set; }
+
+    [Required(ErrorMessage = "El nombre de la empresa es obligatorio.")]
+
+    [StringLength(150)]
 
     public string NombreEmpresa { get; set; } = null!;
 

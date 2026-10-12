@@ -1,0 +1,40 @@
+@model Llanteria.Models.Proveedore
+@inject IWebHostEnvironment Env
+@{
+    var tieneLogo = Model.Id > 0 && System.IO.File.Exists(System.IO.Path.Combine(Env.WebRootPath, "images", "proveedores", Model.Id + ".png"));
+    var logo = tieneLogo ? $"~/images/proveedores/{Model.Id}.png" : "~/images/proveedores/default-proveedor.png";
+}
+
+<form asp-action="@ViewData["Accion"]" asp-route-id="@(Model.Id == 0 ? null : Model.Id.ToString())" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row g-3">
+        <div class="col-md-8">
+            <label asp-for="NombreEmpresa" class="form-label">Empresa</label>
+            <input asp-for="NombreEmpresa" class="form-control" maxlength="150" autofocus />
+            <span asp-validation-for="NombreEmpresa" class="text-danger small"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Telefono" class="form-label">Teléfono</label>
+            <input asp-for="Telefono" class="form-control" maxlength="30" />
+        </div>
+        <div class="col-12">
+            <label asp-for="Contacto" class="form-label">Asesor o persona de contacto</label>
+            <input asp-for="Contacto" class="form-control" maxlength="100" />
+        </div>
+        <div class="col-12 d-flex align-items-center gap-3">
+            <img id="previewLogo" class="file-preview" src="@Url.Content(logo)" alt="Logotipo" />
+            <div class="flex-grow-1">
+                <label asp-for="ImagenArchivo" class="form-label">Logotipo</label>
+                <input asp-for="ImagenArchivo" type="file" class="form-control" accept="image/*" data-preview="#previewLogo" />
+                <span asp-validation-for="ImagenArchivo" class="text-danger small"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <a asp-action="Index" class="btn btn-line">Cancelar</a>
+        <button type="submit" class="btn btn-brand">Guardar</button>
+    </div>
+</form>

@@ -1,223 +1,45 @@
-﻿@{
-    ViewData["Title"] = "Formulario de Ingreso";
+@{
+    ViewData["Title"] = "Iniciar sesión";
 }
-<style>
-    /* Se mantienen los estilos originales, ajustando el input sin icono */
-    .login-container-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: calc(100vh - 250px);
-        padding: 2rem 1rem;
-    }
 
-    @@keyframes slideUpEntrance {
-        0% {
-            opacity: 0;
-            transform: translateY(30px);
+<div class="auth-wrap">
+    <div class="auth-card">
+        <h1>Iniciar sesión</h1>
+        <p class="text-muted mb-4">Personal del taller: usuario o correo. Clientes: correo o documento.</p>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger py-2 small">@ViewBag.Error</div>
         }
 
-        100% {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .entrance-login-card {
-        background-color: #ffffff;
-        width: 100%;
-        max-width: 480px;
-        border-radius: 1.5rem;
-        padding: 2.5rem;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
-        animation: slideUpEntrance 0.6s ease-out forwards;
-        opacity: 0;
-    }
-
-    .form-main-title {
-        font-size: 1.7rem;
-        font-weight: 800;
-        color: #000000;
-        text-align: center;
-    }
-
-    .custom-field-label {
-        display: block;
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #000000;
-        margin-bottom: 0.5rem;
-        text-align: left;
-    }
-
-    .header-group {
-        margin-bottom: 2rem;
-    }
-
-    .input-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-        width: 100%;
-    }
-
-    .password-toggle-btn {
-        position: absolute;
-        left: 15px;
-        background: transparent;
-        border: none;
-        color: #6c757d;
-        font-size: 1.1rem;
-        cursor: pointer;
-        z-index: 5;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-        .password-toggle-btn:hover {
-            color: #000000;
-        }
-
-    .custom-input {
-        height: 55px;
-        font-size: 1.1rem;
-        border: 1px solid #ced4da;
-        border-radius: 0.5rem;
-        width: 100%;
-        padding-left: 15px; /* Ajustado al quitar el icono del usuario */
-    }
-
-    .custom-input-password {
-        padding-left: 45px !important; /* Mantiene el espacio para el botón del ojo */
-    }
-
-    .btn-login-submit {
-        background-color: var(--llanteria-primary, #C92B0A) !important;
-        color: #ffffff !important;
-        border: none !important;
-        font-size: 1.1rem;
-        padding: 1rem;
-        font-weight: 700;
-        transition: filter 0.3s ease, background-color 0.3s ease;
-    }
-
-        .btn-login-submit:disabled {
-            background-color: #8B0000 !important;
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .btn-login-submit:hover {
-            filter: brightness(0.85);
-        }
-
-    .custom-error-text {
-        color: var(--llanteria-primary, #C92B0A);
-        font-weight: 600;
-        font-size: 0.95rem;
-        margin-top: 0.8rem;
-        display: block;
-    }
-
-    .partial-divider {
-        width: 60%;
-        margin: 1.2rem auto;
-        border-top: 1px solid #dee2e6;
-    }
-</style>
-
-<div class="login-container-wrapper">
-    <div class="entrance-login-card">
-
-        <div class="header-group">
-            <h2 class="form-main-title m-0 fw-bold">Iniciar sesión</h2>
-        </div>
-
-        <form id="loginForm" asp-action="Login" method="post">
-            <div class="mb-4">
-                <label class="custom-field-label">Usuario</label>
-                <div class="input-wrapper">
-                    <input type="text" name="username" class="form-control custom-input" placeholder="Usuario" required />
+        <form asp-action="Login" method="post">
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+            <div class="mb-3">
+                <label class="form-label" for="username">Usuario, correo o documento</label>
+                <input id="username" name="username" class="form-control" required autofocus autocomplete="username" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="password">Contraseña</label>
+                <div class="input-group">
+                    <input id="password" name="password" type="password" class="form-control" required autocomplete="current-password" />
+                    <button class="btn btn-line" type="button" id="verPass" title="Mostrar u ocultar"><i class="fa-regular fa-eye"></i></button>
                 </div>
             </div>
-
-            <div class="mb-2">
-                <label class="custom-field-label">Contraseña</label>
-                <div class="input-wrapper">
-                    <button type="button" id="togglePasswordBtn" class="password-toggle-btn" title="Mostrar/Ocultar contraseña">
-                        <i id="eyeIcon" class="fa-regular fa-eye-slash"></i>
-                    </button>
-                    <input type="password" id="passwordInput" name="password" class="form-control custom-input custom-input-password" placeholder="Contraseña" required />
-                </div>
-            </div>
-
-            @if (!string.IsNullOrEmpty(ViewBag.Error))
-            {
-                <div class="custom-error-text">
-                    &bull; @ViewBag.Error
-                </div>
-            }
-
-            <div class="d-grid mt-4">
-                <button type="submit" id="submitBtn" class="btn btn-login-submit text-uppercase rounded-3">
-                    Ingresar
-                </button>
-            </div>
-
-            <div class="text-center mt-4">
-                <a asp-controller="Account" asp-action="ReestablecerContra" class="text-danger fw-bold text-decoration-none" style="font-size: 0.95rem;">
-                    Reestablecer contraseña
-                </a>
-
-                <div class="partial-divider"></div>
-
-                <span class="text-muted">¿No tienes cuenta?</span>
-                <a asp-controller="Account" asp-action="Register" class="text-danger fw-bold text-decoration-none ms-2">Regístrate aquí</a>
-            </div>
+            <button type="submit" class="btn btn-hyper-action w-100 py-2">Entrar</button>
         </form>
+
+        <div class="d-flex justify-content-between mt-3 small">
+            <a asp-action="ReestablecerContra" class="text-llanteria-primary text-decoration-none">¿Olvidaste tu contraseña?</a>
+            <a asp-action="Register" class="text-llanteria-primary text-decoration-none">Crear cuenta de puntos</a>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        // Lógica del Login sin cambios
-        document.addEventListener('DOMContentLoaded', function () {
-            const toggleBtn = document.getElementById('togglePasswordBtn');
-            const passwordInput = document.getElementById('passwordInput');
-            const eyeIcon = document.getElementById('eyeIcon');
-            let isCooldownActivo = false;
-
-            toggleBtn.addEventListener('click', function () {
-                if (isCooldownActivo) return;
-
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
-                } else {
-                    passwordInput.type = 'password';
-                    eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
-                }
-
-                isCooldownActivo = true;
-                toggleBtn.style.cursor = 'wait';
-
-                setTimeout(() => {
-                    isCooldownActivo = false;
-                    toggleBtn.style.cursor = 'pointer';
-                }, 1000);
-            });
-
-            document.getElementById('loginForm').addEventListener('submit', function (e) {
-                const btn = document.getElementById('submitBtn');
-                if (btn.getAttribute('data-clicked') === 'true') {
-                    e.preventDefault();
-                    return;
-                }
-                btn.setAttribute('data-clicked', 'true');
-                btn.style.pointerEvents = 'none';
-            });
+        document.getElementById('verPass').addEventListener('click', function () {
+            const i = document.getElementById('password');
+            i.type = i.type === 'password' ? 'text' : 'password';
         });
     </script>
 }

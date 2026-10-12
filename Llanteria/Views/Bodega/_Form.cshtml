@@ -1,0 +1,27 @@
+@model Llanteria.Models.Bodega
+
+<form asp-action="@ViewData["Accion"]" asp-route-id="@(Model.Id == 0 ? null : Model.Id.ToString())" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="NombreBodega" class="form-label">Nombre</label>
+        <input asp-for="NombreBodega" class="form-control" maxlength="100" placeholder="Ej. Bodega principal" autofocus />
+        <span asp-validation-for="NombreBodega" class="text-danger small"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Ubicacion" class="form-label">Ubicación</label>
+        <input asp-for="Ubicacion" class="form-control" maxlength="200" placeholder="Dirección o referencia" />
+        <span asp-validation-for="Ubicacion" class="text-danger small"></span>
+    </div>
+    <div>
+        <label asp-for="CapacidadMaxima" class="form-label">Capacidad máxima (unidades)</label>
+        <input asp-for="CapacidadMaxima" type="number" min="0" class="form-control" />
+        <span asp-validation-for="CapacidadMaxima" class="text-danger small"></span>
+    </div>
+
+    <div class="form-actions">
+        <a asp-action="Index" class="btn btn-line">Cancelar</a>
+        <button type="submit" class="btn btn-brand">Guardar</button>
+    </div>
+</form>

@@ -1,4 +1,5 @@
 ﻿using Llanteria.Data;
+using Llanteria.Infrastructure;
 using Llanteria.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -67,13 +68,13 @@ public class UsuarioService
         // 2. Validación de seguridad: ¿La contraseña actual coincide?
         // NOTA: Si guardas las contraseñas en texto plano (como parece en tu Login),
         // la comparación es directa.
-        if (usuario.PasswordHash != passwordActual)
+        if (!Claves.Verificar(usuario.PasswordHash, passwordActual, out _))
         {
             return false; // La contraseña actual no coincide
         }
 
         // 3. Actualizamos a la nueva
-        usuario.PasswordHash = nuevaPassword; // Aquí se podría aplicar un Hash si quisieras
+        usuario.PasswordHash = Claves.Hash(nuevaPassword);
 
         try
         {

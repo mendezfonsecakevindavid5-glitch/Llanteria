@@ -1,154 +1,109 @@
-﻿using Microsoft.AspNetCore.Mvc;
 using Llanteria.Models;
 using Llanteria.Services;
-using Microsoft.AspNetCore.Hosting; // 👈 Obligatorio para IWebHostEnvironment
-using System.IO;
-using System;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Llanteria.Controllers;
 
 public class TipoServicioController : Controller
 {
-    private readonly TipoServicioService ser;
-    private readonly IWebHostEnvironment _webHostEnvironment; // 👈 CLAVE para encontrar la carpeta wwwroot
+    private const string ImagenPorDefecto = "default-servicio.png";
+    private static readonly string[] Extensiones = { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
 
-    // Inyectamos el servicio y el entorno web en el constructor
-    public TipoServicioController(TipoServicioService tipoServicioService, IWebHostEnvironment webHostEnvironment)
+    private readonly TipoServicioService ser;
+    private readonly IWebHostEnvironment _env;
+
+    public TipoServicioController(TipoServicioService tipoServicioService, IWebHostEnvironment env)
     {
         ser = tipoServicioService;
-        _webHostEnvironment = webHostEnvironment;
+        _env = env;
     }
 
-    // Listado de servicios ofrecidos en la llantería
-    public IActionResult Index()
-    {
-        var lista = ser.GetTiposServicio();
-        return View(lista);
-    }
+    private string Carpeta => Path.Combine(_env.WebRootPath, "images", "servicios");
 
-    // Vista para agregar un nuevo tipo de servicio
-    public IActionResult Create()
-    {
-        return View();
-    }
+    public IActionResult Index() => View(ser.GetTiposServicio());
 
-    // Guarda el servicio, procesa la imagen y registra su costo base
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    public IActionResult Create() => View(new TipoServicio());
+
+    [HttpPost, ValidateAntiForgeryToken]
     public IActionResult Create(TipoServicio ts)
     {
-        if (ModelState.IsValid)
-        {
-            // 📂 PROCESAR IMAGEN COMPU -> WWWROOT
-            if (ts.ImagenArchivo != null)
-            {
-                string carpetaServicios = Path.Combine(_webHostEnvironment.WebRootPath, "images", "servicios");
+        ValidarImagen(ts.ImagenArchivo);
+        if (!ModelState.IsValid) return View(ts);
 
-                // Crea la carpeta si no existe por seguridad
-                if (!Directory.Exists(carpetaServicios))
-                {
-                    Directory.CreateDirectory(carpetaServicios);
-                }
-
-                // Generar nombre único para evitar archivos duplicados
-                string nombreUnico = Guid.NewGuid().ToString() + "_" + Path.GetFileName(ts.ImagenArchivo.FileName);
-                string rutaDestino = Path.Combine(carpetaServicios, nombreUnico);
-
-                // Guardar físicamente el archivo cargado
-                using (var fileStream = new FileStream(rutaDestino, FileMode.Create))
-                {
-                    ts.ImagenArchivo.CopyTo(fileStream); // Sincrónico ya que usas IActionResult
-                }
-
-                // Asignamos el nombre del archivo al campo de texto que va a la base de datos
-                ts.IconoPath = nombreUnico;
-            }
-            else
-            {
-                // Si no subió foto, asignamos la imagen por defecto
-                ts.IconoPath = "default-servicio.png";
-            }
-
-            ser.AddTipoServicio(ts);
-            return RedirectToAction(nameof(Index));
-        }
-        return View(ts);
+        ts.IconoPath = ts.ImagenArchivo != null ? GuardarImagen(ts.ImagenArchivo) : ImagenPorDefecto;
+        ser.AddTipoServicio(ts);
+        TempData["Exito"] = "Servicio registrado.";
+        return RedirectToAction(nameof(Index));
     }
 
-    // Vista para editar el precio o nombre de un servicio
     public IActionResult Edit(int id)
     {
         var ts = ser.GetTipoServicio(id);
-        if (ts == null) return NotFound();
-        return View(ts);
+        return ts == null ? NotFound() : View(ts);
     }
 
-    // Procesa la actualización del servicio e imagen
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public IActionResult Edit(int id, TipoServicio ts)
     {
-        if (ModelState.IsValid)
+        ts.Id = id;
+        ValidarImagen(ts.ImagenArchivo);
+        var existente = ser.GetTipoServicio(id);
+        if (existente == null) return NotFound();
+        if (!ModelState.IsValid)
         {
-            // Recuperamos el servicio actual sin cambios para saber qué imagen tenía antes
-            var servicioExistente = ser.GetTipoServicio(id);
-
-            if (ts.ImagenArchivo != null)
-            {
-                string carpetaServicios = Path.Combine(_webHostEnvironment.WebRootPath, "images", "servicios");
-
-                // Generamos un nuevo nombre único
-                string nombreUnico = Guid.NewGuid().ToString() + "_" + Path.GetFileName(ts.ImagenArchivo.FileName);
-                string rutaDestino = Path.Combine(carpetaServicios, nombreUnico);
-
-                using (var fileStream = new FileStream(rutaDestino, FileMode.Create))
-                {
-                    ts.ImagenArchivo.CopyTo(fileStream);
-                }
-
-                // Borramos la imagen anterior si existía y no era la por defecto (Mantiene limpio el servidor)
-                if (servicioExistente != null && !string.IsNullOrEmpty(servicioExistente.IconoPath) && servicioExistente.IconoPath != "default-servicio.png")
-                {
-                    string rutaImagenAnterior = Path.Combine(carpetaServicios, servicioExistente.IconoPath);
-                    if (System.IO.File.Exists(rutaImagenAnterior))
-                    {
-                        System.IO.File.Delete(rutaImagenAnterior);
-                    }
-                }
-
-                // Asignamos la nueva ruta de texto
-                ts.IconoPath = nombreUnico;
-            }
-            else
-            {
-                // Si no se subió una nueva imagen en la edición, conservamos la que ya tenía antes
-                if (servicioExistente != null)
-                {
-                    ts.IconoPath = servicioExistente.IconoPath;
-                }
-            }
-
-            ser.UpdateTipoServicio(ts);
-            return RedirectToAction(nameof(Index));
+            ts.IconoPath = existente.IconoPath;
+            return View(ts);
         }
-        return View(ts);
+
+        if (ts.ImagenArchivo != null)
+        {
+            ts.IconoPath = GuardarImagen(ts.ImagenArchivo);
+            EliminarImagen(existente.IconoPath);
+        }
+        else
+        {
+            ts.IconoPath = existente.IconoPath;
+        }
+
+        ser.UpdateTipoServicio(ts);
+        TempData["Exito"] = "Servicio actualizado.";
+        return RedirectToAction(nameof(Index));
     }
 
-    // Elimina un tipo de servicio (si no tiene facturas asociadas)
+    [HttpPost, ValidateAntiForgeryToken]
     public IActionResult Delete(int id)
     {
-        // Opcional: Podrías buscar el servicio y borrar su foto de la carpeta antes de eliminarlo
         var ts = ser.GetTipoServicio(id);
-        if (ts != null && !string.IsNullOrEmpty(ts.IconoPath) && ts.IconoPath != "default-servicio.png")
-        {
-            string rutaImagen = Path.Combine(_webHostEnvironment.WebRootPath, "images", "servicios", ts.IconoPath);
-            if (System.IO.File.Exists(rutaImagen))
-            {
-                System.IO.File.Delete(rutaImagen);
-            }
-        }
-
-        ser.DeleteTipoServicio(id);
+        if (ts == null) return RedirectToAction(nameof(Index));
+        var imagen = ts.IconoPath;
+        ser.DeleteTipoServicio(id); // si tiene facturas, el filtro global avisa del error
+        EliminarImagen(imagen);
+        TempData["Exito"] = "Servicio eliminado.";
         return RedirectToAction(nameof(Index));
+    }
+
+    private void ValidarImagen(IFormFile? archivo)
+    {
+        if (archivo == null) return;
+        if (!Extensiones.Contains(Path.GetExtension(archivo.FileName).ToLowerInvariant()))
+            ModelState.AddModelError(nameof(TipoServicio.ImagenArchivo), "El archivo debe ser una imagen.");
+        else if (archivo.Length > 5 * 1024 * 1024)
+            ModelState.AddModelError(nameof(TipoServicio.ImagenArchivo), "La imagen no puede superar 5 MB.");
+    }
+
+    private string GuardarImagen(IFormFile archivo)
+    {
+        Directory.CreateDirectory(Carpeta);
+        var nombre = Guid.NewGuid().ToString("N") + Path.GetExtension(archivo.FileName).ToLowerInvariant();
+        using var fs = new FileStream(Path.Combine(Carpeta, nombre), FileMode.Create);
+        archivo.CopyTo(fs);
+        return nombre;
+    }
+
+    private void EliminarImagen(string? nombre)
+    {
+        if (string.IsNullOrEmpty(nombre) || nombre == ImagenPorDefecto || nombre.StartsWith("fa-")) return;
+        var ruta = Path.Combine(Carpeta, Path.GetFileName(nombre));
+        if (System.IO.File.Exists(ruta)) System.IO.File.Delete(ruta);
     }
 }

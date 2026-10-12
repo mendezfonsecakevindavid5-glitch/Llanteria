@@ -1,0 +1,16 @@
+@if (TempData["Exito"] is string exito)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({ icon: 'success', title: 'Listo', text: @Json.Serialize(exito), confirmButtonColor: '#C92B0A', confirmButtonText: 'Entendido' });
+        });
+    </script>
+}
+@if (TempData["Error"] is string error)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({ icon: 'error', title: 'No se pudo completar', text: @Json.Serialize(error), confirmButtonColor: '#212529', confirmButtonText: 'Entendido' });
+        });
+    </script>
+}

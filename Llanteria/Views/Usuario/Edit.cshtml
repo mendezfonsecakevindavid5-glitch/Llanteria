@@ -1,50 +1,54 @@
-﻿@model Llanteria.Models.Usuario
+@model Llanteria.Models.Usuario
 
 @{
-    ViewData["Title"] = "Editar Usuario";
+    ViewData["Title"] = "Editar usuario";
 }
 
-<div class="row justify-content-center mt-4">
-    <div class="col-md-6">
-        <div class="card shadow border-0">
-            <div class="card-header bg-warning">
-                <h5 class="mb-0"><i class="fa-solid fa-user-gear"></i> Ajustes de Cuenta</h5>
+@await Html.PartialAsync("_PageHeader", new PageHeader("Editar usuario", "Cambia el rol o el estado de la cuenta.", "Usuario", "Index"))
+
+<div class="panel panel-narrow">
+    <div class="panel-body">
+        <dl class="detail-list mb-3">
+            <dt>Usuario</dt><dd>@Model.Username</dd>
+            <dt>Empleado</dt><dd>@Model.IdEmpleadoNavigation?.Nombres @Model.IdEmpleadoNavigation?.Apellidos</dd>
+            <dt>Correo</dt><dd>@Model.Correo</dd>
+        </dl>
+
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+            <div class="mb-3">
+                <label class="form-label" for="idRol">Rol</label>
+                <select id="idRol" name="idRol" class="form-select" asp-items="ViewBag.IdRol"></select>
             </div>
-            <div class="card-body">
-                <form asp-action="Edit">
-                    <input type="hidden" asp-for="Id" />
-
-                    <div class="mb-3">
-                        <label asp-for="Username" class="form-label fw-bold"></label>
-                        <input asp-for="Username" class="form-control" readonly />
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Cambiar Estado</label>
-                            <select asp-for="Estado" class="form-select">
-                                <option value="Activo">Activo</option>
-                                <option value="Inactivo">Inactivo</option>
-                                <option value="Baneado">Baneado</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Cambiar Rol</label>
-                            <select asp-for="IdRol" class="form-select" asp-items="ViewBag.IdRol"></select>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="MotivoSancion" class="form-label fw-bold">Motivo de Sanción (Opcional)</label>
-                        <textarea asp-for="MotivoSancion" class="form-control" rows="2"></textarea>
-                    </div>
-
-                    <div class="text-end mt-3">
-                        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
-                        <button type="submit" class="btn btn-dark">Actualizar Cuenta</button>
-                    </div>
-                </form>
+            <div class="mb-3">
+                <label class="form-label" for="estado">Estado</label>
+                <select id="estado" name="estado" class="form-select" asp-items="ViewBag.Estados"></select>
+                <span class="text-danger small">@Html.ValidationMessage("Estado")</span>
             </div>
-        </div>
+            <div id="sancion" class="@(Model.Estado == "Baneado" ? "" : "d-none")">
+                <div class="mb-3">
+                    <label class="form-label" for="motivoSancion">Motivo de la sanción</label>
+                    <input id="motivoSancion" name="motivoSancion" class="form-control" maxlength="255" value="@Model.MotivoSancion" />
+                    <span class="text-danger small">@Html.ValidationMessage("MotivoSancion")</span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="fechaFinBaneo">Baneado hasta</label>
+                    <input id="fechaFinBaneo" name="fechaFinBaneo" type="datetime-local" class="form-control"
+                           value="@Model.FechaFinBaneo?.ToString("yyyy-MM-ddTHH:mm")" />
+                    <div class="form-text">Déjalo vacío para un baneo sin fecha de fin.</div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <a asp-action="Index" class="btn btn-line">Cancelar</a>
+                <button type="submit" class="btn btn-brand">Guardar</button>
+            </div>
+        </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        const estado = document.getElementById('estado');
+        const sancion = document.getElementById('sancion');
+        estado.addEventListener('change', () => sancion.classList.toggle('d-none', estado.value !== 'Baneado'));
+    </script>
+}

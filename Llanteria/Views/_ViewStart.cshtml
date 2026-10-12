@@ -1,3 +1,9 @@
-﻿@{
-    Layout = "_Layout";
+@{
+    // Las páginas públicas usan el diseño del sitio; el resto, el del panel.
+    var controlador = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var accion = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var publicos = new[] { "Home", "Account", "Contacto", "Servicios", "Nosotros", "Promociones", "Citas", "MiCuenta" };
+    // Citas/Index es la gestión del personal: va con el panel.
+    var esPublico = publicos.Contains(controlador) && !(controlador == "Citas" && accion == "Index");
+    Layout = esPublico ? "_Layout" : "_AdminLayout";
 }

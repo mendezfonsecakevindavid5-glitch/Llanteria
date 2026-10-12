@@ -1,499 +1,61 @@
-﻿@model IEnumerable<Llanteria.Models.Cliente>
+@using Llanteria.Infrastructure
+@model Paginado<Llanteria.Models.Cliente>
 
 @{
-    ViewData["Title"] = "Gestión de Clientes";
+    ViewData["Title"] = "Clientes";
 }
 
-<div class="container-fluid catalogo-container">
+@await Html.PartialAsync("_PageHeader", new PageHeader("Clientes", "Directorio de clientes y sus puntos.", BotonTexto: "Nuevo cliente", BotonAction: "Create", BotonController: "Cliente"))
 
-    <!-- Encabezado -->
-    <div class="catalogo-header">
-        <div>
-            <a asp-controller="Dashboard" asp-action="Index" class="volver-panel">
-                <i class="fa-solid fa-arrow-left me-2"></i>Volver al Panel
-            </a>
-
-            <div class="titulo-con-icono">
-                <div class="icono-catalogo">
-                    <i class="fa-solid fa-address-book"></i>
-                </div>
-
-                <div>
-                    <h1>CLIENTES</h1>
-                    <p>Directorio de clientes, información de contacto y puntos acumulados.</p>
-                </div>
-            </div>
-        </div>
-
-        <a asp-action="Create" class="btn-nuevo-cliente">
-            <i class="fa-solid fa-user-plus me-2"></i>Nuevo Cliente
-        </a>
+<div class="panel">
+    <div class="panel-head">
+        <form method="get" class="d-flex gap-2 flex-wrap w-100">
+            <input name="buscar" value="@ViewBag.Buscar" type="search" class="form-control form-control-sm" style="max-width:260px" placeholder="Buscar nombre, documento, teléfono o correo" />
+            <button class="btn btn-line btn-sm">Buscar</button>
+            <a asp-action="Exportar" asp-route-buscar="@ViewBag.Buscar" class="btn btn-line btn-sm ms-auto"><i class="fa-solid fa-file-excel me-1"></i>Exportar a Excel</a>
+        </form>
     </div>
-
-    <!-- Tabla -->
-    <div class="tabla-wrapper">
-        <div class="table-responsive">
-            <table class="tabla-clientes">
-                <thead>
+    <div class="table-responsive">
+        <table class="data-table" >
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Documento</th>
+                    <th>Contacto</th>
+                    <th class="text-end">Puntos</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model.Items)
+                {
                     <tr>
-                        <th class="col-cliente">NOMBRE COMPLETO</th>
-                        <th class="col-documento">IDENTIFICACIÓN</th>
-                        <th class="col-contacto">INFORMACIÓN DE CONTACTO</th>
-                        <th class="col-puntos text-center">PUNTOS PREMIUM</th>
-                        <th class="col-acciones text-center">ACCIONES</th>
+                        <td class="cell-title">@c.Nombres @c.Apellidos</td>
+                        <td>@c.IdDocumentoNavigation?.SiglasPresentacion @c.NumeroDocumento</td>
+                        <td>
+                            <div>@c.Telefono</div>
+                            <div class="cell-sub">@c.Correo</div>
+                        </td>
+                        <td class="text-end">@c.PuntosAcumulados.ToString("N0")</td>
+                        <td class="text-end">
+                            <span class="row-actions">
+                                <a asp-controller="Factura" asp-action="Create" asp-route-idCliente="@c.Id" class="icon-btn" title="Nueva factura"><i class="fa-solid fa-file-invoice"></i></a>
+                                <a asp-controller="Vehiculo" asp-action="Create" asp-route-idCliente="@c.Id" class="icon-btn" title="Agregar vehículo"><i class="fa-solid fa-car"></i></a>
+                                <a asp-action="Edit" asp-route-id="@c.Id" class="icon-btn" title="Editar"><i class="fa-solid fa-pen"></i></a>
+                                <button type="button" class="icon-btn danger" title="Eliminar"
+                                        data-delete="@Url.Action("Delete", new { id = c.Id })" data-nombre="@c.Nombres @c.Apellidos"
+                                        data-aviso="No se puede eliminar si tiene facturas o vehículos."><i class="fa-solid fa-trash"></i></button>
+                            </span>
+                        </td>
                     </tr>
-                </thead>
-
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        var nombreCompleto = $"{item.Nombres} {item.Apellidos}".Trim();
-                        var nombreJs = System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(nombreCompleto);
-
-                        <tr>
-                            <!-- Cliente -->
-                            <td>
-                                <div class="cliente-info">
-                                    <div class="cliente-avatar">
-                                        <i class="fa-solid fa-user"></i>
-                                    </div>
-
-                                    <div>
-                                        <div class="cliente-nombre">
-                                            @(string.IsNullOrWhiteSpace(nombreCompleto)
-                                                ? "Cliente sin nombre"
-                                                : nombreCompleto)
-                                        </div>
-
-                                        <span class="sexo-badge">
-                                            <i class="fa-solid fa-venus-mars me-1"></i>
-                                            @(item.IdSexoNavigation?.Nombre ?? "No especificado")
-                                        </span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <!-- Documento -->
-                            <td>
-                                <div class="documento-info">
-                                    <span class="documento-tipo">
-                                        @(item.IdDocumentoNavigation?.Nombre ?? "Documento")
-                                    </span>
-
-                                    <span class="documento-numero">
-                                        @(string.IsNullOrWhiteSpace(item.NumeroDocumento)
-                                            ? "No registrado"
-                                            : item.NumeroDocumento)
-                                    </span>
-                                </div>
-                            </td>
-
-                            <!-- Contacto -->
-                            <td>
-                                <div class="contacto-info">
-                                    <div class="contacto-linea">
-                                        <i class="fa-solid fa-phone"></i>
-                                        <span>
-                                            @(string.IsNullOrWhiteSpace(item.Telefono)
-                                                ? "Sin teléfono"
-                                                : item.Telefono)
-                                        </span>
-                                    </div>
-
-                                    <div class="contacto-linea correo-linea">
-                                        <i class="fa-solid fa-envelope"></i>
-                                        <span>
-                                            @(string.IsNullOrWhiteSpace(item.Correo)
-                                                ? "Sin correo"
-                                                : item.Correo)
-                                        </span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <!-- Puntos -->
-                            <td class="text-center">
-                                <span class="puntos-badge">
-                                    <i class="fa-solid fa-star me-1"></i>
-                                    @item.PuntosAcumulados
-                                </span>
-                            </td>
-
-                            <!-- Acciones -->
-                            <td class="text-center">
-                                <div class="acciones">
-                                    <a asp-action="Edit"
-                                       asp-route-id="@item.Id"
-                                       class="btn-accion btn-editar"
-                                       title="Editar cliente">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                    </a>
-
-                                    <button type="button"
-                                            class="btn-accion btn-eliminar"
-                                            title="Eliminar cliente"
-                                            onclick="confirmarEliminar(@item.Id, '@Html.Raw(nombreJs)')">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                }
+                @if (!Model.Items.Any())
+                {
+                    <tr><td colspan="5" class="empty-state">Aún no hay clientes registrados.</td></tr>
+                }
+            </tbody>
+        </table>
     </div>
+    @await Html.PartialAsync("_Paginacion", (Model.Pagina, Model.TotalPaginas, Model.Total))
 </div>
 
-<style>
-    body {
-        background: #f7f8fa;
-        color: #222;
-    }
-
-    .catalogo-container {
-        max-width: 1500px;
-        margin: 0 auto;
-        padding: 22px 28px 40px;
-    }
-
-    .catalogo-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 25px;
-    }
-
-    .volver-panel {
-        display: inline-block;
-        margin-bottom: 10px;
-        color: #555;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: color .2s ease;
-    }
-
-    .volver-panel:hover {
-        color: #c9250c;
-    }
-
-    .titulo-con-icono {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .icono-catalogo {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        color: #c9250c;
-        font-size: 31px;
-    }
-
-    .titulo-con-icono h1 {
-        margin: 0;
-        color: #20252b;
-        font-size: 31px;
-        font-weight: 800;
-        letter-spacing: -1px;
-    }
-
-    .titulo-con-icono p {
-        margin: 2px 0 0;
-        color: #777;
-        font-size: 14px;
-    }
-
-    .btn-nuevo-cliente {
-        display: inline-flex;
-        align-items: center;
-        padding: 11px 23px;
-        border-radius: 8px;
-        background: #c9250c;
-        color: #fff;
-        font-size: 15px;
-        font-weight: 700;
-        text-decoration: none;
-        box-shadow: 0 3px 7px rgba(201, 37, 12, .20);
-        transition: all .2s ease;
-    }
-
-    .btn-nuevo-cliente:hover {
-        background: #a91d09;
-        color: #fff;
-        transform: translateY(-1px);
-    }
-
-    .tabla-wrapper {
-        overflow: hidden;
-        border: 1px solid #d9d9d9;
-        border-radius: 15px 15px 0 0;
-        background: #fff;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
-    }
-
-    .tabla-clientes {
-        width: 100%;
-        margin: 0;
-        border-collapse: collapse;
-    }
-
-    .tabla-clientes thead {
-        background: #fff;
-    }
-
-    .tabla-clientes th {
-        padding: 13px 18px;
-        border-bottom: 1px solid #d8d8d8;
-        color: #20252b;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 1.35px;
-        white-space: nowrap;
-    }
-
-    .tabla-clientes td {
-        min-height: 82px;
-        padding: 11px 18px;
-        border-bottom: 1px solid #dedede;
-        vertical-align: middle;
-        font-size: 14px;
-    }
-
-    .tabla-clientes tbody tr:last-child td {
-        border-bottom: 0;
-    }
-
-    .tabla-clientes tbody tr:hover {
-        background: #fffaf8;
-    }
-
-    .col-cliente {
-        width: 29%;
-    }
-
-    .col-documento {
-        width: 19%;
-    }
-
-    .col-contacto {
-        width: 30%;
-    }
-
-    .col-puntos {
-        width: 13%;
-    }
-
-    .col-acciones {
-        width: 9%;
-    }
-
-    .cliente-info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .cliente-avatar {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 48px;
-        height: 48px;
-        flex-shrink: 0;
-        border-radius: 9px;
-        background: linear-gradient(135deg, #252a30, #5c6268);
-        color: #fff;
-        font-size: 19px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, .12);
-    }
-
-    .cliente-nombre {
-        margin-bottom: 4px;
-        color: #20252b;
-        font-size: 15px;
-        font-weight: 800;
-    }
-
-    .sexo-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 4px 8px;
-        border: 1px solid #dfe3e6;
-        border-radius: 5px;
-        background: #f5f6f7;
-        color: #697078;
-        font-size: 11px;
-        font-weight: 700;
-    }
-
-    .documento-info {
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-    }
-
-    .documento-tipo {
-        color: #858b90;
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: .3px;
-        text-transform: uppercase;
-    }
-
-    .documento-numero {
-        color: #343a40;
-        font-size: 14px;
-        font-weight: 800;
-    }
-
-    .contacto-info {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    .contacto-linea {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        color: #444b52;
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    .contacto-linea i {
-        width: 14px;
-        color: #8b9298;
-        text-align: center;
-    }
-
-    .correo-linea {
-        overflow: hidden;
-        color: #747b81;
-    }
-
-    .correo-linea span {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .puntos-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 8px 13px;
-        border: 1px solid #f0ce7a;
-        border-radius: 999px;
-        background: #fff6dc;
-        color: #8a5b00;
-        font-size: 13px;
-        font-weight: 800;
-        white-space: nowrap;
-    }
-
-    .puntos-badge i {
-        color: #e5a900;
-    }
-
-    .acciones {
-        display: flex;
-        justify-content: center;
-        gap: 5px;
-    }
-
-    .btn-accion {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 33px;
-        height: 33px;
-        border: 1px solid;
-        border-radius: 8px;
-        background: #fff;
-        font-size: 14px;
-        text-decoration: none;
-        transition: all .2s ease;
-    }
-
-    .btn-editar {
-        border-color: #252525;
-        color: #252525;
-    }
-
-    .btn-eliminar {
-        border-color: #c9250c;
-        color: #c9250c;
-    }
-
-    .btn-editar:hover {
-        background: #252525;
-        color: #fff;
-    }
-
-    .btn-eliminar:hover {
-        background: #c9250c;
-        color: #fff;
-    }
-
-    @@media (max-width: 992px) {
-        .catalogo-container {
-            padding: 18px 12px 30px;
-        }
-
-        .catalogo-header {
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        .btn-nuevo-cliente {
-            align-self: stretch;
-            justify-content: center;
-        }
-
-        .titulo-con-icono h1 {
-            font-size: 25px;
-        }
-
-        .tabla-clientes th,
-        .tabla-clientes td {
-            padding: 10px 12px;
-        }
-    }
-</style>
-
-@section Scripts {
-    <script>
-        function confirmarEliminar(id, nombre) {
-            Swal.fire({
-                title: '¿Eliminar cliente?',
-                html: `
-                    <p class="mb-2">Estás a punto de eliminar permanentemente a:</p>
-                    <strong>${nombre}</strong>
-                    <p class="mt-3 mb-0 text-danger small">
-                        Esta acción puede afectar las facturas y vehículos asociados.
-                    </p>
-                `,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#c9250c',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: '<i class="fa-solid fa-trash me-1"></i>Sí, eliminar',
-                cancelButtonText: 'Cancelar',
-                reverseButtons: true,
-                focusCancel: true,
-                customClass: {
-                    popup: 'rounded-xl'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '/Cliente/Delete/' + id;
-                }
-            });
-        }
-    </script>
-}

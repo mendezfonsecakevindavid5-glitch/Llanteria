@@ -1,119 +1,209 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Llanteria.Data;
+using Llanteria.Infrastructure;
 using Llanteria.Models;
 using Llanteria.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
-namespace Llanteria.Controllers
+namespace Llanteria.Controllers;
+
+public class ClienteController : Controller
 {
-    public class ClienteController : Controller
+    private readonly ClienteService ser;
+    private readonly TipoDocumentoService docSer;
+    private readonly SexoService sexoSer;
+    private readonly LlanteriaDbContext _db;
+
+    public ClienteController(ClienteService clienteService, TipoDocumentoService documentoService,
+        SexoService sexoService, LlanteriaDbContext db)
     {
-        private readonly ClienteService ser;
-        private readonly TipoDocumentoService docSer;
-        private readonly SexoService sexoSer;
+        ser = clienteService;
+        docSer = documentoService;
+        sexoSer = sexoService;
+        _db = db;
+    }
 
-        public ClienteController(ClienteService clienteService, TipoDocumentoService documentoService, SexoService sexoService)
+    public IActionResult Index(string? buscar, int pagina = 1)
+    {
+        ViewBag.Buscar = buscar;
+        return View(Paginado<Cliente>.De(Filtrar(buscar), pagina));
+    }
+
+    public IActionResult Exportar(string? buscar)
+    {
+        var filas = Filtrar(buscar).ToList().Select(c => new string?[]
         {
-            ser = clienteService;
-            docSer = documentoService;
-            sexoSer = sexoService;
+            $"{c.Nombres} {c.Apellidos}".Trim(), c.IdDocumentoNavigation?.SiglasPresentacion, c.NumeroDocumento,
+            c.Telefono, c.Correo, c.PuntosAcumulados.ToString()
+        });
+        return Csv.Archivo("clientes", new[] { "Cliente", "Tipo doc.", "Documento", "Teléfono", "Correo", "Puntos" }, filas);
+    }
+
+    private IQueryable<Cliente> Filtrar(string? buscar)
+    {
+        var q = _db.Clientes.AsNoTracking().Include(c => c.IdDocumentoNavigation).AsQueryable();
+        if (!string.IsNullOrWhiteSpace(buscar))
+        {
+            var t = buscar.Trim();
+            q = q.Where(c => c.Nombres.Contains(t) || c.Apellidos.Contains(t) || c.NumeroDocumento.Contains(t)
+                             || c.Telefono.Contains(t) || c.Correo.Contains(t));
         }
+        return q.OrderBy(c => c.Nombres).ThenBy(c => c.Apellidos);
+    }
 
-        // --- ACCIONES DE ADMINISTRACIÓN (SOLO ADMINS) ---
-        [Authorize]
-        public IActionResult Index() => View(ser.GetClientes());
+    public IActionResult Create()
+    {
+        CargarCombos();
+        return View(new Cliente());
+    }
 
-        [Authorize]
-        public IActionResult Create()
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Create(Cliente c)
+    {
+        ValidarDuplicados(c);
+        if (!ModelState.IsValid)
         {
-            CargarCombos();
-            return View();
-        }
-
-        [HttpPost]
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Cliente c)
-        {
-            if (ModelState.IsValid)
-            {
-                ser.AddCliente(c);
-                return RedirectToAction(nameof(Index));
-            }
-            CargarCombos();
+            CargarCombos(c);
             return View(c);
         }
 
-        // --- REGISTRO PÚBLICO (CLUB DE PUNTOS) ---
-        [AllowAnonymous]
-        public IActionResult Register()
+        c.PuntosAcumulados = 0;
+        ser.AddCliente(c);
+        TempData["Exito"] = "Cliente registrado.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    public IActionResult Edit(int id)
+    {
+        var c = ser.GetCliente(id);
+        if (c == null) return NotFound();
+        CargarCombos(c);
+        return View(c);
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Edit(int id, Cliente c)
+    {
+        c.Id = id;
+        var original = _db.Clientes.Find(id);
+        if (original == null) return NotFound();
+
+        ValidarDuplicados(c);
+        if (!ModelState.IsValid)
         {
-            CargarCombos();
-            return View(); // Busca en Views/Cliente/Register.cshtml
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public IActionResult Register(Cliente c)
-        {
-            if (!ModelState.IsValid)
-            {
-                CargarCombos();
-                return View(c);
-            }
-
-            try
-            {
-                ser.AddCliente(c);
-                return RedirectToAction(nameof(ConfirmacionRegistro));
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Error al registrarse: " + ex.Message);
-                CargarCombos();
-                return View(c);
-            }
-        }
-
-        [AllowAnonymous]
-        public IActionResult ConfirmacionRegistro() => View();
-
-        // --- OTRAS ACCIONES ADMINISTRATIVAS ---
-        [Authorize]
-        public IActionResult Edit(int id)
-        {
-            var c = ser.GetCliente(id);
-            if (c == null) return NotFound();
-            CargarCombos();
+            c.PuntosAcumulados = original.PuntosAcumulados;
+            CargarCombos(c);
             return View(c);
         }
 
-        [HttpPost]
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Cliente c)
+        // Los puntos y la foto no se editan desde este formulario.
+        original.Nombres = c.Nombres.Trim();
+        original.Apellidos = c.Apellidos.Trim();
+        original.IdDocumento = c.IdDocumento;
+        original.NumeroDocumento = c.NumeroDocumento.Trim();
+        original.Telefono = c.Telefono.Trim();
+        original.Correo = c.Correo.Trim();
+        original.IdSexo = c.IdSexo;
+        _db.SaveChanges();
+        TempData["Exito"] = "Cliente actualizado.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Delete(int id)
+    {
+        ser.DeleteCliente(id); // si tiene facturas o vehículos, el filtro global avisa del error
+        TempData["Exito"] = "Cliente eliminado.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    // --- Puntos de fidelidad ---
+
+    public IActionResult GestionPuntos()
+    {
+        ViewBag.Incentivos = _db.CatalogoIncentivos.AsNoTracking()
+            .Where(p => p.StockDisponible == null || p.StockDisponible > 0)
+            .OrderBy(p => p.PuntosRequeridos)
+            .Select(p => new { id = p.Id, nombre = p.NombrePremio, puntos = p.PuntosRequeridos })
+            .ToList();
+        return View(ser.GetClientesPorPuntos());
+    }
+
+    // El canje lo registra el personal en el mostrador: descuenta puntos y stock del premio y deja constancia de quién lo entregó.
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Canjear(int id, int idIncentivo)
+    {
+        var cliente = _db.Clientes.Find(id);
+        var premio = _db.CatalogoIncentivos.Find(idIncentivo);
+        if (cliente == null || premio == null) return NotFound();
+
+        if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var idUsuario))
         {
-            if (ModelState.IsValid)
-            {
-                ser.UpdateCliente(c);
-                return RedirectToAction(nameof(Index));
-            }
-            CargarCombos();
-            return View(c);
+            TempData["Error"] = "No se pudo identificar al usuario que entrega el premio.";
+            return RedirectToAction(nameof(GestionPuntos));
+        }
+        if (premio.StockDisponible is <= 0)
+        {
+            TempData["Error"] = $"«{premio.NombrePremio}» no tiene unidades disponibles.";
+            return RedirectToAction(nameof(GestionPuntos));
+        }
+        if (cliente.PuntosAcumulados < premio.PuntosRequeridos)
+        {
+            TempData["Error"] = $"{cliente.Nombres} tiene {cliente.PuntosAcumulados:N0} puntos y el premio cuesta {premio.PuntosRequeridos:N0}.";
+            return RedirectToAction(nameof(GestionPuntos));
         }
 
-        [Authorize]
-        public IActionResult Delete(int id)
+        cliente.PuntosAcumulados -= premio.PuntosRequeridos;
+        if (premio.StockDisponible.HasValue) premio.StockDisponible--;
+        _db.CanjeIncentivos.Add(new CanjeIncentivo
         {
-            ser.DeleteCliente(id);
-            return RedirectToAction(nameof(Index));
+            IdCliente = cliente.Id,
+            IdIncentivo = premio.Id,
+            FechaCanje = DateTime.Now,
+            EntregadoPor = idUsuario
+        });
+        _db.SaveChanges();
+
+        TempData["Exito"] = $"Canje registrado: {cliente.Nombres} {cliente.Apellidos} recibió «{premio.NombrePremio}» y le quedan {cliente.PuntosAcumulados:N0} puntos.";
+        return RedirectToAction(nameof(GestionPuntos));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult ModificarPuntos(int id, int cantidad, string operacion)
+    {
+        var cliente = _db.Clientes.Find(id);
+        if (cliente == null) return NotFound();
+
+        if (cantidad <= 0 || (operacion != "sumar" && operacion != "restar"))
+        {
+            TempData["Error"] = "Indica una cantidad de puntos mayor a cero.";
+            return RedirectToAction(nameof(GestionPuntos));
         }
 
-        private void CargarCombos()
-        {
-            ViewBag.IdDocumento = new SelectList(docSer.GetTipoDocumentos() ?? new List<TipoDocumento>(), "Id", "Nombre");
-            ViewBag.IdSexo = new SelectList(sexoSer.GetSexos() ?? new List<Sexo>(), "Id", "Nombre");
-        }
+        cliente.PuntosAcumulados = operacion == "sumar"
+            ? cliente.PuntosAcumulados + cantidad
+            : Math.Max(0, cliente.PuntosAcumulados - cantidad);
+        _db.SaveChanges();
+
+        TempData["Exito"] = $"{cliente.Nombres} {cliente.Apellidos} ahora tiene {cliente.PuntosAcumulados:N0} puntos.";
+        return RedirectToAction(nameof(GestionPuntos));
+    }
+
+    private void ValidarDuplicados(Cliente c)
+    {
+        var doc = (c.NumeroDocumento ?? "").Trim();
+        var correo = (c.Correo ?? "").Trim().ToLower();
+        if (_db.Clientes.AsNoTracking().Any(x => x.Id != c.Id && x.NumeroDocumento == doc))
+            ModelState.AddModelError(nameof(Cliente.NumeroDocumento), "Ya existe un cliente con ese documento.");
+        if (_db.Clientes.AsNoTracking().Any(x => x.Id != c.Id && x.Correo.ToLower() == correo))
+            ModelState.AddModelError(nameof(Cliente.Correo), "Ya existe un cliente con ese correo.");
+    }
+
+    private void CargarCombos(Cliente? c = null)
+    {
+        ViewBag.IdDocumento = new SelectList(docSer.GetTipoDocumentos(), "Id", "Nombre", c?.IdDocumento);
+        ViewBag.IdSexo = new SelectList(sexoSer.GetSexos(), "Id", "Nombre", c?.IdSexo);
     }
 }

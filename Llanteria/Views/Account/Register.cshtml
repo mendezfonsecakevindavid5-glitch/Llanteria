@@ -1,573 +1,87 @@
-﻿@model Llanteria.Models.Cliente
+@model Llanteria.Models.Cliente
 
 @{
-    ViewData["Title"] = "Crear cuenta";
+    ViewData["Title"] = "Club de puntos";
 }
 
-<style>
-    .register-container-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: calc(100vh - 250px);
-        padding: 2rem 1rem;
-    }
+<div class="auth-wrap wide">
+    <div class="auth-card">
+        <h1>Únete al club de puntos</h1>
+        <p class="text-muted mb-4">Regístrate, recibe 50 puntos de bienvenida y consulta tus puntos cuando quieras. Verificaremos tu correo con un código.</p>
 
-    @@keyframes slideUpEntrance {
-        0% { opacity: 0; transform: translateY(30px); }
-        100% { opacity: 1; transform: translateY(0); }
-    }
-
-    .entrance-register-card {
-        background-color: #ffffff;
-        width: 100%;
-        max-width: 650px;
-        border-radius: 1.5rem;
-        padding: 2.5rem;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
-        animation: slideUpEntrance 0.6s ease-out forwards;
-    }
-
-    .header-group {
-        margin-bottom: 2rem;
-        text-align: center;
-    }
-
-    .form-main-title {
-        font-size: 1.7rem;
-        font-weight: 800;
-        color: #000000;
-    }
-
-    .custom-field-label {
-        display: block;
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #000000;
-        margin-bottom: 0.5rem;
-        text-align: left;
-    }
-
-    .custom-input {
-        height: 55px;
-        font-size: 1.1rem;
-        border: 1px solid #ced4da;
-        border-radius: 0.5rem;
-        width: 100%;
-        padding-left: 15px;
-        padding-right: 15px;
-        background-color: #fff;
-    }
-
-    .unified-document-group {
-        display: flex;
-        align-items: center;
-        border: 1px solid #ced4da;
-        border-radius: 0.5rem;
-        height: 55px;
-        position: relative;
-        background-color: #fff;
-    }
-
-    .unified-document-group:focus-within {
-        border-color: #86b7fe;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-
-    .doc-type-selector {
-        display: flex;
-        align-items: center;
-        height: 100%;
-        cursor: pointer;
-        user-select: none;
-        padding-left: 15px;
-        padding-right: 10px;
-        border-radius: 0.5rem 0 0 0.5rem;
-    }
-
-    .doc-divider {
-        width: 1px;
-        height: 60%;
-        background-color: #adb5bd;
-        margin: 0 5px;
-    }
-
-    .doc-number-input {
-        flex-grow: 1;
-        border: none;
-        outline: none;
-        padding-left: 10px;
-        height: 100%;
-        background: transparent;
-        border-radius: 0 0.5rem 0.5rem 0;
-        font-size: 1.1rem;
-    }
-
-    .doc-arrow {
-        color: #000000;
-        font-size: 0.9rem;
-        transition: transform 0.3s ease;
-        margin-right: 8px;
-    }
-
-    .doc-arrow.rotate {
-        transform: rotate(-180deg);
-    }
-
-    .doc-acronym {
-        color: #000000;
-        font-weight: 600;
-        font-size: 1.05rem;
-        white-space: nowrap;
-    }
-
-    .custom-dropdown-menu {
-        position: absolute;
-        top: calc(100% + 5px);
-        left: 0;
-        width: 220px;
-        background: #ffffff;
-        border: 1px solid #ced4da;
-        border-radius: 0.5rem;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        padding: 0;
-        list-style: none;
-        display: none;
-        z-index: 100;
-        max-height: 200px;
-        overflow-y: auto;
-    }
-
-    .custom-dropdown-menu.show {
-        display: block;
-    }
-
-    .custom-dropdown-item {
-        padding: 12px 15px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        border-bottom: 1px solid #f1f1f1;
-        font-size: 0.95rem;
-    }
-
-    .custom-dropdown-item:last-child {
-        border-bottom: none;
-    }
-
-    .custom-dropdown-item:hover {
-        background-color: #f8f9fa;
-    }
-
-    .custom-error-text {
-        color: var(--llanteria-primary, #C92B0A);
-        font-weight: 600;
-        font-size: 0.95rem;
-        margin-top: 0.8rem;
-        display: none;
-    }
-
-    .btn-register-submit {
-        background-color: var(--llanteria-primary, #C92B0A) !important;
-        color: #ffffff !important;
-        border: none !important;
-        font-size: 1.1rem;
-        padding: 1rem;
-        font-weight: 700;
-        transition: filter 0.3s ease;
-    }
-
-    .btn-register-submit:hover {
-        filter: brightness(0.85);
-    }
-
-    .back-link-hover {
-        color: #6c757d;
-        text-decoration: none;
-        font-size: 1.1rem;
-        font-weight: 600;
-        position: relative;
-        display: inline-block;
-        padding-bottom: 2px;
-        transition: color 0.2s ease;
-        cursor: pointer;
-    }
-
-    .back-link-hover:hover {
-        color: #000000;
-    }
-
-    .otp-wrapper {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin: 1.5rem 0 0.5rem 0;
-    }
-
-    .otp-input {
-        width: 55px;
-        height: 65px;
-        border: 2px solid #000000;
-        background-color: transparent;
-        border-radius: 0.5rem;
-        text-align: center;
-        font-size: 2rem;
-        font-weight: 700;
-        color: #212529;
-        outline: none;
-        transition: border-color 0.2s ease, transform 0.1s ease;
-    }
-
-    .otp-input:focus {
-        border-color: var(--llanteria-primary, #C92B0A);
-        transform: translateY(-2px);
-    }
-
-    .timer-display {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #dc3545;
-        text-align: center;
-        display: block;
-        margin-bottom: 0.5rem;
-    }
-
-    .expired-text-notice {
-        color: #dc3545;
-        font-weight: 700;
-        font-size: 0.95rem;
-        display: none;
-        margin-bottom: 0.5rem;
-    }
-</style>
-
-<div class="register-container-wrapper">
-    <div class="entrance-register-card">
-        <div class="header-group">
-            <div class="d-flex align-items-center justify-content-center">
-                <i id="headerIcon" class="fa-solid fa-user-plus text-dark me-3" style="font-size: 2.5rem;"></i>
-                <h2 id="mainTitle" class="form-main-title m-0 fw-bold">Crear cuenta</h2>
-            </div>
-        </div>
-
-        <form asp-controller="Account" asp-action="Register" method="post" id="registerForm" novalidate>
-            @Html.AntiForgeryToken()
+        <form asp-action="Register" method="post" data-otp novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
             <div class="row g-3">
-                <div id="etapa1">
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="custom-field-label">Documento</label>
-                            <div class="unified-document-group">
-                                <input type="hidden" id="hiddenIdDocumento" name="IdDocumento" required />
-                                <div class="doc-type-selector" id="docSelectorToggle">
-                                    <i class="fa-solid fa-chevron-down doc-arrow" id="docArrowIcon"></i>
-                                    <span class="doc-acronym" id="docAcronymText">---</span>
-                                </div>
-                                <div class="doc-divider"></div>
-                                <input asp-for="NumeroDocumento" class="doc-number-input" type="text" id="NumeroDocumento" autocomplete="off" placeholder="Ingresa el número de tu documento" required />
-                                <ul class="custom-dropdown-menu" id="docDropdownMenu">
-                                    @if (ViewBag.TiposDocumento != null)
-                                    {
-                                        foreach (var tipo in (IEnumerable<Llanteria.Models.TipoDocumento>)ViewBag.TiposDocumento)
-                                        {
-                                            string siglas = !string.IsNullOrEmpty(tipo.SiglasPresentacion) 
-                                                ? tipo.SiglasPresentacion 
-                                                : (tipo.Nombre.Length >= 3 ? tipo.Nombre.Substring(0, 3).ToUpper() : tipo.Nombre.ToUpper());
-
-                                            <li class="custom-dropdown-item" data-id="@tipo.Id" data-siglas="@siglas">
-                                                @tipo.Nombre
-                                            </li>
-                                        }
-                                    }
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label asp-for="Nombres" class="custom-field-label">Nombres</label>
-                            <input asp-for="Nombres" class="form-control custom-input" type="text" id="Nombres" placeholder="Ingresa tus nombres" required />
-                        </div>
-
-                        <div class="col-md-6">
-                            <label asp-for="Apellidos" class="custom-field-label">Apellidos</label>
-                            <input asp-for="Apellidos" class="form-control custom-input" type="text" id="Apellidos" placeholder="Ingresa tus apellidos" required />
-                        </div>
-
-                        <div class="col-md-6">
-                            <label asp-for="IdSexo" class="custom-field-label">Sexo</label>
-                            <select asp-for="IdSexo" class="form-select custom-input" id="IdSexo" required>
-                                <option value="" disabled selected>Selecciona tu sexo</option>
-                                @if (ViewBag.Sexos != null)
-                                {
-                                    foreach (var sexo in (IEnumerable<Llanteria.Models.Sexo>)ViewBag.Sexos)
-                                    {
-                                        <option value="@sexo.Id">@sexo.Nombre</option>
-                                    }
-                                }
-                            </select>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label asp-for="Telefono" class="custom-field-label">Teléfono</label>
-                            <input asp-for="Telefono" class="form-control custom-input" type="text" id="Telefono" required />
-                        </div>
-
-                        <div class="col-12">
-                            <label asp-for="Correo" class="custom-field-label">Correo electrónico</label>
-                            <input asp-for="Correo" class="form-control custom-input" type="email" id="emailInput" required />
-                        </div>
-                    </div>
+                <div class="col-md-6">
+                    <label asp-for="Nombres" class="form-label">Nombres</label>
+                    <input asp-for="Nombres" class="form-control" maxlength="100" required />
+                    <span asp-validation-for="Nombres" class="text-danger small"></span>
                 </div>
-
-                <div id="etapa2" style="display: none;">
-                    <div class="text-center">
-                        <div class="otp-wrapper" id="otpContainer">
-                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                        </div>
-                        <span class="timer-display" id="timerText">60s</span>
-                        <div id="otpExpiredNotice" class="expired-text-notice">
-                            <i class="fa-solid fa-clock-rotate-left me-1"></i> Este código ya está vencido. Por favor, regresa y solicita uno nuevo.
-                        </div>
-                        <input type="hidden" id="TokenCompleto" name="TokenVerificacion" />
-                    </div>
+                <div class="col-md-6">
+                    <label asp-for="Apellidos" class="form-label">Apellidos</label>
+                    <input asp-for="Apellidos" class="form-control" maxlength="100" required />
+                    <span asp-validation-for="Apellidos" class="text-danger small"></span>
                 </div>
-
-                <div id="generalError" class="custom-error-text text-center mt-3"></div>
-
-                <div class="d-grid mt-4">
-                    <button type="submit" id="btnSiguiente" class="btn btn-register-submit text-uppercase rounded-3">
-                        Siguiente
-                    </button>
+                <div class="col-md-4">
+                    <label asp-for="IdDocumento" class="form-label">Tipo de documento</label>
+                    <select asp-for="IdDocumento" class="form-select" asp-items="ViewBag.IdDocumento" required><option value="0">Seleccione…</option></select>
+                    <span asp-validation-for="IdDocumento" class="text-danger small"></span>
                 </div>
-
-                <div class="text-center mt-4 border-top pt-3">
-                    <a id="btnRegresar" class="back-link-hover">Regresar</a>
+                <div class="col-md-4">
+                    <label asp-for="NumeroDocumento" class="form-label">Número de documento</label>
+                    <input asp-for="NumeroDocumento" class="form-control" maxlength="20" required inputmode="numeric" />
+                    <span asp-validation-for="NumeroDocumento" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="IdSexo" class="form-label">Sexo</label>
+                    <select asp-for="IdSexo" class="form-select" asp-items="ViewBag.IdSexo" required><option value="0">Seleccione…</option></select>
+                    <span asp-validation-for="IdSexo" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Telefono" class="form-label">Teléfono</label>
+                    <input asp-for="Telefono" class="form-control" maxlength="20" required inputmode="tel" />
+                    <span asp-validation-for="Telefono" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Correo" class="form-label">Correo</label>
+                    <input asp-for="Correo" id="emailInput" type="email" class="form-control" maxlength="100" required />
+                    <span asp-validation-for="Correo" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="contrasena">Contraseña</label>
+                    <input id="contrasena" name="contrasena" type="password" class="form-control" minlength="6" required autocomplete="new-password" />
+                    @Html.ValidationMessage("contrasena", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="confirmacion">Repite la contraseña</label>
+                    <input id="confirmacion" name="confirmacion" type="password" class="form-control" minlength="6" required autocomplete="new-password" />
+                    @Html.ValidationMessage("confirmacion", new { @class = "text-danger small" })
                 </div>
             </div>
+
+            <div class="mt-3">
+                <button type="button" id="btnEnviar" class="btn btn-line">Enviar código de verificación</button>
+                <div id="bloqueCodigo" class="d-none mt-3" style="max-width:280px">
+                    <label class="form-label" for="codigo">Código recibido</label>
+                    <input id="codigo" class="form-control otp-input" maxlength="6" inputmode="numeric" autocomplete="one-time-code" />
+                    <button type="button" id="btnVerificar" class="btn btn-brand w-100 mt-2">Verificar</button>
+                </div>
+                <div id="otpEstado" class="small mt-2"></div>
+            </div>
+
+            <button type="submit" id="btnCrear" class="btn btn-hyper-action w-100 py-2 mt-4" disabled>Crear cuenta</button>
+            <p class="small text-muted text-center mt-3 mb-0">¿Ya tienes cuenta? <a asp-action="Login" class="text-llanteria-primary">Inicia sesión</a></p>
         </form>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const etapa1 = document.getElementById('etapa1');
-            const etapa2 = document.getElementById('etapa2');
-            const btnRegresar = document.getElementById('btnRegresar');
-            const mainTitle = document.getElementById('mainTitle');
-            const headerIcon = document.getElementById('headerIcon');
-            const registerForm = document.getElementById('registerForm');
-            const btnSiguiente = document.getElementById('btnSiguiente');
-            const errorContainer = document.getElementById('generalError');
-            const otpExpiredNotice = document.getElementById('otpExpiredNotice');
-            const otpInputs = document.querySelectorAll('.otp-input');
-            const timerText = document.getElementById('timerText');
-            const docInput = document.getElementById('NumeroDocumento');
-            const telInput = document.getElementById('Telefono');
-            const nombresInput = document.getElementById('Nombres');
-            const apellidosInput = document.getElementById('Apellidos');
-            const sexoInput = document.getElementById('IdSexo');
-            const emailInput = document.getElementById('emailInput');
-            const hiddenInput = document.getElementById('hiddenIdDocumento');
-            const toggleBtn = document.getElementById('docSelectorToggle');
-            const dropdownMenu = document.getElementById('docDropdownMenu');
-            const arrowIcon = document.getElementById('docArrowIcon');
-            const acronymText = document.getElementById('docAcronymText');
-            const dropdownItems = document.querySelectorAll('.custom-dropdown-item');
-
-            let countdownInterval;
-            let currentStep = 1;
-
-            if (dropdownItems.length > 0) {
-                const firstItem = dropdownItems[0];
-                hiddenInput.value = firstItem.getAttribute('data-id');
-                acronymText.textContent = firstItem.getAttribute('data-siglas');
-            }
-
-            btnRegresar.addEventListener('click', function (e) {
-                e.preventDefault();
-                errorContainer.style.display = 'none';
-                otpExpiredNotice.style.display = 'none';
-
-                if (currentStep === 1) {
-                    window.location.href = '@Url.Action("Login", "Account")';
-                } else if (currentStep === 2) {
-                    currentStep = 1;
-                    etapa2.style.display = 'none';
-                    etapa1.style.display = 'block';
-                    mainTitle.innerHTML = 'Crear cuenta';
-                    headerIcon.className = 'fa-solid fa-user-plus text-dark me-3';
-                    clearInterval(countdownInterval);
-                    btnSiguiente.innerHTML = 'Siguiente';
-                }
-            });
-
-            registerForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                errorContainer.style.display = 'none';
-                errorContainer.innerHTML = '';
-                let errorMessage = "";
-
-                if (currentStep === 1) {
-                    if (!hiddenInput.value || !docInput.value || !nombresInput.value || !apellidosInput.value || !sexoInput.value || !telInput.value || !emailInput.value) {
-                        errorMessage = "&bull; Por favor, completa todos los campos para continuar.";
-                    } else {
-                        const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
-                        if (!emailRegex.test(emailInput.value)) {
-                            errorMessage = "&bull; Por favor, introduce un correo electrónico válido.";
-                        }
-                    }
-
-                    if (errorMessage !== "") {
-                        errorContainer.innerHTML = errorMessage;
-                        errorContainer.style.display = 'block';
-                        return;
-                    }
-
-                    btnSiguiente.disabled = true;
-                    btnSiguiente.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Enviando correo...';
-
-                    try {
-                        const response = await fetch('@Url.Action("EnviarCodigoOtp", "Account")', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ correo: emailInput.value, nombre: nombresInput.value })
-                        });
-
-                        const resData = await response.json();
-
-                        if (resData.success) {
-                            currentStep = 2;
-                            etapa1.style.display = 'none';
-                            etapa2.style.display = 'block';
-                            mainTitle.innerHTML = 'Verificar correo';
-                            headerIcon.className = 'fa-solid fa-envelope-circle-check text-dark me-3';
-                            btnSiguiente.innerHTML = 'Verificar y Registrar';
-                            iniciarTemporizador(60);
-                            otpInputs[0].focus();
-                        } else {
-                            errorContainer.innerHTML = "&bull; " + (resData.message || "No se pudo enviar el correo de verificación.");
-                            errorContainer.style.display = 'block';
-                        }
-                    } catch (err) {
-                        errorContainer.innerHTML = "&bull; Ocurrió un error al conectar con el servidor.";
-                        errorContainer.style.display = 'block';
-                    } finally {
-                        btnSiguiente.disabled = false;
-                    }
-
-                } else if (currentStep === 2) {
-                    const token = document.getElementById('TokenCompleto').value;
-                    if (token.length < 6) {
-                        errorContainer.innerHTML = "&bull; Debes ingresar los 6 dígitos completos.";
-                        errorContainer.style.display = 'block';
-                        return;
-                    }
-
-                    btnSiguiente.disabled = true;
-                    btnSiguiente.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Verificando e ingresando...';
-
-                    try {
-                        const response = await fetch('@Url.Action("VerificarToken", "Account")', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(token)
-                        });
-
-                        const resData = await response.json();
-
-                        if (resData.success) {
-                            clearInterval(countdownInterval);
-                            registerForm.submit();
-                        } else {
-                            errorContainer.innerHTML = "&bull; " + (resData.message || "Código incorrecto.");
-                            errorContainer.style.display = 'block';
-                        }
-                    } catch (err) {
-                        errorContainer.innerHTML = "&bull; Ocurrió un error al verificar el código.";
-                        errorContainer.style.display = 'block';
-                    } finally {
-                        btnSiguiente.disabled = false;
-                    }
-                }
-            });
-
-            function forceNumericOnly(element) {
-                element.addEventListener('input', function() { this.value = this.value.replace(/[^0-9]/g, ''); });
-            }
-            function preventFirstSpace(element) {
-                element.addEventListener('input', function() { if (this.value.startsWith(' ')) this.value = this.value.trimStart(); });
-            }
-
-            forceNumericOnly(docInput);
-            forceNumericOnly(telInput);
-            preventFirstSpace(nombresInput);
-            preventFirstSpace(apellidosInput);
-
-            toggleBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                dropdownMenu.classList.toggle('show');
-                arrowIcon.classList.toggle('rotate');
-            });
-
-            dropdownItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    hiddenInput.value = this.getAttribute('data-id');
-                    acronymText.textContent = this.getAttribute('data-siglas');
-                    dropdownMenu.classList.remove('show');
-                    arrowIcon.classList.remove('rotate');
-                });
-            });
-
-            document.addEventListener('click', function(e) {
-                if (!toggleBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.classList.remove('show');
-                    arrowIcon.classList.remove('rotate');
-                }
-            });
-
-            otpInputs.forEach((input, index) => {
-                input.addEventListener('input', function() {
-                    this.value = this.value.replace(/[^0-9]/g, '');
-                    if (this.value !== '') {
-                        if (index < otpInputs.length - 1) otpInputs[index + 1].focus();
-                    }
-                    compilarToken();
-                });
-
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace' && this.value === '') {
-                        if (index > 0) otpInputs[index - 1].focus();
-                    }
-                });
-            });
-
-            function compilarToken() {
-                let token = '';
-                otpInputs.forEach(input => token += input.value);
-                document.getElementById('TokenCompleto').value = token;
-            }
-
-            function iniciarTemporizador(segundos) {
-                clearInterval(countdownInterval);
-                otpExpiredNotice.style.display = 'none';
-                let tiempoRestante = segundos;
-
-                countdownInterval = setInterval(() => {
-                    timerText.textContent = `${tiempoRestante}s`;
-
-                    if (tiempoRestante <= 0) {
-                        clearInterval(countdownInterval);
-                        timerText.textContent = "0s";
-                        otpExpiredNotice.style.display = 'block';
-                    }
-                    tiempoRestante--;
-                }, 1000);
-            }
-        });
+        window.OTP = {
+            enviar: '@Url.Action("EnviarCodigoOtp", "Account")',
+            verificar: '@Url.Action("VerificarToken", "Account")',
+            onVerified: function () { document.getElementById('btnCrear').disabled = false; }
+        };
     </script>
+    <script src="~/js/otp.js" asp-append-version="true"></script>
 }

@@ -1,0 +1,10 @@
+Carpetas de imágenes (wwwroot/images)
+
+productoos/    Fotos de productos (llantas, aceites...). Las sube el formulario de Productos.
+               (El nombre con doble "o" viene del proyecto original; se dejó igual para no romper las fotos ya guardadas.)
+proveedores/   Logos de proveedores, un archivo por proveedor: {Id}.png. Las sube el formulario de Proveedores.
+servicios/     Imágenes de los servicios del taller. Las sube el formulario de Servicios.
+sitio/         Imágenes fijas de la página web (portada, "Nosotros"). Se cambian reemplazando el archivo.
+
+Cada carpeta lleva una imagen "default-*.png" que se muestra cuando no hay foto. No la borres.
+Las fotos de empleados y perfiles se guardan en la base de datos, no en carpetas.

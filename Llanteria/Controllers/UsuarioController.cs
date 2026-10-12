@@ -1,106 +1,130 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Llanteria.Data;
+using Llanteria.Infrastructure;
 using Llanteria.Models;
 using Llanteria.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 
 namespace Llanteria.Controllers;
 
 public class UsuarioController : Controller
 {
-    private readonly UsuarioService ser;
+    private static readonly string[] Estados = { "Activo", "Inactivo", "Baneado" };
 
-    // Inyección del servicio de usuarios
-    public UsuarioController(UsuarioService usuarioService)
+    private readonly UsuarioService ser;
+    private readonly EmpleadoService empSer;
+    private readonly RoleService rolSer;
+    private readonly LlanteriaDbContext _db;
+
+    public UsuarioController(UsuarioService usuarioService, EmpleadoService empleadoService,
+        RoleService roleService, LlanteriaDbContext db)
     {
         ser = usuarioService;
+        empSer = empleadoService;
+        rolSer = roleService;
+        _db = db;
     }
 
-    // --- SECCIÓN DE ACCESO (LOGIN) ---
+    public IActionResult Index() => View(ser.GetUsuarios());
 
-    // Muestra la pantalla de inicio de sesión
-    public IActionResult Login()
-    {
-        return View();
-    }
-
-    // Procesa las credenciales de acceso
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Login(string username, string password)
-    {
-        // Buscamos el usuario que coincida con el Username y PasswordHash
-        var user = ser.GetUsuarios()
-            .FirstOrDefault(u => u.Username == username && u.PasswordHash == password);
-
-        if (user != null)
-        {
-            // Validamos que el estado sea 'Activo'
-            if (user.Estado == "Activo")
-            {
-                // Actualizamos la fecha de última conexión (opcional)
-                user.UltimaConexion = DateTime.Now;
-                ser.UpdateUsuario(user);
-
-                return RedirectToAction("Index", "Home");
-            }
-
-            ViewBag.Error = "Su cuenta se encuentra: " + user.Estado;
-            return View();
-        }
-
-        ViewBag.Error = "Nombre de usuario o contraseña incorrectos";
-        return View();
-    }
-
-    // --- SECCIÓN DE GESTIÓN (CRUD) ---
-
-    // Lista todos los usuarios registrados
-    public IActionResult Index()
-    {
-        return View(ser.GetUsuarios());
-    }
-
-    // Vista para el registro de nuevos usuarios
     public IActionResult Create()
     {
-        return View();
+        CargarCombos();
+        return View(new Usuario { Estado = "Activo" });
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public IActionResult Create(Usuario u)
     {
-        if (ModelState.IsValid)
+        if (_db.Usuarios.Any(x => x.Username == u.Username))
+            ModelState.AddModelError(nameof(Usuario.Username), "Ese nombre de usuario ya existe.");
+        if (_db.Usuarios.Any(x => x.IdEmpleado == u.IdEmpleado))
+            ModelState.AddModelError(nameof(Usuario.IdEmpleado), "Ese empleado ya tiene un usuario.");
+        if (!string.IsNullOrEmpty(u.PasswordHash) && u.PasswordHash.Length < 6)
+            ModelState.AddModelError(nameof(Usuario.PasswordHash), "La contraseña debe tener al menos 6 caracteres.");
+        if (!ModelState.IsValid)
         {
-            ser.AddUsuario(u);
-            return RedirectToAction(nameof(Index));
+            CargarCombos(u);
+            return View(u);
         }
-        return View(u);
+
+        u.PasswordHash = Claves.Hash(u.PasswordHash);
+        u.Estado = "Activo";
+        u.FechaCreacion = DateTime.Now;
+        u.MotivoSancion = null;
+        u.FechaFinBaneo = null;
+        ser.AddUsuario(u);
+        TempData["Exito"] = "Usuario creado.";
+        return RedirectToAction(nameof(Index));
     }
 
-    // Vista para editar un usuario existente
     public IActionResult Edit(int id)
     {
         var u = ser.GetUsuario(id);
         if (u == null) return NotFound();
+        CargarCombos(u);
         return View(u);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Edit(int id, Usuario u)
+    // Solo se editan rol, estado y sanción; el usuario, correo y contraseña no se tocan aquí.
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Edit(int id, int idRol, string estado, string? motivoSancion, DateTime? fechaFinBaneo)
     {
-        if (ModelState.IsValid)
+        var u = ser.GetUsuario(id);
+        if (u == null) return NotFound();
+
+        if (!Estados.Contains(estado)) ModelState.AddModelError("Estado", "Estado no válido.");
+        if (estado == "Baneado" && string.IsNullOrWhiteSpace(motivoSancion))
+            ModelState.AddModelError("MotivoSancion", "Indica el motivo de la sanción.");
+
+        // No permitir que el administrador se bloquee a sí mismo.
+        var propio = User.FindFirst(ClaimTypes.NameIdentifier)?.Value == id.ToString();
+        if (propio && estado != "Activo")
+            ModelState.AddModelError("Estado", "No puedes desactivar tu propia cuenta.");
+
+        if (!ModelState.IsValid)
         {
-            ser.UpdateUsuario(u);
-            return RedirectToAction(nameof(Index));
+            u.IdRol = idRol;
+            u.Estado = estado;
+            u.MotivoSancion = motivoSancion;
+            u.FechaFinBaneo = fechaFinBaneo;
+            CargarCombos(u);
+            return View(u);
         }
-        return View(u);
+
+        u.IdRol = idRol;
+        u.Estado = estado;
+        u.MotivoSancion = estado == "Baneado" ? motivoSancion?.Trim() : null;
+        u.FechaFinBaneo = estado == "Baneado" ? fechaFinBaneo : null;
+        _db.SaveChanges();
+        TempData["Exito"] = "Usuario actualizado.";
+        return RedirectToAction(nameof(Index));
     }
 
-    // Acción para eliminar un usuario
+    [HttpPost, ValidateAntiForgeryToken]
     public IActionResult Delete(int id)
     {
-        ser.DeleteUsuario(id);
+        if (User.FindFirst(ClaimTypes.NameIdentifier)?.Value == id.ToString())
+        {
+            TempData["Error"] = "No puedes eliminar tu propia cuenta.";
+            return RedirectToAction(nameof(Index));
+        }
+        ser.DeleteUsuario(id); // si tiene registros asociados, el filtro global avisa del error
+        TempData["Exito"] = "Usuario eliminado.";
         return RedirectToAction(nameof(Index));
+    }
+
+    private void CargarCombos(Usuario? u = null)
+    {
+        // Al crear, solo se ofrecen empleados que todavía no tienen usuario.
+        var conUsuario = _db.Usuarios.Select(x => x.IdEmpleado).ToList();
+        var libres = empSer.GetEmpleados()
+            .Where(e => !conUsuario.Contains(e.Id))
+            .Select(e => new { e.Id, Nombre = $"{e.Nombres} {e.Apellidos} ({e.NumeroDocumento})" })
+            .ToList();
+        ViewBag.IdEmpleado = new SelectList(libres, "Id", "Nombre", u?.IdEmpleado);
+        ViewBag.IdRol = new SelectList(rolSer.GetRoles(), "Id", "NombreRol", u?.IdRol);
+        ViewBag.Estados = new SelectList(Estados, u?.Estado ?? "Activo");
     }
 }

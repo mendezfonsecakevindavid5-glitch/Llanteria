@@ -1,38 +1,40 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using Llanteria.Services;
 using System.Security.Claims;
+using Llanteria.Services;
+using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Llanteria.Filters
+namespace Llanteria.Filters;
+
+/// <summary>Registra en la bitácora las acciones exitosas del panel. Nunca interrumpe la acción si el registro falla.</summary>
+public class LogActionFilter : ActionFilterAttribute
 {
-    public class LogActionFilter : ActionFilterAttribute
+    private readonly string _accion;
+    private readonly string _tabla;
+
+    public LogActionFilter(string accion, string tabla)
     {
-        private readonly string _accion;
-        private readonly string _tabla;
+        _accion = accion;
+        _tabla = tabla;
+    }
 
-        public LogActionFilter(string accion, string tabla)
+    public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    {
+        var resultado = await next();
+        if (resultado.Exception != null && !resultado.ExceptionHandled) return;
+
+        var http = context.HttpContext;
+        // Si el usuario no está identificado no hay a quién atribuir el registro (la tabla exige un usuario válido).
+        if (!int.TryParse(http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId) || userId <= 0) return;
+
+        try
         {
-            _accion = accion;
-            _tabla = tabla;
+            var log = http.RequestServices.GetService<ILogService>();
+            if (log == null) return;
+            var ip = http.Connection.RemoteIpAddress?.ToString() ?? "Desconocida";
+            await log.RegistrarActividadAsync(userId, _accion, _tabla, ip);
         }
-
-        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        catch (Exception ex)
         {
-            // Esperamos a que la acción se ejecute primero
-            var resultContext = await next();
-
-            // Solo registramos si la acción fue exitosa (puedes quitar este if si quieres registrar todo)
-            if (resultContext.Exception == null)
-            {
-                var logService = context.HttpContext.RequestServices.GetService<ILogService>();
-
-                // Obtenemos el Id del usuario desde los Claims (ajusta según tu lógica de login)
-                var userIdClaim = context.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                int userId = int.TryParse(userIdClaim, out int id) ? id : 0;
-
-                string ip = context.HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Desconocida";
-
-                await logService.RegistrarActividadAsync(userId, _accion, _tabla, ip);
-            }
+            http.RequestServices.GetService<ILogger<LogActionFilter>>()?.LogWarning(ex, "No se pudo registrar la actividad.");
         }
     }
 }

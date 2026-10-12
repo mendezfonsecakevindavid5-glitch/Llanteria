@@ -1,78 +1,134 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Llanteria.Data;
+using Llanteria.Filters;
 using Llanteria.Models;
 using Llanteria.Services;
-using Llanteria.Filters; // 👈 NECESARIO: Namespace de tu filtro
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Llanteria.Controllers
+namespace Llanteria.Controllers;
+
+public class GastoController : Controller
 {
-    public class GastoController : Controller
+    private static readonly string[] Extensiones = { ".pdf", ".jpg", ".jpeg", ".png", ".webp" };
+
+    private readonly GastoService ser;
+    private readonly LlanteriaDbContext _db;
+    private readonly IWebHostEnvironment _env;
+
+    public GastoController(GastoService gastoService, LlanteriaDbContext db, IWebHostEnvironment env)
     {
-        private readonly GastoService ser;
+        ser = gastoService;
+        _db = db;
+        _env = env;
+    }
 
-        public GastoController(GastoService gastoService)
+    public IActionResult Index() => View(ser.GetGastos().OrderByDescending(g => g.FechaVencimiento).ToList());
+
+    public IActionResult Create()
+    {
+        CargarCombos();
+        return View(new Gasto { FechaVencimiento = DateOnly.FromDateTime(DateTime.Today), Estado = "Pendiente" });
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Registró un nuevo gasto", "Gasto" })]
+    public IActionResult Create(Gasto g, IFormFile? soporte)
+    {
+        ValidarSoporte(soporte);
+        if (!ModelState.IsValid)
         {
-            ser = gastoService;
-        }
-
-        public IActionResult Index() => View(ser.GetGastos());
-
-        public IActionResult Create() => View();
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        // 👈 AUDITORÍA: Registrar creación de egreso
-        [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Registró un nuevo gasto", "Gasto" })]
-        public IActionResult Create(Gasto g)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    ser.AddGasto(g);
-                    return RedirectToAction(nameof(Index));
-                }
-                return View(g);
-            }
-            catch
-            {
-                return View(g);
-            }
-        }
-
-        public IActionResult Edit(int id)
-        {
-            var g = ser.GetGasto(id);
-            if (g == null) return NotFound();
+            CargarCombos(g.IdCategoria);
             return View(g);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        // 👈 AUDITORÍA: Registrar edición de egreso
-        [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Editó un gasto", "Gasto" })]
-        public IActionResult Edit(int id, Gasto g)
+        g.FechaRegistro = DateTime.Now;
+        if (soporte != null) g.ArchivoSupport = GuardarSoporte(soporte);
+        ser.AddGasto(g);
+        TempData["Exito"] = "Gasto registrado.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    public IActionResult Edit(int id)
+    {
+        var g = ser.GetGasto(id);
+        if (g == null) return NotFound();
+        CargarCombos(g.IdCategoria);
+        return View(g);
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Editó un gasto", "Gasto" })]
+    public IActionResult Edit(int id, Gasto g, IFormFile? soporte)
+    {
+        ValidarSoporte(soporte);
+        var original = ser.GetGasto(id);
+        if (original == null) return NotFound();
+        if (!ModelState.IsValid)
         {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    ser.UpdateGasto(g);
-                    return RedirectToAction(nameof(Index));
-                }
-                return View(g);
-            }
-            catch
-            {
-                return View(g);
-            }
+            g.Id = id;
+            g.ArchivoSupport = original.ArchivoSupport;
+            CargarCombos(g.IdCategoria);
+            return View(g);
         }
 
-        // 👈 AUDITORÍA: Registrar eliminación de egreso
-        [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Eliminó un gasto", "Gasto" })]
-        public IActionResult Delete(int id)
+        // Se copian solo los campos editables sobre la entidad ya cargada.
+        original.IdCategoria = g.IdCategoria;
+        original.Descripcion = g.Descripcion;
+        original.Monto = g.Monto;
+        original.FechaVencimiento = g.FechaVencimiento;
+        original.FechaPago = g.FechaPago;
+        original.Estado = g.Estado;
+        if (soporte != null)
         {
-            ser.DeleteGasto(id);
-            return RedirectToAction(nameof(Index));
+            EliminarSoporte(original.ArchivoSupport);
+            original.ArchivoSupport = GuardarSoporte(soporte);
         }
+        _db.SaveChanges();
+        TempData["Exito"] = "Gasto actualizado.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    [TypeFilter(typeof(LogActionFilter), Arguments = new object[] { "Eliminó un gasto", "Gasto" })]
+    public IActionResult Delete(int id)
+    {
+        var g = ser.GetGasto(id);
+        if (g != null)
+        {
+            var archivo = g.ArchivoSupport;
+            ser.DeleteGasto(id);
+            EliminarSoporte(archivo);
+            TempData["Exito"] = "Gasto eliminado.";
+        }
+        return RedirectToAction(nameof(Index));
+    }
+
+    private void CargarCombos(int? seleccionada = null)
+        => ViewBag.IdCategoria = new SelectList(_db.CategoriaGastos.OrderBy(c => c.Nombre).ToList(), "Id", "Nombre", seleccionada);
+
+    private void ValidarSoporte(IFormFile? archivo)
+    {
+        if (archivo == null) return;
+        if (!Extensiones.Contains(Path.GetExtension(archivo.FileName).ToLowerInvariant()))
+            ModelState.AddModelError("soporte", "El soporte debe ser PDF o imagen.");
+        else if (archivo.Length > 5 * 1024 * 1024)
+            ModelState.AddModelError("soporte", "El soporte no puede superar 5 MB.");
+    }
+
+    private string GuardarSoporte(IFormFile archivo)
+    {
+        var carpeta = Path.Combine(_env.WebRootPath, "uploads", "gastos");
+        Directory.CreateDirectory(carpeta);
+        var nombre = Guid.NewGuid().ToString("N") + Path.GetExtension(archivo.FileName).ToLowerInvariant();
+        using var fs = new FileStream(Path.Combine(carpeta, nombre), FileMode.Create);
+        archivo.CopyTo(fs);
+        return nombre;
+    }
+
+    private void EliminarSoporte(string? nombre)
+    {
+        if (string.IsNullOrEmpty(nombre)) return;
+        var ruta = Path.Combine(_env.WebRootPath, "uploads", "gastos", Path.GetFileName(nombre));
+        if (System.IO.File.Exists(ruta)) System.IO.File.Delete(ruta);
     }
 }

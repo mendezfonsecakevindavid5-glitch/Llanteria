@@ -1,0 +1,20 @@
+<section id="servicios" class="section">
+    <div class="container">
+        <div class="mb-4">
+            <span class="eyebrow">Servicios</span>
+            <h2 class="section-title mt-1">Todo para tu vehículo en un solo lugar</h2>
+        </div>
+        <div class="row g-3">
+            @foreach (var s in ServiciosCatalogo.Todos)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Servicios" asp-action="Detalle" asp-route-slug="@s.Slug" class="service-card">
+                        <span class="icon-tile"><i class="fa-solid @s.Icono"></i></span>
+                        <h3>@s.Titulo</h3>
+                        <p>@s.Subtitulo</p>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>

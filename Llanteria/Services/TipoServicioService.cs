@@ -1,4 +1,5 @@
-﻿using Llanteria.Data;
+using Microsoft.EntityFrameworkCore;
+using Llanteria.Data;
 using Llanteria.Models;
 
 public class TipoServicioService
@@ -17,7 +18,7 @@ public class TipoServicioService
 
     public TipoServicio? GetTipoServicio(int id)
     {
-        return _context.TipoServicios.Find(id);
+        return _context.TipoServicios.AsNoTracking().FirstOrDefault(t => t.Id == id);
     }
 
     public void AddTipoServicio(TipoServicio obj)

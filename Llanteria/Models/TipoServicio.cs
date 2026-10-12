@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema; // 👈 Asegúrate de tener este using
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema; // 👈 Asegúrate de tener este using
 using Microsoft.AspNetCore.Http;
 
 namespace Llanteria.Models;
@@ -6,7 +7,10 @@ namespace Llanteria.Models;
 public partial class TipoServicio
 {
     public int Id { get; set; }
+    [Required(ErrorMessage = "El nombre del servicio es obligatorio.")]
+    [StringLength(100)]
     public string NombreServicio { get; set; } = null!;
+    [Range(0, 999999999, ErrorMessage = "El valor no puede ser negativo.")]
     public decimal ValorServicio { get; set; }
     public string? IconoPath { get; set; }
 
