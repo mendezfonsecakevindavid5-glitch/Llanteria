@@ -1,5 +1,5 @@
-﻿@{
-    ViewData["Title"] = "Formulario de Ingreso";
+@{
+    ViewData["Title"] = "Iniciar sesión";
 }
 
 <style>
@@ -11,17 +11,15 @@
         padding: 2rem 1rem;
     }
 
-    @@keyframes slideUpEntrance {
-        0% {
-            opacity: 0;
-            transform: translateY(30px);
-        }
+<div class="auth-wrap">
+    <div class="auth-card">
+        <h1>Iniciar sesión</h1>
+        <p class="text-muted mb-4">Personal del taller: usuario o correo. Clientes: correo o documento.</p>
 
-        100% {
-            opacity: 1;
-            transform: translateY(0);
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger py-2 small">@ViewBag.Error</div>
         }
-    }
 
     .entrance-login-card {
         background-color: #ffffff;

@@ -1,0 +1,149 @@
+@model Llanteria.Controllers.MiCuentaViewModel
+
+@{
+    ViewData["Title"] = "Mi cuenta";
+    var c = Model.Cliente;
+    var siguiente = Model.Premios.FirstOrDefault(p => p.PuntosRequeridos > c.PuntosAcumulados);
+}
+
+<div class="container py-5">
+    <div class="mb-4">
+        <h1 class="h2 fw-bold mb-1">Hola, @c.Nombres</h1>
+        <p class="text-muted mb-0">Aquí ves tus puntos, tus compras y tus citas.</p>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="auth-card h-100">
+                <div class="small text-muted text-uppercase fw-semibold">Puntos acumulados</div>
+                <div class="display-5 fw-bold text-llanteria-primary">@c.PuntosAcumulados.ToString("N0")</div>
+                @if (siguiente != null)
+                {
+                    <div class="small text-muted">Te faltan @((siguiente.PuntosRequeridos - c.PuntosAcumulados).ToString("N0")) para «@siguiente.NombrePremio».</div>
+                }
+                else if (Model.Premios.Any())
+                {
+                    <div class="small text-muted">Ya puedes canjear cualquiera de los premios disponibles.</div>
+                }
+                <div class="small text-muted mt-2">Cada $1.000 en compras suma 1 punto. Para canjear un premio, acércate al taller.</div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="auth-card h-100">
+                <h2 class="h5 fw-bold">Premios disponibles</h2>
+                @if (Model.Premios.Any())
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var p in Model.Premios)
+                        {
+                            var alcanza = c.PuntosAcumulados >= p.PuntosRequeridos;
+                            <li class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span>
+                                    <strong>@p.NombrePremio</strong>
+                                    @if (!string.IsNullOrWhiteSpace(p.Descripcion)) { <span class="d-block small text-muted">@p.Descripcion</span> }
+                                </span>
+                                <span class="badge @(alcanza ? "text-bg-success" : "text-bg-secondary")">@p.PuntosRequeridos.ToString("N0") pts</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">Por ahora no hay premios en el catálogo.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-6">
+            <div class="auth-card h-100">
+                <h2 class="h5 fw-bold">Mis últimas compras</h2>
+                @if (Model.Facturas.Any())
+                {
+                    <table class="table table-sm align-middle mb-0">
+                        <thead><tr><th>N.º</th><th>Fecha</th><th class="text-end">Total</th><th class="text-end">Puntos</th></tr></thead>
+                        <tbody>
+                            @foreach (var f in Model.Facturas)
+                            {
+                                <tr>
+                                    <td>#@f.Id</td>
+                                    <td>@f.Fecha?.ToString("dd/MM/yyyy")</td>
+                                    <td class="text-end">@f.TotalPagar.ToString("C0")</td>
+                                    <td class="text-end">@((int)(f.TotalPagar / 1000))</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else { <p class="text-muted mb-0">Aún no tienes compras registradas.</p> }
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="auth-card h-100">
+                <h2 class="h5 fw-bold">Mis citas</h2>
+                @if (Model.Citas.Any())
+                {
+                    <table class="table table-sm align-middle mb-0">
+                        <thead><tr><th>Servicio</th><th>Fecha</th><th>Estado</th></tr></thead>
+                        <tbody>
+                            @foreach (var ci in Model.Citas)
+                            {
+                                <tr>
+                                    <td>@ci.Servicio</td>
+                                    <td>@ci.Fecha.ToString("dd/MM/yyyy") @ci.Hora</td>
+                                    <td>@ci.Estado</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else { <p class="text-muted mb-0">No has agendado citas. <a asp-controller="Home" asp-action="Index" asp-fragment="servicios">Ver servicios</a>.</p> }
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="auth-card h-100">
+                <h2 class="h5 fw-bold">Mis vehículos</h2>
+                @if (Model.Vehiculos.Any())
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var v in Model.Vehiculos)
+                        {
+                            <li class="py-1"><strong>@v.Placa</strong> · @v.Marca @v.Modelo</li>
+                        }
+                    </ul>
+                }
+                else { <p class="text-muted mb-0">Aún no hay vehículos asociados. Pídelos en el taller en tu próxima visita.</p> }
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="auth-card h-100">
+                <h2 class="h5 fw-bold">Premios canjeados</h2>
+                @if (Model.Canjes.Any())
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var cj in Model.Canjes)
+                        {
+                            <li class="d-flex justify-content-between py-1 border-bottom">
+                                <span>@cj.IdIncentivoNavigation?.NombrePremio</span>
+                                <span class="text-muted small">@cj.FechaCanje?.ToString("dd/MM/yyyy")</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else { <p class="text-muted mb-0">Todavía no has canjeado premios.</p> }
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="auth-card">
+                <h2 class="h5 fw-bold">Cambiar contraseña</h2>
+                <form asp-action="CambiarPassword" method="post" autocomplete="off" class="row g-3">
+                    <div class="col-md-4"><label class="form-label" for="actual">Contraseña actual</label><input id="actual" name="actual" type="password" class="form-control" required autocomplete="current-password" /></div>
+                    <div class="col-md-4"><label class="form-label" for="nueva">Nueva contraseña</label><input id="nueva" name="nueva" type="password" class="form-control" minlength="6" required autocomplete="new-password" /></div>
+                    <div class="col-md-4"><label class="form-label" for="confirmacion">Repite la nueva</label><input id="confirmacion" name="confirmacion" type="password" class="form-control" minlength="6" required autocomplete="new-password" /></div>
+                    <div class="col-12"><button class="btn btn-hyper-action">Guardar contraseña</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

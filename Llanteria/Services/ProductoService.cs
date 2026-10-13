@@ -1,4 +1,4 @@
-﻿using Llanteria.Data;
+using Llanteria.Data;
 using Llanteria.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -73,6 +73,9 @@ public class ProductoService
                 existente.DetalleProducto.Perfil = obj.DetalleProducto.Perfil;
                 existente.DetalleProducto.Diametro = obj.DetalleProducto.Diametro;
                 existente.DetalleProducto.Viscosidad = obj.DetalleProducto.Viscosidad;
+                existente.DetalleProducto.TipoAceite = obj.DetalleProducto.TipoAceite;
+                existente.DetalleProducto.IndiceCarga = obj.DetalleProducto.IndiceCarga;
+                existente.DetalleProducto.IndiceVelocidad = obj.DetalleProducto.IndiceVelocidad;
                 existente.DetalleProducto.GarantiaMeses = obj.DetalleProducto.GarantiaMeses;
             }
         }

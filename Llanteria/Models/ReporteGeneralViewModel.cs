@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
+namespace Llanteria.Models;
 
-namespace Llanteria.Models
+public class ReporteGeneralViewModel
 {
-    public class ReporteGeneralViewModel
-    {
-        // Esta clase es un "contenedor" para pasar múltiples listas a la vista
-        public IEnumerable<Llanteria.Models.Factura> Facturas { get; set; }
-        public IEnumerable<Llanteria.Models.Gasto> Gastos { get; set; }
-    }
+    public string Titulo { get; set; } = "Reporte";
+    public string? Periodo { get; set; }
+    public IEnumerable<Factura> Facturas { get; set; } = new List<Factura>();
+    public IEnumerable<Gasto> Gastos { get; set; } = new List<Gasto>();
 }

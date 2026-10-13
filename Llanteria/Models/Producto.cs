@@ -1,4 +1,5 @@
-﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema; // 👈 Obligatorio
 using Microsoft.AspNetCore.Http; // 👈 Obligatorio para IFormFile
@@ -10,13 +11,23 @@ public partial class Producto
 {
     public int Id { get; set; }
 
+    [Required(ErrorMessage = "El nombre es obligatorio.")]
+
+    [StringLength(150)]
+
     public string Nombre { get; set; } = null!;
 
     public string? Descripcion { get; set; }
 
+    [Range(0, 999999999, ErrorMessage = "El precio no puede ser negativo.")]
+
     public decimal PrecioCompra { get; set; }
 
+    [Range(0, 999999999, ErrorMessage = "El precio no puede ser negativo.")]
+
     public decimal PrecioVenta { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Selecciona un proveedor.")]
 
     public int IdProveedor { get; set; }
 
@@ -38,6 +49,7 @@ public partial class Producto
     public IFormFile? ImagenArchivo { get; set; }
 
     // ✅ NUEVO: Relación con Bodega
+    [Range(1, int.MaxValue, ErrorMessage = "Selecciona una bodega.")]
     public int IdBodega { get; set; }
 
     [ForeignKey("IdBodega")]

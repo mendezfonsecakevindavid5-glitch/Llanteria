@@ -1,120 +1,98 @@
-﻿using Microsoft.AspNetCore.Mvc;
 using Llanteria.Models;
 using Llanteria.Services;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
-using System;
+using Microsoft.AspNetCore.Mvc;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
 
 namespace Llanteria.Controllers;
 
 public class ProveedoreController : Controller
 {
-    private readonly ProveedoreService ser;
-    private readonly IWebHostEnvironment _webHostEnvironment;
+    private static readonly string[] Extensiones = { ".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp" };
 
-    public ProveedoreController(ProveedoreService proveedoreService, IWebHostEnvironment webHostEnvironment)
+    private readonly ProveedoreService ser;
+    private readonly IWebHostEnvironment _env;
+
+    public ProveedoreController(ProveedoreService proveedoreService, IWebHostEnvironment env)
     {
         ser = proveedoreService;
-        _webHostEnvironment = webHostEnvironment;
+        _env = env;
     }
 
-    public ActionResult Index()
+    public IActionResult Index() => View(ser.GetProveedores());
+
+    public IActionResult Create() => View(new Proveedore());
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Create(Proveedore prov)
     {
-        var lista = ser.GetProveedores();
-        return View(lista);
+        ValidarLogo(prov.ImagenArchivo);
+        if (!ModelState.IsValid) return View(prov);
+
+        ser.AddProveedor(prov); // genera el Id, que se usa como nombre del logo
+        GuardarLogo(prov.Id, prov.ImagenArchivo);
+        TempData["Exito"] = "Proveedor registrado.";
+        return RedirectToAction(nameof(Index));
     }
 
-    public ActionResult Create()
-    {
-        return View();
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult Create(Proveedore prov)
-    {
-        if (ModelState.IsValid)
-        {
-            // 1. Primero guardamos el proveedor en la base de datos para que SQL le asigne un ID
-            ser.AddProveedor(prov);
-
-            // 2. Una vez guardado, verificamos si subió un archivo desde la PC
-            if (prov.ImagenArchivo != null)
-            {
-                string carpetaProveedores = Path.Combine(_webHostEnvironment.WebRootPath, "images", "proveedores");
-                if (!Directory.Exists(carpetaProveedores)) Directory.CreateDirectory(carpetaProveedores);
-
-                // El nombre del archivo será exactamente su ID (ej: "5.jpg")
-                string extension = Path.GetExtension(prov.ImagenArchivo.FileName);
-                string nombreArchivo = prov.Id + extension;
-                string rutaDestino = Path.Combine(carpetaProveedores, nombreArchivo);
-
-                using (var fileStream = new FileStream(rutaDestino, FileMode.Create))
-                {
-                    prov.ImagenArchivo.CopyTo(fileStream);
-                }
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
-        return View(prov);
-    }
-
-    public ActionResult Edit(int id)
+    public IActionResult Edit(int id)
     {
         var prov = ser.GetProveedor(id);
-        if (prov == null) return NotFound();
-        return View(prov);
+        return prov == null ? NotFound() : View(prov);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public ActionResult Edit(int id, Proveedore prov)
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Edit(int id, Proveedore prov)
     {
-        if (ModelState.IsValid)
-        {
-            ser.UpdateProveedor(prov);
+        prov.Id = id;
+        ValidarLogo(prov.ImagenArchivo);
+        if (!ModelState.IsValid) return View(prov);
 
-            // Si en la edición decide cambiar el logotipo por uno nuevo
-            if (prov.ImagenArchivo != null)
-            {
-                string carpetaProveedores = Path.Combine(_webHostEnvironment.WebRootPath, "images", "proveedores");
-
-                // Borramos cualquier logo previo con extensiones comunes para evitar duplicados (.jpg, .png)
-                string[] posiblesArchivos = { prov.Id + ".jpg", prov.Id + ".png", prov.Id + ".jpeg" };
-                foreach (var archivo in posiblesArchivos)
-                {
-                    string rutaVieja = Path.Combine(carpetaProveedores, archivo);
-                    if (System.IO.File.Exists(rutaVieja)) System.IO.File.Delete(rutaVieja);
-                }
-
-                // Guardamos el nuevo
-                string extension = Path.GetExtension(prov.ImagenArchivo.FileName);
-                string rutaDestino = Path.Combine(carpetaProveedores, prov.Id + extension);
-
-                using (var fileStream = new FileStream(rutaDestino, FileMode.Create))
-                {
-                    prov.ImagenArchivo.CopyTo(fileStream);
-                }
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
-        return View(prov);
-    }
-
-    public ActionResult Delete(int id)
-    {
-        // Al eliminar, borramos también su foto del servidor
-        string carpetaProveedores = Path.Combine(_webHostEnvironment.WebRootPath, "images", "proveedores");
-        string[] posiblesArchivos = { id + ".jpg", id + ".png", id + ".jpeg" };
-        foreach (var archivo in posiblesArchivos)
-        {
-            string rutaImagen = Path.Combine(carpetaProveedores, archivo);
-            if (System.IO.File.Exists(rutaImagen)) System.IO.File.Delete(rutaImagen);
-        }
-
-        ser.DeleteProveedor(id);
+        ser.UpdateProveedor(prov);
+        GuardarLogo(id, prov.ImagenArchivo);
+        TempData["Exito"] = "Proveedor actualizado.";
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Delete(int id)
+    {
+        ser.DeleteProveedor(id); // si tiene productos, el filtro global avisa del error
+        EliminarLogo(id);
+        TempData["Exito"] = "Proveedor eliminado.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    private string Carpeta => Path.Combine(_env.WebRootPath, "images", "proveedores");
+
+    private void ValidarLogo(IFormFile? archivo)
+    {
+        if (archivo == null) return;
+        if (!Extensiones.Contains(Path.GetExtension(archivo.FileName).ToLowerInvariant()))
+            ModelState.AddModelError(nameof(Proveedore.ImagenArchivo), "El logotipo debe ser una imagen.");
+        else if (archivo.Length > 3 * 1024 * 1024)
+            ModelState.AddModelError(nameof(Proveedore.ImagenArchivo), "El logotipo no puede superar 3 MB.");
+    }
+
+    // Siempre se guarda como {id}.png, que es lo que muestran las vistas.
+    private void GuardarLogo(int id, IFormFile? archivo)
+    {
+        if (archivo == null) return;
+        Directory.CreateDirectory(Carpeta);
+        using var stream = archivo.OpenReadStream();
+        using var imagen = Image.Load(stream);
+        imagen.Mutate(x => x.Resize(new ResizeOptions { Size = new Size(400, 400), Mode = ResizeMode.Max }));
+        EliminarLogo(id);
+        imagen.Save(Path.Combine(Carpeta, id + ".png"), new PngEncoder());
+    }
+
+    private void EliminarLogo(int id)
+    {
+        foreach (var ext in new[] { ".png", ".jpg", ".jpeg" })
+        {
+            var ruta = Path.Combine(Carpeta, id + ext);
+            if (System.IO.File.Exists(ruta)) System.IO.File.Delete(ruta);
+        }
     }
 }

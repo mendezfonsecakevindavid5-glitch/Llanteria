@@ -1,52 +1,55 @@
 @model IEnumerable<Llanteria.Models.Inventario>
 @{
     Layout = null;
-    var inventarios = Model ?? new List<Llanteria.Models.Inventario>();
+    var inventarios = Model?.ToList() ?? new List<Llanteria.Models.Inventario>();
 }
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <style>
-        body { font-family: 'Arial', sans-serif; font-size: 12px; color: #333; margin: 25px; }
+        body { font-family: Arial, sans-serif; font-size: 12px; color: #1f2328; margin: 28px; }
+        .header { border-bottom: 2px solid #C92B0A; padding-bottom: 8px; margin-bottom: 18px; }
+        .header h1 { margin: 0; font-size: 20px; text-transform: uppercase; }
+        .header p { margin: 2px 0 0; color: #6b7280; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 8px; border: 1px solid #eaeaea; }
-        th { background: #C92B0A; color: white; }
-        .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 9px; color: #999; }
+        th { background: #f1f2f4; text-align: left; padding: 7px 8px; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #cfd4da; }
+        td { padding: 7px 8px; border-bottom: 1px solid #eceef1; }
+        .num { text-align: right; }
+        .bajo { color: #A32008; font-weight: bold; }
+        .pie { margin-top: 24px; font-size: 10px; color: #8a9099; text-align: center; }
     </style>
 </head>
 <body>
-    <h2 style="color: #C92B0A;">Reporte de Inventario</h2>
-    <p>Generado: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+    <div class="header">
+        <h1>Llantería Valledupar · Inventario</h1>
+        <p>Generado el @DateTime.Now.ToString("dd/MM/yyyy HH:mm") · @inventarios.Count registros</p>
+    </div>
 
     <table>
         <thead>
             <tr>
-                <th>Producto</th>
-                <th>Código</th>
-                <th>Stock Actual</th>
-                <th>Stock Mínimo</th>
-                <th>Cantidad Ingresada</th>
-                <th>Bodega</th>
-                <th>Estado</th>
+                <th>Producto</th><th>Código</th><th>Bodega</th><th>Estado</th>
+                <th class="num">Stock</th><th class="num">Mínimo</th><th class="num">Ingresado</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in inventarios.OrderBy(i => i.Id))
+            @foreach (var i in inventarios)
             {
+                var bajo = i.StockActual.HasValue && i.StockMinimo.HasValue && i.StockActual <= i.StockMinimo;
                 <tr>
-                    <td>@item.IdProductoNavigation?.Nombre ?? "-"</td>
-                    <td>@item.Codigo</td>
-                    <td>@(item.StockActual?.ToString() ?? "-")</td>
-                    <td>@(item.StockMinimo?.ToString() ?? "-")</td>
-                    <td>@item.CantidadIngresada</td>
-                    <td>@item.IdBodegaNavigation?.NombreBodega ?? "-"</td>
-                    <td>@item.IdEstadoNavigation?.Nombre ?? "-"</td>
+                    <td>@(i.IdProductoNavigation?.Nombre ?? "-")</td>
+                    <td>@i.Codigo</td>
+                    <td>@(i.IdBodegaNavigation?.NombreBodega ?? "-")</td>
+                    <td>@(i.IdEstadoNavigation?.Nombre ?? "-")</td>
+                    <td class="num @(bajo ? "bajo" : "")">@(i.StockActual?.ToString() ?? "-")</td>
+                    <td class="num">@(i.StockMinimo?.ToString() ?? "-")</td>
+                    <td class="num">@i.CantidadIngresada</td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <div class="footer">Documento oficial - Llantería Valledupar</div>
+    <div class="pie">Llantería Valledupar</div>
 </body>
 </html>

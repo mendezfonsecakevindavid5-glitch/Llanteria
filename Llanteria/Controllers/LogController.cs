@@ -1,29 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
 using Llanteria.Data;
+using Llanteria.Infrastructure;
+using Llanteria.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
-namespace Llanteria.Controllers
+namespace Llanteria.Controllers;
+
+public class LogController : Controller
 {
-    public class LogController : Controller
+    private readonly LlanteriaDbContext _context;
+
+    public LogController(LlanteriaDbContext context) => _context = context;
+
+    public IActionResult Index(string? buscar, int pagina = 1)
     {
-        private readonly LlanteriaDbContext _context;
-
-        public LogController(LlanteriaDbContext context)
+        var consulta = _context.LogActividads.AsNoTracking().Include(l => l.IdUsuarioNavigation).AsQueryable();
+        if (!string.IsNullOrWhiteSpace(buscar))
         {
-            _context = context;
+            var q = buscar.Trim();
+            consulta = consulta.Where(l => l.Accion.Contains(q) || (l.TablaAfectada != null && l.TablaAfectada.Contains(q))
+                                           || l.IdUsuarioNavigation.Username.Contains(q));
         }
 
-        // Vista de Auditoría para el Administrador
-        public IActionResult Index()
-        {
-            // Cargamos el log incluyendo la información del usuario que realizó la acción
-            var logs = _context.LogActividads
-                .Include(l => l.IdUsuarioNavigation)
-                .OrderByDescending(l => l.FechaRegistro)
-                .ToList();
-
-            return View(logs);
-        }
+        ViewBag.Buscar = buscar;
+        return View(Paginado<LogActividad>.De(consulta.OrderByDescending(l => l.FechaRegistro).ThenByDescending(l => l.Id), pagina, 30));
     }
 }

@@ -1,20 +1,36 @@
 using Llanteria.Data;
+using Llanteria.Infrastructure;
 using Llanteria.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.Cookies; // Necesario para la autenticación
+using System.Globalization;
+
+// Formato colombiano para fechas y moneda (la lectura de decimales se hace con cultura invariante, ver InvariantDecimalModelBinder).
+var cultura = new CultureInfo("es-CO");
+CultureInfo.DefaultThreadCurrentCulture = cultura;
+CultureInfo.DefaultThreadCurrentUICulture = cultura;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Configuración de Autenticación por Cookies
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login"; // Ruta de tu controlador de Login
+        options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Home/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;
     });
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    // Las propiedades de navegación (IdClienteNavigation, etc.) no vienen del formulario.
+    // Sin esto, ModelState.IsValid era siempre falso en Cliente, Factura, Vehículo, Usuario...
+    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+    options.ModelBinderProviders.Insert(0, new InvariantDecimalModelBinderProvider());
+    options.Conventions.Add(new RoleConvention());
+    options.Filters.Add<DbUpdateExceptionFilter>();
+});
+
 builder.Services.AddDbContext<LlanteriaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Con")));
 
@@ -44,30 +60,33 @@ Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath)
 
 Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath);
 
-builder.Services.AddSession(options => {
-    options.IdleTimeout = TimeSpan.FromMinutes(10); // El código expira en 10 min
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(10);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath);
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
     try
     {
-        var context = services.GetRequiredService<LlanteriaDbContext>();
-        context.Database.EnsureCreated();
+        var db = scope.ServiceProvider.GetRequiredService<LlanteriaDbContext>();
+        db.Database.EnsureCreated();
+        EsquemaUpdater.Aplicar(db);
+        DatosIniciales.Asegurar(db);
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Ocurrió un error al crear la Base de Datos automáticamente.");
+        scope.ServiceProvider.GetRequiredService<ILogger<Program>>()
+            .LogError(ex, "No se pudo verificar la base de datos al iniciar.");
     }
 }
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -77,8 +96,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseSession();
+app.UseAuthentication();   // Faltaba: sin esto User.Identity nunca estaba autenticado
 app.UseAuthorization();
 
+app.UseStaticFiles(); // sirve también los archivos subidos en tiempo de ejecución (productos, logos, soportes)
 app.MapStaticAssets();
 
 app.MapControllerRoute(

@@ -1,245 +1,162 @@
-﻿using Microsoft.AspNetCore.Mvc;
 using Llanteria.Models;
 using Llanteria.Services;
-using Llanteria.Filters;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
-using System;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Formats.Webp;
+using SixLabors.ImageSharp.Processing;
 
-namespace Llanteria.Controllers
+namespace Llanteria.Controllers;
+
+public class ProductoController : Controller
 {
-    public class ProductoController : Controller
+    private const string ImagenPorDefecto = "default-producto.png";
+    private static readonly string[] Extensiones = { ".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp" };
+
+    private readonly ProductoService ser;
+    private readonly ProveedoreService provSer;
+    private readonly MarcaService marcSer;
+    private readonly BodegaService bodSer;
+    private readonly IWebHostEnvironment _env;
+
+    public ProductoController(ProductoService productoService, ProveedoreService proveedoreService,
+        MarcaService marcaService, BodegaService bodegaService, IWebHostEnvironment env)
     {
-        private readonly ProductoService ser;
-        private readonly ProveedoreService provSer;
-        private readonly MarcaService marcSer;
-        private readonly BodegaService bodSer;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        ser = productoService;
+        provSer = proveedoreService;
+        marcSer = marcaService;
+        bodSer = bodegaService;
+        _env = env;
+    }
 
-        public ProductoController(
-            ProductoService productoService,
-            ProveedoreService proveedoreService,
-            MarcaService marcaService,
-            BodegaService bodegaService,
-            IWebHostEnvironment webHostEnvironment)
+    public IActionResult Index() => View(ser.GetProductos());
+
+    public IActionResult Create()
+    {
+        CargarCombos();
+        return View(new Producto { DetalleProducto = new DetalleProducto() });
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Create(Producto p)
+    {
+        ValidarImagen(p.ImagenArchivo);
+        ValidarDetalle(p);
+        if (!ModelState.IsValid)
         {
-            ser = productoService;
-            provSer = proveedoreService;
-            marcSer = marcaService;
-            bodSer = bodegaService;
-            _webHostEnvironment = webHostEnvironment;
-        }
-
-        // --- VISTAS Y LOGICA (MÉTODOS GET) ---
-
-        [HttpGet]
-        public ActionResult Index()
-        {
-            var productos = ser.GetProductos();
-
-            // Extraer medidas únicas registradas en los productos de la BD
-            ViewBag.Anchos = productos
-                .Where(p => p.DetalleProducto?.Ancho != null)
-                .Select(p => p.DetalleProducto.Ancho)
-                .Distinct()
-                .OrderBy(x => x)
-                .ToList();
-
-            ViewBag.Perfiles = productos
-                .Where(p => p.DetalleProducto?.Perfil != null)
-                .Select(p => p.DetalleProducto.Perfil)
-                .Distinct()
-                .OrderBy(x => x)
-                .ToList();
-
-            ViewBag.Diametros = productos
-                .Where(p => p.DetalleProducto?.Diametro != null)
-                .Select(p => p.DetalleProducto.Diametro)
-                .Distinct()
-                .OrderBy(x => x)
-                .ToList();
-
-            return View(productos);
-        }
-
-        [HttpGet]
-        public ActionResult Create()
-        {
-            CargarCombos();
-            return View();
-        }
-
-        [HttpGet]
-        public ActionResult Edit(int id)
-        {
-            var producto = ser.GetProducto(id);
-            if (producto == null)
-            {
-                return NotFound();
-            }
-
-            CargarCombos();
-            return View(producto);
-        }
-
-        [HttpGet]
-        public JsonResult GetProductosJson()
-        {
-            var productos = ser.GetProductos()
-                .Select(p => new {
-                    nombre = p.Nombre,
-                    precio = p.PrecioVenta.ToString("C0"),
-                    img = "/images/productoos/" + (string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen),
-                    categoria = p.Categoria,
-                    detalles = p.DetalleProducto != null ? new
-                    {
-                        ancho = p.DetalleProducto.Ancho,
-                        perfil = p.DetalleProducto.Perfil,
-                        diametro = p.DetalleProducto.Diametro,
-                        viscosidad = p.DetalleProducto.Viscosidad,
-                        tipoAceite = p.DetalleProducto.TipoAceite
-                    } : null
-                }).ToList();
-
-            return Json(productos);
-        }
-
-        // Endpoint de filtrado dinámico por medidas
-        public JsonResult GetLlantasJson(string? ancho, string? perfil, string? diametro)
-        {
-            var query = ser.GetProductos().AsQueryable();
-
-            // 1. Filtrado por Ancho
-            if (!string.IsNullOrEmpty(ancho))
-            {
-                query = query.Where(p => p.DetalleProducto != null
-                                      && p.DetalleProducto.Ancho != null
-                                      && p.DetalleProducto.Ancho.ToString() == ancho);
-            }
-
-            // 2. Filtrado por Perfil
-            if (!string.IsNullOrEmpty(perfil))
-            {
-                query = query.Where(p => p.DetalleProducto != null
-                                      && p.DetalleProducto.Perfil != null
-                                      && p.DetalleProducto.Perfil.ToString() == perfil);
-            }
-
-            // 3. Filtrado por Diametro
-            if (!string.IsNullOrEmpty(diametro))
-            {
-                query = query.Where(p => p.DetalleProducto != null
-                                      && p.DetalleProducto.Diametro != null
-                                      && p.DetalleProducto.Diametro.ToString() == diametro);
-            }
-
-            // 4. Proyección de datos
-            // Usamos .AsEnumerable() antes de dar formato de moneda a la cadena,
-            // ya que .ToString("C0") no puede ser traducido a SQL por Entity Framework.
-            var resultados = query.AsEnumerable().Select(p => new
-            {
-                nombre = p.Nombre,
-                precio = p.PrecioVenta.ToString("C0"),
-                img = "/images/productoos/" + (string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen)
-            }).ToList();
-
-            return Json(resultados);
-        }
-
-        // --- PROCESAMIENTO DE FORMULARIOS (MÉTODOS POST) ---
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(Producto p)
-        {
-            if (!ModelState.IsValid)
-            {
-                var errores = ModelState
-                    .Where(x => x.Value.Errors.Count > 0)
-                    .Select(x => $"{x.Key}: {string.Join(" | ", x.Value.Errors.Select(e => e.ErrorMessage))}")
-                    .ToList();
-
-                ViewBag.Errores = string.Join("<br>", errores);
-            }
-
-            if (ModelState.IsValid)
-            {
-                p.RutaImagen = ProcesarImagen(p.ImagenArchivo);
-                ser.AddProducto(p);
-                return RedirectToAction(nameof(Index));
-            }
-
             CargarCombos();
             return View(p);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Producto ob)
+        LimpiarDetalle(p);
+        p.RutaImagen = p.ImagenArchivo != null ? GuardarImagen(p.ImagenArchivo) : ImagenPorDefecto;
+        ser.AddProducto(p);
+        TempData["Exito"] = "Producto registrado correctamente.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    public IActionResult Edit(int id)
+    {
+        var producto = ser.GetProducto(id);
+        if (producto == null) return NotFound();
+        producto.DetalleProducto ??= new DetalleProducto();
+        CargarCombos();
+        return View(producto);
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Edit(int id, Producto p)
+    {
+        p.Id = id;
+        ValidarImagen(p.ImagenArchivo);
+        ValidarDetalle(p);
+        var original = ser.GetProducto(id);
+        if (original == null) return NotFound();
+
+        if (!ModelState.IsValid)
         {
-            if (ModelState.IsValid)
-            {
-                if (ob.ImagenArchivo != null)
-                {
-                    var original = ser.GetProducto(id);
-                    EliminarImagen(original?.RutaImagen);
-                    ob.RutaImagen = ProcesarImagen(ob.ImagenArchivo);
-                }
-
-                ser.UpdateProducto(ob);
-                return RedirectToAction(nameof(Index));
-            }
-
+            p.RutaImagen = original.RutaImagen;
             CargarCombos();
-            return View(ob);
+            return View(p);
         }
 
-        // --- MÉTODOS AUXILIARES ---
-
-        private string ProcesarImagen(IFormFile? archivo)
+        LimpiarDetalle(p);
+        var imagenAnterior = original.RutaImagen;
+        if (p.ImagenArchivo != null)
         {
-            if (archivo == null) return "default-producto.png";
-
-            string carpeta = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productoos");
-            if (!Directory.Exists(carpeta)) Directory.CreateDirectory(carpeta);
-
-            string nombreBase = Path.GetFileNameWithoutExtension(archivo.FileName).ToLower().Replace(" ", "-");
-            string nombreWebp = nombreBase + ".webp";
-            string ruta = Path.Combine(carpeta, nombreWebp);
-
-            using (Image image = Image.Load(archivo.OpenReadStream()))
-            {
-                image.Mutate(x => x.Resize(new ResizeOptions
-                {
-                    Size = new Size(800, 800),
-                    Mode = ResizeMode.Max
-                }));
-
-                image.Save(ruta, new WebpEncoder { Quality = 75 });
-            }
-
-            return nombreWebp;
+            p.RutaImagen = GuardarImagen(p.ImagenArchivo);
+            EliminarImagen(imagenAnterior);
         }
-
-        private void EliminarImagen(string? nombreArchivo)
+        else
         {
-            if (string.IsNullOrEmpty(nombreArchivo) || nombreArchivo == "default-producto.png") return;
-
-            string ruta = Path.Combine(_webHostEnvironment.WebRootPath, "images", "productoos", nombreArchivo);
-            if (System.IO.File.Exists(ruta)) System.IO.File.Delete(ruta);
+            p.RutaImagen = imagenAnterior;
         }
 
-        private void CargarCombos()
-        {
-            ViewBag.IdProveedor = new SelectList(provSer.GetProveedores(), "Id", "NombreEmpresa");
-            ViewBag.IdMarca = new SelectList(marcSer.GetMarcas(), "Id", "Nombre");
-            ViewBag.IdBodega = new SelectList(bodSer.GetBodegas(), "Id", "NombreBodega");
-        }
+        ser.UpdateProducto(p);
+        TempData["Exito"] = "Producto actualizado.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Delete(int id)
+    {
+        var p = ser.GetProducto(id);
+        if (p == null) return RedirectToAction(nameof(Index));
+        var imagen = p.RutaImagen;
+        ser.DeleteProducto(id);
+        EliminarImagen(imagen);
+        TempData["Exito"] = "Producto eliminado.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    private void ValidarDetalle(Producto p)
+    {
+        var d = p.DetalleProducto;
+        if (d == null || d.IdMarca > 0) return;
+        var conDatos = !string.IsNullOrWhiteSpace(d.Ancho) || !string.IsNullOrWhiteSpace(d.Perfil) || !string.IsNullOrWhiteSpace(d.Diametro)
+                       || !string.IsNullOrWhiteSpace(d.Viscosidad) || !string.IsNullOrWhiteSpace(d.TipoAceite) || d.GarantiaMeses.HasValue;
+        if (conDatos) ModelState.AddModelError("DetalleProducto.IdMarca", "Selecciona la marca para guardar la ficha técnica.");
+    }
+
+    // Si no se eligió marca, no se guarda el detalle (evita violar la llave foránea).
+    private static void LimpiarDetalle(Producto p)
+    {
+        if (p.DetalleProducto == null || p.DetalleProducto.IdMarca <= 0) p.DetalleProducto = null;
+    }
+
+    private void ValidarImagen(IFormFile? archivo)
+    {
+        if (archivo == null) return;
+        if (!Extensiones.Contains(Path.GetExtension(archivo.FileName).ToLowerInvariant()))
+            ModelState.AddModelError(nameof(Producto.ImagenArchivo), "El archivo debe ser una imagen (jpg, png, webp, gif o bmp).");
+        else if (archivo.Length > 5 * 1024 * 1024)
+            ModelState.AddModelError(nameof(Producto.ImagenArchivo), "La imagen no puede superar 5 MB.");
+    }
+
+    private string GuardarImagen(IFormFile archivo)
+    {
+        var carpeta = Path.Combine(_env.WebRootPath, "images", "productoos");
+        Directory.CreateDirectory(carpeta);
+        var nombre = Guid.NewGuid().ToString("N") + ".webp";
+
+        using var stream = archivo.OpenReadStream();
+        using var imagen = Image.Load(stream);
+        imagen.Mutate(x => x.Resize(new ResizeOptions { Size = new Size(800, 800), Mode = ResizeMode.Max }));
+        imagen.Save(Path.Combine(carpeta, nombre), new WebpEncoder { Quality = 75 });
+        return nombre;
+    }
+
+    private void EliminarImagen(string? nombre)
+    {
+        if (string.IsNullOrEmpty(nombre) || nombre == ImagenPorDefecto) return;
+        var ruta = Path.Combine(_env.WebRootPath, "images", "productoos", Path.GetFileName(nombre));
+        if (System.IO.File.Exists(ruta)) System.IO.File.Delete(ruta);
+    }
+
+    private void CargarCombos()
+    {
+        ViewBag.IdProveedor = new SelectList(provSer.GetProveedores(), "Id", "NombreEmpresa");
+        ViewBag.IdMarca = new SelectList(marcSer.GetMarcas(), "Id", "Nombre");
+        ViewBag.IdBodega = new SelectList(bodSer.GetBodegas(), "Id", "NombreBodega");
     }
 }

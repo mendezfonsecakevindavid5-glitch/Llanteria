@@ -1,56 +1,60 @@
-﻿using System;
-using System.Net.Http;
+using System.Net;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 
 namespace Llanteria.Services
 {
     public class EmailService
     {
+        private static readonly HttpClient Http = new();
         private readonly IConfiguration _configuration;
-        private readonly HttpClient _httpClient;
 
         public EmailService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _httpClient = new HttpClient();
         }
 
-        public async Task<bool> EnviarCorreoAsync(string destinatarioEmail, string destinatarioNombre, string asunto, string cuerpoHtml)
+        /// <summary>Correo del negocio que recibe contactos, solicitudes y citas.</summary>
+        public string CorreoDestino => _configuration["Contacto:CorreoDestino"] ?? "";
+
+        public async Task<bool> EnviarCorreoAsync(string destinatarioEmail, string destinatarioNombre,
+            string asunto, string cuerpoHtml, string? responderA = null)
         {
             try
             {
-                var apiKey = _configuration["Brevo:ApiKey"] ?? _configuration["MailerSend:ApiKey"];
-                var fromEmail = _configuration["Brevo:FromEmail"] ?? _configuration["MailerSend:FromEmail"];
-                var fromName = _configuration["Brevo:FromName"] ?? "Sistema Llantería";
-                var requestUri = "https://api.brevo.com/v3/smtp/email";
+                var apiKey = _configuration["Brevo:ApiKey"];
+                var fromEmail = _configuration["Brevo:FromEmail"];
+                var fromName = _configuration["Brevo:FromName"] ?? "Llantería Valledupar";
 
-                // Estructura JSON requerida por la API v3 de Brevo
-                var payload = new
+                if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(fromEmail) || string.IsNullOrWhiteSpace(destinatarioEmail))
                 {
-                    sender = new { name = fromName, email = fromEmail },
-                    to = new[] { new { email = destinatarioEmail, name = destinatarioNombre } },
-                    subject = asunto,
-                    htmlContent = cuerpoHtml
-                };
-
-                var jsonPayload = JsonSerializer.Serialize(payload);
-                var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-
-                _httpClient.DefaultRequestHeaders.Clear();
-                _httpClient.DefaultRequestHeaders.Add("api-key", apiKey);
-                _httpClient.DefaultRequestHeaders.Add("accept", "application/json");
-
-                var response = await _httpClient.PostAsync(requestUri, content);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorResponse = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Error Brevo ({response.StatusCode}): {errorResponse}");
+                    Console.WriteLine("EmailService: falta configurar Brevo:ApiKey, Brevo:FromEmail o el destinatario.");
+                    return false;
                 }
 
+                var payload = new Dictionary<string, object>
+                {
+                    ["sender"] = new { name = fromName, email = fromEmail },
+                    ["to"] = new[] { new { email = destinatarioEmail, name = destinatarioNombre } },
+                    ["subject"] = asunto,
+                    ["htmlContent"] = cuerpoHtml
+                };
+                if (!string.IsNullOrWhiteSpace(responderA))
+                    payload["replyTo"] = new { email = responderA };
+
+                using var request = new HttpRequestMessage(HttpMethod.Post, "https://api.brevo.com/v3/smtp/email")
+                {
+                    Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
+                };
+                request.Headers.Add("api-key", apiKey);
+                request.Headers.Add("accept", "application/json");
+
+                var response = await Http.SendAsync(request);
+                if (!response.IsSuccessStatusCode)
+                {
+                    var detalle = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Error Brevo ({response.StatusCode}): {detalle}");
+                }
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
@@ -60,60 +64,35 @@ namespace Llanteria.Services
             }
         }
 
+        /// <summary>Plantilla sencilla para avisos internos (contacto, solicitudes, citas).</summary>
+        public static string PlantillaAviso(string titulo, IEnumerable<(string Etiqueta, string? Valor)> datos, string? mensaje = null)
+        {
+            var sb = new StringBuilder();
+            sb.Append("<div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;border:1px solid #e0e0e0;border-radius:6px;overflow:hidden'>");
+            sb.Append($"<div style='background:#C92B0A;color:#fff;padding:16px 20px'><h2 style='margin:0;font-size:18px'>{WebUtility.HtmlEncode(titulo)}</h2></div>");
+            sb.Append("<div style='padding:20px'><table style='width:100%;border-collapse:collapse'>");
+            foreach (var (etiqueta, valor) in datos)
+                sb.Append($"<tr><td style='padding:6px 0;color:#555;width:35%'><strong>{WebUtility.HtmlEncode(etiqueta)}</strong></td><td style='padding:6px 0'>{WebUtility.HtmlEncode(valor ?? "-")}</td></tr>");
+            sb.Append("</table>");
+            if (!string.IsNullOrWhiteSpace(mensaje))
+                sb.Append($"<div style='margin-top:16px;padding:12px;border-left:4px solid #C92B0A;background:#fafafa;white-space:pre-line'>{WebUtility.HtmlEncode(mensaje)}</div>");
+            sb.Append("</div></div>");
+            return sb.ToString();
+        }
+
         public async Task<bool> EnviarTokenRecuperacionAsync(string destinatarioEmail, string otp)
         {
-            string asunto = "Código de verificación de Llantería";
-
-            string cuerpoHtml = $@"
-        <!DOCTYPE html>
-        <html lang='es'>
-        <head>
-            <meta charset='UTF-8'>
-            <style>
-                body {{ font-family: Arial, sans-serif; background-color: #ffffff; margin: 0; padding: 20px; color: #202124; }}
-                .container {{ max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }}
-                .header-box {{ background-color: #C92B0A; padding: 30px; text-align: left; }}
-                .header-title {{ color: #ffffff; font-size: 24px; margin: 0; font-weight: normal; }}
-                .content-box {{ padding: 40px 30px; }}
-                .text-body {{ font-size: 16px; line-height: 1.5; color: #3c4043; margin-bottom: 30px; }}
-                .otp-code {{ font-size: 36px; font-weight: bold; color: #000000; text-align: center; margin-bottom: 30px; letter-spacing: 2px; }}
-                .footer-text {{ font-size: 14px; color: #5f6368; line-height: 1.4; border-top: 1px solid #e0e0e0; padding-top: 20px; }}
-                .bottom-footer {{ margin-top: 20px; text-align: left; font-size: 12px; color: #70757a; }}
-            </style>
-        </head>
-        <body>
-            <div style='margin-bottom: 20px;'>
-                <strong style='font-size: 24px; color: #C92B0A;'>Llantería Valledupar</strong>
-            </div>
-            <div class='container'>
-                <div class='header-box'>
-                    <h2 class='header-title'>Código de verificación de Llantería</h2>
-                </div>
-                <div class='content-box'>
-                    <p class='text-body'>
-                        Llantería recibió una solicitud para usar esta dirección de correo electrónico como método de recuperación para la cuenta <strong>{destinatarioEmail}</strong>.
-                    </p>
-                    
-                    <div class='otp-code'>{otp}</div>
-                    
-                    <p class='text-body'>
-                        Cuando se te solicite, ingresa el código para demostrar que Llantería puede comunicarse contigo a través de esta dirección de correo electrónico.
-                    </p>
-                    
-                    <p class='footer-text'>
-                        Si no reconoces <strong>{destinatarioEmail}</strong>, es probable que alguien haya dado tu dirección de correo electrónico por error. Puedes ignorar este mensaje.<br><br>
-                        Atentamente.<br>
-                        El equipo de Llantería Valledupar
-                    </p>
-                </div>
-            </div>
-            <div class='bottom-footer'>
-                No se pueden enviar respuestas a esta dirección de correo electrónico.
-            </div>
-        </body>
-        </html>";
-
-            return await EnviarCorreoAsync(destinatarioEmail, "Usuario", asunto, cuerpoHtml);
+            var correo = WebUtility.HtmlEncode(destinatarioEmail);
+            var cuerpo = $@"
+<div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;border:1px solid #e0e0e0;border-radius:6px;overflow:hidden'>
+  <div style='background:#C92B0A;padding:24px'><h2 style='color:#fff;margin:0;font-weight:normal'>Código de verificación</h2></div>
+  <div style='padding:32px 24px'>
+    <p style='font-size:15px;color:#3c4043'>Recibimos una solicitud de verificación para la cuenta <strong>{correo}</strong>. Ingresa este código cuando se te pida:</p>
+    <p style='font-size:34px;font-weight:bold;text-align:center;letter-spacing:4px;margin:24px 0'>{otp}</p>
+    <p style='font-size:13px;color:#5f6368'>Si no fuiste tú, ignora este mensaje.<br/>Llantería Valledupar</p>
+  </div>
+</div>";
+            return await EnviarCorreoAsync(destinatarioEmail, "Usuario", "Código de verificación - Llantería Valledupar", cuerpo);
         }
     }
 }

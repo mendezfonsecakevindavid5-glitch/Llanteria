@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Sistema Llantería</title>
+    <title>@ViewData["Title"] - Llantería Valledupar</title>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -136,32 +136,26 @@
         }
     </style>
 </head>
-<body>
-
+<body class="public">
     <header>
-        <nav class="navbar navbar-expand-lg michelin-nav-global">
-            <div class="container-fluid px-4 px-lg-5">
-                <a class="brand-matrix d-flex align-items-center me-lg-5 header-interactable" asp-controller="Home" asp-action="Index">
-                    <i class="fa-solid fa-radar me-3" style="color: var(--llanteria-light); font-size: 1.8rem;"></i>
-                    <div class="d-flex flex-column text-start">
-                        <span style="color:white; font-size: 1.45rem;">LLantería</span>
-                        <span style="color:rgba(255,255,255,0.9); font-size: 0.85rem;">Valledupar</span>
-                    </div>
+        <nav class="navbar navbar-expand-lg navbar-dark site-nav">
+            <div class="container">
+                <a class="site-brand" asp-controller="Home" asp-action="Index">
+                    Llantería<small>Valledupar</small>
                 </a>
 
-                <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                    <i class="fa-solid fa-bars-staggered fs-4"></i>
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-label="Menú">
+                    <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarContent">
-                    <ul class="navbar-nav me-auto align-items-center gap-1">
-                        <li class="nav-item"><a class="nav-link nav-matrix-link header-interactable" href="/#inicio">Inicio</a></li>
-                        <li class="nav-item"><a class="nav-link nav-matrix-link header-interactable" href="/#categorias">Categorías</a></li>
-                        <li class="nav-item"><a class="nav-link nav-matrix-link header-interactable" href="/#nosotros">Nosotros</a></li>
-                        <li class="nav-item"><a class="nav-link nav-matrix-link header-interactable" href="/#promociones">Promociones</a></li>
-                        <li class="nav-item"><a class="nav-link nav-matrix-link header-interactable" href="/#servicios">Servicios</a></li>
-                        <li class="nav-item"><a class="nav-link nav-matrix-link header-interactable" href="/#productos">Productos</a></li>
-                        <li class="nav-item"><a class="nav-link nav-matrix-link header-interactable" asp-controller="Contacto" asp-action="Index">Contacto</a></li>
+                    <ul class="navbar-nav me-auto align-items-lg-center ms-lg-4">
+                        <li class="nav-item"><a class="nav-link" href="/#inicio">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/#nosotros">Nosotros</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/#promociones">Promociones</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/#servicios">Servicios</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/#productos">Productos</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Contacto" asp-action="Index">Contacto</a></li>
                     </ul>
 
                     <ul class="navbar-nav ms-auto align-items-center gap-3 mt-3 mt-lg-0">
@@ -199,66 +193,42 @@
         </nav>
     </header>
 
-    <main role="main" class="main-matrix-container">
+    <main role="main" class="site-main">
         @RenderBody()
     </main>
 
-    <footer class="matrix-footer py-5">
+    <footer class="site-footer">
         <div class="container">
-            <div class="row text-center text-md-start mb-4">
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <h5 class="footer-heading">Garantías</h5>
-                    <ul class="footer-links">
-                        <li><span>Políticas de Devolución</span></li>
-                        <li><span>Términos de Garantía</span></li>
-                        <li><span>Registro de Neumáticos</span></li>
-                        <li><span>Soporte Post-venta</span></li>
+            <div class="row g-4 mb-3">
+                <div class="col-md-4">
+                    <h5>Llantería Valledupar</h5>
+                    <p class="small mb-0">Venta de llantas, aceites y servicios de mantenimiento automotriz.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contacto</h5>
+                    <ul>
+                        <li><i class="fa-solid fa-phone"></i><a href="tel:+573117723978" class="text-reset text-decoration-none">+57 311 772 3978</a></li>
+                        <li><i class="fa-solid fa-envelope"></i>superllantasmedellinsas@hotmail.com</li>
+                        <li><i class="fa-solid fa-location-dot"></i>Valledupar, Cesar</li>
                     </ul>
                 </div>
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <h5 class="footer-heading">Comunidad</h5>
-                    <ul class="footer-links">
-                        <li><span>Eventos Locales</span></li>
-                        <li><span>Club de Beneficios</span></li>
-                        <li><span>Blog y Consejos</span></li>
-                        <li><span>Testimonios</span></li>
-                    </ul>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <h5 class="footer-heading">Productos</h5>
-                    <ul class="footer-links">
-                        <li><span>Catálogo Completo</span></li>
-                        <li><span>Llantas para Auto</span></li>
-                        <li><span>Llantas para Camioneta</span></li>
-                        <li><span>Accesorios</span></li>
-                    </ul>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <h5 class="footer-heading">Contacto</h5>
-                    <ul class="footer-links">
-                        <li><span><i class="fa-solid fa-location-dot me-2 text-white"></i>Cra. 19 # 14-25, Valledupar</span></li>
-                        <li><span><i class="fa-solid fa-phone-volume me-2 text-white"></i>+57 320 123 4567</span></li>
-                        <li><span><i class="fa-solid fa-envelope-circle-check me-2 text-white"></i>soporte@llanteria.com</span></li>
-                        <li><span><i class="fa-solid fa-clock me-2 text-white"></i>Lun - Sáb: 8:00 AM - 6:00 PM</span></li>
+                <div class="col-md-4">
+                    <h5>Horario</h5>
+                    <ul>
+                        <li><i class="fa-solid fa-clock"></i>Lunes a viernes: 7:30 a.m. a 5:30 p.m.</li>
+                        <li><i class="fa-solid fa-clock"></i>Sábados: 8:00 a.m. a 4:00 p.m.</li>
                     </ul>
                 </div>
             </div>
-
-            <hr class="mb-4" style="border-color: rgba(255,255,255,0.2);">
-
-            <div class="text-center">
-                <a class="brand-matrix d-inline-flex align-items-center justify-content-center text-decoration-none mb-2" asp-controller="Home" asp-action="Index">
-                    <i class="fa-solid fa-radar me-2" style="color: var(--llanteria-primary); font-size: 1.6rem;"></i>
-                    <span style="color: #FFFFFF; font-size: 1.4rem; margin-right: 6px;">LLantería</span>
-                    <span style="color: var(--llanteria-primary); font-size: 1.4rem;">Valledupar</span>
-                </a>
-                <p class="text-white small mb-0">&copy; 2026 - Todos los derechos reservados.</p>
-            </div>
+            <hr />
+            <p class="text-center small mb-0">&copy; @DateTime.Now.Year Llantería Valledupar. Todos los derechos reservados.</p>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <partial name="_Alertas" />
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -27,6 +27,7 @@ public partial class Vehiculo
 
     [Required(ErrorMessage = "Debe asignar un cliente al vehículo.")]
     [Display(Name = "Propietario / Cliente")]
+    [Range(1, int.MaxValue, ErrorMessage = "Selecciona el propietario.")]
     public int IdCliente { get; set; }
 
     // --- Propiedades de Navegación ---

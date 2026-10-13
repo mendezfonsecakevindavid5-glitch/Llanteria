@@ -1,0 +1,18 @@
+@model Llanteria.Models.Inventario
+
+@{
+    ViewData["Title"] = "Nuevas existencias";
+    ViewData["Accion"] = "Create";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Nuevas existencias", "Registra un producto en una bodega con su stock inicial.", "Inventario", "Index"))
+
+<div class="panel panel-medium">
+    <div class="panel-body">
+        <partial name="_Form" model="Model" />
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

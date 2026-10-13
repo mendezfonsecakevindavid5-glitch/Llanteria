@@ -1,4 +1,4 @@
-﻿using Llanteria.Data;
+using Llanteria.Data;
 using Llanteria.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -40,19 +40,7 @@ namespace Llanteria.Services
                 NotificacionesActivas = perfil?.NotificacionesActivas ?? false,
                 FotoBase64 = perfil?.FotoCircular != null
                     ? $"data:image/png;base64,{Convert.ToBase64String(perfil.FotoCircular)}"
-                    : null,
-                FacturasRecientes = await _context.Facturas
-                    .Where(f => f.IdCliente == usuarioId)
-                    .OrderByDescending(f => f.Fecha)
-                    .Take(5)
-                    .Select(f => new FacturaViewModel
-                    {
-                        Id = f.Id,
-                        NumeroFactura = f.Id.ToString(),
-                        Fecha = f.Fecha.HasValue ? f.Fecha.Value.ToDateTime(TimeOnly.MinValue) : DateTime.Now,
-                        TotalPagar = f.TotalPagar,
-                        EstadoPago = "Pagado"
-                    }).ToListAsync()
+                    : null
             };
         }
 
@@ -137,12 +125,12 @@ namespace Llanteria.Services
 
             if (usuario == null) return false;
 
-            if (usuario.PasswordHash != passwordActual)
+            if (!Llanteria.Infrastructure.Claves.Verificar(usuario.PasswordHash, passwordActual, out _))
             {
                 return false;
             }
 
-            usuario.PasswordHash = nuevaPassword;
+            usuario.PasswordHash = Llanteria.Infrastructure.Claves.Hash(nuevaPassword);
 
             try
             {

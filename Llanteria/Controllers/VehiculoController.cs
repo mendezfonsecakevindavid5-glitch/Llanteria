@@ -1,99 +1,96 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Llanteria.Data;
 using Llanteria.Models;
 using Llanteria.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Llanteria.Controllers;
 
 public class VehiculoController : Controller
 {
     private readonly VehiculoService ser;
-    private readonly ClienteService cliSer; // CAMBIO: Ahora usamos el servicio de Clientes directamente
+    private readonly ClienteService cliSer;
+    private readonly LlanteriaDbContext _db;
 
-    // Constructor actualizado con el servicio de Clientes
-    public VehiculoController(VehiculoService vehiculoService, ClienteService clienteService)
+    public VehiculoController(VehiculoService vehiculoService, ClienteService clienteService, LlanteriaDbContext db)
     {
         ser = vehiculoService;
         cliSer = clienteService;
+        _db = db;
     }
 
-    public IActionResult Index()
+    public IActionResult Index() => View(ser.GetVehiculos());
+
+    public IActionResult Create(int? idCliente)
     {
-        return View(ser.GetVehiculos());
+        CargarCombos(idCliente);
+        return View(new Vehiculo { IdCliente = idCliente ?? 0 });
     }
 
-    public IActionResult Create()
-    {
-        CargarCombos();
-        return View();
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public IActionResult Create(Vehiculo v)
     {
-        try
+        Normalizar(v);
+        if (_db.Vehiculos.AsNoTracking().Any(x => x.Placa == v.Placa))
+            ModelState.AddModelError(nameof(Vehiculo.Placa), "Ya existe un vehículo con esa placa.");
+        if (!ModelState.IsValid)
         {
-            if (ModelState.IsValid)
-            {
-                ser.AddVehiculo(v);
-                return RedirectToAction(nameof(Index));
-            }
+            CargarCombos(v.IdCliente);
+            return View(v);
         }
-        catch
-        {
-            ModelState.AddModelError("", "No se pudo guardar el vehículo.");
-        }
-        CargarCombos();
-        return View(v);
+
+        ser.AddVehiculo(v);
+        TempData["Exito"] = "Vehículo registrado.";
+        return RedirectToAction(nameof(Index));
     }
 
     public IActionResult Edit(int id)
     {
         var v = ser.GetVehiculo(id);
         if (v == null) return NotFound();
-
-        CargarCombos();
+        CargarCombos(v.IdCliente);
         return View(v);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken]
     public IActionResult Edit(int id, Vehiculo v)
     {
-        try
+        v.Id = id;
+        Normalizar(v);
+        if (_db.Vehiculos.AsNoTracking().Any(x => x.Placa == v.Placa && x.Id != id))
+            ModelState.AddModelError(nameof(Vehiculo.Placa), "Ya existe otro vehículo con esa placa.");
+        if (!ModelState.IsValid)
         {
-            if (ModelState.IsValid)
-            {
-                ser.UpdateVehiculo(v);
-                return RedirectToAction(nameof(Index));
-            }
+            CargarCombos(v.IdCliente);
+            return View(v);
         }
-        catch
-        {
-            ModelState.AddModelError("", "No se pudo actualizar el vehículo.");
-        }
-        CargarCombos();
-        return View(v);
-    }
 
-    public IActionResult Delete(int id)
-    {
-        ser.DeleteVehiculo(id);
+        ser.UpdateVehiculo(v);
+        TempData["Exito"] = "Vehículo actualizado.";
         return RedirectToAction(nameof(Index));
     }
 
-    // Método actualizado para llenar el Select con la lista de CLIENTES
-    private void CargarCombos()
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Delete(int id)
     {
-        // Traemos la lista completa de clientes (ajusta .GetClientes() si tu método en el servicio se llama diferente, ej: .GetAll())
-        var clientes = cliSer.GetClientes().Select(c => new
-        {
-            Id = c.Id,
-            NombreFull = $"{c.Nombres} {c.Apellidos} - Documento: {c.NumeroDocumento}"
-        });
+        ser.DeleteVehiculo(id);
+        TempData["Exito"] = "Vehículo eliminado.";
+        return RedirectToAction(nameof(Index));
+    }
 
-        // Guardamos la lista en ViewBag.IdCliente (Recuerda cambiar en la vista Create/Edit el asp-for="IdConductor" por asp-for="IdCliente")
-        ViewBag.IdCliente = new SelectList(clientes, "Id", "NombreFull");
+    private static void Normalizar(Vehiculo v)
+    {
+        v.Placa = (v.Placa ?? "").Trim().ToUpperInvariant();
+        v.Marca = (v.Marca ?? "").Trim();
+        v.Modelo = (v.Modelo ?? "").Trim();
+    }
+
+    private void CargarCombos(int? seleccionado = null)
+    {
+        var clientes = cliSer.GetClientes()
+            .OrderBy(c => c.Nombres)
+            .Select(c => new { c.Id, Nombre = $"{c.Nombres} {c.Apellidos} — {c.NumeroDocumento}" });
+        ViewBag.IdCliente = new SelectList(clientes, "Id", "Nombre", seleccionado);
     }
 }

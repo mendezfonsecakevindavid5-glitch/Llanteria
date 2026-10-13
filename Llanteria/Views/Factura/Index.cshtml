@@ -1,409 +1,62 @@
-﻿@model IEnumerable<Llanteria.Models.Factura>
+@using Llanteria.Infrastructure
+@model Paginado<Llanteria.Models.Factura>
 
 @{
-    ViewData["Title"] = "Historial de Ventas";
+    ViewData["Title"] = "Ventas";
 }
 
-<div class="container-fluid catalogo-container">
+@await Html.PartialAsync("_PageHeader", new PageHeader("Ventas", "Facturas emitidas a los clientes.", BotonTexto: "Nueva factura", BotonAction: "Create", BotonController: "Factura"))
 
-    <!-- Encabezado -->
-    <div class="catalogo-header">
-        <div>
-            <a asp-controller="Dashboard" asp-action="Index" class="volver-panel">
-                <i class="fa-solid fa-arrow-left me-2"></i>Volver al Panel
-            </a>
-
-            <div class="titulo-con-icono">
-                <div class="icono-catalogo">
-                    <i class="fa-solid fa-file-invoice-dollar"></i>
-                </div>
-
-                <div>
-                    <h1>FACTURAS DE VENTAS</h1>
-                    <p>Historial de transacciones, clientes atendidos y totales generados.</p>
-                </div>
-            </div>
-        </div>
-
-        <a asp-action="Create" class="btn-nueva-venta">
-            <i class="fa-solid fa-plus me-2"></i>Nueva Venta
-        </a>
-    </div>
-
-    <!-- Tabla -->
-    <div class="tabla-wrapper">
-        <div class="table-responsive">
-            <table class="tabla-facturas">
-                <thead>
-                    <tr>
-                        <th class="col-factura">NRO. FACTURA</th>
-                        <th class="col-fecha">FECHA</th>
-                        <th class="col-cliente">CLIENTE</th>
-                        <th class="col-subtotal text-end">SUBTOTAL</th>
-                        <th class="col-iva text-end">IVA</th>
-                        <th class="col-total text-end">TOTAL A PAGAR</th>
-                        <th class="col-acciones text-center">ACCIONES</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        var nombreCliente = $"{item.IdClienteNavigation?.Nombres} {item.IdClienteNavigation?.Apellidos}".Trim();
-
-                        <tr>
-                            <td>
-                                <span class="factura-numero">
-                                    <i class="fa-solid fa-receipt me-2"></i># @item.Id
-                                </span>
-                            </td>
-
-                            <td>
-                                <span class="fecha-factura">
-                                    <i class="fa-regular fa-calendar-days me-2"></i>
-                                    @(item.Fecha?.ToString("dd/MM/yyyy") ?? "N/A")
-                                </span>
-                            </td>
-
-                            <td>
-                                <div class="cliente-factura">
-                                    <div class="cliente-icono">
-                                        <i class="fa-solid fa-user"></i>
-                                    </div>
-
-                                    <span>
-                                        @(string.IsNullOrWhiteSpace(nombreCliente)
-                                            ? "Cliente no registrado"
-                                            : nombreCliente)
-                                    </span>
-                                </div>
-                            </td>
-
-                            <td class="text-end">
-                                <span class="valor-secundario">
-                                    $ @item.TotalBruto.ToString("N0")
-                                </span>
-                            </td>
-
-                            <td class="text-end">
-                                <span class="valor-secundario">
-                                    $ @item.Iva.ToString("N0")
-                                </span>
-                            </td>
-
-                            <td class="text-end">
-                                <span class="total-factura">
-                                    $ @item.TotalPagar.ToString("N0")
-                                </span>
-                            </td>
-
-                            <td class="text-center">
-                                <div class="acciones">
-                                    <a asp-action="Details"
-                                       asp-route-id="@item.Id"
-                                       class="btn-accion btn-detalle"
-                                       title="Ver detalles de la factura">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </a>
-
-                                    <a asp-action="Edit"
-                                       asp-route-id="@item.Id"
-                                       class="btn-accion btn-editar"
-                                       title="Editar factura">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
+<div class="row g-3 mb-3">
+    <div class="col-sm-6 col-lg-3"><div class="stat accent"><div class="label">Vendido este mes</div><div class="value money">@(((decimal)ViewBag.VendidoMes).ToString("C0"))</div></div></div>
+    <div class="col-sm-6 col-lg-3"><div class="stat"><div class="label">Facturas este mes</div><div class="value">@ViewBag.FacturasMes</div></div></div>
 </div>
 
-<style>
-    body {
-        background: #f7f8fa;
-        color: #222;
-    }
+<div class="panel">
+    <div class="panel-head">
+        <form method="get" class="d-flex gap-2 flex-wrap w-100">
+            <input name="buscar" value="@ViewBag.Buscar" type="search" class="form-control form-control-sm" style="max-width:260px" placeholder="Buscar por número o cliente" />
+            <button class="btn btn-line btn-sm">Buscar</button>
+            <a asp-action="Exportar" asp-route-buscar="@ViewBag.Buscar" class="btn btn-line btn-sm ms-auto"><i class="fa-solid fa-file-excel me-1"></i>Exportar a Excel</a>
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table class="data-table" >
+            <thead>
+                <tr>
+                    <th>N.º</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th class="text-end">Total</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var f in Model.Items)
+                {
+                    <tr>
+                        <td class="cell-title">#@f.Id</td>
+                        <td>@f.Fecha?.ToString("dd/MM/yyyy")</td>
+                        <td>@f.IdClienteNavigation?.Nombres @f.IdClienteNavigation?.Apellidos</td>
+                        <td class="text-end money">@f.TotalPagar.ToString("C0")</td>
+                        <td class="text-end">
+                            <span class="row-actions">
+                                <a asp-action="Details" asp-route-id="@f.Id" class="icon-btn" title="Ver"><i class="fa-solid fa-eye"></i></a>
+                                <a asp-action="Edit" asp-route-id="@f.Id" class="icon-btn" title="Editar"><i class="fa-solid fa-pen"></i></a>
+                                <button type="button" class="icon-btn danger" title="Eliminar"
+                                        data-delete="@Url.Action("Delete", new { id = f.Id })" data-nombre="Factura #@f.Id"
+                                        data-aviso="Se restarán al cliente los puntos que esta factura le dio."><i class="fa-solid fa-trash"></i></button>
+                            </span>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Items.Any())
+                {
+                    <tr><td colspan="5" class="empty-state">Aún no hay facturas registradas.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @await Html.PartialAsync("_Paginacion", (Model.Pagina, Model.TotalPaginas, Model.Total))
+</div>
 
-    .catalogo-container {
-        max-width: 1500px;
-        margin: 0 auto;
-        padding: 22px 28px 40px;
-    }
-
-    .catalogo-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 25px;
-    }
-
-    .volver-panel {
-        display: inline-block;
-        margin-bottom: 10px;
-        color: #555;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: color .2s ease;
-    }
-
-    .volver-panel:hover {
-        color: #c9250c;
-    }
-
-    .titulo-con-icono {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .icono-catalogo {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        color: #c9250c;
-        font-size: 31px;
-    }
-
-    .titulo-con-icono h1 {
-        margin: 0;
-        color: #20252b;
-        font-size: 31px;
-        font-weight: 800;
-        letter-spacing: -1px;
-    }
-
-    .titulo-con-icono p {
-        margin: 2px 0 0;
-        color: #777;
-        font-size: 14px;
-    }
-
-    .btn-nueva-venta {
-        display: inline-flex;
-        align-items: center;
-        padding: 11px 23px;
-        border-radius: 8px;
-        background: #c9250c;
-        color: #fff;
-        font-size: 15px;
-        font-weight: 700;
-        text-decoration: none;
-        box-shadow: 0 3px 7px rgba(201, 37, 12, .20);
-        transition: all .2s ease;
-    }
-
-    .btn-nueva-venta:hover {
-        background: #a91d09;
-        color: #fff;
-        transform: translateY(-1px);
-    }
-
-    .tabla-wrapper {
-        overflow: hidden;
-        border: 1px solid #d9d9d9;
-        border-radius: 15px 15px 0 0;
-        background: #fff;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
-    }
-
-    .tabla-facturas {
-        width: 100%;
-        margin: 0;
-        border-collapse: collapse;
-    }
-
-    .tabla-facturas thead {
-        background: #fff;
-    }
-
-    .tabla-facturas th {
-        padding: 13px 17px;
-        border-bottom: 1px solid #d8d8d8;
-        color: #20252b;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 1.25px;
-        white-space: nowrap;
-    }
-
-    .tabla-facturas td {
-        min-height: 80px;
-        padding: 11px 17px;
-        border-bottom: 1px solid #dedede;
-        vertical-align: middle;
-        font-size: 14px;
-    }
-
-    .tabla-facturas tbody tr:last-child td {
-        border-bottom: 0;
-    }
-
-    .tabla-facturas tbody tr:hover {
-        background: #fffaf8;
-    }
-
-    .col-factura {
-        width: 13%;
-    }
-
-    .col-fecha {
-        width: 14%;
-    }
-
-    .col-cliente {
-        width: 25%;
-    }
-
-    .col-subtotal {
-        width: 13%;
-    }
-
-    .col-iva {
-        width: 11%;
-    }
-
-    .col-total {
-        width: 15%;
-    }
-
-    .col-acciones {
-        width: 9%;
-    }
-
-    .factura-numero {
-        display: inline-flex;
-        align-items: center;
-        padding: 7px 10px;
-        border: 1px solid #d9dee2;
-        border-radius: 6px;
-        background: #f7f8f9;
-        color: #363b40;
-        font-family: Consolas, "Courier New", monospace;
-        font-size: 13px;
-        font-weight: 800;
-        white-space: nowrap;
-    }
-
-    .factura-numero i {
-        color: #c9250c;
-    }
-
-    .fecha-factura {
-        color: #5e656b;
-        font-size: 13px;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    .fecha-factura i {
-        color: #777e84;
-    }
-
-    .cliente-factura {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #252a30;
-        font-size: 14px;
-        font-weight: 800;
-    }
-
-    .cliente-icono {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 38px;
-        height: 38px;
-        flex-shrink: 0;
-        border-radius: 8px;
-        background: #fff1ed;
-        color: #c9250c;
-        font-size: 15px;
-    }
-
-    .valor-secundario {
-        color: #697078;
-        font-size: 14px;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    .total-factura {
-        color: #c9250c;
-        font-size: 15px;
-        font-weight: 800;
-        white-space: nowrap;
-    }
-
-    .acciones {
-        display: flex;
-        justify-content: center;
-        gap: 5px;
-    }
-
-    .btn-accion {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 33px;
-        height: 33px;
-        border: 1px solid;
-        border-radius: 8px;
-        background: #fff;
-        font-size: 14px;
-        text-decoration: none;
-        transition: all .2s ease;
-    }
-
-    .btn-detalle {
-        border-color: #0f8ca8;
-        color: #0f8ca8;
-    }
-
-    .btn-editar {
-        border-color: #252525;
-        color: #252525;
-    }
-
-    .btn-detalle:hover {
-        background: #0f8ca8;
-        color: #fff;
-    }
-
-    .btn-editar:hover {
-        background: #252525;
-        color: #fff;
-    }
-
-    @@media (max-width: 992px) {
-        .catalogo-container {
-            padding: 18px 12px 30px;
-        }
-
-        .catalogo-header {
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        .btn-nueva-venta {
-            align-self: stretch;
-            justify-content: center;
-        }
-
-        .titulo-con-icono h1 {
-            font-size: 25px;
-        }
-
-        .tabla-facturas th,
-        .tabla-facturas td {
-            padding: 10px 12px;
-        }
-    }
-</style>

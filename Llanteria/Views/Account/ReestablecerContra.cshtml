@@ -1,5 +1,5 @@
-﻿@{
-    ViewData["Title"] = "Reestablecer contraseña";
+@{
+    ViewData["Title"] = "Recuperar contraseña";
 }
 
 <style>
@@ -11,20 +11,14 @@
         padding: 2rem 1rem;
     }
 
-    @@keyframes slideUpEntrance {
-        0% { opacity: 0; transform: translateY(30px); }
-        100% { opacity: 1; transform: translateY(0); }
-    }
+<div class="auth-wrap">
+    <div class="auth-card">
+        <h1>Recuperar contraseña</h1>
+        <p class="text-muted mb-4">Te enviaremos un código al correo de tu cuenta.</p>
 
-    .entrance-register-card {
-        background-color: #ffffff;
-        width: 100%;
-        max-width: 480px;
-        border-radius: 1.5rem;
-        padding: 2.5rem;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
-        animation: slideUpEntrance 0.6s ease-out forwards;
-    }
+        <form asp-action="ProcesarReestablecimiento" method="post" data-otp>
+            <label class="form-label" for="emailInput">Correo</label>
+            <input id="emailInput" type="email" class="form-control" maxlength="100" required autofocus />
 
     .header-group {
         margin-bottom: 2.5rem;
@@ -349,6 +343,7 @@
                 </div>
             </div>
         </form>
+        <p class="small text-center mt-3 mb-0"><a asp-action="Login" class="text-llanteria-primary text-decoration-none">Volver a iniciar sesión</a></p>
     </div>
 </div>
 
@@ -633,4 +628,5 @@
             });
         });
     </script>
+    <script src="~/js/otp.js" asp-append-version="true"></script>
 }
