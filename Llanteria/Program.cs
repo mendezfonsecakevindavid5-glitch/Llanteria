@@ -1,4 +1,4 @@
-using Llanteria.Data;
+ using Llanteria.Data;
 using Llanteria.Infrastructure;
 using Llanteria.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -55,6 +55,8 @@ builder.Services.AddScoped<BodegaService>();
 builder.Services.AddScoped<TipoServicioService>();
 builder.Services.AddScoped<CatalogoIncentivoService>();
 builder.Services.AddSingleton<EmailService>();
+builder.Services.AddSingleton(builder.Configuration.GetSection("Negocio").Get<NegocioInfo>() ?? new NegocioInfo());
+builder.Services.AddHostedService<RecordatorioCitasService>();
 builder.Services.AddScoped<IPerfilService, PerfilService>();
 
 builder.Services.AddSession(options =>

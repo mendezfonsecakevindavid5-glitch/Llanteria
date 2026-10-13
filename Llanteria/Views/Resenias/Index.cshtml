@@ -1,0 +1,40 @@
+@model List<Llanteria.Models.Resenia>
+@{
+    ViewData["Title"] = "Opiniones de clientes";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Opiniones de clientes", "Calificaciones publicadas en el inicio. Oculta las que no deban mostrarse."))
+
+<div class="panel">
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead><tr><th>Fecha</th><th>Cliente</th><th>Calificación</th><th>Comentario</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td>@r.Fecha.ToString("dd/MM/yyyy")</td>
+                        <td>@r.Nombre</td>
+                        <td>@r.Calificacion / 5</td>
+                        <td style="max-width:420px">@r.Comentario</td>
+                        <td><span class="tag @(r.Visible ? "tag-ok" : "tag-neutral")">@(r.Visible ? "Visible" : "Oculta")</span></td>
+                        <td class="text-end">
+                            <form asp-action="Alternar" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <button class="btn btn-line btn-sm">@(r.Visible ? "Ocultar" : "Mostrar")</button>
+                            </form>
+                            <form asp-action="Eliminar" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar esta opinión?');">
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <button class="btn btn-line btn-sm">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6" class="text-center text-muted py-4">Todavía no hay opiniones.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

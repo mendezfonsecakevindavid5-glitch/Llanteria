@@ -1,3 +1,4 @@
+@inject Llanteria.Infrastructure.NegocioInfo Negocio
 @{
     ViewData["Title"] = "Contacto";
 }
@@ -14,19 +15,23 @@
             <div class="contact-info-card">
                 <div class="contact-info-item">
                     <div class="contact-info-icon"><i class="fa-solid fa-phone"></i></div>
-                    <div class="contact-info-text"><label>Teléfono</label><a href="tel:+573117723978">+57 311 772 3978</a></div>
+                    <div class="contact-info-text"><label>Teléfono</label><a href="tel:@Negocio.TelefonoLimpio">@Negocio.Telefono</a></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-info-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                    <div class="contact-info-text"><label>WhatsApp</label><a href="@Negocio.LinkWhatsApp(null)" target="_blank" rel="noopener">Escríbenos ahora</a></div>
                 </div>
                 <div class="contact-info-item">
                     <div class="contact-info-icon"><i class="fa-solid fa-envelope"></i></div>
-                    <div class="contact-info-text"><label>Correo</label><a href="mailto:superllantasmedellinsas@hotmail.com">superllantasmedellinsas@hotmail.com</a></div>
+                    <div class="contact-info-text"><label>Correo</label><a href="mailto:@Negocio.Correo">@Negocio.Correo</a></div>
                 </div>
                 <div class="contact-info-item">
                     <div class="contact-info-icon"><i class="fa-solid fa-clock"></i></div>
-                    <div class="contact-info-text"><label>Horario</label><p>Lunes a viernes: 7:30 a.m. a 5:30 p.m.</p><p>Sábados: 8:00 a.m. a 4:00 p.m.</p></div>
+                    <div class="contact-info-text"><label>Horario</label><p>Lunes a viernes: @Negocio.HorarioSemana</p><p>Sábados: @Negocio.HorarioSabado</p></div>
                 </div>
                 <div class="contact-info-item">
                     <div class="contact-info-icon"><i class="fa-solid fa-location-dot"></i></div>
-                    <div class="contact-info-text"><label>Ubicación</label><p>Valledupar, Cesar</p></div>
+                    <div class="contact-info-text"><label>Ubicación</label><p>@Negocio.Direccion</p><a href="@Negocio.ComoLlegar" target="_blank" rel="noopener">Cómo llegar</a></div>
                 </div>
             </div>
         </div>
@@ -53,5 +58,9 @@
                 </form>
             </div>
         </div>
+    </div>
+
+    <div class="map-frame mt-4">
+        <iframe title="Ubicación de @Negocio.Nombre" src="@Negocio.MapaIncrustado" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
     </div>
 </div>

@@ -1,14 +1,17 @@
+@inject Llanteria.Infrastructure.NegocioInfo Negocio
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Llantería Valledupar</title>
+    <meta name="description" content="@(ViewData["Description"] ?? "Llantas, baterías, aceites y servicio automotriz en Valledupar: montaje, balanceo, alineación 3D y mantenimiento de flotas.")" />
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/public.css" asp-append-version="true" />
+    <script type="application/ld+json">@Html.Raw(Negocio.JsonLd($"{Context.Request.Scheme}://{Context.Request.Host}/"))</script>
 </head>
 <body class="public">
     <header>
@@ -25,11 +28,9 @@
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav me-auto align-items-lg-center ms-lg-4">
                         <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Inicio</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Llantas" asp-action="Index">Llantas</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Baterias" asp-action="Index">Baterías</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/#servicios">Servicios</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Promociones" asp-action="Index">Promociones</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Empresas" asp-action="Index">Empresas</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/#promociones">Promociones</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Blog" asp-action="Index">Blog</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Contacto" asp-action="Index">Contacto</a></li>
                     </ul>
@@ -83,16 +84,16 @@
                 <div class="col-md-4">
                     <h5>Contacto</h5>
                     <ul>
-                        <li><i class="fa-solid fa-phone"></i><a href="tel:+573117723978" class="text-reset text-decoration-none">+57 311 772 3978</a></li>
-                        <li><i class="fa-solid fa-envelope"></i>superllantasmedellinsas@hotmail.com</li>
-                        <li><i class="fa-solid fa-location-dot"></i>Valledupar, Cesar</li>
+                        <li><i class="fa-solid fa-phone"></i><a href="tel:@Negocio.TelefonoLimpio" class="text-reset text-decoration-none">@Negocio.Telefono</a></li>
+                        <li><i class="fa-solid fa-envelope"></i>@Negocio.Correo</li>
+                        <li><i class="fa-solid fa-location-dot"></i><a href="@Negocio.ComoLlegar" target="_blank" rel="noopener" class="text-reset text-decoration-none">@Negocio.Direccion</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">
                     <h5>Horario</h5>
                     <ul>
-                        <li><i class="fa-solid fa-clock"></i>Lunes a viernes: 7:30 a.m. a 5:30 p.m.</li>
-                        <li><i class="fa-solid fa-clock"></i>Sábados: 8:00 a.m. a 4:00 p.m.</li>
+                        <li><i class="fa-solid fa-clock"></i>Lunes a viernes: @Negocio.HorarioSemana</li>
+                        <li><i class="fa-solid fa-clock"></i>Sábados: @Negocio.HorarioSabado</li>
                     </ul>
                 </div>
             </div>
@@ -100,6 +101,10 @@
             <p class="text-center small mb-0">&copy; @DateTime.Now.Year Llantería Valledupar. Todos los derechos reservados.</p>
         </div>
     </footer>
+
+    <a class="wa-float" href="@Negocio.LinkWhatsApp(null)" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span>
+    </a>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

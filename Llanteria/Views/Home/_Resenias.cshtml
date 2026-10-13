@@ -1,0 +1,65 @@
+@{
+    var lista = (List<Llanteria.Models.Resenia>)ViewBag.Resenias;
+    int total = ViewBag.TotalResenias;
+    double promedio = ViewBag.PromedioResenias;
+    var esCliente = User.IsInRole("Cliente");
+    var logueado = User.Identity?.IsAuthenticated == true;
+}
+<section id="opiniones" class="section section-alt">
+    <div class="container">
+        <div class="row g-4 align-items-start">
+            <div class="col-lg-4">
+                <span class="eyebrow">Opiniones</span>
+                <h2 class="section-title mt-1">Lo que dicen nuestros clientes</h2>
+                @if (total > 0)
+                {
+                    <div class="rating-big">@promedio.ToString("0.0")</div>
+                    <div class="stars" aria-label="@promedio.ToString("0.0") de 5">
+                        @for (var i = 1; i <= 5; i++) { <i class="fa-solid fa-star @(i <= Math.Round(promedio) ? "on" : "")"></i> }
+                    </div>
+                    <div class="small text-muted mb-3">Según @total @(total == 1 ? "opinión" : "opiniones")</div>
+                }
+                else
+                {
+                    <p class="text-muted">Aún no hay opiniones. ¡Sé el primero en calificarnos!</p>
+                }
+
+                @if (esCliente)
+                {
+                    <form method="post" asp-controller="Resenias" asp-action="Crear" class="rating-form">
+                        @Html.AntiForgeryToken()
+                        <div class="fw-semibold mb-1">Califica nuestro sitio</div>
+                        <div class="star-input" role="radiogroup">
+                            @for (var i = 5; i >= 1; i--)
+                            {
+                                <input type="radio" id="est@(i)" name="calificacion" value="@i" required /><label for="est@(i)" title="@i"><i class="fa-solid fa-star"></i></label>
+                            }
+                        </div>
+                        <textarea name="comentario" class="form-control mt-2" rows="3" maxlength="400" minlength="10" required placeholder="Cuéntanos tu experiencia"></textarea>
+                        <button class="btn btn-hyper-action btn-sm mt-2" type="submit">Publicar opinión</button>
+                    </form>
+                }
+                else if (!logueado)
+                {
+                    <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="/#opiniones" class="btn btn-outline-llanteria-primary btn-sm">Inicia sesión para calificarnos</a>
+                }
+            </div>
+            <div class="col-lg-8">
+                <div class="row g-3">
+                    @foreach (var r in lista)
+                    {
+                        <div class="col-md-6">
+                            <div class="review-card">
+                                <div class="stars">
+                                    @for (var i = 1; i <= 5; i++) { <i class="fa-solid fa-star @(i <= r.Calificacion ? "on" : "")"></i> }
+                                </div>
+                                <p>&ldquo;@r.Comentario&rdquo;</p>
+                                <div class="small"><strong>@r.Nombre</strong> <span class="text-muted">· @r.Fecha.ToString("MMM yyyy")</span></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

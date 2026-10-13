@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Llanteria.Data;
+using Llanteria.Infrastructure;
 using Llanteria.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,9 @@ public class HomeController : Controller
 {
     private readonly LlanteriaDbContext _context;
 
-    public HomeController(LlanteriaDbContext context) => _context = context;
+    private readonly IWebHostEnvironment _env;
+
+    public HomeController(LlanteriaDbContext context, IWebHostEnvironment env) { _context = context; _env = env; }
 
     public IActionResult Index()
     {
@@ -19,11 +22,13 @@ public class HomeController : Controller
         ViewBag.Perfiles = detalles.Where(d => d.Perfil != null && d.Perfil != "").Select(d => d.Perfil!).Distinct().OrderBy(p => p).ToList();
         ViewBag.Diametros = detalles.Where(d => d.Diametro != null && d.Diametro != "").Select(d => d.Diametro!).Distinct().OrderBy(d => d).ToList();
 
-        var productos = _context.Productos.AsNoTracking()
-            .Include(p => p.DetalleProducto)
-            .OrderBy(p => p.Nombre)
-            .ToList();
-        return View(productos);
+        ViewBag.Marcas = Vitrina.Marcas(_context, _env.WebRootPath);
+
+        var visibles = _context.Resenias.AsNoTracking().Where(r => r.Visible);
+        ViewBag.TotalResenias = visibles.Count();
+        ViewBag.PromedioResenias = ViewBag.TotalResenias > 0 ? visibles.Average(r => (double)r.Calificacion) : 0d;
+        ViewBag.Resenias = visibles.OrderByDescending(r => r.Fecha).Take(6).ToList();
+        return View();
     }
 
     public IActionResult AccessDenied() => View();

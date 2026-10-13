@@ -13,6 +13,9 @@ public class DashboardViewModel
     public List<MesSerie> Meses { get; set; } = new();
     public List<Factura> UltimasFacturas { get; set; } = new();
     public List<Inventario> StockBajo { get; set; } = new();
+    public List<TopProducto> MasVendidos { get; set; } = new();
 }
+
+public record TopProducto(string Nombre, int Unidades, decimal Total);
 
 public record MesSerie(string Etiqueta, decimal Ventas, decimal Gastos);

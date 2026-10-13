@@ -230,3 +230,39 @@ main.site-main { margin-top: 72px; flex: 1 0 auto; }
 .emp-step-n { display: inline-block; font-weight: 800; font-size: 2rem; color: #d9dde1; line-height: 1; margin-bottom: .5rem; }
 .emp-tags { display: flex; flex-wrap: wrap; gap: .6rem; }
 .emp-tags span { padding: .55rem 1rem; background: #fff; border: 1px solid #d5d9de; border-radius: 999px; font-weight: 600; font-size: .92rem; }
+
+/* ---- Inicio: marcas, servicios con foto, opiniones ---- */
+.brand-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .75rem; }
+.brand-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .3rem; min-height: 96px; padding: .9rem; background: #fff; border: 1px solid #e3e6ea; border-radius: 8px; color: inherit; text-decoration: none; transition: border-color .2s, box-shadow .2s; }
+.brand-tile:hover { border-color: var(--llanteria-primary); box-shadow: 0 6px 18px rgba(0, 0, 0, .07); color: inherit; }
+.brand-tile img { max-height: 44px; max-width: 100%; object-fit: contain; }
+.brand-tile .brand-word { font-weight: 800; font-size: 1.1rem; letter-spacing: .5px; text-transform: uppercase; color: var(--llanteria-dark); }
+.brand-tile small { font-size: .72rem; color: #6b7280; text-transform: uppercase; letter-spacing: .6px; }
+
+.service-photo-card { display: block; height: 100%; background: #fff; border: 1px solid #e3e6ea; border-radius: 8px; overflow: hidden; color: inherit; text-decoration: none; transition: border-color .2s, box-shadow .2s; }
+.service-photo-card:hover { border-color: var(--llanteria-primary); box-shadow: 0 8px 22px rgba(0, 0, 0, .09); color: inherit; }
+.service-photo-card img { width: 100%; height: 190px; object-fit: cover; display: block; background: #e9ecef; }
+.service-photo-card .body { padding: 1.1rem 1.25rem 1.25rem; }
+.service-photo-card h3 { font-size: 1.05rem; font-weight: 700; margin: 0 0 .35rem; }
+.service-photo-card p { color: #6b7280; font-size: .92rem; margin: 0 0 .6rem; }
+.service-photo-card .more { color: var(--llanteria-primary); font-weight: 600; font-size: .88rem; }
+
+.rating-big { font-size: 3rem; font-weight: 800; line-height: 1; margin-top: .5rem; }
+.stars .fa-star { color: #d1d5db; }
+.stars .fa-star.on { color: #f59e0b; }
+.review-card { background: #fff; border: 1px solid #e3e6ea; border-radius: 8px; padding: 1.2rem; height: 100%; }
+.review-card p { margin: .5rem 0 .8rem; color: #374151; font-size: .95rem; }
+.rating-form { background: #fff; border: 1px solid #e3e6ea; border-radius: 8px; padding: 1rem; }
+.star-input { display: inline-flex; flex-direction: row-reverse; gap: .15rem; }
+.star-input input { position: absolute; opacity: 0; width: 0; height: 0; }
+.star-input label { cursor: pointer; font-size: 1.5rem; color: #d1d5db; }
+.star-input label:hover, .star-input label:hover ~ label, .star-input input:checked ~ label { color: #f59e0b; }
+.star-input input:focus-visible + label { outline: 2px solid var(--llanteria-primary); }
+
+/* ---- WhatsApp flotante y mapa ---- */
+.wa-float { position: fixed; right: 18px; bottom: 18px; z-index: 1030; display: inline-flex; align-items: center; gap: .5rem; background: #1faa59; color: #fff; padding: .7rem 1rem; border-radius: 999px; font-weight: 600; font-size: .92rem; text-decoration: none; box-shadow: 0 4px 14px rgba(0, 0, 0, .25); }
+.wa-float i { font-size: 1.4rem; }
+.wa-float:hover { background: #178a49; color: #fff; }
+@media (max-width: 575px) { .wa-float span { display: none; } .wa-float { padding: .75rem .85rem; } }
+.map-frame { border: 1px solid #e3e6ea; border-radius: 8px; overflow: hidden; height: 360px; }
+.map-frame iframe { width: 100%; height: 100%; border: 0; display: block; }

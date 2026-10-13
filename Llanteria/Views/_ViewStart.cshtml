@@ -2,9 +2,9 @@
     // Las páginas públicas usan el diseño del sitio; el resto, el del panel.
     var controlador = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var accion = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
-    var publicos = new[] { "Home", "Account", "Contacto", "Servicios", "Nosotros", "Promociones", "Citas", "MiCuenta", "Llantas", "Baterias", "Blog", "Empresas" };
+    var publicos = new[] { "Home", "Account", "Contacto", "Servicios", "Nosotros", "Promociones", "Citas", "MiCuenta", "Llantas", "Baterias", "Blog", "Empresas", "Resenias" };
     // Citas/Index y Empresas/Solicitudes son la gestión del personal: van con el panel.
-    var gestion = (controlador == "Citas" && accion == "Index") || (controlador == "Empresas" && accion == "Solicitudes");
+    var gestion = (controlador == "Citas" && accion == "Index") || (controlador == "Empresas" && accion == "Solicitudes") || (controlador == "Resenias" && accion == "Index");
     var esPublico = publicos.Contains(controlador) && !gestion;
     Layout = esPublico ? "_Layout" : "_AdminLayout";
 }
