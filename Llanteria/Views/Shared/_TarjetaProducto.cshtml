@@ -1,0 +1,25 @@
+@* Tarjeta de producto para los catálogos públicos. Modelo: (producto, agotado) *@
+@model (Llanteria.Models.Producto P, bool Agotado)
+@{
+    var p = Model.P;
+    var d = p.DetalleProducto;
+    var marca = d?.IdMarcaNavigation?.Nombre;
+    var foto = string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen;
+}
+<article class="cat-card @(Model.Agotado ? "is-out" : "")">
+    <div class="cat-card-img">
+        <img src="~/images/productoos/@foto" alt="@p.Nombre" loading="lazy" />
+        @if (Model.Agotado) { <span class="cat-badge">Agotado</span> }
+    </div>
+    <div class="cat-card-body">
+        @if (!string.IsNullOrEmpty(marca)) { <div class="cat-brand">@marca</div> }
+        <h3>@p.Nombre</h3>
+        @if (d != null && !string.IsNullOrEmpty(d.Ancho) && !string.IsNullOrEmpty(d.Perfil) && !string.IsNullOrEmpty(d.Diametro))
+        {
+            <div class="cat-meta">Medida @d.Ancho/@d.Perfil @d.Diametro@(string.IsNullOrEmpty(d.IndiceCarga) ? "" : $" · IC {d.IndiceCarga}{d.IndiceVelocidad}")</div>
+        }
+        @if (d?.GarantiaMeses != null) { <div class="cat-meta">Garantía @d.GarantiaMeses meses</div> }
+        <div class="cat-price">@p.PrecioVenta.ToString("C0")</div>
+        <a asp-controller="Contacto" asp-action="Index" asp-route-producto="@p.Nombre" class="btn btn-hyper-action btn-sm w-100">Cotizar</a>
+    </div>
+</article>

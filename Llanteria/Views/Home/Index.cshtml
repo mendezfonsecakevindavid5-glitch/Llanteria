@@ -16,43 +16,41 @@
 </section>
 
 <div class="container search-wrap">
-    <div class="search-matrix-panel">
+    <form class="search-matrix-panel" method="get" asp-controller="Llantas" asp-action="Index">
         <h2 class="h6 text-white text-uppercase mb-3" style="letter-spacing:.8px">Buscar llantas por medida</h2>
         <div class="row g-3 form-floating-dark">
             <div class="col-md-3">
                 <label class="small text-white-50" for="anchoSelect">Ancho</label>
-                <select id="anchoSelect" class="form-select">
+                <select id="anchoSelect" name="ancho" class="form-select">
                     <option value="">Todos</option>
                     @foreach (var a in (List<string>)ViewBag.Anchos) { <option value="@a">@a</option> }
                 </select>
             </div>
             <div class="col-md-3">
                 <label class="small text-white-50" for="perfilSelect">Perfil</label>
-                <select id="perfilSelect" class="form-select">
+                <select id="perfilSelect" name="perfil" class="form-select">
                     <option value="">Todos</option>
                     @foreach (var p in (List<string>)ViewBag.Perfiles) { <option value="@p">@p</option> }
                 </select>
             </div>
             <div class="col-md-3">
                 <label class="small text-white-50" for="diametroSelect">Rin</label>
-                <select id="diametroSelect" class="form-select">
+                <select id="diametroSelect" name="diametro" class="form-select">
                     <option value="">Todos</option>
                     @foreach (var d in (List<string>)ViewBag.Diametros) { <option value="@d">@d</option> }
                 </select>
             </div>
             <div class="col-md-3 d-flex align-items-end">
-                <button type="button" id="btnBuscarLlantas" class="btn btn-hyper-action w-100 py-2">Buscar</button>
+                <button type="submit" class="btn btn-hyper-action w-100 py-2">Buscar</button>
             </div>
         </div>
-    </div>
+        <div class="mt-3 small">
+            <a asp-controller="Llantas" asp-action="Index" class="text-white-50">Ver todas las llantas</a>
+            <span class="text-white-50 mx-2">·</span>
+            <a asp-controller="Baterias" asp-action="Index" class="text-white-50">Ver baterías</a>
+        </div>
+    </form>
 </div>
-
-<section id="resultadosBusqueda" class="section pb-0 d-none">
-    <div class="container">
-        <h2 class="section-title mb-3">Resultados de la búsqueda</h2>
-        <div class="row g-3" id="contenedorTarjetas"></div>
-    </div>
-</section>
 
 <partial name="_Nosotros" />
 <partial name="_Servicios" />
@@ -69,6 +67,7 @@
             <button type="button" class="btn btn-outline-dark filter-btn active" data-filter="todos">Todos</button>
             <button type="button" class="btn btn-outline-dark filter-btn" data-filter="Llantas">Llantas</button>
             <button type="button" class="btn btn-outline-dark filter-btn" data-filter="Aceites">Aceites</button>
+            <button type="button" class="btn btn-outline-dark filter-btn" data-filter="Baterías">Baterías</button>
         </div>
 
         <div class="row g-3" id="gridCatalogoProductos">
@@ -116,44 +115,6 @@
                     el.style.display = (f === 'todos' || el.dataset.categoria === f) ? '' : 'none';
                 });
             });
-        });
-
-        function esc(t) {
-            const d = document.createElement('div');
-            d.textContent = t == null ? '' : String(t);
-            return d.innerHTML;
-        }
-
-        // Búsqueda por medida
-        document.getElementById('btnBuscarLlantas').addEventListener('click', async function () {
-            const ancho = document.getElementById('anchoSelect').value;
-            const perfil = document.getElementById('perfilSelect').value;
-            const diametro = document.getElementById('diametroSelect').value;
-            if (!ancho && !perfil && !diametro) {
-                Swal.fire({ icon: 'info', title: 'Elige una medida', text: 'Selecciona al menos un valor para buscar.', confirmButtonColor: '#C92B0A' });
-                return;
-            }
-
-            const url = '@Url.Action("BuscarLlantas", "Home")' + '?ancho=' + encodeURIComponent(ancho) +
-                '&perfil=' + encodeURIComponent(perfil) + '&diametro=' + encodeURIComponent(diametro);
-            const contenedor = document.getElementById('contenedorTarjetas');
-            try {
-                const r = await fetch(url);
-                if (!r.ok) throw new Error(r.status);
-                const lista = await r.json();
-                contenedor.innerHTML = lista.length ? lista.map(function (l) {
-                    return '<div class="col-sm-6 col-lg-4"><div class="premium-product-card h-100 d-flex flex-column">' +
-                        '<img class="product-img" src="' + esc(l.img) + '" alt="">' +
-                        '<div class="p-3 d-flex flex-column flex-grow-1"><h3 class="h6 fw-bold">' + esc(l.nombre) + '</h3>' +
-                        '<div class="fs-5 fw-bold text-llanteria-primary mb-3">' + esc(l.precio) + '</div>' +
-                        '<a href="@Url.Action("Index", "Contacto")" class="btn btn-hyper-action btn-sm mt-auto">Cotizar</a></div></div></div>';
-                }).join('') : '<div class="col-12 text-muted">No encontramos llantas con esa medida. Escríbenos y las conseguimos.</div>';
-                const seccion = document.getElementById('resultadosBusqueda');
-                seccion.classList.remove('d-none');
-                seccion.scrollIntoView({ behavior: 'smooth' });
-            } catch (e) {
-                Swal.fire({ icon: 'error', title: 'No se pudo buscar', text: 'Inténtalo de nuevo en un momento.', confirmButtonColor: '#212529' });
-            }
         });
     </script>
 }

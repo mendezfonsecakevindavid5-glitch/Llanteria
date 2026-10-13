@@ -26,25 +26,6 @@ public class HomeController : Controller
         return View(productos);
     }
 
-    // Búsqueda por medida desde el buscador de la página de inicio (público).
-    [HttpGet]
-    public IActionResult BuscarLlantas(string? ancho, string? perfil, string? diametro)
-    {
-        var consulta = _context.Productos.AsNoTracking().Where(p => p.DetalleProducto != null);
-        if (!string.IsNullOrEmpty(ancho)) consulta = consulta.Where(p => p.DetalleProducto!.Ancho == ancho);
-        if (!string.IsNullOrEmpty(perfil)) consulta = consulta.Where(p => p.DetalleProducto!.Perfil == perfil);
-        if (!string.IsNullOrEmpty(diametro)) consulta = consulta.Where(p => p.DetalleProducto!.Diametro == diametro);
-
-        var resultados = consulta.OrderBy(p => p.PrecioVenta).Take(24).AsEnumerable()
-            .Select(p => new
-            {
-                nombre = p.Nombre,
-                precio = p.PrecioVenta.ToString("C0"),
-                img = Url.Content("~/images/productoos/" + (string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen))
-            }).ToList();
-        return Json(resultados);
-    }
-
     public IActionResult AccessDenied() => View();
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

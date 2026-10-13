@@ -7,6 +7,7 @@ namespace Llanteria.Data;
 public partial class LlanteriaDbContext
 {
     public virtual DbSet<Cita> Citas { get; set; }
+    public virtual DbSet<SolicitudEmpresa> SolicitudesEmpresa { get; set; }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
@@ -24,6 +25,21 @@ public partial class LlanteriaDbContext
             e.Property(x => x.Solicitante).HasMaxLength(100);
             e.Property(x => x.Telefono).HasMaxLength(20);
             e.Property(x => x.Correo).HasMaxLength(100);
+            e.Property(x => x.Estado).HasMaxLength(20).HasDefaultValue("Pendiente");
+            e.Property(x => x.FechaCreacion).HasColumnType("datetime").HasDefaultValueSql("(getdate())");
+        });
+
+        modelBuilder.Entity<SolicitudEmpresa>(e =>
+        {
+            e.ToTable("SolicitudesEmpresa");
+            e.Property(x => x.Empresa).HasMaxLength(120);
+            e.Property(x => x.Nit).HasMaxLength(20);
+            e.Property(x => x.Contacto).HasMaxLength(100);
+            e.Property(x => x.Telefono).HasMaxLength(20);
+            e.Property(x => x.Correo).HasMaxLength(100);
+            e.Property(x => x.Ciudad).HasMaxLength(60);
+            e.Property(x => x.TipoFlota).HasMaxLength(40);
+            e.Property(x => x.Mensaje).HasMaxLength(500);
             e.Property(x => x.Estado).HasMaxLength(20).HasDefaultValue("Pendiente");
             e.Property(x => x.FechaCreacion).HasColumnType("datetime").HasDefaultValueSql("(getdate())");
         });

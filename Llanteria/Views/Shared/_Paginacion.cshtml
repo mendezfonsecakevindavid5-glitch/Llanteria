@@ -7,7 +7,7 @@
     {
         var q = Context.Request.Query
             .Where(k => !string.Equals(k.Key, "pagina", StringComparison.OrdinalIgnoreCase))
-            .Select(k => $"{Uri.EscapeDataString(k.Key)}={Uri.EscapeDataString(k.Value.ToString())}")
+            .SelectMany(k => k.Value.Select(v => $"{Uri.EscapeDataString(k.Key)}={Uri.EscapeDataString(v ?? "")}"))
             .Append($"pagina={p}");
         return Context.Request.Path + "?" + string.Join("&", q);
     }

@@ -24,11 +24,13 @@
 
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav me-auto align-items-lg-center ms-lg-4">
-                        <li class="nav-item"><a class="nav-link" href="/#inicio">Inicio</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/#nosotros">Nosotros</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/#promociones">Promociones</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Llantas" asp-action="Index">Llantas</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Baterias" asp-action="Index">Baterías</a></li>
                         <li class="nav-item"><a class="nav-link" href="/#servicios">Servicios</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/#productos">Productos</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Empresas" asp-action="Index">Empresas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/#promociones">Promociones</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Blog" asp-action="Index">Blog</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Contacto" asp-action="Index">Contacto</a></li>
                     </ul>
 

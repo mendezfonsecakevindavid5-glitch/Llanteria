@@ -35,6 +35,24 @@ BEGIN
     );
 END;
 
+IF OBJECT_ID(N'dbo.SolicitudesEmpresa', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.SolicitudesEmpresa (
+        Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_SolicitudesEmpresa PRIMARY KEY,
+        Empresa nvarchar(120) NOT NULL,
+        Nit nvarchar(20) NULL,
+        Contacto nvarchar(100) NOT NULL,
+        Telefono nvarchar(20) NOT NULL,
+        Correo nvarchar(100) NOT NULL,
+        Ciudad nvarchar(60) NULL,
+        TipoFlota nvarchar(40) NOT NULL,
+        NumeroVehiculos int NOT NULL,
+        Mensaje nvarchar(500) NULL,
+        Estado nvarchar(20) NOT NULL CONSTRAINT DF_SolEmp_Estado DEFAULT ('Pendiente'),
+        FechaCreacion datetime NOT NULL CONSTRAINT DF_SolEmp_Fecha DEFAULT (GETDATE())
+    );
+END;
+
 IF COL_LENGTH('dbo.Clientes', 'PasswordHash') IS NULL
     ALTER TABLE dbo.Clientes ADD PasswordHash nvarchar(200) NULL;");
     }
