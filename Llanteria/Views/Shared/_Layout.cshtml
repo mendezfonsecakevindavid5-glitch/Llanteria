@@ -1,4 +1,16 @@
 @inject Llanteria.Infrastructure.NegocioInfo Negocio
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    bool isHomeIndex = currentController.Equals("Home", StringComparison.OrdinalIgnoreCase) && currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase);
+
+    bool isInicio = isHomeIndex;
+    bool isBaterias = currentController.Equals("Baterias", StringComparison.OrdinalIgnoreCase);
+    bool isPromociones = currentController.Equals("Promociones", StringComparison.OrdinalIgnoreCase);
+    bool isEmpresas = currentController.Equals("Empresas", StringComparison.OrdinalIgnoreCase);
+    bool isBlog = currentController.Equals("Blog", StringComparison.OrdinalIgnoreCase);
+    bool isContacto = currentController.Equals("Contacto", StringComparison.OrdinalIgnoreCase);
+}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,9 +20,10 @@
     <meta name="description" content="@(ViewData["Description"] ?? "Llantas, baterías, aceites y servicio automotriz en Valledupar: montaje, balanceo, alineación 3D y mantenimiento de flotas.")" />
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/public.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Llanteria.styles.css" asp-append-version="true" />
 
     <style>
@@ -39,13 +52,13 @@
             left: 0;
             width: 100%;
             z-index: 1100;
-            background: transparent; /* Transparente por defecto */
+            background: transparent;
             backdrop-filter: blur(10px);
             padding: 1.25rem 0;
             transition: background 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* Cambia a color sólido al hacer scroll o al pasar el mouse por encima */
+        .michelin-nav-global.solid-bg,
         .michelin-nav-global.scrolled,
         .michelin-nav-global:hover {
             background: rgba(255, 255, 255, 0.98) !important;
@@ -61,8 +74,10 @@
             font-size: 1.4rem;
             text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
             transition: color 0.3s ease;
+            cursor: pointer;
         }
 
+        .michelin-nav-global.solid-bg .brand-matrix,
         .michelin-nav-global.scrolled .brand-matrix,
         .michelin-nav-global:hover .brand-matrix {
             color: #000000 !important;
@@ -73,38 +88,70 @@
             color: var(--llanteria-primary) !important;
         }
 
-        .navbar-nav .nav-link {
+        /* Nav Links estilo base (Transparent Header) */
+        .michelin-nav-global .navbar-nav .nav-link {
             color: #FFFFFF !important;
             font-weight: 600;
-            transition: color 0.2s ease;
+            transition: color 0.15s ease-in-out;
             text-decoration: none !important;
             text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+            position: relative;
+            padding-bottom: 4px;
+            margin: 0 6px; /* Separación nítida entre cada nav item */
         }
 
+        /* Nav Links cuando el header es sólido */
+        .michelin-nav-global.solid-bg .navbar-nav .nav-link,
         .michelin-nav-global.scrolled .navbar-nav .nav-link,
         .michelin-nav-global:hover .navbar-nav .nav-link {
             color: #000000 !important;
             text-shadow: none;
         }
 
-        .navbar-nav .nav-link:hover,
-        .navbar-nav .nav-link.active:not([href$="#inicio"]) {
+        /* Subrayado independiente al pasar el mouse (separado y definido) */
+        .michelin-nav-global.solid-bg .navbar-nav .nav-link::after,
+        .michelin-nav-global.scrolled .navbar-nav .nav-link::after,
+        .michelin-nav-global:hover .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: #000000;
+            transition: width 0.2s ease, left 0.2s ease;
+        }
+
+        .michelin-nav-global.solid-bg .navbar-nav .nav-link:hover::after,
+        .michelin-nav-global.scrolled .navbar-nav .nav-link:hover::after,
+        .michelin-nav-global:hover .navbar-nav .nav-link:hover::after {
+            width: 80%;
+            left: 10%;
+        }
+
+        /* Color rojo al hacer clic en el nav item */
+        .navbar-nav .nav-link.clicked-red {
             color: var(--llanteria-primary) !important;
         }
 
+        /* Botón Iniciar Sesión (Negro, semirredondeado, con ícono de usuario) */
         .btn-matrix-action {
-            background: var(--llanteria-primary) !important;
+            background: #000000 !important;
             color: #FFFFFF !important;
-            border: 1px solid var(--llanteria-primary) !important;
-            padding: 0.5rem 1.5rem;
-            border-radius: 50rem;
+            border: 1px solid #000000 !important;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem; /* Semirredondeado */
             font-weight: 700;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px; /* Separación entre el ícono y el texto */
         }
 
         .btn-matrix-action:hover {
-            background: #000000 !important;
-            border-color: #000000 !important;
+            background: #212529 !important;
+            border-color: #212529 !important;
+            color: #FFFFFF !important;
         }
 
         .main-matrix-container {
@@ -138,16 +185,13 @@
         }
     </style>
     @await RenderSectionAsync("Styles", required: false)
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/public.css" asp-append-version="true" />
     <script type="application/ld+json">@Html.Raw(Negocio.JsonLd($"{Context.Request.Scheme}://{Context.Request.Host}/"))</script>
 </head>
 <body class="public">
     <header>
-        <nav class="navbar navbar-expand-lg site-nav michelin-nav-global">
+        <nav class="navbar navbar-expand-lg site-nav michelin-nav-global @(!isHomeIndex ? "solid-bg" : "")" id="mainNavbar">
             <div class="container">
-                <a class="navbar-brand brand-matrix" asp-controller="Home" asp-action="Index">
+                <a class="navbar-brand brand-matrix" href="javascript:void(0);">
                     Llantería<small class="ms-1">Valledupar</small>
                 </a>
 
@@ -156,19 +200,25 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarContent">
-                    <ul class="navbar-nav me-auto align-items-lg-center ms-lg-4 gap-lg-3">
-                        <li class="nav-item"><a class="nav-link" href="/#inicio">Inicio</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/#nosotros">Nosotros</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/#promociones">Promociones</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/#servicios">Servicios</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/#productos">Productos</a></li>
-                    <ul class="navbar-nav me-auto align-items-lg-center ms-lg-4">
-                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Inicio</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Baterias" asp-action="Index">Baterías</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Promociones" asp-action="Index">Promociones</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Empresas" asp-action="Index">Empresas</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Blog" asp-action="Index">Blog</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Contacto" asp-action="Index">Contacto</a></li>
+                    <ul class="navbar-nav me-auto align-items-lg-center ms-lg-4 gap-lg-2" id="navMenuList">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Baterias" asp-action="Index">Baterías</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Promociones" asp-action="Index">Promociones</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Empresas" asp-action="Index">Empresas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Blog" asp-action="Index">Blog</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Contacto" asp-action="Index">Contacto</a>
+                        </li>
                     </ul>
 
                     <ul class="navbar-nav ms-auto align-items-center gap-3 mt-3 mt-lg-0">
@@ -176,7 +226,7 @@
                         {
                             <li class="nav-item">
                                 <a class="btn btn-matrix-action header-interactable" asp-controller="Account" asp-action="Login">
-                                    Iniciar sesión
+                                    <i class="fa-regular fa-user"></i> Iniciar sesión
                                 </a>
                             </li>
                         }
@@ -220,25 +270,16 @@
                 <div class="col-md-4">
                     <h5 class="text-white fw-bold">Contacto</h5>
                     <ul class="footer-links">
-                        <li><i class="fa-solid fa-phone me-2 text-danger"></i><a href="tel:+573117723978" class="text-reset text-decoration-none">+57 311 772 3978</a></li>
-                        <li><i class="fa-solid fa-envelope me-2 text-danger"></i>superllantasmedellinsas@hotmail.com</li>
-                        <li><i class="fa-solid fa-location-dot me-2 text-danger"></i>Valledupar, Cesar</li>
-                    <h5>Contacto</h5>
-                    <ul>
-                        <li><i class="fa-solid fa-phone"></i><a href="tel:@Negocio.TelefonoLimpio" class="text-reset text-decoration-none">@Negocio.Telefono</a></li>
-                        <li><i class="fa-solid fa-envelope"></i>@Negocio.Correo</li>
-                        <li><i class="fa-solid fa-location-dot"></i><a href="@Negocio.ComoLlegar" target="_blank" rel="noopener" class="text-reset text-decoration-none">@Negocio.Direccion</a></li>
+                        <li><i class="fa-solid fa-phone me-2 text-danger"></i><a href="tel:@Negocio.TelefonoLimpio" class="text-reset text-decoration-none">@Negocio.Telefono</a></li>
+                        <li><i class="fa-solid fa-envelope me-2 text-danger"></i>@Negocio.Correo</li>
+                        <li><i class="fa-solid fa-location-dot me-2 text-danger"></i><a href="@Negocio.ComoLlegar" target="_blank" rel="noopener" class="text-reset text-decoration-none">@Negocio.Direccion</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">
                     <h5 class="text-white fw-bold">Horario</h5>
                     <ul class="footer-links">
-                        <li><i class="fa-solid fa-clock me-2 text-danger"></i><span class="text-white-50">Lunes a viernes: 7:30 a.m. a 5:30 p.m.</span></li>
-                        <li><i class="fa-solid fa-clock me-2 text-danger"></i><span class="text-white-50">Sábados: 8:00 a.m. a 4:00 p.m.</span></li>
-                    <h5>Horario</h5>
-                    <ul>
-                        <li><i class="fa-solid fa-clock"></i>Lunes a viernes: @Negocio.HorarioSemana</li>
-                        <li><i class="fa-solid fa-clock"></i>Sábados: @Negocio.HorarioSabado</li>
+                        <li><i class="fa-solid fa-clock me-2 text-danger"></i><span class="text-white-50">Lunes a viernes: @Negocio.HorarioSemana</span></li>
+                        <li><i class="fa-solid fa-clock me-2 text-danger"></i><span class="text-white-50">Sábados: @Negocio.HorarioSabado</span></li>
                     </ul>
                 </div>
             </div>
@@ -256,12 +297,25 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         window.addEventListener('scroll', function () {
-            const nav = document.querySelector('.michelin-nav-global');
-            if (window.scrollY > 40) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
+            const nav = document.getElementById('mainNavbar');
+            @if (isHomeIndex)
+            {
+                <text>
+                if (window.scrollY > 40) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+                </text>
             }
+        });
+
+        // Lógica para cambiar color a rojo al hacer clic en un nav-link
+        document.querySelectorAll('#navMenuList .nav-link').forEach(link => {
+            link.addEventListener('click', function () {
+                document.querySelectorAll('#navMenuList .nav-link').forEach(l => l.classList.remove('clicked-red'));
+                this.classList.add('clicked-red');
+            });
         });
     </script>
     <partial name="_Alertas" />
