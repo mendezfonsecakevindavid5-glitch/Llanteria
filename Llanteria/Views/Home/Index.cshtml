@@ -1,5 +1,8 @@
+@model IEnumerable<Llanteria.Models.Producto>
+
 @{
     ViewData["Title"] = "Inicio";
+    var productos = Model?.ToList() ?? new List<Llanteria.Models.Producto>();
     var marcas = (List<Llanteria.Models.MarcaVitrina>)ViewBag.Marcas;
 }
 
@@ -43,17 +46,15 @@
 <section class="banner-hero-matrix">
     <div class="container">
         <div class="banner-content-box">
+            <span class="eyebrow text-white-50">Valledupar, Cesar</span>
             <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -0.5px; text-shadow: 2px 2px 8px rgba(0,0,0,0.7);">Explora y encuentra la llanta que deseas</h1>
             <p class="lead mb-4 text-white-75" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">Llantas, aceites y el mejor mantenimiento automotriz para tu vehículo en Valledupar.</p>
             <a href="#productos" class="btn btn-banner-explorar">Explorar</a>
         </div>
     </div>
-        <span class="eyebrow text-white-50">Valledupar, Cesar</span>
-        <h1 class="display-4 mt-2 mb-3">Encuentra las llantas<br />exactas para tu vehículo</h1>
-        <p class="lead mb-0">Busca por la medida que trae tu llanta y mira solo lo que te sirve.</p>
-    </div>
 </section>
 
+<!-- Panel de Búsqueda -->
 <div class="container search-wrap mt-4">
     <div class="search-matrix-panel p-4 bg-dark rounded-4 shadow">
         <h2 class="h6 text-white text-uppercase mb-3" style="letter-spacing:.8px">Buscar llantas por medida</h2>
@@ -66,18 +67,6 @@
                     {
                         foreach (var a in (List<string>)ViewBag.Anchos) { <option value="@a">@a</option> }
                     }
-<div class="container search-wrap">
-    <form class="search-matrix-panel" method="get" asp-controller="Llantas" asp-action="Index">
-        <div class="d-flex flex-wrap justify-content-between align-items-baseline mb-3 gap-2">
-            <h2 class="h6 text-white text-uppercase mb-0" style="letter-spacing:.8px">Buscar llantas por medida</h2>
-            <a asp-controller="Blog" asp-action="Detalle" asp-route-slug="como-leer-la-medida-de-tu-llanta" class="small text-white-50">¿Dónde veo la medida de mi llanta?</a>
-        </div>
-        <div class="row g-3 form-floating-dark">
-            <div class="col-md-3 col-6">
-                <label class="small text-white-50" for="anchoSelect">Ancho (mm)</label>
-                <select id="anchoSelect" name="ancho" class="form-select">
-                    <option value="">Cualquiera</option>
-                    @foreach (var a in (List<string>)ViewBag.Anchos) { <option value="@a">@a</option> }
                 </select>
             </div>
             <div class="col-md-3">
@@ -88,11 +77,6 @@
                     {
                         foreach (var p in (List<string>)ViewBag.Perfiles) { <option value="@p">@p</option> }
                     }
-            <div class="col-md-3 col-6">
-                <label class="small text-white-50" for="perfilSelect">Perfil (%)</label>
-                <select id="perfilSelect" name="perfil" class="form-select">
-                    <option value="">Cualquiera</option>
-                    @foreach (var p in (List<string>)ViewBag.Perfiles) { <option value="@p">@p</option> }
                 </select>
             </div>
             <div class="col-md-3">
@@ -103,27 +87,33 @@
                     {
                         foreach (var d in (List<string>)ViewBag.Diametros) { <option value="@d">@d</option> }
                     }
-            <div class="col-md-3 col-6">
-                <label class="small text-white-50" for="diametroSelect">Rin (pulgadas)</label>
-                <select id="diametroSelect" name="diametro" class="form-select">
-                    <option value="">Cualquiera</option>
-                    @foreach (var d in (List<string>)ViewBag.Diametros) { <option value="@d">@d</option> }
                 </select>
             </div>
             <div class="col-md-3 d-flex align-items-end">
                 <button type="button" id="btnBuscarLlantas" class="btn btn-danger w-100 py-2 fw-bold" style="background-color: var(--llanteria-primary); border:none;">Buscar</button>
-            <div class="col-md-3 col-6 d-flex align-items-end">
-                <button type="submit" class="btn btn-hyper-action w-100 py-2"><i class="fa-solid fa-magnifying-glass me-2"></i>Buscar llantas</button>
             </div>
         </div>
         <div class="mt-3 small text-white-50">Ejemplo: una llanta 205/55 R16 se busca con ancho 205, perfil 55 y rin 16.</div>
-    </form>
+    </div>
 </div>
 
-<partial name="_Marcas" model="marcas" />
+<section id="resultadosBusqueda" class="section pb-0 d-none">
+    <div class="container">
+        <h2 class="section-title mb-3">Resultados de la búsqueda</h2>
+        <div class="row g-3" id="contenedorTarjetas"></div>
+    </div>
+</section>
+
+@if (marcas != null && marcas.Any())
+{
+    <partial name="_Marcas" model="marcas" />
+}
+<partial name="_Resenias" />
+<partial name="_Nosotros" />
 <partial name="_Servicios" />
 <partial name="_Promociones" />
 
+<!-- Catálogo de Productos -->
 <section id="productos" class="section py-5">
     <div class="container">
         <div class="mb-4">
@@ -221,5 +211,3 @@
         });
     </script>
 }
-<partial name="_Resenias" />
-<partial name="_Nosotros" />

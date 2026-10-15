@@ -10,10 +10,13 @@ namespace Llanteria.Controllers;
 public class HomeController : Controller
 {
     private readonly LlanteriaDbContext _context;
-
     private readonly IWebHostEnvironment _env;
 
-    public HomeController(LlanteriaDbContext context, IWebHostEnvironment env) { _context = context; _env = env; }
+    public HomeController(LlanteriaDbContext context, IWebHostEnvironment env)
+    {
+        _context = context;
+        _env = env;
+    }
 
     public IActionResult Index()
     {
@@ -28,7 +31,14 @@ public class HomeController : Controller
         ViewBag.TotalResenias = visibles.Count();
         ViewBag.PromedioResenias = ViewBag.TotalResenias > 0 ? visibles.Average(r => (double)r.Calificacion) : 0d;
         ViewBag.Resenias = visibles.OrderByDescending(r => r.Fecha).Take(6).ToList();
-        return View();
+
+        // Se obtienen los productos para pasarlos como modelo a la vista
+        var productos = _context.Productos
+            .Include(p => p.DetalleProducto)
+            .AsNoTracking()
+            .ToList();
+
+        return View(productos);
     }
 
     public IActionResult AccessDenied() => View();
