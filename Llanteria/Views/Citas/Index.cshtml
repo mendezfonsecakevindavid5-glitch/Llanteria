@@ -1,5 +1,6 @@
 @using Llanteria.Infrastructure
 @model Paginado<Llanteria.Models.Cita>
+@inject NegocioInfo Negocio
 
 @{
     ViewData["Title"] = "Citas";
@@ -72,6 +73,12 @@
                         <td><span class="tag @Clase(c.Estado)">@c.Estado</span></td>
                         <td class="text-end">
                             <span class="row-actions">
+                                @{ var wa = NegocioInfo.WhatsAppDe(c.Telefono); }
+                                @if (wa != null)
+                                {
+                                    var texto = $"Hola {c.Solicitante}, te escribimos de {Negocio.Nombre} sobre tu cita de {c.Servicio} el {c.Fecha:dd/MM/yyyy} a las {c.Hora}.";
+                                    <a class="icon-btn" title="Escribir por WhatsApp" target="_blank" rel="noopener" href="https://wa.me/@(wa)?text=@(Uri.EscapeDataString(texto))"><i class="fa-brands fa-whatsapp"></i></a>
+                                }
                                 @if (c.Estado == "Pendiente")
                                 {
                                     <button type="button" class="icon-btn" title="Confirmar" data-estado="Confirmada" data-id="@c.Id"><i class="fa-solid fa-check"></i></button>

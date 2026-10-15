@@ -11,7 +11,13 @@ public class ContactoController : Controller
     public ContactoController(EmailService email) => _email = email;
 
     [HttpGet]
-    public IActionResult Index() => View();
+    public IActionResult Index(string? producto)
+    {
+        // Desde las tarjetas del catálogo llega el nombre del producto para dejar el asunto listo.
+        if (!string.IsNullOrWhiteSpace(producto))
+            ViewBag.Asunto = ("Cotización: " + producto.Trim())[..Math.Min(100, ("Cotización: " + producto.Trim()).Length)];
+        return View();
+    }
 
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> EnviarMensaje(string nombre, string correo, string asunto, string mensaje)

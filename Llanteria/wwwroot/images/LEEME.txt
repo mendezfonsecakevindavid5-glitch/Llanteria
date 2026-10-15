@@ -8,3 +8,9 @@ sitio/         Imágenes fijas de la página web (portada, "Nosotros"). Se cambi
 
 Cada carpeta lleva una imagen "default-*.png" que se muestra cuando no hay foto. No la borres.
 Las fotos de empleados y perfiles se guardan en la base de datos, no en carpetas.
+
+marcas/     Logos de la franja del inicio. Nombre del archivo = nombre de la marca en minúsculas,
+            sin tildes y con guiones: michelin.png, bridgestone.svg, goodyear.webp... Si no hay logo, se muestra el nombre.
+            Usa solo logos de marcas con las que realmente tengas convenio o permiso de uso.
+servicios/  Foto de cada servicio en el inicio: montaje-balanceo.jpg, alineacion-3d.jpg, mantenimiento-express.jpg,
+            baterias.jpg, suspension-amortiguadores.jpg, serviteca-movil.jpg (si falta, se usa default-servicio.png).

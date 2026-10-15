@@ -1,0 +1,108 @@
+@* Página de catálogo con panel de filtros a la izquierda y resultados a la derecha (llantas y baterías). *@
+@model Llanteria.Models.CatalogoViewModel
+@{
+    string titulo = ViewData["TituloCatalogo"] as string ?? "Catálogo";
+    string intro = ViewData["IntroCatalogo"] as string ?? "";
+    string controlador = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    bool porMedida = ViewData["PorMedida"] is true;
+    var r = Model.Resultados;
+}
+
+<section class="cat-hero">
+    <div class="container">
+        <nav class="cat-crumbs" aria-label="Ruta"><a asp-controller="Home" asp-action="Index">Inicio</a><span>/</span>@titulo</nav>
+        <h1>@titulo</h1>
+        <p>@intro</p>
+    </div>
+</section>
+
+<div class="container cat-wrap">
+    <div class="row g-4">
+        <aside class="col-lg-3">
+            <form id="filtros" method="get" asp-controller="@controlador" asp-action="Index" class="cat-filters">
+                <div class="cat-filters-head">
+                    <strong>Filtrar por</strong>
+                    @if (Model.HayFiltros) { <a asp-controller="@controlador" asp-action="Index">Limpiar</a> }
+                </div>
+
+                @if (porMedida)
+                {
+                    <div class="cat-group">
+                        <div class="cat-group-title">Medida</div>
+                        <select name="ancho" class="form-select form-select-sm mb-2" aria-label="Ancho">
+                            <option value="">Ancho</option>
+                            @foreach (var a in Model.AnchosDisponibles) { <option value="@a" selected="@(Model.Ancho == a)">@a</option> }
+                        </select>
+                        <select name="perfil" class="form-select form-select-sm mb-2" aria-label="Perfil">
+                            <option value="">Perfil</option>
+                            @foreach (var a in Model.PerfilesDisponibles) { <option value="@a" selected="@(Model.Perfil == a)">@a</option> }
+                        </select>
+                        <select name="diametro" class="form-select form-select-sm" aria-label="Rin">
+                            <option value="">Rin</option>
+                            @foreach (var a in Model.DiametrosDisponibles) { <option value="@a" selected="@(Model.Diametro == a)">@a</option> }
+                        </select>
+                    </div>
+                }
+
+                <div class="cat-group">
+                    <div class="cat-group-title">Marca</div>
+                    @foreach (var m in Model.MarcasDisponibles)
+                    {
+                        <label class="cat-check">
+                            <input type="checkbox" name="marca" value="@m.Nombre" checked="@Model.Marcas.Contains(m.Nombre)" />
+                            <span>@m.Nombre</span><em>@m.Cantidad</em>
+                        </label>
+                    }
+                    @if (!Model.MarcasDisponibles.Any()) { <div class="small text-muted">Sin marcas registradas.</div> }
+                </div>
+
+                <div class="cat-group">
+                    <div class="cat-group-title">Precio</div>
+                    <div class="d-flex gap-2">
+                        <input type="number" name="min" value="@Model.PrecioMin" min="0" step="1000" class="form-control form-control-sm" placeholder="@Model.PrecioMasBajo.ToString("N0")" aria-label="Precio mínimo" />
+                        <input type="number" name="max" value="@Model.PrecioMax" min="0" step="1000" class="form-control form-control-sm" placeholder="@Model.PrecioMasAlto.ToString("N0")" aria-label="Precio máximo" />
+                    </div>
+                    <div class="small text-muted mt-1">En pesos colombianos.</div>
+                </div>
+
+                <button type="submit" class="btn btn-hyper-action w-100">Aplicar filtros</button>
+            </form>
+        </aside>
+
+        <div class="col-lg-9">
+            <div class="cat-toolbar">
+                <span>@r.Total @(r.Total == 1 ? "producto" : "productos")</span>
+                <label class="d-flex align-items-center gap-2">
+                    <span class="d-none d-sm-inline">Ordenar</span>
+                    <select name="orden" form="filtros" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="precio-asc" selected="@(Model.Orden == "precio-asc")">Menor a mayor precio</option>
+                        <option value="precio-desc" selected="@(Model.Orden == "precio-desc")">Mayor a menor precio</option>
+                        <option value="nombre" selected="@(Model.Orden == "nombre")">Nombre (A-Z)</option>
+                    </select>
+                </label>
+            </div>
+
+            @if (r.Items.Any())
+            {
+                <div class="cat-grid">
+                    @foreach (var p in r.Items)
+                    {
+                        <partial name="_TarjetaProducto" model="(p, Model.Agotados.Contains(p.Id))" />
+                    }
+                </div>
+                <div class="mt-4">
+                    <partial name="_Paginacion" model="(r.Pagina, r.TotalPaginas, r.Total)" />
+                </div>
+            }
+            else
+            {
+                <div class="cat-empty">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <h2>No encontramos resultados</h2>
+                    <p>Prueba con otros filtros o escríbenos: conseguimos lo que necesitas.</p>
+                    <a asp-controller="Contacto" asp-action="Index" class="btn btn-hyper-action">Pedir cotización</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

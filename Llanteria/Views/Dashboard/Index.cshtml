@@ -94,6 +94,30 @@
     <div class="col-12">
         <div class="panel">
             <div class="panel-head">
+                <span>Más vendidos (últimos 90 días)</span>
+            </div>
+            @if (Model.MasVendidos.Any())
+            {
+                <table class="data-table">
+                    <thead><tr><th>Producto o servicio</th><th class="text-end">Unidades</th><th class="text-end">Total vendido</th></tr></thead>
+                    <tbody>
+                        @foreach (var t in Model.MasVendidos)
+                        {
+                            <tr><td class="cell-title">@t.Nombre</td><td class="text-end">@t.Unidades</td><td class="text-end money">@t.Total.ToString("C0")</td></tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="empty-state">Aún no hay ventas en este período.</div>
+            }
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="panel">
+            <div class="panel-head">
                 <span>Últimas ventas</span>
                 <a asp-controller="Factura" asp-action="Index" class="small">Ver todas</a>
             </div>

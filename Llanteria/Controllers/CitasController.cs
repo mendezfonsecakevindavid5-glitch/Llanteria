@@ -19,11 +19,13 @@ public class CitasController : Controller
 
     private readonly EmailService _email;
     private readonly LlanteriaDbContext _db;
+    private readonly NegocioInfo _negocio;
 
-    public CitasController(EmailService email, LlanteriaDbContext db)
+    public CitasController(EmailService email, LlanteriaDbContext db, NegocioInfo negocio)
     {
         _email = email;
         _db = db;
+        _negocio = negocio;
     }
 
     // ---------- Solicitar (público con sesión) ----------
@@ -101,6 +103,10 @@ public class CitasController : Controller
         }
         catch { /* se ignora a propósito */ }
 
+        // Acuse de recibo al cliente (si dejó correo en el club).
+        await NotificarClienteAsync(cita, "Recibimos tu solicitud de cita",
+            "Tu cita quedó solicitada. Te confirmaremos pronto; cuando la confirmemos recibirás otro correo.");
+
         return Redirect(Volver("Exito", $"Tu cita quedó solicitada para el {dia:dd/MM/yyyy} a las {hora}. Te confirmaremos por teléfono."));
     }
 
@@ -122,7 +128,7 @@ public class CitasController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = RolesPersonal)]
-    public IActionResult CambiarEstado(int id, string estado, string? retorno)
+    public async Task<IActionResult> CambiarEstado(int id, string estado, string? retorno)
     {
         var cita = _db.Citas.Find(id);
         if (cita == null) return NotFound();
@@ -135,6 +141,10 @@ public class CitasController : Controller
             cita.Estado = estado;
             _db.SaveChanges();
             TempData["Exito"] = $"Cita de {cita.Solicitante} marcada como {estado.ToLower()}.";
+            if (estado == Cita.Confirmada)
+                await NotificarClienteAsync(cita, "Tu cita fue confirmada", "Ya tienes cupo reservado. ¡Te esperamos!");
+            else if (estado == Cita.Cancelada)
+                await NotificarClienteAsync(cita, "Tu cita fue cancelada", $"Si quieres reprogramarla, escríbenos por WhatsApp o llama al {_negocio.Telefono}.");
         }
         return !string.IsNullOrEmpty(retorno) && Url.IsLocalUrl(retorno) ? LocalRedirect(retorno) : RedirectToAction(nameof(Index));
     }
@@ -162,6 +172,22 @@ public class CitasController : Controller
                              || (c.Telefono != null && c.Telefono.Contains(t)));
         }
         return q;
+    }
+
+    // Correo al cliente; es un extra, nunca debe impedir guardar la cita ni cambiar su estado.
+    private async Task NotificarClienteAsync(Cita cita, string titulo, string mensaje)
+    {
+        if (string.IsNullOrWhiteSpace(cita.Correo)) return;
+        try
+        {
+            var cuerpo = EmailService.PlantillaAviso(titulo, new (string, string?)[]
+            {
+                ("Servicio", cita.Servicio), ("Fecha", cita.Fecha.ToString("dd/MM/yyyy")), ("Hora", cita.Hora),
+                ("Vehículo", cita.Vehiculo), ("Lugar", cita.Direccion ?? _negocio.Direccion)
+            }, mensaje);
+            await _email.EnviarCorreoAsync(cita.Correo, cita.Solicitante, $"{titulo} – {_negocio.Nombre}", cuerpo);
+        }
+        catch { /* se ignora a propósito */ }
     }
 
     private static string? Recortar(string? v, int max)

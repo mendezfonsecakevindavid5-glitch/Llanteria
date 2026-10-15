@@ -24,4 +24,5 @@ public class Cita
     public int? IdCliente { get; set; }
     public string Estado { get; set; } = Pendiente;
     public DateTime FechaCreacion { get; set; } = DateTime.Now;
+    public bool RecordatorioEnviado { get; set; }
 }

@@ -1,4 +1,4 @@
-using Llanteria.Data;
+ using Llanteria.Data;
 using Llanteria.Infrastructure;
 using Llanteria.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -31,8 +31,12 @@ builder.Services.AddControllersWithViews(options =>
     options.Filters.Add<DbUpdateExceptionFilter>();
 });
 
-builder.Services.AddDbContext<LlanteriaDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Con")));
+var cadenaConexion = builder.Configuration.GetConnectionString("Con");
+if (string.IsNullOrWhiteSpace(cadenaConexion))
+    throw new InvalidOperationException(
+        "Falta la cadena de conexión \"ConnectionStrings:Con\". Agrégala en appsettings.json (o en User Secrets); mira appsettings.EJEMPLO.json.");
+
+builder.Services.AddDbContext<LlanteriaDbContext>(options => options.UseSqlServer(cadenaConexion));
 
 builder.Services.AddScoped<TipoDocumentoService>();
 builder.Services.AddScoped<SexoService>();
@@ -59,6 +63,10 @@ Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath)
 
 
 Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath);
+builder.Services.AddSingleton<EmailService>();
+builder.Services.AddSingleton(builder.Configuration.GetSection("Negocio").Get<NegocioInfo>() ?? new NegocioInfo());
+builder.Services.AddHostedService<RecordatorioCitasService>();
+builder.Services.AddScoped<IPerfilService, PerfilService>();
 
 builder.Services.AddSession(options =>
 {

@@ -43,6 +43,15 @@ public class DashboardController : Controller
                 .OrderBy(i => i.StockActual).Take(8).ToList()
         };
 
+        // Más vendidos de los últimos 90 días (productos y servicios facturados, por descripción).
+        var desde = DateOnly.FromDateTime(hoy.AddDays(-90));
+        vm.MasVendidos = _context.DetalleFacturas.AsNoTracking()
+            .Where(d => d.IdFacturaNavigation.Fecha != null && d.IdFacturaNavigation.Fecha >= desde)
+            .GroupBy(d => d.Descripción)
+            .Select(g => new { Nombre = g.Key, Unidades = g.Sum(d => d.Cantidad), Total = g.Sum(d => d.Subtotal) })
+            .OrderByDescending(x => x.Unidades).Take(5).ToList()
+            .Select(x => new TopProducto(x.Nombre, x.Unidades, x.Total)).ToList();
+
         for (var i = 0; i < 6; i++)
         {
             var mes = inicioSerie.AddMonths(i);

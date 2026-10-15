@@ -132,6 +132,6 @@ public class EmpleadoController : Controller
     {
         ViewBag.IdDocumento = new SelectList(docSer.GetTipoDocumentos(), "Id", "Nombre", e?.IdDocumento);
         ViewBag.IdSexo = new SelectList(sexoSer.GetSexos(), "Id", "Nombre", e?.IdSexo);
-        ViewBag.IdRol = new SelectList(rolSer.GetRoles(), "Id", "NombreRol", e?.IdRol);
+        ViewBag.IdRol = new SelectList(rolSer.GetRoles().Where(r => r.NombreRol != "Cliente"), "Id", "NombreRol", e?.IdRol);
     }
 }
