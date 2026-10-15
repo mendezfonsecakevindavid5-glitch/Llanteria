@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -11,62 +10,41 @@ public partial class Cliente
     [Key]
     public int Id { get; set; }
 
-    [Required(ErrorMessage = "Los nombres son obligatorios.")]
-
-    [StringLength(100)]
-
     [Required(ErrorMessage = "El nombre es obligatorio.")]
     [StringLength(60)]
     [Display(Name = "Nombres")]
     public string Nombres { get; set; } = null!;
-
-    [Required(ErrorMessage = "Los apellidos son obligatorios.")]
-
-    [StringLength(100)]
 
     [Required(ErrorMessage = "El apellido es obligatorio.")]
     [StringLength(60)]
     [Display(Name = "Apellidos")]
     public string Apellidos { get; set; } = null!;
 
-    [Range(1, int.MaxValue, ErrorMessage = "Selecciona el tipo de documento.")]
-
     [Required(ErrorMessage = "Debe seleccionar un tipo de documento.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Selecciona el tipo de documento.")]
     public int IdDocumento { get; set; }
 
-    [Required(ErrorMessage = "El documento es obligatorio.")]
-
-    [StringLength(20)]
-
     [Required(ErrorMessage = "El número de documento es obligatorio.")]
+    [StringLength(20)]
     public string NumeroDocumento { get; set; } = null!;
 
     [Required(ErrorMessage = "El teléfono es obligatorio.")]
-
-    [StringLength(20)]
-
     [StringLength(30, ErrorMessage = "El teléfono no puede exceder los 30 caracteres.")]
     public string Telefono { get; set; } = null!;
 
     [Required(ErrorMessage = "El correo es obligatorio.")]
-
-    [EmailAddress(ErrorMessage = "Formato de correo no válido.")]
-
+    [EmailAddress(ErrorMessage = "Formato de correo electrónico no válido.")]
     [StringLength(100)]
-
     public string Correo { get; set; } = null!;
 
     [Range(1, int.MaxValue, ErrorMessage = "Selecciona el sexo.")]
-
     public int IdSexo { get; set; }
 
-    // SOLUCIÓN A LA TRUNCACIÓN: Permitir texto ilimitado para el Base64 de la foto
     [Column(TypeName = "nvarchar(max)")]
     public string? Foto { get; set; }
 
     public int PuntosAcumulados { get; set; }
 
-    // Hash de la contraseña del club de puntos. Nunca se enlaza desde formularios.
     [Microsoft.AspNetCore.Mvc.ModelBinding.BindNever]
     public string? PasswordHash { get; set; }
 

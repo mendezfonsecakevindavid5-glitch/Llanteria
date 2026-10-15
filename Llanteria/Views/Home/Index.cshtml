@@ -5,43 +5,89 @@
     var productos = Model.ToList();
 }
 
-<section id="inicio" class="hero">
+<style>
+    .banner-hero-matrix {
+        position: relative;
+        background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.65)), url('/images/ImageBanner.jpg') center/cover no-repeat;
+        min-height: 85vh;
+        display: flex;
+        align-items: flex-end;
+        padding-bottom: 5rem;
+        color: #FFFFFF;
+        margin-top: -85px; /* Compensa el header flotante */
+        padding-top: 140px;
+    }
+
+    .banner-content-box {
+        max-width: 750px;
+    }
+
+    .btn-banner-explorar {
+        background-color: #000000 !important;
+        color: #FFFFFF !important;
+        border: 1px solid #000000 !important;
+        border-radius: 0.5rem;
+        padding: 0.75rem 2.5rem;
+        font-weight: 700;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-banner-explorar:hover {
+        background-color: var(--llanteria-primary) !important;
+        border-color: var(--llanteria-primary) !important;
+        color: #FFFFFF !important;
+    }
+</style>
+
+<!-- Banner Principal -->
+<section class="banner-hero-matrix">
     <div class="container">
-        <span class="eyebrow text-white-50">Valledupar, Cesar</span>
-        <h1 class="display-4 mt-2 mb-3">Llantas, aceites y servicio<br />para tu vehículo</h1>
-        <p class="lead mb-4">Encuentra la medida que necesitas y agenda tu servicio sin filas.</p>
-        <a href="#productos" class="btn btn-hyper-action px-4 py-2 me-2">Ver productos</a>
-        <a href="#servicios" class="btn btn-outline-light px-4 py-2">Servicios</a>
+        <div class="banner-content-box">
+            <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -0.5px; text-shadow: 2px 2px 8px rgba(0,0,0,0.7);">Explora y encuentra la llanta que deseas</h1>
+            <p class="lead mb-4 text-white-75" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">Llantas, aceites y el mejor mantenimiento automotriz para tu vehículo en Valledupar.</p>
+            <a href="#productos" class="btn btn-banner-explorar">Explorar</a>
+        </div>
     </div>
 </section>
 
-<div class="container search-wrap">
-    <div class="search-matrix-panel">
+<div class="container search-wrap mt-4">
+    <div class="search-matrix-panel p-4 bg-dark rounded-4 shadow">
         <h2 class="h6 text-white text-uppercase mb-3" style="letter-spacing:.8px">Buscar llantas por medida</h2>
-        <div class="row g-3 form-floating-dark">
+        <div class="row g-3">
             <div class="col-md-3">
                 <label class="small text-white-50" for="anchoSelect">Ancho</label>
                 <select id="anchoSelect" class="form-select">
                     <option value="">Todos</option>
-                    @foreach (var a in (List<string>)ViewBag.Anchos) { <option value="@a">@a</option> }
+                    @if (ViewBag.Anchos != null)
+                    {
+                        foreach (var a in (List<string>)ViewBag.Anchos) { <option value="@a">@a</option> }
+                    }
                 </select>
             </div>
             <div class="col-md-3">
                 <label class="small text-white-50" for="perfilSelect">Perfil</label>
                 <select id="perfilSelect" class="form-select">
                     <option value="">Todos</option>
-                    @foreach (var p in (List<string>)ViewBag.Perfiles) { <option value="@p">@p</option> }
+                    @if (ViewBag.Perfiles != null)
+                    {
+                        foreach (var p in (List<string>)ViewBag.Perfiles) { <option value="@p">@p</option> }
+                    }
                 </select>
             </div>
             <div class="col-md-3">
                 <label class="small text-white-50" for="diametroSelect">Rin</label>
                 <select id="diametroSelect" class="form-select">
                     <option value="">Todos</option>
-                    @foreach (var d in (List<string>)ViewBag.Diametros) { <option value="@d">@d</option> }
+                    @if (ViewBag.Diametros != null)
+                    {
+                        foreach (var d in (List<string>)ViewBag.Diametros) { <option value="@d">@d</option> }
+                    }
                 </select>
             </div>
             <div class="col-md-3 d-flex align-items-end">
-                <button type="button" id="btnBuscarLlantas" class="btn btn-hyper-action w-100 py-2">Buscar</button>
+                <button type="button" id="btnBuscarLlantas" class="btn btn-danger w-100 py-2 fw-bold" style="background-color: var(--llanteria-primary); border:none;">Buscar</button>
             </div>
         </div>
     </div>
@@ -58,11 +104,11 @@
 <partial name="_Servicios" />
 <partial name="_Promociones" />
 
-<section id="productos" class="section">
+<section id="productos" class="section py-5">
     <div class="container">
         <div class="mb-4">
-            <span class="eyebrow">Catálogo</span>
-            <h2 class="section-title mt-1">Productos disponibles</h2>
+            <span class="eyebrow text-danger fw-bold">Catálogo</span>
+            <h2 class="section-title mt-1 fw-bold">Productos disponibles</h2>
         </div>
 
         <div class="d-flex gap-2 mb-4 flex-wrap">
@@ -77,9 +123,9 @@
                 var categoria = string.IsNullOrEmpty(p.Categoria) ? "Llantas" : p.Categoria;
                 var d = p.DetalleProducto;
                 <div class="col-sm-6 col-lg-4 item-producto" data-categoria="@categoria">
-                    <div class="premium-product-card h-100 d-flex flex-column">
-                        <img class="product-img" src="~/images/productoos/@(string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen)" alt="@p.Nombre" loading="lazy" />
-                        <div class="p-3 d-flex flex-column flex-grow-1">
+                    <div class="premium-product-card h-100 d-flex flex-column border rounded-3 p-3 bg-white shadow-sm">
+                        <img class="product-img img-fluid mb-3 rounded" src="~/images/productoos/@(string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen)" alt="@p.Nombre" loading="lazy" style="height: 200px; object-fit: contain;" />
+                        <div class="d-flex flex-column flex-grow-1">
                             <span class="small text-muted text-uppercase">@categoria</span>
                             <h3 class="h6 fw-bold mb-1">@p.Nombre</h3>
                             @if (d != null && !string.IsNullOrEmpty(d.Ancho) && !string.IsNullOrEmpty(d.Perfil) && !string.IsNullOrEmpty(d.Diametro))
@@ -90,8 +136,8 @@
                             {
                                 <div class="small text-muted">Viscosidad: @d.Viscosidad @d.TipoAceite</div>
                             }
-                            <div class="fs-5 fw-bold text-llanteria-primary mt-2 mb-3">@p.PrecioVenta.ToString("C0")</div>
-                            <a asp-controller="Contacto" asp-action="Index" class="btn btn-hyper-action btn-sm mt-auto">Cotizar</a>
+                            <div class="fs-5 fw-bold text-danger mt-2 mb-3">@p.PrecioVenta.ToString("C0")</div>
+                            <a asp-controller="Contacto" asp-action="Index" class="btn btn-danger btn-sm mt-auto fw-bold" style="background-color: var(--llanteria-primary); border:none;">Cotizar</a>
                         </div>
                     </div>
                 </div>
@@ -106,11 +152,10 @@
 
 @section Scripts {
     <script>
-        // Filtro por categoría
         document.querySelectorAll('.filter-btn').forEach(function (btn) {
             btn.addEventListener('click', function () {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'btn-dark'));
+                btn.classList.add('active', 'btn-dark');
                 const f = btn.dataset.filter;
                 document.querySelectorAll('.item-producto').forEach(function (el) {
                     el.style.display = (f === 'todos' || el.dataset.categoria === f) ? '' : 'none';
@@ -124,8 +169,7 @@
             return d.innerHTML;
         }
 
-        // Búsqueda por medida
-        document.getElementById('btnBuscarLlantas').addEventListener('click', async function () {
+        document.getElementById('btnBuscarLlantas')?.addEventListener('click', async function () {
             const ancho = document.getElementById('anchoSelect').value;
             const perfil = document.getElementById('perfilSelect').value;
             const diametro = document.getElementById('diametroSelect').value;
@@ -142,11 +186,11 @@
                 if (!r.ok) throw new Error(r.status);
                 const lista = await r.json();
                 contenedor.innerHTML = lista.length ? lista.map(function (l) {
-                    return '<div class="col-sm-6 col-lg-4"><div class="premium-product-card h-100 d-flex flex-column">' +
-                        '<img class="product-img" src="' + esc(l.img) + '" alt="">' +
-                        '<div class="p-3 d-flex flex-column flex-grow-1"><h3 class="h6 fw-bold">' + esc(l.nombre) + '</h3>' +
-                        '<div class="fs-5 fw-bold text-llanteria-primary mb-3">' + esc(l.precio) + '</div>' +
-                        '<a href="@Url.Action("Index", "Contacto")" class="btn btn-hyper-action btn-sm mt-auto">Cotizar</a></div></div></div>';
+                    return '<div class="col-sm-6 col-lg-4"><div class="premium-product-card h-100 d-flex flex-column border rounded-3 p-3 bg-white shadow-sm">' +
+                        '<img class="product-img img-fluid mb-3 rounded" src="' + esc(l.img) + '" alt="" style="height: 200px; object-fit: contain;">' +
+                        '<div class="d-flex flex-column flex-grow-1"><h3 class="h6 fw-bold">' + esc(l.nombre) + '</h3>' +
+                        '<div class="fs-5 fw-bold text-danger mb-3">' + esc(l.precio) + '</div>' +
+                        '<a href="@Url.Action("Index", "Contacto")" class="btn btn-danger btn-sm mt-auto fw-bold" style="background-color: var(--llanteria-primary); border:none;">Cotizar</a></div></div></div>';
                 }).join('') : '<div class="col-12 text-muted">No encontramos llantas con esa medida. Escríbenos y las conseguimos.</div>';
                 const seccion = document.getElementById('resultadosBusqueda');
                 seccion.classList.remove('d-none');

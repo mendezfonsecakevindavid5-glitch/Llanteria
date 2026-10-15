@@ -32,8 +32,17 @@ public class UsuarioService
     // Agregar un nuevo usuario
     public void AddUsuario(Usuario obj)
     {
-        _context.Usuarios.Add(obj);
-        _context.SaveChanges();
+        try
+        {
+            _context.Usuarios.Add(obj);
+            _context.SaveChanges();
+        }
+        catch (DbUpdateException ex)
+        {
+            // Inspecciona 'ex.InnerException?.Message' aquí para ver el error SQL exacto
+            var mensajeSql = ex.InnerException?.Message;
+            throw;
+        }
     }
 
     // Actualizar un usuario existente

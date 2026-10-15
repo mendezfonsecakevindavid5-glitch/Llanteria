@@ -11,16 +11,6 @@
         padding: 2rem 1rem;
     }
 
-<div class="auth-wrap">
-    <div class="auth-card">
-        <h1>Iniciar sesión</h1>
-        <p class="text-muted mb-4">Personal del taller: usuario o correo. Clientes: correo o documento.</p>
-
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger py-2 small">@ViewBag.Error</div>
-        }
-
     .entrance-login-card {
         background-color: #ffffff;
         width: 100%;
@@ -29,7 +19,11 @@
         padding: 2.5rem;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
         animation: slideUpEntrance 0.6s ease-out forwards;
-        opacity: 0;
+    }
+
+    @@keyframes slideUpEntrance {
+        0% { opacity: 0; transform: translateY(30px); }
+        100% { opacity: 1; transform: translateY(0); }
     }
 
     .form-main-title {
@@ -74,9 +68,9 @@
         justify-content: center;
     }
 
-        .password-toggle-btn:hover {
-            color: #000000;
-        }
+    .password-toggle-btn:hover {
+        color: #000000;
+    }
 
     .custom-input {
         height: 55px;
@@ -101,9 +95,9 @@
         transition: filter 0.3s ease, background-color 0.3s ease;
     }
 
-        .btn-login-submit:hover:not(.btn-muted) {
-            filter: brightness(0.85);
-        }
+    .btn-login-submit:hover:not(.btn-muted) {
+        filter: brightness(0.85);
+    }
 
     .btn-incorrect {
         background-color: #000000 !important;
@@ -134,33 +128,33 @@
         font-size: 1.2rem;
     }
 
-        .required-asterisk .tooltip-text {
-            visibility: hidden;
-            opacity: 0;
-            background-color: #ffffff;
-            color: #000000;
-            text-align: center;
-            border-radius: 0.375rem;
-            padding: 6px 12px;
-            position: absolute;
-            z-index: 20;
-            left: 100%;
-            top: 50%;
-            transform: translateY(-50%);
-            margin-left: 10px;
-            white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border: 1px solid #e0e0e0;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: opacity 0.2s ease, visibility 0.2s ease;
-            pointer-events: none;
-        }
+    .required-asterisk .tooltip-text {
+        visibility: hidden;
+        opacity: 0;
+        background-color: #ffffff;
+        color: #000000;
+        text-align: center;
+        border-radius: 0.375rem;
+        padding: 6px 12px;
+        position: absolute;
+        z-index: 20;
+        left: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-left: 10px;
+        white-space: nowrap;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e0e0e0;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+        pointer-events: none;
+    }
 
-        .required-asterisk:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
+    .required-asterisk:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+    }
 
     .btn-muted {
         background-color: #e0e0e0 !important;
@@ -174,30 +168,14 @@
         animation: waveDots 1.2s infinite ease-in-out;
     }
 
-        .wave-dot:nth-child(1) {
-            animation-delay: 0s;
-        }
-
-        .wave-dot:nth-child(2) {
-            animation-delay: 0.15s;
-        }
-
-        .wave-dot:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-
-        .wave-dot:nth-child(4) {
-            animation-delay: 0.45s;
-        }
+    .wave-dot:nth-child(1) { animation-delay: 0s; }
+    .wave-dot:nth-child(2) { animation-delay: 0.15s; }
+    .wave-dot:nth-child(3) { animation-delay: 0.3s; }
+    .wave-dot:nth-child(4) { animation-delay: 0.45s; }
 
     @@keyframes waveDots {
-        0%, 100% {
-            transform: translateY(0);
-        }
-
-        50% {
-            transform: translateY(-5px);
-        }
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
     }
 
     .timer-container {
@@ -228,10 +206,10 @@
         transition: border-color 0.2s ease, transform 0.1s ease;
     }
 
-        .otp-input:focus {
-            border-color: var(--llanteria-primary, #C92B0A);
-            transform: translateY(-2px);
-        }
+    .otp-input:focus {
+        border-color: var(--llanteria-primary, #C92B0A);
+        transform: translateY(-2px);
+    }
 
     .resend-link {
         color: var(--llanteria-primary, #C92B0A);
@@ -243,20 +221,22 @@
         transition: text-decoration 0.2s ease;
     }
 
-        .resend-link:hover {
-            text-decoration: underline !important;
-        }
+    .resend-link:hover {
+        text-decoration: underline !important;
+    }
 </style>
 
 <div class="login-container-wrapper">
     <div class="entrance-login-card">
-
         <div class="header-group">
             <h2 class="form-main-title m-0 fw-bold" id="formTitle">Iniciar sesión</h2>
         </div>
 
-        <form id="loginForm" method="post">
-            <!-- ETAPA 1: Credenciales de acceso -->
+        <form id="loginForm" method="post" autocomplete="off" novalidate>
+            <!-- Campos trampa invisibles para evitar autofill del navegador -->
+            <input type="text" style="display:none" name="prevent_autofill_user" autocomplete="username" />
+            <input type="password" style="display:none" name="prevent_autofill_pass" autocomplete="current-password" />
+
             <div id="stage1">
                 <div class="mb-4">
                     <label class="custom-field-label">
@@ -264,7 +244,7 @@
                         <span class="required-asterisk">*<span class="tooltip-text">Este campo es obligatorio</span></span>
                     </label>
                     <div class="input-wrapper">
-                        <input type="text" id="usernameInput" name="username" class="form-control custom-input validate-field-s1" placeholder="Usuario" required />
+                        <input type="text" id="usernameInput" name="username" class="form-control custom-input validate-field-s1" placeholder="Usuario" autocomplete="off" data-lpignore="true" autocapitalize="off" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
                     </div>
                 </div>
 
@@ -277,7 +257,7 @@
                         <button type="button" id="togglePasswordBtn" class="password-toggle-btn" title="Mostrar/Ocultar contraseña">
                             <i id="eyeIcon" class="fa-regular fa-eye-slash"></i>
                         </button>
-                        <input type="password" id="passwordInput" name="password" class="form-control custom-input custom-input-password validate-field-s1" placeholder="Contraseña" required />
+                        <input type="password" id="passwordInput" name="password" class="form-control custom-input custom-input-password validate-field-s1" placeholder="Contraseña" autocomplete="new-password" data-lpignore="true" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
                     </div>
                 </div>
 
@@ -304,9 +284,7 @@
                 </div>
             </div>
 
-            <!-- ETAPA 2: Verificación de Código 2FA -->
             <div id="stage2" style="display: none;">
-                
                 <p class="text-center text-muted mb-4" style="font-size: 0.95rem;">
                     Ingrese el código enviado a <br/>
                     <span class="fw-bold text-dark" id="censoredEmailDisplay"></span>
@@ -314,17 +292,16 @@
 
                 <div class="text-center">
                     <div class="otp-wrapper my-4" id="otpContainer">
-                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
                     </div>
                     <input type="hidden" id="codeInput" name="code" />
                 </div>
 
-                <!-- Contenedor alineado horizontalmente para el temporizador y el botón de reenvío -->
                 <div class="d-flex justify-content-between align-items-center my-4">
                     <div class="timer-container m-0">
                         <span id="timerCountdown">01:20</span>
@@ -370,6 +347,12 @@
             let timerInterval = null;
             let currentUsername = "";
 
+            document.querySelectorAll('input').forEach(inp => {
+                ['paste', 'copy', 'cut', 'drop'].forEach(ev => {
+                    inp.addEventListener(ev, e => e.preventDefault());
+                });
+            });
+
             toggleBtn.addEventListener('click', function () {
                 const isPassword = passwordInput.type === 'password';
                 passwordInput.type = isPassword ? 'text' : 'password';
@@ -404,7 +387,7 @@
                 btnStage1.innerHTML = '<span class="wave-dot">.</span><span class="wave-dot">.</span><span class="wave-dot">.</span><span class="wave-dot">.</span>';
 
                 try {
-                    const response = await fetch('@Url.Action("IniciarAutenticacion", "Usuario")', {
+                    const response = await fetch('@Url.Action("IniciarAutenticacion", "Account")', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: new URLSearchParams({
@@ -416,28 +399,8 @@
                     const res = await response.json();
 
                     if (res.success) {
-                        if (res.esUsuarioLegacy) {
-                            window.location.href = res.redirectUrl;
-                            return;
-                        }
-
                         currentUsername = usernameInput.value.trim();
-
-                        let textoCensurado = currentUsername;
-                        if (res.correoCensurado) {
-                            textoCensurado = res.correoCensurado;
-                        } else if (currentUsername.includes('\u0040')) {
-                            const [nombre, dominio] = currentUsername.split('\u0040');
-                            if (nombre.length <= 2) {
-                                textoCensurado = nombre + '***\u0040' + dominio;
-                            } else {
-                                textoCensurado = nombre.substring(0, 2) + '*'.repeat(nombre.length - 2) + '\u0040' + dominio;
-                            }
-                        } else {
-                            textoCensurado = currentUsername.length > 2
-                                ? currentUsername.substring(0, 2) + '*'.repeat(currentUsername.length - 2)
-                                : currentUsername + '***';
-                        }
+                        let textoCensurado = res.correoCensurado || currentUsername;
                         document.getElementById('censoredEmailDisplay').textContent = textoCensurado;
 
                         stage1.style.display = 'none';
@@ -462,15 +425,11 @@
             otpInputs.forEach((input, index) => {
                 input.addEventListener('input', function() {
                     this.value = this.value.replace(/[^0-9]/g, '');
-                    if (this.value !== '') {
-                        if (index < otpInputs.length - 1) otpInputs[index + 1].focus();
-                    }
+                    if (this.value !== '' && index < otpInputs.length - 1) otpInputs[index + 1].focus();
                     compilarToken();
                 });
                 input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace' && this.value === '') {
-                        if (index > 0) otpInputs[index - 1].focus();
-                    }
+                    if (e.key === 'Backspace' && this.value === '' && index > 0) otpInputs[index - 1].focus();
                 });
             });
 
@@ -478,10 +437,10 @@
                 let token = '';
                 otpInputs.forEach(input => token += input.value);
                 codeInput.value = token;
-
                 if (token.length === 6) {
                     btnVerify.classList.remove('btn-muted');
                     clientErrorStage2.style.display = 'none';
+                    btnVerify.click();
                 } else {
                     btnVerify.classList.add('btn-muted');
                 }
@@ -489,8 +448,6 @@
 
             btnVerify.addEventListener('click', async function () {
                 if (!codeInput.value || codeInput.value.length < 6) return;
-
-                // Pausa automática del temporizador al dar clic en verificar
                 clearInterval(timerInterval);
 
                 btnVerify.style.pointerEvents = 'none';
@@ -498,24 +455,16 @@
                 btnVerify.innerHTML = '<span class="wave-dot">.</span><span class="wave-dot">.</span><span class="wave-dot">.</span><span class="wave-dot">.</span>';
 
                 try {
-                    const response = await fetch('@Url.Action("VerificarCodigo", "Usuario")', {
+                    const response = await fetch('@Url.Action("VerificarCodigoLogin", "Account")', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: new URLSearchParams({
-                            username: currentUsername,
-                            code: codeInput.value.trim()
-                        })
+                        body: new URLSearchParams({ username: currentUsername, code: codeInput.value.trim() })
                     });
-
                     const res = await response.json();
 
                     if (res.success) {
-                        btnVerify.classList.remove('btn-incorrect');
                         btnVerify.innerHTML = '<i class="fa-solid fa-check me-2"></i>CORRECTO';
-
-                        setTimeout(() => {
-                            window.location.href = '@Url.Action("Index", "Home")';
-                        }, 800);
+                        setTimeout(() => { window.location.href = '@Url.Action("Index", "Home")'; }, 800);
                     } else {
                         btnVerify.classList.add('btn-incorrect');
                         btnVerify.innerHTML = '<i class="fa-solid fa-xmark me-2"></i>INCORRECTO';
@@ -525,7 +474,6 @@
                 } catch (err) {
                     btnVerify.classList.add('btn-incorrect');
                     btnVerify.innerHTML = '<i class="fa-solid fa-xmark me-2"></i>INCORRECTO';
-                    resendCodeBtn.style.display = 'inline-block';
                     btnVerify.style.pointerEvents = 'auto';
                 }
             });
@@ -538,15 +486,9 @@
                 timerInterval = setInterval(() => {
                     let minutos = Math.floor(tiempo / 60);
                     let segundos = tiempo % 60;
-
-                    minutos = minutos < 10 ? '0' + minutos : minutos;
-                    segundos = segundos < 10 ? '0' + segundos : segundos;
-
-                    timerCountdown.textContent = `${minutos}:${segundos}`;
-
+                    timerCountdown.textContent = `${minutos < 10 ? '0' + minutos : minutos}:${segundos < 10 ? '0' + segundos : segundos}`;
                     if (--tiempo < 0) {
                         clearInterval(timerInterval);
-                        timerCountdown.textContent = "00:00";
                         resendCodeBtn.style.display = 'inline-block';
                     }
                 }, 1000);
@@ -559,10 +501,9 @@
                 btnVerify.classList.remove('btn-incorrect');
                 btnVerify.classList.add('btn-muted');
                 btnVerify.textContent = 'Verificar';
-                clientErrorStage2.style.display = 'none';
 
                 try {
-                    await fetch('@Url.Action("ReenviarCodigo", "Usuario")', {
+                    await fetch('@Url.Action("ReenviarCodigoLogin", "Account")', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: new URLSearchParams({ username: currentUsername })

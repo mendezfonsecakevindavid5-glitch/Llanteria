@@ -14,7 +14,6 @@ namespace Llanteria.Services
             _configuration = configuration;
         }
 
-        /// <summary>Correo del negocio que recibe contactos, solicitudes y citas.</summary>
         public string CorreoDestino => _configuration["Contacto:CorreoDestino"] ?? "";
 
         public async Task<bool> EnviarCorreoAsync(string destinatarioEmail, string destinatarioNombre,
@@ -64,7 +63,6 @@ namespace Llanteria.Services
             }
         }
 
-        /// <summary>Plantilla sencilla para avisos internos (contacto, solicitudes, citas).</summary>
         public static string PlantillaAviso(string titulo, IEnumerable<(string Etiqueta, string? Valor)> datos, string? mensaje = null)
         {
             var sb = new StringBuilder();
@@ -82,16 +80,23 @@ namespace Llanteria.Services
 
         public async Task<bool> EnviarTokenRecuperacionAsync(string destinatarioEmail, string otp)
         {
-            var correo = WebUtility.HtmlEncode(destinatarioEmail);
+            // Plantilla de correo simplificada, moderna y profesional
             var cuerpo = $@"
-<div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;border:1px solid #e0e0e0;border-radius:6px;overflow:hidden'>
-  <div style='background:#C92B0A;padding:24px'><h2 style='color:#fff;margin:0;font-weight:normal'>Código de verificación</h2></div>
-  <div style='padding:32px 24px'>
-    <p style='font-size:15px;color:#3c4043'>Recibimos una solicitud de verificación para la cuenta <strong>{correo}</strong>. Ingresa este código cuando se te pida:</p>
-    <p style='font-size:34px;font-weight:bold;text-align:center;letter-spacing:4px;margin:24px 0'>{otp}</p>
-    <p style='font-size:13px;color:#5f6368'>Si no fuiste tú, ignora este mensaje.<br/>Llantería Valledupar</p>
-  </div>
-</div>";
+            <div style='font-family: -apple-system, BlinkMacSystemFont, ""Segoe UI"", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f5f7; padding: 40px 0;'>
+                <div style='max-width: 480px; margin: 0 auto; background: #ffffff; border-radius: 8px; border: 1px solid #e1e4e8; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);'>
+                    <div style='background-color: #C92B0A; padding: 22px; text-align: center;'>
+                        <h2 style='color: #ffffff; margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 0.5px;'>LLANTERÍA VALLEDUPAR</h2>
+                    </div>
+                    <div style='padding: 32px 24px; text-align: center;'>
+                        <p style='font-size: 15px; color: #2d3748; margin-top: 0; margin-bottom: 20px;'>Tu código de verificación es:</p>
+                        <div style='background-color: #f8f9fa; border: 1px dashed #cbd5e0; border-radius: 6px; padding: 14px; margin-bottom: 24px;'>
+                            <span style='font-size: 30px; font-weight: 800; letter-spacing: 6px; color: #1a202c;'>{otp}</span>
+                        </div>
+                        <p style='font-size: 13px; color: #718096; margin: 0; line-height: 1.5;'>Este código expirará en 10 minutos.<br>Si no solicitaste este código, puedes ignorar este mensaje.</p>
+                    </div>
+                </div>
+            </div>";
+
             return await EnviarCorreoAsync(destinatarioEmail, "Usuario", "Código de verificación - Llantería Valledupar", cuerpo);
         }
     }

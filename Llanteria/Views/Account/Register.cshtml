@@ -1,7 +1,7 @@
 @model Llanteria.Models.Cliente
 
 @{
-    ViewData["Title"] = "Club de puntos";
+    ViewData["Title"] = "Crear cuenta";
 }
 
 <style>
@@ -22,15 +22,8 @@
     }
 
     @@keyframes slideUpEntrance {
-        0% {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        100% {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        0% { opacity: 0; transform: translateY(30px); }
+        100% { opacity: 1; transform: translateY(0); }
     }
 
     .entrance-register-card {
@@ -102,9 +95,9 @@
         justify-content: center;
     }
 
-        .password-toggle-btn:hover {
-            color: #000000;
-        }
+    .password-toggle-btn:hover {
+        color: #000000;
+    }
 
     .required-asterisk {
         color: var(--llanteria-primary, #C92B0A);
@@ -116,33 +109,33 @@
         font-size: 1.2rem;
     }
 
-        .required-asterisk .tooltip-text {
-            visibility: hidden;
-            opacity: 0;
-            background-color: #ffffff;
-            color: #000000;
-            text-align: center;
-            border-radius: 0.375rem;
-            padding: 6px 12px;
-            position: absolute;
-            z-index: 20;
-            left: 100%;
-            top: 50%;
-            transform: translateY(-50%);
-            margin-left: 10px;
-            white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border: 1px solid #e0e0e0;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: opacity 0.2s ease, visibility 0.2s ease;
-            pointer-events: none;
-        }
+    .required-asterisk .tooltip-text {
+        visibility: hidden;
+        opacity: 0;
+        background-color: #ffffff;
+        color: #000000;
+        text-align: center;
+        border-radius: 0.375rem;
+        padding: 6px 12px;
+        position: absolute;
+        z-index: 20;
+        left: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-left: 10px;
+        white-space: nowrap;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e0e0e0;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+        pointer-events: none;
+    }
 
-        .required-asterisk:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
+    .required-asterisk:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+    }
 
     .unified-group {
         display: flex;
@@ -154,10 +147,10 @@
         background-color: #fff;
     }
 
-        .unified-group:focus-within {
-            border-color: #86b7fe;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-        }
+    .unified-group:focus-within {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
 
     .group-selector-toggle {
         display: flex;
@@ -196,9 +189,9 @@
         margin-right: 8px;
     }
 
-        .dropdown-arrow.rotate {
-            transform: rotate(-180deg);
-        }
+    .dropdown-arrow.rotate {
+        transform: rotate(-180deg);
+    }
 
     .dropdown-text {
         color: #000000;
@@ -224,9 +217,9 @@
         overflow-y: auto;
     }
 
-        .custom-dropdown-menu.show {
-            display: block;
-        }
+    .custom-dropdown-menu.show {
+        display: block;
+    }
 
     .custom-dropdown-item {
         padding: 12px 15px;
@@ -238,9 +231,9 @@
         font-weight: 500;
     }
 
-        .custom-dropdown-item:hover {
-            background-color: #f8f9fa;
-        }
+    .custom-dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
 
     .custom-error-text {
         color: var(--llanteria-primary, #C92B0A);
@@ -260,9 +253,9 @@
         transition: filter 0.3s ease;
     }
 
-        .btn-register-submit:hover:not(.btn-muted) {
-            filter: brightness(0.85);
-        }
+    .btn-register-submit:hover:not(.btn-muted) {
+        filter: brightness(0.85);
+    }
 
     .btn-muted {
         background-color: #e0e0e0 !important;
@@ -312,9 +305,9 @@
         transition: text-decoration 0.2s ease;
     }
 
-        .resend-link:hover {
-            text-decoration: underline !important;
-        }
+    .resend-link:hover {
+        text-decoration: underline !important;
+    }
 
     .stage3-grid {
         display: flex;
@@ -344,14 +337,14 @@
         transition: border-color 0.2s ease;
     }
 
-        .avatar-circle-btn:hover {
-            border-color: #000;
-        }
+    .avatar-circle-btn:hover {
+        border-color: #000;
+    }
 
-        .avatar-circle-btn i {
-            font-size: 6rem;
-            color: #888888;
-        }
+    .avatar-circle-btn i {
+        font-size: 6rem;
+        color: #888888;
+    }
 
     .avatar-preview-img {
         width: 100%;
@@ -410,18 +403,18 @@
         transition: background-color 0.2s ease;
     }
 
-        .close-modal-icon-wrapper i {
-            color: #000000;
-            font-size: 1.1rem;
-        }
+    .close-modal-icon-wrapper i {
+        color: #000000;
+        font-size: 1.1rem;
+    }
 
-        .close-modal-icon-wrapper:hover {
-            background-color: #C92B0A;
-        }
+    .close-modal-icon-wrapper:hover {
+        background-color: #C92B0A;
+    }
 
-            .close-modal-icon-wrapper:hover i {
-                color: #ffffff;
-            }
+    .close-modal-icon-wrapper:hover i {
+        color: #ffffff;
+    }
 
     .crop-middle-panel {
         position: relative;
@@ -460,10 +453,10 @@
         margin-bottom: 0.4rem;
     }
 
-        .req-item.valid {
-            color: #198754 !important;
-            font-weight: 700;
-        }
+    .req-item.valid {
+        color: #198754 !important;
+        font-weight: 700;
+    }
 
     .req-icon {
         width: 18px;
@@ -489,40 +482,24 @@
         transition: all 0.2s ease;
     }
 
-        .req-tab-btn.active-req {
-            border-color: #000000;
-            background-color: #dee2e6;
-        }
+    .req-tab-btn.active-req {
+        border-color: #000000;
+        background-color: #dee2e6;
+    }
 
     .wave-dot {
         display: inline-block;
         animation: waveDots 1.2s infinite ease-in-out;
     }
 
-        .wave-dot:nth-child(1) {
-            animation-delay: 0s;
-        }
-
-        .wave-dot:nth-child(2) {
-            animation-delay: 0.15s;
-        }
-
-        .wave-dot:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-
-        .wave-dot:nth-child(4) {
-            animation-delay: 0.45s;
-        }
+    .wave-dot:nth-child(1) { animation-delay: 0s; }
+    .wave-dot:nth-child(2) { animation-delay: 0.15s; }
+    .wave-dot:nth-child(3) { animation-delay: 0.3s; }
+    .wave-dot:nth-child(4) { animation-delay: 0.45s; }
 
     @@keyframes waveDots {
-        0%, 100% {
-            transform: translateY(0);
-        }
-
-        50% {
-            transform: translateY(-5px);
-        }
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
     }
 </style>
 
@@ -532,10 +509,12 @@
             <h2 id="mainTitle" class="form-main-title m-0 fw-bold">Crear cuenta</h2>
         </div>
 
-        <form asp-controller="Account" asp-action="Register" method="post" id="registerForm" enctype="multipart/form-data" novalidate>
+        <form asp-controller="Account" asp-action="Register" method="post" id="registerForm" enctype="multipart/form-data" autocomplete="off" novalidate>
             @Html.AntiForgeryToken()
+            <input type="text" style="display:none" name="prevent_autofill_reg" autocomplete="username" />
+            <input type="password" style="display:none" name="prevent_autofill_reg_pass" autocomplete="current-password" />
+
             <div>
-                <!-- ETAPA 1 -->
                 <div id="etapa1">
                     <div class="mb-4">
                         <label class="custom-field-label">
@@ -546,10 +525,10 @@
                             <input type="hidden" id="hiddenIdDocumento" asp-for="IdDocumento" required />
                             <div class="group-selector-toggle" id="docSelectorToggle">
                                 <i class="fa-solid fa-chevron-down dropdown-arrow" id="docArrowIcon"></i>
-                                <span class="dropdown-text" id="docAcronymText">---</span>
+                                <span class="dropdown-text" id="docAcronymText">Seleccionar...</span>
                             </div>
                             <div class="group-divider"></div>
-                            <input asp-for="NumeroDocumento" class="group-inner-input" type="text" id="NumeroDocumento" autocomplete="off" placeholder="Ingresa el número de tu documento" required />
+                            <input asp-for="NumeroDocumento" class="group-inner-input" type="text" id="NumeroDocumento" autocomplete="off" data-lpignore="true" placeholder="Número de documento" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
                             <ul class="custom-dropdown-menu" id="docDropdownMenu">
                                 @if (ViewBag.TiposDocumento != null)
                                 {
@@ -568,7 +547,7 @@
                             Nombres
                             <span class="required-asterisk">*<span class="tooltip-text">Este campo es obligatorio</span></span>
                         </label>
-                        <input asp-for="Nombres" class="form-control custom-input" type="text" id="Nombres" placeholder="Ingresa tus nombres" required />
+                        <input asp-for="Nombres" class="form-control custom-input" type="text" id="Nombres" placeholder="Ingresa tus nombres" autocomplete="off" data-lpignore="true" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
                     </div>
 
                     <div class="mb-4">
@@ -576,7 +555,7 @@
                             Apellidos
                             <span class="required-asterisk">*<span class="tooltip-text">Este campo es obligatorio</span></span>
                         </label>
-                        <input asp-for="Apellidos" class="form-control custom-input" type="text" id="Apellidos" placeholder="Ingresa tus apellidos" required />
+                        <input asp-for="Apellidos" class="form-control custom-input" type="text" id="Apellidos" placeholder="Ingresa tus apellidos" autocomplete="off" data-lpignore="true" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
                     </div>
 
                     <div class="mb-4">
@@ -584,8 +563,8 @@
                             Sexo
                             <span class="required-asterisk">*<span class="tooltip-text">Este campo es obligatorio</span></span>
                         </label>
-                        <select asp-for="IdSexo" class="form-select custom-input" id="IdSexo" required>
-                            <option value="" disabled selected>Selecciona tu sexo</option>
+                        <select asp-for="IdSexo" class="form-select custom-input" id="IdSexo" autocomplete="off" required>
+                            <option value="" disabled selected>Seleccionar...</option>
                             @if (ViewBag.Sexos != null)
                             {
                                 foreach (var sexo in (IEnumerable<Llanteria.Models.Sexo>)ViewBag.Sexos)
@@ -608,7 +587,7 @@
                                 <span class="dropdown-text" id="phonePrefixText">+57</span>
                             </div>
                             <div class="group-divider"></div>
-                            <input asp-for="Telefono" class="group-inner-input" type="text" id="Telefono" autocomplete="off" placeholder="Ingresa tu número de teléfono" required />
+                            <input asp-for="Telefono" class="group-inner-input" type="text" id="Telefono" autocomplete="off" data-lpignore="true" placeholder="Número de teléfono" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
                             <ul class="custom-dropdown-menu" id="phoneDropdownMenu">
                                 <li class="custom-dropdown-item phone-item" data-prefijo="+57" data-nombre="Colombia">Colombia (+57)</li>
                                 <li class="custom-dropdown-item phone-item" data-prefijo="+1" data-nombre="Estados Unidos">Estados Unidos (+1)</li>
@@ -630,7 +609,7 @@
                             Correo electrónico
                             <span class="required-asterisk">*<span class="tooltip-text">Este campo es obligatorio</span></span>
                         </label>
-                        <input asp-for="Correo" class="form-control custom-input" type="email" id="emailInput" placeholder="Dirección de correo electrónico" required />
+                        <input asp-for="Correo" class="form-control custom-input" type="email" id="emailInput" placeholder="Dirección de correo electrónico" autocomplete="off" data-lpignore="true" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
                     </div>
 
                     <div id="generalErrorStage1" class="custom-error-text text-center mb-3"></div>
@@ -647,7 +626,6 @@
                     </div>
                 </div>
 
-                <!-- ETAPA 2 -->
                 <div id="etapa2" style="display: none;">
                     <p class="text-center text-muted mb-4" style="font-size: 0.95rem;">
                         Ingrese el código enviado a <br />
@@ -656,15 +634,14 @@
 
                     <div class="text-center">
                         <div class="otp-wrapper my-4" id="otpContainer">
-                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
-                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
                         </div>
 
-                        <!-- Contenedor alineado horizontalmente para el temporizador y el botón de reenvío -->
                         <div class="d-flex justify-content-between align-items-center my-4">
                             <div class="timer-container m-0">
                                 <span id="timerText">01:20</span>
@@ -686,7 +663,6 @@
                     </div>
                 </div>
 
-                <!-- ETAPA 3 -->
                 <div id="etapa3" style="display: none;">
                     <div class="stage3-grid mb-4">
                         <div class="avatar-upload-container">
@@ -706,7 +682,7 @@
                                     <span class="required-asterisk">*<span class="tooltip-text">Este campo es obligatorio</span></span>
                                 </label>
                                 <div class="input-wrapper">
-                                    <input type="text" id="usernameInput" name="Username" class="form-control custom-input" placeholder="Crea tu nombre de usuario" maxlength="50" autocomplete="off" required />
+                                    <input type="text" id="usernameInput" name="Username" class="form-control custom-input" placeholder="Nombre de usuario" maxlength="50" autocomplete="off" data-lpignore="true" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -716,7 +692,7 @@
                                 </label>
                                 <div class="input-wrapper">
                                     <button type="button" id="togglePass1" class="password-toggle-btn"><i id="eyeIcon1" class="fa-regular fa-eye-slash"></i></button>
-                                    <input type="password" id="pass1" name="Password" class="form-control custom-input custom-input-password" placeholder="Escriba una contraseña" oncopy="return false;" required />
+                                    <input type="password" id="pass1" name="Password" class="form-control custom-input custom-input-password" placeholder="Contraseña" autocomplete="new-password" data-lpignore="true" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -726,7 +702,7 @@
                                 </label>
                                 <div class="input-wrapper">
                                     <button type="button" id="togglePass2" class="password-toggle-btn"><i id="eyeIcon2" class="fa-regular fa-eye-slash"></i></button>
-                                    <input type="password" id="pass2" class="form-control custom-input custom-input-password" placeholder="Escriba nuevamente la contraseña" oncopy="return false;" onpaste="return false;" required />
+                                    <input type="password" id="pass2" class="form-control custom-input custom-input-password" placeholder="Confirmar contraseña" autocomplete="new-password" data-lpignore="true" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
                                 </div>
                             </div>
                         </div>
@@ -856,6 +832,16 @@
 
             const allowedEmailRegex = /^[a-zA-Z0-9._%+-]+@@(gmail|outlook|hotmail)\.[a-zA-Z]{2,}$/i;
 
+            function getAntiForgeToken() {
+                return document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+            }
+
+            document.querySelectorAll('input').forEach(inp => {
+                ['paste', 'copy', 'cut', 'drop'].forEach(ev => {
+                    inp.addEventListener(ev, e => e.preventDefault());
+                });
+            });
+
             btnTabUser.addEventListener('click', function () {
                 viewingUsernameReqs = true;
                 btnTabUser.classList.add('active-req');
@@ -885,11 +871,6 @@
                 `;
                 validarRequisitosEtapa3();
             });
-
-            if (docItems.length > 0) {
-                hiddenIdDoc.value = docItems[0].getAttribute('data-id');
-                docText.textContent = docItems[0].getAttribute('data-siglas');
-            }
 
             btnRegresarLogin.addEventListener('click', () => window.location.href = '@Url.Action("Login", "Account")');
 
@@ -939,7 +920,7 @@
                 const tieneDoc = hiddenIdDoc.value !== '' && docInput.value.trim() !== '';
                 const tieneNombres = nombresInput.value.trim() !== '';
                 const tieneApellidos = apellidosInput.value.trim() !== '';
-                const tieneSexo = sexoInput.value !== null && sexoInput.value !== '';
+                const tieneSexo = sexoInput.value !== '' && sexoInput.value !== null;
                 const tieneTel = telInput.value.trim() !== '';
                 const tieneEmail = emailInput.value.trim() !== '';
 
@@ -954,7 +935,9 @@
             [docInput, telInput, nombresInput, apellidosInput, emailInput, sexoInput].forEach(elem => {
                 elem.addEventListener('input', verificarEtapa1);
                 elem.addEventListener('change', verificarEtapa1);
+                elem.addEventListener('blur', verificarEtapa1);
             });
+            setTimeout(verificarEtapa1, 200);
 
             togglePass1.addEventListener('click', () => {
                 const isPass = pass1.type === 'password';
@@ -1037,7 +1020,6 @@
             if (pass1) pass1.addEventListener('input', validarRequisitosEtapa3);
             if (pass2) pass2.addEventListener('input', validarRequisitosEtapa3);
 
-            // --- LÓGICA COMPLETA DEL MODAL DE RECORTE Y FOTO ---
             btnSelectFoto.addEventListener('click', () => fileFotoInput.click());
 
             fileFotoInput.addEventListener('change', function (e) {
@@ -1078,7 +1060,6 @@
                 ctx.stroke();
             }
 
-            // Eventos de arrastre del canvas con Mouse
             cropCanvas.addEventListener('mousedown', (e) => {
                 isDragging = true;
                 startX = e.clientX - imgX;
@@ -1092,11 +1073,8 @@
                 drawCropCanvas();
             });
 
-            window.addEventListener('mouseup', () => {
-                isDragging = false;
-            });
+            window.addEventListener('mouseup', () => { isDragging = false; });
 
-            // Eventos de arrastre táctiles para móviles
             cropCanvas.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 1) {
                     isDragging = true;
@@ -1112,23 +1090,18 @@
                 drawCropCanvas();
             });
 
-            cropCanvas.addEventListener('touchend', () => {
-                isDragging = false;
-            });
+            cropCanvas.addEventListener('touchend', () => { isDragging = false; });
 
-            // Botón Cerrar Modal
             btnCloseCropModal.addEventListener('click', () => {
                 cropModalOverlay.style.display = 'none';
                 fileFotoInput.value = '';
             });
 
-            // Botón Cambiar Imagen
             btnCambiarImagen.addEventListener('click', () => {
                 cropModalOverlay.style.display = 'none';
                 fileFotoInput.click();
             });
 
-            // Botón Aceptar Imagen y recortar en Base64
             btnAceptarImagen.addEventListener('click', () => {
                 const tempCanvas = document.createElement('canvas');
                 tempCanvas.width = 200;
@@ -1154,7 +1127,6 @@
                 cropModalOverlay.style.display = 'none';
             });
 
-            // --- ENVÍO DE FORMULARIO ---
             registerForm.addEventListener('submit', async function(e) {
                 if (currentStep === 1) {
                     e.preventDefault();
@@ -1170,7 +1142,10 @@
                     try {
                         const response = await fetch('@Url.Action("EnviarCodigoOtp", "Account")', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': getAntiForgeToken()
+                            },
                             body: JSON.stringify({
                                 correo: emailInput.value.trim(),
                                 nombre: nombresInput.value.trim() + ' ' + apellidosInput.value.trim()
@@ -1208,16 +1183,18 @@
 
                     try {
                         const formData = new FormData(registerForm);
-
-                        // Concatenar el prefijo de país con el número telefónico
                         const telefonoCompleto = hiddenPrefijo.value + ' ' + telInput.value.trim();
                         formData.set('Telefono', telefonoCompleto);
 
                         const response = await fetch('@Url.Action("Register", "Account")', {
-                            method: 'POST',
-                            body: formData
-                        });
-                        const resData = await response.json();
+    method: 'POST',
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'RequestVerificationToken': getAntiForgeToken()
+    },
+    body: formData
+});
+const resData = await response.json();
 
                         if (resData.success) {
                             window.location.href = resData.redirectUrl;
@@ -1249,7 +1226,10 @@
                 try {
                     const response = await fetch('@Url.Action("VerificarToken", "Account")', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': getAntiForgeToken()
+                        },
                         body: JSON.stringify(token)
                     });
                     const resData = await response.json();
@@ -1283,8 +1263,12 @@
                     if (this.value !== '' && index < otpInputs.length - 1) otpInputs[index + 1].focus();
                     let t = '';
                     otpInputs.forEach(i => t += i.value);
-                    if (t.length === 6) btnVerificar.classList.remove('btn-muted');
-                    else btnVerificar.classList.add('btn-muted');
+                    if (t.length === 6) {
+                        btnVerificar.classList.remove('btn-muted');
+                        btnVerificar.click();
+                    } else {
+                        btnVerificar.classList.add('btn-muted');
+                    }
                 });
                 input.addEventListener('keydown', function(e) {
                     if (e.key === 'Backspace' && this.value === '' && index > 0) otpInputs[index - 1].focus();
@@ -1327,7 +1311,10 @@
                 try {
                     await fetch('@Url.Action("EnviarCodigoOtp", "Account")', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': getAntiForgeToken()
+                        },
                         body: JSON.stringify({
                             correo: emailInput.value.trim(),
                             nombre: nombresInput.value.trim() + ' ' + apellidosInput.value.trim()
@@ -1342,5 +1329,4 @@
             });
         });
     </script>
-    <script src="~/js/otp.js" asp-append-version="true"></script>
 }

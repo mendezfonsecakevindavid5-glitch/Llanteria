@@ -31,49 +31,69 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Llantería Valledupar</title>
+    <title>@ViewData["Title"] - Llantería Valledupar Admin</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <style>
+        :root {
+            --llanteria-primary: #C92B0A;
+            --llanteria-dark: #09090B;
+        }
+        body.admin {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F8F9FA;
+        }
+        .topbar .brand {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .topbar .brand span {
+            color: var(--llanteria-primary);
+        }
+    </style>
 </head>
 <body class="admin">
-    <header class="topbar">
-        <div class="d-flex align-items-center gap-2">
-            <button class="toggle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-label="Menú">
+    <header class="topbar bg-white shadow-sm py-3 px-4 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <button class="toggle d-lg-none btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-label="Menú">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <a asp-controller="Dashboard" asp-action="Index" class="brand">LLANTERÍA<span>VALLEDUPAR</span></a>
+            <a asp-controller="Dashboard" asp-action="Index" class="brand text-decoration-none text-dark fs-5">LLANTERÍA <span>VALLEDUPAR</span></a>
         </div>
         <div class="d-flex align-items-center gap-3">
-            <a asp-controller="User" asp-action="Perfil" class="user">
-                <span class="d-none d-md-block text-end">
-                    @nombre
-                    <small>@(isAdmin ? "Administrador" : "Empleado")</small>
+            <a asp-controller="User" asp-action="Perfil" class="user text-decoration-none text-dark d-flex align-items-center gap-2">
+                <span class="d-none d-md-block text-end lh-sm">
+                    <strong>@nombre</strong><br />
+                    <small class="text-muted">@(isAdmin ? "Administrador" : "Empleado")</small>
                 </span>
-                <span class="avatar-initial">@inicial</span>
+                <span class="avatar-initial rounded-circle bg-danger text-white d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">@inicial</span>
             </a>
-            <a asp-controller="Account" asp-action="Logout" class="btn-exit"><i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Salir</a>
+            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-dark btn-sm rounded-pill px-3"><i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Salir</a>
         </div>
     </header>
 
-    <div class="layout">
-        <aside class="sidebar collapse d-lg-block" id="sidebar">
+    <div class="layout d-flex">
+        <aside class="sidebar collapse d-lg-block bg-white border-end p-3" id="sidebar" style="width: 260px; min-height: calc(100vh - 70px);">
             @foreach (var g in items.Where(i => !i.AdminOnly || isAdmin).GroupBy(i => i.Group))
             {
-                <div class="sidebar-group">@g.Key</div>
+                <div class="sidebar-group text-uppercase text-muted fw-bold small mt-3 mb-2 px-2">@g.Key</div>
                 foreach (var i in g)
                 {
                     var activo = ctrl == i.C && (act == i.A || (i.A == "Index" && act != "GestionPuntos"));
-                    <a class="sidebar-link @(activo ? "active" : "")" asp-controller="@i.C" asp-action="@i.A">
-                        <i class="fa-solid @i.Icon"></i>@i.Text
+                    <a class="sidebar-link d-flex align-items-center gap-2 py-2 px-3 rounded-2 text-decoration-none @(activo ? "active bg-danger text-white fw-bold" : "text-dark")" asp-controller="@i.C" asp-action="@i.A">
+                        <i class="fa-solid @i.Icon" style="width: 20px;"></i>@i.Text
                     </a>
                 }
             }
-            <div class="sidebar-group">Sitio</div>
-            <a class="sidebar-link" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-globe"></i>Ver página web</a>
+            <div class="sidebar-group text-uppercase text-muted fw-bold small mt-4 mb-2 px-2">Sitio</div>
+            <a class="sidebar-link d-flex align-items-center gap-2 py-2 px-3 rounded-2 text-decoration-none text-dark" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-globe" style="width: 20px;"></i>Ver página web</a>
         </aside>
 
-        <main class="content">
+        <main class="content flex-grow-1 p-4">
             @RenderBody()
         </main>
     </div>

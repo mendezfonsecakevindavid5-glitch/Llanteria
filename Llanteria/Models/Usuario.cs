@@ -27,11 +27,11 @@ public partial class Usuario
     [Display(Name = "Contraseña")]
     public string PasswordHash { get; set; } = null!;
 
-    [Required(ErrorMessage = "Debe asociar un empleado.")]
     [Display(Name = "Empleado")]
     public int? IdEmpleado { get; set; }
-    [Range(1, int.MaxValue, ErrorMessage = "Selecciona un empleado.")]
-    public int IdEmpleado { get; set; }
+
+    [Display(Name = "Cliente")]
+    public int? IdCliente { get; set; }
 
     [Required(ErrorMessage = "El rol es obligatorio.")]
     [Display(Name = "Rol de Usuario")]
@@ -64,7 +64,11 @@ public partial class Usuario
 
     [ForeignKey("IdEmpleado")]
     [Display(Name = "Datos del Empleado")]
-    public virtual Empleado IdEmpleadoNavigation { get; set; } = null!;
+    public virtual Empleado? IdEmpleadoNavigation { get; set; }
+
+    [ForeignKey("IdCliente")]
+    [Display(Name = "Datos del Cliente")]
+    public virtual Cliente? IdClienteNavigation { get; set; }
 
     [ForeignKey("IdRol")]
     [Display(Name = "Rol Asignado")]

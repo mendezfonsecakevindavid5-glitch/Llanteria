@@ -16,7 +16,6 @@
             --llanteria-primary: #C92B0A;
             --llanteria-dark: #09090B;
             --llanteria-light: #FFFFFF;
-            --glass-nav-bg: rgba(201, 43, 10, 0.95);
         }
 
         html, body {
@@ -38,10 +37,17 @@
             left: 0;
             width: 100%;
             z-index: 1100;
-            background: var(--glass-nav-bg);
-            backdrop-filter: blur(16px);
+            background: transparent; /* Transparente por defecto */
+            backdrop-filter: blur(10px);
             padding: 1.25rem 0;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Cambia a color sólido al hacer scroll o al pasar el mouse por encima */
+        .michelin-nav-global.scrolled,
+        .michelin-nav-global:hover {
+            background: rgba(255, 255, 255, 0.98) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
         .brand-matrix {
@@ -49,49 +55,57 @@
             font-weight: 900;
             text-transform: uppercase;
             text-decoration: none;
-            cursor: pointer;
+            color: #FFFFFF !important;
+            font-size: 1.4rem;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+            transition: color 0.3s ease;
         }
 
-        .nav-matrix-link {
+        .michelin-nav-global.scrolled .brand-matrix,
+        .michelin-nav-global:hover .brand-matrix {
+            color: #000000 !important;
+            text-shadow: none;
+        }
+
+        .brand-matrix small {
+            color: var(--llanteria-primary) !important;
+        }
+
+        .navbar-nav .nav-link {
             color: #FFFFFF !important;
             font-weight: 600;
-            font-size: 1.05rem;
-            padding: 0.5rem 0.65rem !important;
-            cursor: pointer;
-            position: relative;
+            transition: color 0.2s ease;
+            text-decoration: none !important;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
         }
 
-        .nav-matrix-link:hover {
-            background-color: transparent !important;
+        .michelin-nav-global.scrolled .navbar-nav .nav-link,
+        .michelin-nav-global:hover .navbar-nav .nav-link {
+            color: #000000 !important;
+            text-shadow: none;
         }
 
-        .nav-matrix-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #FFFFFF;
-            transition: width 0.2s ease-out;
-        }
-
-        .nav-matrix-link:hover::after {
-            width: 100%;
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active:not([href$="#inicio"]) {
+            color: var(--llanteria-primary) !important;
         }
 
         .btn-matrix-action {
-            background: #000000 !important;
+            background: var(--llanteria-primary) !important;
             color: #FFFFFF !important;
-            border: 1px solid #000000 !important;
-            padding: 0.4rem 1.4rem;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
+            border: 1px solid var(--llanteria-primary) !important;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50rem;
+            font-weight: 700;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .btn-matrix-action:hover {
+            background: #000000 !important;
+            border-color: #000000 !important;
         }
 
         .main-matrix-container {
-            margin-top: 85px;
             flex: 1 0 auto;
             padding-bottom: 2rem;
         }
@@ -103,53 +117,40 @@
             color: var(--llanteria-light);
         }
 
-        .footer-heading {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: 1.4rem;
-            color: #FFFFFF;
-            margin-bottom: 1.2rem;
-        }
-
         .footer-links {
             padding: 0;
             list-style: none;
         }
 
-            .footer-links li {
-                margin-bottom: 0.8rem;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
+        .footer-links li {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
         @@media (min-width: 768px) {
             .footer-links li {
                 justify-content: flex-start;
             }
         }
-
-        .footer-links span {
-            color: #FFFFFF;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
     </style>
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body class="public">
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark site-nav">
+        <nav class="navbar navbar-expand-lg site-nav michelin-nav-global">
             <div class="container">
-                <a class="site-brand" asp-controller="Home" asp-action="Index">
-                    Llantería<small>Valledupar</small>
+                <a class="navbar-brand brand-matrix" asp-controller="Home" asp-action="Index">
+                    Llantería<small class="ms-1">Valledupar</small>
                 </a>
 
-                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-label="Menú">
+                <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-label="Menú">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarContent">
-                    <ul class="navbar-nav me-auto align-items-lg-center ms-lg-4">
+                    <ul class="navbar-nav me-auto align-items-lg-center ms-lg-4 gap-lg-3">
                         <li class="nav-item"><a class="nav-link" href="/#inicio">Inicio</a></li>
                         <li class="nav-item"><a class="nav-link" href="/#nosotros">Nosotros</a></li>
                         <li class="nav-item"><a class="nav-link" href="/#promociones">Promociones</a></li>
@@ -159,10 +160,10 @@
                     </ul>
 
                     <ul class="navbar-nav ms-auto align-items-center gap-3 mt-3 mt-lg-0">
-                        @if (!User.Identity.IsAuthenticated)
+                        @if (!User.Identity!.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="btn btn-matrix-action rounded-pill header-interactable" asp-controller="Account" asp-action="Login">
+                                <a class="btn btn-matrix-action header-interactable" asp-controller="Account" asp-action="Login">
                                     Iniciar sesión
                                 </a>
                             </li>
@@ -193,41 +194,51 @@
         </nav>
     </header>
 
-    <main role="main" class="site-main">
+    <main role="main" class="main-matrix-container">
         @RenderBody()
     </main>
 
-    <footer class="site-footer">
+    <footer class="matrix-footer py-4">
         <div class="container">
             <div class="row g-4 mb-3">
                 <div class="col-md-4">
-                    <h5>Llantería Valledupar</h5>
-                    <p class="small mb-0">Venta de llantas, aceites y servicios de mantenimiento automotriz.</p>
+                    <h5 class="text-white fw-bold">Llantería Valledupar</h5>
+                    <p class="small mb-0 text-white-50">Venta de llantas, aceites y servicios de mantenimiento automotriz.</p>
                 </div>
                 <div class="col-md-4">
-                    <h5>Contacto</h5>
-                    <ul>
-                        <li><i class="fa-solid fa-phone"></i><a href="tel:+573117723978" class="text-reset text-decoration-none">+57 311 772 3978</a></li>
-                        <li><i class="fa-solid fa-envelope"></i>superllantasmedellinsas@hotmail.com</li>
-                        <li><i class="fa-solid fa-location-dot"></i>Valledupar, Cesar</li>
+                    <h5 class="text-white fw-bold">Contacto</h5>
+                    <ul class="footer-links">
+                        <li><i class="fa-solid fa-phone me-2 text-danger"></i><a href="tel:+573117723978" class="text-reset text-decoration-none">+57 311 772 3978</a></li>
+                        <li><i class="fa-solid fa-envelope me-2 text-danger"></i>superllantasmedellinsas@hotmail.com</li>
+                        <li><i class="fa-solid fa-location-dot me-2 text-danger"></i>Valledupar, Cesar</li>
                     </ul>
                 </div>
                 <div class="col-md-4">
-                    <h5>Horario</h5>
-                    <ul>
-                        <li><i class="fa-solid fa-clock"></i>Lunes a viernes: 7:30 a.m. a 5:30 p.m.</li>
-                        <li><i class="fa-solid fa-clock"></i>Sábados: 8:00 a.m. a 4:00 p.m.</li>
+                    <h5 class="text-white fw-bold">Horario</h5>
+                    <ul class="footer-links">
+                        <li><i class="fa-solid fa-clock me-2 text-danger"></i><span class="text-white-50">Lunes a viernes: 7:30 a.m. a 5:30 p.m.</span></li>
+                        <li><i class="fa-solid fa-clock me-2 text-danger"></i><span class="text-white-50">Sábados: 8:00 a.m. a 4:00 p.m.</span></li>
                     </ul>
                 </div>
             </div>
-            <hr />
-            <p class="text-center small mb-0">&copy; @DateTime.Now.Year Llantería Valledupar. Todos los derechos reservados.</p>
+            <hr class="border-secondary" />
+            <p class="text-center small mb-0 text-white-50">&copy; @DateTime.Now.Year Llantería Valledupar. Todos los derechos reservados.</p>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        window.addEventListener('scroll', function () {
+            const nav = document.querySelector('.michelin-nav-global');
+            if (window.scrollY > 40) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+    </script>
     <partial name="_Alertas" />
     @await RenderSectionAsync("Scripts", required: false)
 </body>
