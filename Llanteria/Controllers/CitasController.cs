@@ -152,13 +152,25 @@ public class CitasController : Controller
     [Authorize(Roles = RolesPersonal)]
     public IActionResult Exportar(string? estado, string? buscar)
     {
-        var filas = Filtrar(estado, buscar).OrderBy(c => c.Fecha).ThenBy(c => c.Hora).ToList()
-            .Select(c => new string?[]
+        var lista = Filtrar(estado, buscar).OrderBy(c => c.Fecha).ThenBy(c => c.Hora).ToList();
+        var filtros = new List<string>();
+        if (!string.IsNullOrWhiteSpace(estado)) filtros.Add($"estado {estado}");
+        if (!string.IsNullOrWhiteSpace(buscar)) filtros.Add($"búsqueda \"{buscar.Trim()}\"");
+        return this.ExcelArchivo("citas", new TablaHoja
+        {
+            Nombre = "Citas",
+            Titulo = "Agenda de citas",
+            Subtitulo = filtros.Count == 0 ? "Todas las citas" : "Filtro: " + string.Join(" · ", filtros),
+            Columnas =
             {
-                c.Fecha.ToString("dd/MM/yyyy"), c.Hora, c.Servicio, c.Solicitante, c.Telefono, c.Vehiculo,
-                c.Direccion, c.FormaPago, c.Estado, c.Notas
-            });
-        return Csv.Archivo("citas", new[] { "Fecha", "Hora", "Servicio", "Solicitante", "Teléfono", "Vehículo", "Dirección", "Forma de pago", "Estado", "Notas" }, filas);
+                new("Fecha", TipoCol.Fecha), new("Hora"), new("Servicio"), new("Solicitante"), new("Teléfono"), new("Vehículo"),
+                new("Dirección"), new("Forma de pago"), new("Estado"), new("Notas")
+            },
+            Filas = lista.Select(c => new object?[]
+            {
+                c.Fecha, c.Hora, c.Servicio, c.Solicitante, c.Telefono, c.Vehiculo, c.Direccion, c.FormaPago, c.Estado, c.Notas
+            }).ToList()
+        });
     }
 
     private IQueryable<Cita> Filtrar(string? estado, string? buscar)

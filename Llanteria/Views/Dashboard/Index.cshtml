@@ -158,24 +158,66 @@
         </div>
         <div class="col-lg-6">
             <div class="panel h-100">
-                <div class="panel-head"><span>Reportes en PDF</span></div>
+                <div class="panel-head"><span>Reportes y exportaciones</span></div>
                 <div class="panel-body">
-                    <form asp-controller="Reporte" asp-action="GenerarGeneral" method="get" class="row g-2 align-items-end mb-3">
-                        <div class="col-sm-5">
+                    <div class="row g-2 mb-3">
+                        <div class="col-sm-6">
                             <label class="form-label" for="fechaInicio">Desde</label>
-                            <input id="fechaInicio" name="fechaInicio" type="date" class="form-control" value="@(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString("yyyy-MM-dd"))" />
+                            <input id="fechaInicio" type="date" class="form-control" value="@(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString("yyyy-MM-dd"))" />
                         </div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-6">
                             <label class="form-label" for="fechaFin">Hasta</label>
-                            <input id="fechaFin" name="fechaFin" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                            <input id="fechaFin" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
                         </div>
-                        <div class="col-sm-2"><button class="btn btn-brand w-100">General</button></div>
-                    </form>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <a asp-controller="Reporte" asp-action="GenerarIndividual" asp-route-tipo="Factura" class="btn btn-line btn-sm">Ventas</a>
-                        <a asp-controller="Reporte" asp-action="GenerarIndividual" asp-route-tipo="Gasto" class="btn btn-line btn-sm">Gastos</a>
-                        <a asp-controller="Reporte" asp-action="GenerarIndividual" asp-route-tipo="Inventario" class="btn btn-line btn-sm">Inventario</a>
                     </div>
+                    <table class="data-table">
+                        <thead><tr><th>Reporte</th><th class="text-end">Descargar</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td><div class="cell-title">General de ingresos y egresos</div><div class="cell-sub">Estado de resultados, flujo, categorías y detalle</div></td>
+                                <td class="text-end text-nowrap">
+                                    <a data-reporte download href="@Url.Action("GenerarGeneral", "Reporte")" class="btn btn-brand btn-sm"><i class="fa-solid fa-file-pdf me-1"></i>PDF</a>
+                                    <a data-reporte download href="@Url.Action("ExcelGeneral", "Reporte")" class="btn btn-line btn-sm"><i class="fa-solid fa-file-excel me-1"></i>Excel</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><div class="cell-title">Ventas</div><div class="cell-sub">Facturas, IVA, retenciones y mejores clientes</div></td>
+                                <td class="text-end text-nowrap">
+                                    <a data-reporte download href="@Url.Action("GenerarIndividual", "Reporte", new { tipo = "Factura" })" class="btn btn-brand btn-sm"><i class="fa-solid fa-file-pdf me-1"></i>PDF</a>
+                                    <a data-reporte download href="@Url.Action("ExcelIndividual", "Reporte", new { tipo = "Factura" })" class="btn btn-line btn-sm"><i class="fa-solid fa-file-excel me-1"></i>Excel</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><div class="cell-title">Gastos y egresos</div><div class="cell-sub">Por categoría, pagados, pendientes y vencidos</div></td>
+                                <td class="text-end text-nowrap">
+                                    <a data-reporte download href="@Url.Action("GenerarIndividual", "Reporte", new { tipo = "Gasto" })" class="btn btn-brand btn-sm"><i class="fa-solid fa-file-pdf me-1"></i>PDF</a>
+                                    <a data-reporte download href="@Url.Action("ExcelIndividual", "Reporte", new { tipo = "Gasto" })" class="btn btn-line btn-sm"><i class="fa-solid fa-file-excel me-1"></i>Excel</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><div class="cell-title">Inventario</div><div class="cell-sub">Existencias por bodega, alertas y valorización (al día de hoy)</div></td>
+                                <td class="text-end text-nowrap">
+                                    <a download href="@Url.Action("GenerarIndividual", "Reporte", new { tipo = "Inventario" })" class="btn btn-brand btn-sm"><i class="fa-solid fa-file-pdf me-1"></i>PDF</a>
+                                    <a download href="@Url.Action("ExcelIndividual", "Reporte", new { tipo = "Inventario" })" class="btn btn-line btn-sm"><i class="fa-solid fa-file-excel me-1"></i>Excel</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <script>
+                        // Los reportes con periodo toman las fechas elegidas arriba.
+                        (function () {
+                            var desde = document.getElementById('fechaInicio'), hasta = document.getElementById('fechaFin');
+                            document.querySelectorAll('[data-reporte]').forEach(function (a) {
+                                a.addEventListener('click', function (e) {
+                                    if (!desde.value || !hasta.value) { e.preventDefault(); desde.focus(); return; }
+                                    var u = new URL(a.getAttribute('href'), window.location.origin);
+                                    u.searchParams.set('fechaInicio', desde.value);
+                                    u.searchParams.set('fechaFin', hasta.value);
+                                    a.setAttribute('href', u.pathname + u.search);
+                                });
+                            });
+                        })();
+                    </script>
                 </div>
             </div>
         </div>

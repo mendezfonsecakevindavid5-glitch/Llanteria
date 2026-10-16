@@ -1,0 +1,116 @@
+@using Llanteria.Infrastructure
+@model ResumenCompra
+@{
+    ViewData["Title"] = "Carrito";
+}
+
+<section class="cat-hero">
+    <div class="container">
+        <nav class="cat-crumbs" aria-label="Ruta"><a asp-controller="Home" asp-action="Index">Inicio</a><span>/</span>Carrito</nav>
+        <h1>Tu carrito</h1>
+        <p>Revisa tus productos antes de pagar.</p>
+    </div>
+</section>
+
+<div class="container tc-wrap">
+    @if (!Model.Lineas.Any())
+    {
+        <div class="tc-panel text-center py-5 px-3">
+            <i class="fa-solid fa-cart-shopping fa-2x text-muted mb-3"></i>
+            <h2 class="h5 fw-bold">Tu carrito está vacío</h2>
+            <p class="text-muted">Agrega llantas, baterías o lubricantes desde el catálogo.</p>
+            <div class="d-flex gap-2 justify-content-center flex-wrap">
+                <a asp-controller="Llantas" asp-action="Index" class="btn btn-hyper-action">Ver llantas</a>
+                <a asp-controller="Baterias" asp-action="Index" class="btn btn-outline-llanteria-primary">Ver baterías</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="tc-panel">
+                    <div class="tc-panel-head justify-content-between">
+                        <span>@Model.Unidades @(Model.Unidades == 1 ? "producto" : "productos")</span>
+                        <form asp-action="Vaciar" method="post" class="m-0"><button class="tc-link">Vaciar carrito</button></form>
+                    </div>
+                    @foreach (var l in Model.Lineas)
+                    {
+                        <div class="tc-line">
+                            <img src="~/images/productoos/@l.Imagen" alt="@l.Nombre" />
+                            <div>
+                                @if (!string.IsNullOrEmpty(l.Marca)) { <div class="tc-line-meta text-uppercase">@l.Marca</div> }
+                                <h3 class="tc-line-name h6">@l.Nombre</h3>
+                                <div class="tc-line-meta">
+                                    @if (l.EnPromocion) { <s class="cat-old">@l.PrecioLista.ToString("C0")</s> }
+                                    @l.Precio.ToString("C0") c/u
+                                </div>
+                                <form asp-action="Actualizar" method="post" class="tc-qty">
+                                    <input type="hidden" name="id" value="@l.IdProducto" />
+                                    <label class="visually-hidden" for="cant-@l.IdProducto">Cantidad</label>
+                                    <input id="cant-@l.IdProducto" type="number" name="cantidad" value="@l.Cantidad" min="0" max="@Carrito.MaxPorLinea"
+                                           class="form-control form-control-sm" onchange="this.form.submit()" />
+                                    <noscript><button class="btn btn-line btn-sm">Actualizar</button></noscript>
+                                </form>
+                                @if (l.SinStock)
+                                {
+                                    <div class="tc-warn mt-1">Solo hay @(l.Disponible) disponible(s). Ajusta la cantidad.</div>
+                                }
+                            </div>
+                            <div class="tc-line-total">
+                                <div class="fw-bold">@l.Subtotal.ToString("C0")</div>
+                                <form asp-action="Quitar" method="post" class="mt-2">
+                                    <input type="hidden" name="id" value="@l.IdProducto" />
+                                    <button class="tc-link">Quitar</button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <a asp-controller="Llantas" asp-action="Index" class="small text-muted text-decoration-none d-inline-block mt-3"><i class="fa-solid fa-arrow-left me-1"></i>Seguir comprando</a>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="tc-panel tc-summary">
+                    <div class="tc-panel-head">Resumen</div>
+                    <div class="tc-panel-body">
+                        @if (Model.Cupon == null)
+                        {
+                            <form asp-action="Cupon" method="post" class="d-flex gap-2 mb-3">
+                                <input name="codigo" class="form-control form-control-sm text-uppercase" placeholder="Código de cupón" maxlength="20" />
+                                <button class="btn btn-line btn-sm">Aplicar</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="Cupon" method="post" class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="small"><i class="fa-solid fa-ticket text-llanteria-primary me-1"></i><strong>@Model.Cupon</strong> · @Model.TituloCupon</span>
+                                <button class="tc-link">Quitar</button>
+                            </form>
+                        }
+
+                        <div class="tc-row"><span>Subtotal</span><span>@Model.Subtotal.ToString("C0")</span></div>
+                        @if (Model.Descuento > 0)
+                        {
+                            <div class="tc-row desc"><span>Descuento</span><span>− @Model.Descuento.ToString("C0")</span></div>
+                        }
+                        <div class="tc-row muted"><span>Base gravable</span><span>@Model.BaseGravable.ToString("C0")</span></div>
+                        <div class="tc-row muted"><span>IVA (@((ResumenCompra.TasaIva * 100).ToString("0")) %, incluido)</span><span>@Model.Iva.ToString("C0")</span></div>
+                        <div class="tc-row muted"><span>Envío</span><span>Se confirma según destino</span></div>
+                        <div class="tc-row total"><span>Total</span><span>@Model.Total.ToString("C0")</span></div>
+
+                        @if (Model.HayProblemas)
+                        {
+                            <button class="btn btn-hyper-action w-100 mt-3" disabled>Ajusta las cantidades</button>
+                        }
+                        else
+                        {
+                            <a asp-controller="Pedidos" asp-action="Checkout" class="btn btn-hyper-action w-100 mt-3">Continuar con la compra</a>
+                        }
+                        <p class="small text-muted mt-3 mb-0"><i class="fa-solid fa-lock me-1"></i>Pagas en efectivo o por transferencia. No pedimos datos de tarjeta en este sitio.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

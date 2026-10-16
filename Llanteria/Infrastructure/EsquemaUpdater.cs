@@ -7,7 +7,6 @@ namespace Llanteria.Infrastructure;
 /// El proyecto crea la base con EnsureCreated, que NO modifica una base que ya existe.
 /// Este paso agrega, de forma idempotente, lo que se añadió después de la primera versión
 /// (si la base es nueva, EnsureCreated ya lo creó y esto no hace nada).
-/// Si prefieres migraciones de EF, mira la sección correspondiente en LEEME_CAMBIOS.md.
 /// </summary>
 public static class EsquemaUpdater
 {
@@ -67,10 +66,61 @@ BEGIN
     CREATE UNIQUE INDEX IX_Resenias_IdCliente ON dbo.Resenias(IdCliente);
 END;
 
+IF OBJECT_ID(N'dbo.Pedidos', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Pedidos (
+        Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_Pedidos PRIMARY KEY,
+        Numero nvarchar(20) NOT NULL,
+        Token nvarchar(32) NOT NULL,
+        IdCliente int NULL,
+        Nombres nvarchar(60) NOT NULL,
+        Apellidos nvarchar(60) NOT NULL,
+        TipoDocumento nvarchar(10) NOT NULL,
+        NumeroDocumento nvarchar(20) NOT NULL,
+        Correo nvarchar(100) NOT NULL,
+        Telefono nvarchar(25) NOT NULL,
+        Pais nvarchar(40) NOT NULL,
+        Departamento nvarchar(60) NOT NULL,
+        Ciudad nvarchar(60) NOT NULL,
+        Direccion nvarchar(200) NOT NULL,
+        Complemento nvarchar(100) NULL,
+        CodigoPostal nvarchar(12) NOT NULL,
+        Notas nvarchar(400) NULL,
+        MetodoPago nvarchar(20) NOT NULL,
+        Estado nvarchar(20) NOT NULL CONSTRAINT DF_Pedidos_Estado DEFAULT ('Pendiente'),
+        CodigoCupon nvarchar(20) NULL,
+        Subtotal decimal(18,2) NOT NULL,
+        Descuento decimal(18,2) NOT NULL,
+        BaseGravable decimal(18,2) NOT NULL,
+        Iva decimal(18,2) NOT NULL,
+        Envio decimal(18,2) NOT NULL,
+        Total decimal(18,2) NOT NULL,
+        Fecha datetime NOT NULL
+    );
+    CREATE UNIQUE INDEX IX_Pedidos_Token ON dbo.Pedidos(Token);
+END;
+
+IF OBJECT_ID(N'dbo.PedidoItems', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.PedidoItems (
+        Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_PedidoItems PRIMARY KEY,
+        IdPedido int NOT NULL CONSTRAINT FK_PedidoItems_Pedidos REFERENCES dbo.Pedidos(Id) ON DELETE CASCADE,
+        IdProducto int NULL,
+        Descripcion nvarchar(260) NOT NULL,
+        Cantidad int NOT NULL,
+        ValorUnitario decimal(18,2) NOT NULL,
+        Subtotal decimal(18,2) NOT NULL
+    );
+    CREATE INDEX IX_PedidoItems_IdPedido ON dbo.PedidoItems(IdPedido);
+END;
+
 IF COL_LENGTH('dbo.Citas', 'RecordatorioEnviado') IS NULL
     ALTER TABLE dbo.Citas ADD RecordatorioEnviado bit NOT NULL CONSTRAINT DF_Citas_Recordatorio DEFAULT (0);
 
 IF COL_LENGTH('dbo.Clientes', 'PasswordHash') IS NULL
-    ALTER TABLE dbo.Clientes ADD PasswordHash nvarchar(200) NULL;");
+    ALTER TABLE dbo.Clientes ADD PasswordHash nvarchar(200) NULL;
+
+IF COL_LENGTH('dbo.Productos', 'PrecioPromocion') IS NULL
+    ALTER TABLE dbo.Productos ADD PrecioPromocion decimal(14,2) NULL;");
     }
 }

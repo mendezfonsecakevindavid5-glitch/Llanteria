@@ -39,12 +39,10 @@ public class InventarioController : Controller
     {
         var todos = _db.Inventarios.AsNoTracking()
             .Include(i => i.IdProductoNavigation).Include(i => i.IdBodegaNavigation).Include(i => i.IdEstadoNavigation).ToList();
-        var filas = Aplicar(todos, buscar, filtro).Select(i => new string?[]
-        {
-            i.IdProductoNavigation?.Nombre, i.Codigo, i.IdBodegaNavigation?.NombreBodega, i.IdEstadoNavigation?.Nombre,
-            (i.StockActual ?? 0).ToString(), (i.StockMinimo ?? 0).ToString(), i.FechaIngreso?.ToString("dd/MM/yyyy")
-        });
-        return Csv.Archivo("existencias", new[] { "Producto", "Código", "Bodega", "Estado", "Stock", "Mínimo", "Ingreso" }, filas);
+        var partes = new List<string> { $"Corte al {DateTime.Now:dd/MM/yyyy HH:mm}" };
+        if (filtro == "bajo") partes.Add("solo stock bajo");
+        if (!string.IsNullOrWhiteSpace(buscar)) partes.Add($"búsqueda \"{buscar.Trim()}\"");
+        return this.ExcelArchivo("inventario", ReporteController.HojaInventario(Aplicar(todos, buscar, filtro), string.Join(" · ", partes)));
     }
 
     private static List<Inventario> Aplicar(IEnumerable<Inventario> lista, string? buscar, string? filtro)

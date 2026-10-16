@@ -33,12 +33,22 @@ public class ClienteController : Controller
 
     public IActionResult Exportar(string? buscar)
     {
-        var filas = Filtrar(buscar).ToList().Select(c => new string?[]
+        var lista = Filtrar(buscar).ToList();
+        return this.ExcelArchivo("clientes", new TablaHoja
         {
-            $"{c.Nombres} {c.Apellidos}".Trim(), c.IdDocumentoNavigation?.SiglasPresentacion, c.NumeroDocumento,
-            c.Telefono, c.Correo, c.PuntosAcumulados.ToString()
+            Nombre = "Clientes",
+            Titulo = "Listado de clientes",
+            Subtitulo = string.IsNullOrWhiteSpace(buscar) ? "Todos los clientes" : $"Filtro: \"{buscar.Trim()}\"",
+            Columnas =
+            {
+                new("Cliente"), new("Tipo doc."), new("Documento"), new("Teléfono"), new("Correo"), new("Puntos", TipoCol.Entero, true)
+            },
+            Filas = lista.Select(c => new object?[]
+            {
+                $"{c.Nombres} {c.Apellidos}".Trim(), c.IdDocumentoNavigation?.SiglasPresentacion, c.NumeroDocumento,
+                c.Telefono, c.Correo, c.PuntosAcumulados
+            }).ToList()
         });
-        return Csv.Archivo("clientes", new[] { "Cliente", "Tipo doc.", "Documento", "Teléfono", "Correo", "Puntos" }, filas);
     }
 
     private IQueryable<Cliente> Filtrar(string? buscar)

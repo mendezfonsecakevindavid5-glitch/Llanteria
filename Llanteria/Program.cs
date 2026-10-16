@@ -1,4 +1,4 @@
- using Llanteria.Data;
+using Llanteria.Data;
 using Llanteria.Infrastructure;
 using Llanteria.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -24,7 +24,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddControllersWithViews(options =>
 {
     // Las propiedades de navegación (IdClienteNavigation, etc.) no vienen del formulario.
-    // Sin esto, ModelState.IsValid era siempre falso en Cliente, Factura, Vehículo, Usuario...
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
     options.ModelBinderProviders.Insert(0, new InvariantDecimalModelBinderProvider());
     options.Conventions.Add(new RoleConvention());
@@ -34,7 +33,7 @@ builder.Services.AddControllersWithViews(options =>
 var cadenaConexion = builder.Configuration.GetConnectionString("Con");
 if (string.IsNullOrWhiteSpace(cadenaConexion))
     throw new InvalidOperationException(
-        "Falta la cadena de conexión \"ConnectionStrings:Con\". Agrégala en appsettings.json (o en User Secrets); mira appsettings.EJEMPLO.json.");
+        "Falta la cadena de conexión \"ConnectionStrings:Con\". Agrégala en appsettings.json (o en User Secrets).");
 
 builder.Services.AddDbContext<LlanteriaDbContext>(options => options.UseSqlServer(cadenaConexion));
 
@@ -54,19 +53,17 @@ builder.Services.AddScoped<MarcaService>();
 builder.Services.AddScoped<BodegaService>();
 builder.Services.AddScoped<TipoServicioService>();
 builder.Services.AddScoped<CatalogoIncentivoService>();
-builder.Services.AddTransient<EmailService>();
-builder.Services.AddScoped<Llanteria.Services.IPerfilService, Llanteria.Services.PerfilService>();
+builder.Services.AddScoped<IPerfilService, PerfilService>();
 builder.Services.AddScoped<PaisService>();
 builder.Services.AddScoped<CredentialGenerationService>();
 
-Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath);
-
-
-Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath);
+// Cada servicio se registra una sola vez (antes EmailService y IPerfilService estaban duplicados).
 builder.Services.AddSingleton<EmailService>();
 builder.Services.AddSingleton(builder.Configuration.GetSection("Negocio").Get<NegocioInfo>() ?? new NegocioInfo());
+builder.Services.AddSingleton(builder.Configuration.GetSection("Pagos").Get<PagoInfo>() ?? new PagoInfo());
 builder.Services.AddHostedService<RecordatorioCitasService>();
-builder.Services.AddScoped<IPerfilService, PerfilService>();
+
+Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath);
 
 builder.Services.AddSession(options =>
 {
@@ -74,8 +71,6 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
-
-Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath);
 
 var app = builder.Build();
 
@@ -102,12 +97,11 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles(); // también sirve los archivos subidos en tiempo de ejecución (productos, logos, soportes)
 app.UseRouting();
 app.UseSession();
-app.UseAuthentication();   // Faltaba: sin esto User.Identity nunca estaba autenticado
+app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseStaticFiles(); // sirve también los archivos subidos en tiempo de ejecución (productos, logos, soportes)
 app.MapStaticAssets();
 
 app.MapControllerRoute(

@@ -1,9 +1,6 @@
-@model IEnumerable<Llanteria.Models.Producto>
-
 @{
     ViewData["Title"] = "Inicio";
-    var productos = Model?.ToList() ?? new List<Llanteria.Models.Producto>();
-    var marcas = (List<Llanteria.Models.MarcaVitrina>)ViewBag.Marcas;
+    var logos = (List<Llanteria.Models.MarcaVitrina>)ViewBag.Logos;
 }
 
 <style>
@@ -18,11 +15,7 @@
         margin-top: -85px; /* Compensa el header flotante transparente */
         padding-top: 140px;
     }
-
-    .banner-content-box {
-        max-width: 750px;
-    }
-
+    .banner-content-box { max-width: 750px; }
     .btn-banner-explorar {
         background-color: #000000 !important;
         color: #FFFFFF !important;
@@ -34,7 +27,6 @@
         text-decoration: none;
         display: inline-block;
     }
-
     .btn-banner-explorar:hover {
         background-color: var(--llanteria-primary) !important;
         border-color: var(--llanteria-primary) !important;
@@ -42,173 +34,58 @@
     }
 </style>
 
-<!-- Banner Principal -->
+<!-- Banner principal -->
 <section class="banner-hero-matrix">
     <div class="container">
         <div class="banner-content-box">
             <span class="eyebrow text-white-50">Valledupar, Cesar</span>
             <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -0.5px; text-shadow: 2px 2px 8px rgba(0,0,0,0.7);">Explora y encuentra la llanta que deseas</h1>
             <p class="lead mb-4 text-white-75" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">Llantas, aceites y el mejor mantenimiento automotriz para tu vehículo en Valledupar.</p>
-            <a href="#productos" class="btn btn-banner-explorar">Explorar</a>
+            <a asp-controller="Llantas" asp-action="Index" class="btn btn-banner-explorar">Explorar</a>
         </div>
     </div>
 </section>
 
-<!-- Panel de Búsqueda -->
+<!-- Buscador por medida: lleva al catálogo con los filtros ya aplicados -->
 <div class="container search-wrap mt-4">
-    <div class="search-matrix-panel p-4 bg-dark rounded-4 shadow">
+    <form method="get" asp-controller="Llantas" asp-action="Index" class="search-matrix-panel p-4 bg-dark rounded-4 shadow">
         <h2 class="h6 text-white text-uppercase mb-3" style="letter-spacing:.8px">Buscar llantas por medida</h2>
         <div class="row g-3">
             <div class="col-md-3">
                 <label class="small text-white-50" for="anchoSelect">Ancho</label>
-                <select id="anchoSelect" class="form-select">
+                <select id="anchoSelect" name="ancho" class="form-select">
                     <option value="">Todos</option>
-                    @if (ViewBag.Anchos != null)
-                    {
-                        foreach (var a in (List<string>)ViewBag.Anchos) { <option value="@a">@a</option> }
-                    }
+                    @foreach (var a in (List<string>)ViewBag.Anchos) { <option value="@a">@a</option> }
                 </select>
             </div>
             <div class="col-md-3">
                 <label class="small text-white-50" for="perfilSelect">Perfil</label>
-                <select id="perfilSelect" class="form-select">
+                <select id="perfilSelect" name="perfil" class="form-select">
                     <option value="">Todos</option>
-                    @if (ViewBag.Perfiles != null)
-                    {
-                        foreach (var p in (List<string>)ViewBag.Perfiles) { <option value="@p">@p</option> }
-                    }
+                    @foreach (var p in (List<string>)ViewBag.Perfiles) { <option value="@p">@p</option> }
                 </select>
             </div>
             <div class="col-md-3">
                 <label class="small text-white-50" for="diametroSelect">Rin</label>
-                <select id="diametroSelect" class="form-select">
+                <select id="diametroSelect" name="diametro" class="form-select">
                     <option value="">Todos</option>
-                    @if (ViewBag.Diametros != null)
-                    {
-                        foreach (var d in (List<string>)ViewBag.Diametros) { <option value="@d">@d</option> }
-                    }
+                    @foreach (var d in (List<string>)ViewBag.Diametros) { <option value="@d">@d</option> }
                 </select>
             </div>
             <div class="col-md-3 d-flex align-items-end">
-                <button type="button" id="btnBuscarLlantas" class="btn btn-danger w-100 py-2 fw-bold" style="background-color: var(--llanteria-primary); border:none;">Buscar</button>
+                <button type="submit" class="btn w-100 py-2 fw-bold text-white" style="background-color: var(--llanteria-primary); border:none;">Buscar</button>
             </div>
         </div>
         <div class="mt-3 small text-white-50">Ejemplo: una llanta 205/55 R16 se busca con ancho 205, perfil 55 y rin 16.</div>
-    </div>
+    </form>
 </div>
 
-<!-- Resultados de Búsqueda -->
-<section id="resultadosBusqueda" class="section pb-0 d-none">
-    <div class="container">
-        <h2 class="section-title mb-3">Resultados de la búsqueda</h2>
-        <div class="row g-3" id="contenedorTarjetas"></div>
-    </div>
-</section>
-
-@if (marcas != null && marcas.Any())
-{
-    <partial name="_Marcas" model="marcas" />
-}
-<partial name="_Resenias" />
-<partial name="_Nosotros" />
+<partial name="_Marcas" model="logos" />
+<partial name="_Categorias" />
 <partial name="_Servicios" />
-<partial name="_Promociones" />
-
-<!-- Catálogo de Productos -->
-<section id="productos" class="section py-5">
-    <div class="container">
-        <div class="mb-4">
-            <span class="eyebrow text-danger fw-bold">Catálogo</span>
-            <h2 class="section-title mt-1 fw-bold">Productos disponibles</h2>
-        </div>
-
-        <div class="d-flex gap-2 mb-4 flex-wrap">
-            <button type="button" class="btn btn-outline-dark filter-btn active" data-filter="todos">Todos</button>
-            <button type="button" class="btn btn-outline-dark filter-btn" data-filter="Llantas">Llantas</button>
-            <button type="button" class="btn btn-outline-dark filter-btn" data-filter="Aceites">Aceites</button>
-        </div>
-
-        <div class="row g-3" id="gridCatalogoProductos">
-            @foreach (var p in productos)
-            {
-                var categoria = string.IsNullOrEmpty(p.Categoria) ? "Llantas" : p.Categoria;
-                var d = p.DetalleProducto;
-                <div class="col-sm-6 col-lg-4 item-producto" data-categoria="@categoria">
-                    <div class="premium-product-card h-100 d-flex flex-column border rounded-3 p-3 bg-white shadow-sm">
-                        <img class="product-img img-fluid mb-3 rounded" src="~/images/productoos/@(string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen)" alt="@p.Nombre" loading="lazy" style="height: 200px; object-fit: contain;" />
-                        <div class="d-flex flex-column flex-grow-1">
-                            <span class="small text-muted text-uppercase">@categoria</span>
-                            <h3 class="h6 fw-bold mb-1">@p.Nombre</h3>
-                            @if (d != null && !string.IsNullOrEmpty(d.Ancho) && !string.IsNullOrEmpty(d.Perfil) && !string.IsNullOrEmpty(d.Diametro))
-                            {
-                                <div class="small text-muted">Medida: @d.Ancho/@d.Perfil R@(d.Diametro)</div>
-                            }
-                            else if (d != null && !string.IsNullOrEmpty(d.Viscosidad))
-                            {
-                                <div class="small text-muted">Viscosidad: @d.Viscosidad @d.TipoAceite</div>
-                            }
-                            <div class="fs-5 fw-bold text-danger mt-2 mb-3">@p.PrecioVenta.ToString("C0")</div>
-                            <a asp-controller="Contacto" asp-action="Index" class="btn btn-danger btn-sm mt-auto fw-bold" style="background-color: var(--llanteria-primary); border:none;">Cotizar</a>
-                        </div>
-                    </div>
-                </div>
-            }
-            @if (!productos.Any())
-            {
-                <div class="col-12 text-center text-muted py-5">Pronto publicaremos nuestro catálogo.</div>
-            }
-        </div>
-    </div>
-</section>
+<partial name="_Nosotros" />
+<partial name="_Resenias" />
 
 @section Scripts {
-    <script>
-        document.querySelectorAll('.filter-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'btn-dark'));
-                btn.classList.add('active', 'btn-dark');
-                const f = btn.dataset.filter;
-                document.querySelectorAll('.item-producto').forEach(function (el) {
-                    el.style.display = (f === 'todos' || el.dataset.categoria === f) ? '' : 'none';
-                });
-            });
-        });
-
-        function esc(t) {
-            const d = document.createElement('div');
-            d.textContent = t == null ? '' : String(t);
-            return d.innerHTML;
-        }
-
-        document.getElementById('btnBuscarLlantas')?.addEventListener('click', async function () {
-            const ancho = document.getElementById('anchoSelect').value;
-            const perfil = document.getElementById('perfilSelect').value;
-            const diametro = document.getElementById('diametroSelect').value;
-            if (!ancho && !perfil && !diametro) {
-                Swal.fire({ icon: 'info', title: 'Elige una medida', text: 'Selecciona al menos un valor para buscar.', confirmButtonColor: '#C92B0A' });
-                return;
-            }
-
-            const url = '@Url.Action("BuscarLlantas", "Home")' + '?ancho=' + encodeURIComponent(ancho) +
-                '&perfil=' + encodeURIComponent(perfil) + '&diametro=' + encodeURIComponent(diametro);
-            const contenedor = document.getElementById('contenedorTarjetas');
-            try {
-                const r = await fetch(url);
-                if (!r.ok) throw new Error(r.status);
-                const lista = await r.json();
-                contenedor.innerHTML = lista.length ? lista.map(function (l) {
-                    return '<div class="col-sm-6 col-lg-4"><div class="premium-product-card h-100 d-flex flex-column border rounded-3 p-3 bg-white shadow-sm">' +
-                        '<img class="product-img img-fluid mb-3 rounded" src="' + esc(l.img) + '" alt="" style="height: 200px; object-fit: contain;">' +
-                        '<div class="d-flex flex-column flex-grow-1"><h3 class="h6 fw-bold">' + esc(l.nombre) + '</h3>' +
-                        '<div class="fs-5 fw-bold text-danger mb-3">' + esc(l.precio) + '</div>' +
-                        '<a href="@Url.Action("Index", "Contacto")" class="btn btn-danger btn-sm mt-auto fw-bold" style="background-color: var(--llanteria-primary); border:none;">Cotizar</a></div></div></div>';
-                }).join('') : '<div class="col-12 text-muted">No encontramos llantas con esa medida. Escríbenos y las conseguimos.</div>';
-                const seccion = document.getElementById('resultadosBusqueda');
-                seccion.classList.remove('d-none');
-                seccion.scrollIntoView({ behavior: 'smooth' });
-            } catch (e) {
-                Swal.fire({ icon: 'error', title: 'No se pudo buscar', text: 'Inténtalo de nuevo en un momento.', confirmButtonColor: '#212529' });
-            }
-        });
-    </script>
+    <script src="~/js/tienda.js" asp-append-version="true"></script>
 }

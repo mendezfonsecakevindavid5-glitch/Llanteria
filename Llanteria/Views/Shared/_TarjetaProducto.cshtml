@@ -10,6 +10,7 @@
     <div class="cat-card-img">
         <img src="~/images/productoos/@foto" alt="@p.Nombre" loading="lazy" />
         @if (Model.Agotado) { <span class="cat-badge">Agotado</span> }
+        else if (p.EnPromocion) { <span class="cat-badge-promo">-@((int)Math.Round((1 - p.PrecioActual / p.PrecioVenta) * 100))%</span> }
     </div>
     <div class="cat-card-body">
         @if (!string.IsNullOrEmpty(marca)) { <div class="cat-brand">@marca</div> }
@@ -19,7 +20,16 @@
             <div class="cat-meta">Medida @d.Ancho/@d.Perfil @d.Diametro@(string.IsNullOrEmpty(d.IndiceCarga) ? "" : $" · IC {d.IndiceCarga}{d.IndiceVelocidad}")</div>
         }
         @if (d?.GarantiaMeses != null) { <div class="cat-meta">Garantía @d.GarantiaMeses meses</div> }
-        <div class="cat-price">@p.PrecioVenta.ToString("C0")</div>
-        <a asp-controller="Contacto" asp-action="Index" asp-route-producto="@p.Nombre" class="btn btn-hyper-action btn-sm w-100">Cotizar</a>
+        <div class="cat-price">
+            @if (p.EnPromocion) { <s class="cat-old">@p.PrecioVenta.ToString("C0")</s> }
+            @p.PrecioActual.ToString("C0")
+        </div>
+        <form asp-controller="Carrito" asp-action="Agregar" method="post" class="d-grid gap-2">
+            <input type="hidden" name="id" value="@p.Id" />
+            <button type="submit" class="btn btn-hyper-action btn-sm" disabled="@Model.Agotado">
+                <i class="fa-solid fa-cart-plus me-1"></i>@(Model.Agotado ? "No disponible" : "Agregar al carrito")
+            </button>
+            <a asp-controller="Contacto" asp-action="Index" asp-route-producto="@p.Nombre" class="btn btn-outline-llanteria-primary btn-sm">Cotizar</a>
+        </form>
     </div>
 </article>

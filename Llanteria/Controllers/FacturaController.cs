@@ -5,6 +5,8 @@ using Llanteria.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Rotativa.AspNetCore;
+using Rotativa.AspNetCore.Options;
 
 namespace Llanteria.Controllers;
 
@@ -29,13 +31,45 @@ public class FacturaController : Controller
 
     public IActionResult Exportar(string? buscar)
     {
-        var filas = Filtrar(buscar).ToList().Select(f => new string?[]
+        var lista = Filtrar(buscar).ToList();
+        var filtro = string.IsNullOrWhiteSpace(buscar) ? "Todas las facturas" : $"Filtro: \"{buscar.Trim()}\"";
+        return this.ExcelArchivo("ventas", new TablaHoja
         {
-            f.Id.ToString(), f.Fecha?.ToString("dd/MM/yyyy"),
-            $"{f.IdClienteNavigation?.Nombres} {f.IdClienteNavigation?.Apellidos}".Trim(),
-            f.TotalBruto.ToString("0.##"), f.Iva.ToString("0.##"), (f.RteFte ?? 0).ToString("0.##"), f.TotalPagar.ToString("0.##")
+            Nombre = "Ventas",
+            Titulo = "Listado de ventas",
+            Subtitulo = filtro,
+            Columnas =
+            {
+                new("N.º", TipoCol.Entero), new("Fecha", TipoCol.Fecha), new("Cliente"), new("Documento"),
+                new("Subtotal", TipoCol.Moneda, true), new("IVA", TipoCol.Moneda, true),
+                new("Retención", TipoCol.Moneda, true), new("Total", TipoCol.Moneda, true), new("Observaciones")
+            },
+            Filas = lista.Select(f => new object?[]
+            {
+                f.Id, f.Fecha, $"{f.IdClienteNavigation?.Nombres} {f.IdClienteNavigation?.Apellidos}".Trim(),
+                f.IdClienteNavigation?.NumeroDocumento, f.TotalBruto, f.Iva, f.RteFte ?? 0, f.TotalPagar, f.Observaciones
+            }).ToList()
         });
-        return Csv.Archivo("facturas", new[] { "N.º", "Fecha", "Cliente", "Subtotal", "IVA", "Retención", "Total" }, filas);
+    }
+
+    // Factura individual en PDF (botón "Descargar PDF" del detalle de la factura).
+    public IActionResult Pdf(int id)
+    {
+        var f = _context.Facturas.AsNoTracking()
+            .Include(x => x.IdClienteNavigation).ThenInclude(c => c.IdDocumentoNavigation)
+            .Include(x => x.DetalleFacturas)
+            .FirstOrDefault(x => x.Id == id);
+        if (f == null) return NotFound();
+
+        return new ViewAsPdf("FacturaPdf", f)
+        {
+            FileName = $"Factura_{f.Id:D6}.pdf",
+            PageSize = Size.A4,
+            PageOrientation = Orientation.Portrait,
+            PageMargins = new Margins(16, 14, 18, 14),
+            CustomSwitches = "--print-media-type --footer-font-size 7 --footer-spacing 5 --footer-line " +
+                             "--footer-left \"[title]\" --footer-right \"[page] / [topage]\""
+        };
     }
 
     private IQueryable<Factura> Filtrar(string? buscar)

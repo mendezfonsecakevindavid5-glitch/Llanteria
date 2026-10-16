@@ -1,0 +1,31 @@
+@* Imágenes: wwwroot/images/tienda/{llantas,lubricantes,baterias,accesorios,flotas}.png. Si falta una, se muestra un ícono. *@
+@{
+    var categorias = new (string Nombre, string Imagen, string Icono, string Controlador)[]
+    {
+        ("Llantas", "llantas", "fa-circle-notch", "Llantas"),
+        ("Lubricantes", "lubricantes", "fa-oil-can", "Lubricantes"),
+        ("Baterías", "baterias", "fa-car-battery", "Baterias"),
+        ("Accesorios", "accesorios", "fa-gears", "Accesorios"),
+        ("Mantenimiento de flotas", "flotas", "fa-truck", "Empresas")
+    };
+}
+<section id="categorias" class="tc-cats">
+    <div class="container">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 justify-content-center">
+            @for (var i = 0; i < categorias.Length; i++)
+            {
+                var c = categorias[i];
+                <div class="col">
+                    <a class="tc-cat" asp-controller="@c.Controlador" asp-action="Index">
+                        <span class="tc-cat-art">
+                            <img src="~/images/tienda/@(c.Imagen).png" alt="" loading="lazy" style="animation-delay:@(i * 0.4)s"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
+                            <i class="fa-solid @c.Icono" style="display:none;animation-delay:@(i * 0.4)s"></i>
+                        </span>
+                        <span class="tc-cat-label">@c.Nombre</span>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>

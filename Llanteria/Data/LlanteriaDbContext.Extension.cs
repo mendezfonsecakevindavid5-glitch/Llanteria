@@ -9,6 +9,8 @@ public partial class LlanteriaDbContext
     public virtual DbSet<Cita> Citas { get; set; }
     public virtual DbSet<SolicitudEmpresa> SolicitudesEmpresa { get; set; }
     public virtual DbSet<Resenia> Resenias { get; set; }
+    public virtual DbSet<Pedido> Pedidos { get; set; }
+    public virtual DbSet<PedidoItem> PedidoItems { get; set; }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
@@ -52,6 +54,46 @@ public partial class LlanteriaDbContext
             e.Property(x => x.Comentario).HasMaxLength(400);
             e.Property(x => x.Fecha).HasColumnType("datetime").HasDefaultValueSql("(getdate())");
             e.HasIndex(x => x.IdCliente).IsUnique();
+        });
+
+        modelBuilder.Entity<Pedido>(e =>
+        {
+            e.ToTable("Pedidos");
+            e.Property(x => x.Numero).HasMaxLength(20);
+            e.Property(x => x.Token).HasMaxLength(32);
+            e.Property(x => x.Nombres).HasMaxLength(60);
+            e.Property(x => x.Apellidos).HasMaxLength(60);
+            e.Property(x => x.TipoDocumento).HasMaxLength(10);
+            e.Property(x => x.NumeroDocumento).HasMaxLength(20);
+            e.Property(x => x.Correo).HasMaxLength(100);
+            e.Property(x => x.Telefono).HasMaxLength(25);
+            e.Property(x => x.Pais).HasMaxLength(40);
+            e.Property(x => x.Departamento).HasMaxLength(60);
+            e.Property(x => x.Ciudad).HasMaxLength(60);
+            e.Property(x => x.Direccion).HasMaxLength(200);
+            e.Property(x => x.Complemento).HasMaxLength(100);
+            e.Property(x => x.CodigoPostal).HasMaxLength(12);
+            e.Property(x => x.Notas).HasMaxLength(400);
+            e.Property(x => x.MetodoPago).HasMaxLength(20);
+            e.Property(x => x.Estado).HasMaxLength(20).HasDefaultValue("Pendiente");
+            e.Property(x => x.CodigoCupon).HasMaxLength(20);
+            e.Property(x => x.Subtotal).HasColumnType("decimal(18, 2)");
+            e.Property(x => x.Descuento).HasColumnType("decimal(18, 2)");
+            e.Property(x => x.BaseGravable).HasColumnType("decimal(18, 2)");
+            e.Property(x => x.Iva).HasColumnType("decimal(18, 2)");
+            e.Property(x => x.Envio).HasColumnType("decimal(18, 2)");
+            e.Property(x => x.Total).HasColumnType("decimal(18, 2)");
+            e.Property(x => x.Fecha).HasColumnType("datetime");
+            e.HasIndex(x => x.Token).IsUnique();
+        });
+
+        modelBuilder.Entity<PedidoItem>(e =>
+        {
+            e.ToTable("PedidoItems");
+            e.Property(x => x.Descripcion).HasMaxLength(260);
+            e.Property(x => x.ValorUnitario).HasColumnType("decimal(18, 2)");
+            e.Property(x => x.Subtotal).HasColumnType("decimal(18, 2)");
+            e.HasOne(x => x.Pedido).WithMany(p => p.Items).HasForeignKey(x => x.IdPedido).OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Cliente>().Property(c => c.PasswordHash).HasMaxLength(200);

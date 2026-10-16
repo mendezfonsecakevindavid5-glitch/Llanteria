@@ -1,28 +1,26 @@
+@* Franja de logos que va de un extremo al otro y regresa (tienda.js). Logos en wwwroot/images/marcas *@
 @model List<Llanteria.Models.MarcaVitrina>
 @if (Model.Count > 0)
 {
-    <section id="marcas" class="section pb-0">
-        <div class="container">
-            <div class="text-center mb-4">
-                <span class="eyebrow">Marcas</span>
-                <h2 class="section-title mt-1">Trabajamos con las mejores marcas</h2>
-                <p class="section-sub mb-0">Toca una marca para ver sus productos disponibles.</p>
-            </div>
-            <div class="brand-strip">
+    <section id="marcas" class="tc-brands" aria-label="Marcas con las que trabajamos">
+        <div class="tc-brands-viewport" data-marquee>
+            <div class="tc-brands-track">
                 @foreach (var m in Model)
                 {
-                    <a class="brand-tile" asp-controller="@m.Catalogo" asp-action="Index" asp-route-marca="@m.Nombre"
-                       title="Ver @(m.Catalogo == "Llantas" ? "llantas" : "baterías") @m.Nombre">
-                        @if (m.Logo != null)
-                        {
-                            <img src="@m.Logo" alt="@m.Nombre" loading="lazy" />
-                        }
-                        else
-                        {
-                            <span class="brand-word">@m.Nombre</span>
-                        }
-                        <small>@(m.Catalogo == "Llantas" ? "Llantas" : "Baterías")</small>
-                    </a>
+                    if (!string.IsNullOrEmpty(m.Catalogo))
+                    {
+                        <a class="tc-brand" asp-controller="@m.Catalogo" asp-action="Index" asp-route-marca="@m.Nombre" title="Ver productos @m.Nombre">
+                            @if (m.Logo != null) { <img src="@m.Logo" alt="@m.Nombre" loading="lazy" /> }
+                            else { <span class="tc-brand-word">@m.Nombre</span> }
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="tc-brand" title="@m.Nombre">
+                            @if (m.Logo != null) { <img src="@m.Logo" alt="@m.Nombre" loading="lazy" /> }
+                            else { <span class="tc-brand-word">@m.Nombre</span> }
+                        </span>
+                    }
                 }
             </div>
         </div>

@@ -15,6 +15,10 @@
 </div>
 
 <div class="panel">
+    <div class="panel-head">
+        <span>@Model.Count() gastos registrados</span>
+        <a asp-action="Exportar" class="btn btn-line btn-sm ms-auto"><i class="fa-solid fa-file-excel me-1"></i>Exportar a Excel</a>
+    </div>
     <div class="table-responsive">
         <table class="data-table">
             <thead>

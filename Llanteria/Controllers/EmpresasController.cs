@@ -111,12 +111,25 @@ public class EmpresasController : Controller
     [Authorize(Roles = RolesPersonal)]
     public IActionResult Exportar(string? estado, string? buscar)
     {
-        var filas = Filtrar(estado, buscar).OrderByDescending(x => x.FechaCreacion).ToList().Select(x => new string?[]
+        var lista = Filtrar(estado, buscar).OrderByDescending(x => x.FechaCreacion).ToList();
+        var filtros = new List<string>();
+        if (!string.IsNullOrWhiteSpace(estado)) filtros.Add($"estado {estado}");
+        if (!string.IsNullOrWhiteSpace(buscar)) filtros.Add($"búsqueda \"{buscar.Trim()}\"");
+        return this.ExcelArchivo("solicitudes_empresas", new TablaHoja
         {
-            x.FechaCreacion.ToString("dd/MM/yyyy"), x.Empresa, x.Nit, x.Contacto, x.Telefono, x.Correo, x.Ciudad,
-            x.TipoFlota, x.NumeroVehiculos.ToString(), x.Estado, x.Mensaje
+            Nombre = "Solicitudes",
+            Titulo = "Solicitudes de empresas y flotas",
+            Subtitulo = filtros.Count == 0 ? "Todas las solicitudes" : "Filtro: " + string.Join(" · ", filtros),
+            Columnas =
+            {
+                new("Fecha", TipoCol.Fecha), new("Empresa"), new("NIT"), new("Contacto"), new("Teléfono"), new("Correo"), new("Ciudad"),
+                new("Tipo de flota"), new("Vehículos", TipoCol.Entero, true), new("Estado"), new("Mensaje")
+            },
+            Filas = lista.Select(x => new object?[]
+            {
+                x.FechaCreacion, x.Empresa, x.Nit, x.Contacto, x.Telefono, x.Correo, x.Ciudad, x.TipoFlota, x.NumeroVehiculos, x.Estado, x.Mensaje
+            }).ToList()
         });
-        return Csv.Archivo("solicitudes_empresas", new[] { "Fecha", "Empresa", "NIT", "Contacto", "Teléfono", "Correo", "Ciudad", "Tipo de flota", "Vehículos", "Estado", "Mensaje" }, filas);
     }
 
     private IQueryable<SolicitudEmpresa> Filtrar(string? estado, string? buscar)

@@ -1,5 +1,6 @@
 using Llanteria.Data;
 using Llanteria.Filters;
+using Llanteria.Infrastructure;
 using Llanteria.Models;
 using Llanteria.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,28 @@ public class GastoController : Controller
     }
 
     public IActionResult Index() => View(ser.GetGastos().OrderByDescending(g => g.FechaVencimiento).ToList());
+
+    public IActionResult Exportar()
+    {
+        var hoy = DateOnly.FromDateTime(DateTime.Today);
+        var lista = ser.GetGastos().OrderByDescending(g => g.FechaVencimiento).ToList();
+        return this.ExcelArchivo("gastos", new TablaHoja
+        {
+            Nombre = "Gastos",
+            Titulo = "Egresos y cuentas por pagar",
+            Subtitulo = "Todos los gastos registrados",
+            Columnas =
+            {
+                new("Registro", TipoCol.Fecha), new("Categoría"), new("Descripción"), new("Vence", TipoCol.Fecha),
+                new("Pagado el", TipoCol.Fecha), new("Estado"), new("Monto", TipoCol.Moneda, true)
+            },
+            Filas = lista.Select(g => new object?[]
+            {
+                g.FechaRegistro, g.IdCategoriaNavigation?.Nombre, g.Descripcion, g.FechaVencimiento, g.FechaPago,
+                g.Estado == "Pagado" ? "Pagado" : g.FechaVencimiento < hoy ? "Vencido" : "Pendiente", g.Monto
+            }).ToList()
+        });
+    }
 
     public IActionResult Create()
     {
