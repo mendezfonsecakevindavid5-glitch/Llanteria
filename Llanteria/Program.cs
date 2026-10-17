@@ -80,6 +80,7 @@ builder.Services.AddSingleton<EmailService>();
 builder.Services.AddSingleton(builder.Configuration.GetSection("Negocio").Get<NegocioInfo>() ?? new NegocioInfo());
 builder.Services.AddSingleton(builder.Configuration.GetSection("Pagos").Get<PagoInfo>() ?? new PagoInfo());
 builder.Services.AddHostedService<RecordatorioCitasService>();
+builder.Services.AddHostedService<RecordatorioMantenimientoService>();
 
 Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath);
 

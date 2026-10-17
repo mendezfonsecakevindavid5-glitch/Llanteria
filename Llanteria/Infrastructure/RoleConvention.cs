@@ -18,7 +18,7 @@ public class RoleConvention : IControllerModelConvention
 
     private static readonly HashSet<string> Personal = new()
     {
-        "Dashboard", "Factura", "Cliente", "Vehiculo", "Inventario", "Pqrs"
+        "Dashboard", "Factura", "Cliente", "Vehiculo", "Inventario", "Pqrs", "OrdenTrabajo"
     };
 
     public void Apply(ControllerModel controller)

@@ -41,6 +41,9 @@ namespace Llanteria.Models
 
         public int Puntos { get; set; }
 
+        /// <summary>Vehículos del cliente con su historial (vacío si la cuenta no es de un cliente).</summary>
+        public List<VehiculoHistorial> Vehiculos { get; set; } = new List<VehiculoHistorial>();
+
         // Ahora apunta a modelos de datos reales
         public List<FacturaViewModel> FacturasRecientes { get; set; } = new List<FacturaViewModel>();
     }

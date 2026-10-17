@@ -46,6 +46,7 @@ public class UserController : Controller
         ModelState.Remove(nameof(PerfilUsuarioViewModel.Correo));
         ModelState.Remove(nameof(PerfilUsuarioViewModel.FacturasRecientes));
         ModelState.Remove(nameof(PerfilUsuarioViewModel.Rol));
+        ModelState.Remove(nameof(PerfilUsuarioViewModel.Vehiculos));
         if (model.NuevaFoto != null && !model.NuevaFoto.ContentType.StartsWith("image/"))
             ModelState.AddModelError(nameof(PerfilUsuarioViewModel.NuevaFoto), "El archivo debe ser una imagen.");
         else if (model.NuevaFoto != null && model.NuevaFoto.Length > 3 * 1024 * 1024)
@@ -57,6 +58,7 @@ public class UserController : Controller
             model.FotoBase64 = actual.FotoBase64;
             model.Correo = actual.Correo;
             model.Rol = actual.Rol;
+            model.Vehiculos = actual.Vehiculos;
             return View("Perfil", model);
         }
 

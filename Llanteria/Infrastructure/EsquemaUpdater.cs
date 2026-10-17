@@ -74,6 +74,34 @@ BEGIN
     CREATE UNIQUE INDEX IX_Pqrs_Radicado ON dbo.Pqrs(Radicado);
 END;
 
+IF COL_LENGTH('dbo.Vehiculos', 'Anio') IS NULL
+    ALTER TABLE dbo.Vehiculos ADD Anio int NULL;
+IF COL_LENGTH('dbo.Vehiculos', 'Kilometraje') IS NULL
+    ALTER TABLE dbo.Vehiculos ADD Kilometraje int NULL;
+
+IF OBJECT_ID(N'dbo.OrdenesTrabajo', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.OrdenesTrabajo (
+        Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_OrdenesTrabajo PRIMARY KEY,
+        Numero nvarchar(20) NOT NULL,
+        IdVehiculo int NOT NULL CONSTRAINT FK_OrdenesTrabajo_Vehiculos REFERENCES dbo.Vehiculos(Id),
+        IdEmpleado int NULL,
+        Tipo nvarchar(40) NOT NULL,
+        Descripcion nvarchar(150) NOT NULL,
+        Kilometraje int NULL,
+        Observaciones nvarchar(500) NULL,
+        Total decimal(14,2) NOT NULL,
+        Estado nvarchar(20) NOT NULL CONSTRAINT DF_OrdenesTrabajo_Estado DEFAULT ('Recibido'),
+        FechaIngreso datetime NOT NULL,
+        FechaEntrega datetime NULL,
+        ProximaFecha date NULL,
+        ProximoKm int NULL,
+        RecordatorioEnviado bit NOT NULL CONSTRAINT DF_OrdenesTrabajo_Recordatorio DEFAULT (0)
+    );
+    CREATE UNIQUE INDEX IX_OrdenesTrabajo_Numero ON dbo.OrdenesTrabajo(Numero);
+    CREATE INDEX IX_OrdenesTrabajo_IdVehiculo ON dbo.OrdenesTrabajo(IdVehiculo);
+END;
+
 IF OBJECT_ID(N'dbo.Resenias', N'U') IS NULL
 BEGIN
     CREATE TABLE dbo.Resenias (

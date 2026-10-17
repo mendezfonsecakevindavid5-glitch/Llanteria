@@ -1,0 +1,110 @@
+@using Llanteria.Infrastructure
+@model Paginado<Llanteria.Models.OrdenTrabajo>
+
+@{
+    ViewData["Title"] = "Órdenes de trabajo";
+    string estado = ViewBag.Estado ?? "";
+    var tecnicos = (Dictionary<int, string>)ViewBag.Tecnicos;
+    var retorno = Context.Request.Path + Context.Request.QueryString;
+    var esAdmin = User.IsInRole("Administrador");
+    string Clase(string e) => e switch
+    {
+        "Recibido" => "tag-warn",
+        "En proceso" => "tag-neutral",
+        "Listo" => "tag-ok",
+        "Entregado" => "tag-ok",
+        _ => "tag-bad"
+    };
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Órdenes de trabajo", "Seguimiento de los vehículos que están en el taller.", BotonTexto: "Nueva orden", BotonAction: "Create", BotonController: "OrdenTrabajo"))
+
+<form id="formEstado" asp-action="CambiarEstado" method="post" class="d-none">
+    <input type="hidden" name="id" />
+    <input type="hidden" name="estado" />
+    <input type="hidden" name="retorno" value="@retorno" />
+</form>
+
+<div class="row g-3 mb-3">
+    <div class="col-sm-6 col-lg-3"><div class="stat accent"><div class="label">En el taller</div><div class="value">@ViewBag.EnTaller</div></div></div>
+    <div class="col-sm-6 col-lg-3"><div class="stat"><div class="label">Listas para entregar</div><div class="value">@ViewBag.Listas</div></div></div>
+</div>
+
+<div class="panel">
+    <div class="panel-head">
+        <form method="get" class="d-flex gap-2 flex-wrap w-100">
+            <input name="buscar" value="@ViewBag.Buscar" type="search" class="form-control form-control-sm" style="max-width:280px" placeholder="Buscar orden, placa, cliente o trabajo" />
+            <select name="estado" class="form-select form-select-sm" style="max-width:170px">
+                <option value="">Todos los estados</option>
+                @foreach (var e in Llanteria.Models.OrdenTrabajo.Estados) { <option value="@e" selected="@(estado == e)">@e</option> }
+            </select>
+            <button class="btn btn-line btn-sm">Filtrar</button>
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr><th>Orden</th><th>Ingreso</th><th>Vehículo</th><th>Trabajo</th><th>Técnico</th><th class="text-end">Valor</th><th>Estado</th><th class="text-end">Acciones</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var o in Model.Items)
+                {
+                    var abierta = o.Estado is "Recibido" or "En proceso" or "Listo";
+                    <tr>
+                        <td class="cell-title">@o.Numero</td>
+                        <td class="money">@o.FechaIngreso.ToString("dd/MM/yyyy")<div class="cell-sub">@o.FechaIngreso.ToString("HH:mm")</div></td>
+                        <td>@o.Vehiculo.Placa<div class="cell-sub">@o.Vehiculo.Marca @o.Vehiculo.Modelo</div><div class="cell-sub">@o.Vehiculo.Cliente.Nombres @o.Vehiculo.Cliente.Apellidos</div></td>
+                        <td>@o.Descripcion<div class="cell-sub">@o.Tipo@(o.Kilometraje.HasValue ? " · " + o.Kilometraje.Value.ToString("N0") + " km" : "")</div></td>
+                        <td>@(o.IdEmpleado.HasValue && tecnicos.TryGetValue(o.IdEmpleado.Value, out var t) ? t : "—")</td>
+                        <td class="money text-end">@o.Total.ToString("C0")</td>
+                        <td><span class="tag @Clase(o.Estado)">@o.Estado</span></td>
+                        <td class="text-end">
+                            <span class="row-actions">
+                                @if (o.Estado == "Recibido")
+                                {
+                                    <button type="button" class="icon-btn" title="Pasar a «En proceso»" data-estado="En proceso" data-id="@o.Id"><i class="fa-solid fa-play"></i></button>
+                                }
+                                @if (o.Estado is "Recibido" or "En proceso")
+                                {
+                                    <button type="button" class="icon-btn" title="Marcar como lista (avisa al cliente)" data-estado="Listo" data-id="@o.Id"><i class="fa-solid fa-circle-check"></i></button>
+                                }
+                                @if (o.Estado == "Listo")
+                                {
+                                    <button type="button" class="icon-btn" title="Entregar al cliente" data-estado="Entregado" data-id="@o.Id"><i class="fa-solid fa-key"></i></button>
+                                }
+                                @if (abierta)
+                                {
+                                    <a asp-action="Edit" asp-route-id="@o.Id" class="icon-btn" title="Editar"><i class="fa-solid fa-pen"></i></a>
+                                    <button type="button" class="icon-btn danger" title="Cancelar orden" data-estado="Cancelado" data-id="@o.Id"><i class="fa-solid fa-ban"></i></button>
+                                }
+                                @if (esAdmin)
+                                {
+                                    <button type="button" class="icon-btn danger" title="Eliminar"
+                                            data-delete="@Url.Action("Delete", new { id = o.Id })" data-nombre="@o.Numero"><i class="fa-solid fa-trash"></i></button>
+                                }
+                            </span>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Items.Any())
+                {
+                    <tr><td colspan="8" class="empty-state">No hay órdenes con esos filtros.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @await Html.PartialAsync("_Paginacion", (Model.Pagina, Model.TotalPaginas, Model.Total))
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('click', function (e) {
+            const b = e.target.closest('[data-estado]');
+            if (!b) return;
+            const f = document.getElementById('formEstado');
+            f.elements['id'].value = b.dataset.id;
+            f.elements['estado'].value = b.dataset.estado;
+            f.submit();
+        });
+    </script>
+}

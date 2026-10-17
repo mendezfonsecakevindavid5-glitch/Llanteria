@@ -123,6 +123,18 @@
     </div>
 </div>
 
+@if (Model.Vehiculos.Any())
+{
+    <div class="perfil-wrap pt-0" style="padding-top:0 !important">
+        <div class="perfil-card">
+            <div class="perfil-card-head">Mis vehículos y mantenimiento</div>
+            <div class="perfil-card-body">
+                <partial name="_HistorialVehiculos" model="Model.Vehiculos" />
+            </div>
+        </div>
+    </div>
+}
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>

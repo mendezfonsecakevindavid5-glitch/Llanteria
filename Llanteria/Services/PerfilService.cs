@@ -44,6 +44,7 @@ namespace Llanteria.Services
                 Bio = perfil?.Bio ?? "",
                 TemaPreferencia = perfil?.TemaPreferencia ?? "Light",
                 NotificacionesActivas = perfil?.NotificacionesActivas ?? false,
+                Vehiculos = cliente != null ? HistorialVehiculos.De(_context, cliente.Id) : new List<VehiculoHistorial>(),
                 FotoBase64 = foto is { } f ? $"data:{f.Tipo};base64,{Convert.ToBase64String(f.Datos)}" : null
             };
         }

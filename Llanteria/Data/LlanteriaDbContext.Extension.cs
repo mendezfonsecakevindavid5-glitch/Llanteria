@@ -13,6 +13,7 @@ public partial class LlanteriaDbContext
     public virtual DbSet<Pedido> Pedidos { get; set; }
     public virtual DbSet<PedidoItem> PedidoItems { get; set; }
     public virtual DbSet<Pqrs> RegistrosPqrs { get; set; }
+    public virtual DbSet<OrdenTrabajo> OrdenesTrabajo { get; set; }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
@@ -40,6 +41,23 @@ public partial class LlanteriaDbContext
             e.Property(x => x.Correo).HasMaxLength(100);
             e.Property(x => x.Estado).HasMaxLength(20).HasDefaultValue("Pendiente");
             e.Property(x => x.FechaCreacion).HasColumnType("datetime").HasDefaultValueSql("(getdate())");
+        });
+
+        modelBuilder.Entity<OrdenTrabajo>(e =>
+        {
+            e.ToTable("OrdenesTrabajo");
+            e.Property(x => x.Numero).HasMaxLength(20);
+            e.HasIndex(x => x.Numero).IsUnique();
+            e.HasIndex(x => x.IdVehiculo);
+            e.Property(x => x.Tipo).HasMaxLength(40);
+            e.Property(x => x.Descripcion).HasMaxLength(150);
+            e.Property(x => x.Observaciones).HasMaxLength(500);
+            e.Property(x => x.Total).HasColumnType("decimal(14,2)");
+            e.Property(x => x.Estado).HasMaxLength(20).HasDefaultValue(OrdenTrabajo.Recibido);
+            e.Property(x => x.FechaIngreso).HasColumnType("datetime");
+            e.Property(x => x.FechaEntrega).HasColumnType("datetime");
+            e.Property(x => x.ProximaFecha).HasColumnType("date");
+            e.HasOne(x => x.Vehiculo).WithMany().HasForeignKey(x => x.IdVehiculo).OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Pqrs>(e =>

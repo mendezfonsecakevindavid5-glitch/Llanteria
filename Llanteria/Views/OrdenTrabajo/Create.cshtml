@@ -1,0 +1,18 @@
+@model Llanteria.Models.OrdenTrabajo
+
+@{
+    ViewData["Title"] = "Nueva orden de trabajo";
+    ViewData["Accion"] = "Create";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Nueva orden de trabajo", "Registra el vehículo que entra al taller y el trabajo a realizar.", "OrdenTrabajo", "Index"))
+
+<div class="panel panel-medium">
+    <div class="panel-body">
+        <partial name="_Form" model="Model" />
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
