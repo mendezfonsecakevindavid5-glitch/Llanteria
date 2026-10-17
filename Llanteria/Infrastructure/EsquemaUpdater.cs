@@ -52,6 +52,28 @@ BEGIN
     );
 END;
 
+IF OBJECT_ID(N'dbo.Pqrs', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Pqrs (
+        Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_Pqrs PRIMARY KEY,
+        Radicado nvarchar(20) NOT NULL,
+        Tipo nvarchar(20) NOT NULL,
+        Nombre nvarchar(100) NOT NULL,
+        NumeroDocumento nvarchar(20) NULL,
+        Correo nvarchar(100) NOT NULL,
+        Telefono nvarchar(25) NULL,
+        Asunto nvarchar(120) NOT NULL,
+        Mensaje nvarchar(1500) NOT NULL,
+        AutorizaDatos bit NOT NULL,
+        IdCliente int NULL,
+        Estado nvarchar(20) NOT NULL CONSTRAINT DF_Pqrs_Estado DEFAULT ('Recibida'),
+        Respuesta nvarchar(1500) NULL,
+        FechaCreacion datetime NOT NULL CONSTRAINT DF_Pqrs_Fecha DEFAULT (GETDATE()),
+        FechaRespuesta datetime NULL
+    );
+    CREATE UNIQUE INDEX IX_Pqrs_Radicado ON dbo.Pqrs(Radicado);
+END;
+
 IF OBJECT_ID(N'dbo.Resenias', N'U') IS NULL
 BEGIN
     CREATE TABLE dbo.Resenias (

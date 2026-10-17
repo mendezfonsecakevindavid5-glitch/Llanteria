@@ -272,7 +272,7 @@ public class AccountController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(Cliente cliente, string? Username, string? Password, string? FotoBase64)
+    public async Task<IActionResult> Register(Cliente cliente, string? Username, string? Password, string? FotoBase64, bool AceptaTerminos = false)
     {
         cliente.Nombres = (cliente.Nombres ?? "").Trim();
         cliente.Apellidos = (cliente.Apellidos ?? "").Trim();
@@ -287,6 +287,9 @@ public class AccountController : Controller
 
         if (string.IsNullOrEmpty(Username))
             ModelState.AddModelError("Username", "El nombre de usuario es obligatorio.");
+
+        if (!AceptaTerminos)
+            ModelState.AddModelError("AceptaTerminos", "Debes aceptar los términos y autorizar el tratamiento de tus datos personales.");
 
         var correo = cliente.Correo.ToLower();
         if (_db.Clientes.AsNoTracking().Any(c => c.NumeroDocumento == cliente.NumeroDocumento))

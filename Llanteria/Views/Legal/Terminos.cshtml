@@ -1,0 +1,62 @@
+@inject Llanteria.Infrastructure.NegocioInfo Negocio
+@{
+    ViewData["Title"] = "Términos y condiciones";
+    ViewData["Subtitulo"] = "Reglas de uso del sitio, de la compra en línea y de los servicios del taller.";
+}
+<partial name="_Inicio" />
+
+<p class="legal-meta">Última actualización: octubre de 2026</p>
+
+<h2>1. Quién vende</h2>
+<p>Este sitio es operado por <strong>@Negocio.Nombre</strong>@(string.IsNullOrWhiteSpace(Negocio.Nit) ? "" : $", NIT {Negocio.Nit}"), con establecimiento en @Negocio.Direccion. Puedes escribirnos a <a href="mailto:@Negocio.Correo">@Negocio.Correo</a> o llamarnos al <a href="tel:@Negocio.TelefonoLimpio">@Negocio.Telefono</a>. Atendemos de lunes a viernes de @Negocio.HorarioSemana y los sábados de @Negocio.HorarioSabado.</p>
+
+<h2>2. Aceptación</h2>
+<p>Al navegar, crear una cuenta, agendar una cita o confirmar un pedido en este sitio aceptas estos términos. Si no estás de acuerdo, te pedimos no utilizar los servicios en línea; seguirás pudiendo comprar y recibir servicio directamente en el taller.</p>
+
+<h2>3. Productos, precios y disponibilidad</h2>
+<ul>
+    <li>Los precios están expresados en pesos colombianos (COP). Antes de confirmar tu pedido verás el detalle completo: subtotal, descuentos, base gravable e IVA.</li>
+    <li>Las fotos son de referencia. La medida, la marca y las especificaciones de cada producto aparecen en su ficha.</li>
+    <li>La disponibilidad depende del inventario del taller. Si un producto se agota antes de que confirmemos tu pedido, te lo informaremos y podrás elegir otro o cancelar sin costo.</li>
+    <li>Corregiremos cualquier error evidente de precio o de especificación antes de aceptar el pedido.</li>
+</ul>
+
+<h2>4. Cómo se hace un pedido</h2>
+<ol>
+    <li>Agregas productos al carrito y, si tienes un cupón vigente, lo aplicas.</li>
+    <li>Completas tus datos de contacto y de entrega y eliges el medio de pago.</li>
+    <li>Aceptas estos términos y la política de tratamiento de datos, y confirmas.</li>
+    <li>Recibes un número de pedido. El pedido queda <em>pendiente</em> hasta que se verifique el pago o se acuerde la entrega con el taller.</li>
+</ol>
+
+<h2>5. Medios de pago</h2>
+<p>Aceptamos efectivo (contra entrega o en el taller, solo en Colombia) y transferencia bancaria, Nequi o Daviplata. <strong>Este sitio no recibe números de tarjeta ni códigos de seguridad.</strong> Si prefieres tarjeta, puedes pagar con datáfono en el taller. Nunca te pediremos claves, códigos de verificación ni datos bancarios por WhatsApp o correo.</p>
+
+<h2>6. Entrega</h2>
+<p>El costo y el tiempo de envío se confirman según el destino antes de despachar. También puedes recoger tu pedido en el taller. Para productos que requieren montaje, recomendamos instalarlos con nosotros: así conservas la garantía de mano de obra.</p>
+
+<h2>7. Servicios y citas</h2>
+<p>Las citas se agendan en línea o por WhatsApp y se atienden por orden de llegada dentro del horario confirmado. Si no puedes asistir, cancélala o reprográmala con anticipación desde tu cuenta o escribiéndonos, para liberar el cupo. Los precios publicados de los servicios son de referencia: el valor final se confirma después del diagnóstico del vehículo.</p>
+
+<h2>8. Cuenta de usuario</h2>
+<p>Eres responsable de la confidencialidad de tu usuario y contraseña y de lo que se haga con tu cuenta. Si crees que alguien más accedió, cambia tu contraseña y avísanos de inmediato. Podemos suspender cuentas que se usen para fraude o que incumplan estos términos.</p>
+
+<h2>9. Programa de puntos</h2>
+<p>Los clientes registrados acumulan puntos por sus compras en el taller y pueden canjearlos por los premios del catálogo vigente. Los puntos no tienen valor en dinero, no se pueden transferir ni cambiar por efectivo, y los premios están sujetos a existencias. Podemos modificar el catálogo y las condiciones del programa informándolo en el sitio.</p>
+
+<h2>10. Garantía, retracto y reclamos</h2>
+<p>Consulta la <a asp-controller="Legal" asp-action="Garantia">política de garantía</a> y la de <a asp-controller="Legal" asp-action="Devoluciones">retracto y devoluciones</a>. Para cualquier petición, queja, reclamo o sugerencia usa nuestro <a asp-controller="Legal" asp-action="Pqrs">formulario de PQRS</a>.</p>
+
+<h2>11. Datos personales</h2>
+<p>Tratamos tus datos conforme a la Ley 1581 de 2012 y según nuestra <a asp-controller="Legal" asp-action="Privacidad">política de tratamiento de datos</a>.</p>
+
+<h2>12. Propiedad intelectual</h2>
+<p>El nombre, el logotipo, los textos y el diseño del sitio pertenecen a @Negocio.Nombre. Las marcas de llantas, baterías y lubricantes que aparecen son de sus respectivos titulares y se muestran solo para identificar los productos que vendemos.</p>
+
+<h2>13. Cambios en estos términos</h2>
+<p>Podemos actualizar estos términos. La versión vigente es la publicada en esta página, con su fecha de actualización. Los pedidos ya confirmados se rigen por los términos vigentes al momento de la compra.</p>
+
+<h2>14. Ley aplicable y autoridad</h2>
+<p>Estos términos se rigen por las leyes de la República de Colombia, en especial la Ley 1480 de 2011 (Estatuto del Consumidor). Si no estás conforme con la respuesta del taller, puedes acudir a la Superintendencia de Industria y Comercio (SIC).</p>
+
+<partial name="_Fin" />

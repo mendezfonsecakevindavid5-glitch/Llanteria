@@ -51,6 +51,14 @@
     </div>
 
     <div class="footer-legal">
+        <nav class="footer-legal-links" aria-label="Información legal">
+            <a asp-controller="Legal" asp-action="Terminos">Términos y condiciones</a>
+            <a asp-controller="Legal" asp-action="Privacidad">Tratamiento de datos</a>
+            <a asp-controller="Legal" asp-action="Garantia">Garantía</a>
+            <a asp-controller="Legal" asp-action="Devoluciones">Retracto y devoluciones</a>
+            <a asp-controller="Legal" asp-action="Faq">Preguntas frecuentes</a>
+            <a asp-controller="Legal" asp-action="Pqrs">PQRS</a>
+        </nav>
         <p>&copy; @DateTime.Now.Year Llantería Valledupar. Todos los derechos reservados.</p>
     </div>
 </footer>

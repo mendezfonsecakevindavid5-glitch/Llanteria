@@ -1,0 +1,16 @@
+@model Llanteria.Models.Pqrs
+@{
+    ViewData["Title"] = "Solicitud radicada";
+    ViewData["Subtitulo"] = "Recibimos tu solicitud y ya está en manos del equipo.";
+}
+<partial name="_Inicio" />
+
+<div class="text-center py-3">
+    <div class="mb-3" style="font-size:3rem;color:#1f9d55"><i class="fa-solid fa-circle-check"></i></div>
+    <p class="mb-1 text-muted">Tu número de radicado es</p>
+    <p class="mb-3" style="font-size:1.9rem;font-weight:800;letter-spacing:.04em">@Model.Radicado</p>
+    <p>Te responderemos a <strong>@Model.Correo</strong> a más tardar el <strong>@Model.FechaLimite.ToString("dd/MM/yyyy")</strong>. Guarda este número: lo necesitas para cualquier seguimiento.</p>
+    <a asp-controller="Home" asp-action="Index" class="legal-btn d-inline-block text-decoration-none mt-2">Volver al inicio</a>
+</div>
+
+<partial name="_Fin" />

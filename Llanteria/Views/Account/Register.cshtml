@@ -725,6 +725,13 @@
                         </ul>
                     </div>
 
+                    <div class="form-check mb-3" style="font-size: 0.85rem;">
+                        <input class="form-check-input" type="checkbox" id="aceptaTerminosReg" name="AceptaTerminos" value="true" />
+                        <label class="form-check-label" for="aceptaTerminosReg">
+                            He leído y acepto los <a href="@Url.Action("Terminos", "Legal")" target="_blank" rel="noopener">términos y condiciones</a> y autorizo el tratamiento de mis datos personales según la <a href="@Url.Action("Privacidad", "Legal")" target="_blank" rel="noopener">política de tratamiento de datos</a>. <span class="required-asterisk">*</span>
+                        </label>
+                    </div>
+
                     <div id="generalErrorStage3" class="custom-error-text text-center mb-3"></div>
 
                     <div class="d-grid mt-4">
@@ -1007,7 +1014,10 @@
                 const rMatch = p1 !== '' && p1 === p2;
                 const isPasswordValid = rLen && rUpper && rLower && rNum && rSpec && rMatch;
 
-                if (isUsernameValid && isPasswordValid) {
+                const aceptaChk = document.getElementById('aceptaTerminosReg');
+                const aceptaOk = !aceptaChk || aceptaChk.checked;
+
+                if (isUsernameValid && isPasswordValid && aceptaOk) {
                     btnFinalizarRegister.disabled = false;
                     btnFinalizarRegister.classList.remove('btn-muted');
                 } else {
@@ -1019,6 +1029,8 @@
             if (usernameInput) usernameInput.addEventListener('input', validarRequisitosEtapa3);
             if (pass1) pass1.addEventListener('input', validarRequisitosEtapa3);
             if (pass2) pass2.addEventListener('input', validarRequisitosEtapa3);
+            const chkTerminos = document.getElementById('aceptaTerminosReg');
+            if (chkTerminos) chkTerminos.addEventListener('change', validarRequisitosEtapa3);
 
             btnSelectFoto.addEventListener('click', () => fileFotoInput.click());
 
