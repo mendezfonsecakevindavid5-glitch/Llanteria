@@ -1,0 +1,23 @@
+@model Llanteria.ViewComponents.AvatarMenuModel
+
+@* Avatar + menú. Sin foto (o si la foto falla) se ven las iniciales: la <img> se oculta sola. *@
+<div class="avatar-menu" data-avatar-menu style="--avatar-size:@(Model.Tamano)px">
+    <button type="button" class="avatar-btn" aria-haspopup="true" aria-expanded="false" aria-controls="avatarPanel" title="@Model.Usuario">
+        <span class="avatar-circle" style="background:@Model.Fondo;color:@Model.Texto">
+            <span class="avatar-initials" aria-hidden="true">@Model.Iniciales</span>
+            <img src="@Url.Action("Foto", "User")" alt="Foto de perfil de @Model.Usuario" onerror="this.remove()" />
+        </span>
+    </button>
+
+    <div class="avatar-panel" id="avatarPanel" role="menu" hidden>
+        <a class="avatar-item" role="menuitem" asp-controller="User" asp-action="Perfil">
+            <i class="fa-regular fa-user" aria-hidden="true"></i><span>Cuenta</span>
+        </a>
+        <div class="avatar-sep" role="separator"></div>
+        <form asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit" class="avatar-item" role="menuitem">
+                <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i><span>Cerrar sesión</span>
+            </button>
+        </form>
+    </div>
+</div>

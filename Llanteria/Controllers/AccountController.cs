@@ -54,7 +54,7 @@ public class AccountController : Controller
     public IActionResult Login(string? returnUrl = null)
     {
         if (User.Identity?.IsAuthenticated == true)
-            return RedirigirSegunRol(User.IsInRole("Administrador") || User.IsInRole("Empleado"), returnUrl);
+            return RedirigirSegunRol(RolesApp.EsPersonal(User), returnUrl, rol: RolesApp.De(User));
         ViewData["ReturnUrl"] = returnUrl;
         return View();
     }
@@ -93,15 +93,9 @@ public class AccountController : Controller
             user.UltimaConexion = DateTime.Now;
             _db.SaveChanges();
 
-            var rol = user.IdRolNavigation?.NombreRol ?? "Cliente";
-            await IniciarSesion(new Claim[]
-            {
-                new(ClaimTypes.Name, user.Username),
-                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new(ClaimTypes.Role, rol),
-                new("ClienteId", user.IdCliente?.ToString() ?? "")
-            });
-            return RedirigirSegunRol(rol is "Administrador" or "Empleado", returnUrl, user.IdCliente);
+            var rol = user.IdRolNavigation?.NombreRol ?? RolesApp.UsuarioRegistrado;
+            await IniciarSesion(ClaimsDe(user, rol));
+            return RedirigirSegunRol(rol is RolesApp.Administrador or RolesApp.Empleado, returnUrl, user.IdCliente, rol);
         }
 
         return ErrorLogin();
@@ -117,18 +111,53 @@ public class AccountController : Controller
         => HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme)));
 
-    [HttpGet]
+    /// <summary>
+    /// Datos de la sesión. La foto NO va en la cookie (una imagen no cabe): el avatar la pide a User/Foto.
+    /// "Nombres" y "Apellidos" se guardan para dibujar las iniciales sin consultar la base en cada página.
+    /// </summary>
+    private Claim[] ClaimsDe(Usuario user, string rol)
+    {
+        string nombres = "", apellidos = "";
+        if (user.IdCliente.HasValue)
+        {
+            var c = _db.Clientes.AsNoTracking().Where(x => x.Id == user.IdCliente.Value)
+                .Select(x => new { x.Nombres, x.Apellidos }).FirstOrDefault();
+            nombres = c?.Nombres ?? ""; apellidos = c?.Apellidos ?? "";
+        }
+        else if (user.IdEmpleado.HasValue)
+        {
+            var e = _db.Empleados.AsNoTracking().Where(x => x.Id == user.IdEmpleado.Value)
+                .Select(x => new { x.Nombres, x.Apellidos }).FirstOrDefault();
+            nombres = e?.Nombres ?? ""; apellidos = e?.Apellidos ?? "";
+        }
+
+        return new Claim[]
+        {
+            new(ClaimTypes.Name, user.Username),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Role, rol),
+            new("ClienteId", user.IdCliente?.ToString() ?? ""),
+            new("Nombres", nombres),
+            new("Apellidos", apellidos)
+        };
+    }
+
+    // GET se conserva porque otros controladores redirigen aquí; el menú del avatar usa POST con token.
+    [AcceptVerbs("GET", "POST")]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Index", "Home");
     }
 
-    private IActionResult RedirigirSegunRol(bool esPersonal, string? returnUrl, int? clienteId = null)
+    private IActionResult RedirigirSegunRol(bool esPersonal, string? returnUrl, int? clienteId = null, string? rol = null)
     {
         if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)) return LocalRedirect(returnUrl);
         if (esPersonal) return RedirectToAction("Index", "Dashboard");
-        return clienteId.HasValue || User.IsInRole("Cliente") ? RedirectToAction("Index", "MiCuenta") : RedirectToAction("Index", "Home");
+        // El usuario registrado solo tiene su perfil.
+        if (rol == RolesApp.UsuarioRegistrado) return RedirectToAction("Perfil", "User");
+        return clienteId.HasValue || rol == RolesApp.Cliente || User.IsInRole(RolesApp.Cliente)
+            ? RedirectToAction("Index", "MiCuenta") : RedirectToAction("Index", "Home");
     }
 
     // --- MÉTODOS NUEVOS PARA EL LOGIN POR FASES (OTP) ---
@@ -206,14 +235,8 @@ public class AccountController : Controller
         user.UltimaConexion = DateTime.Now;
         _db.SaveChanges();
 
-        var rol = user.IdRolNavigation?.NombreRol ?? "Cliente";
-        await IniciarSesion(new Claim[]
-        {
-            new(ClaimTypes.Name, user.Username),
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Role, rol),
-            new("ClienteId", user.IdCliente?.ToString() ?? "")
-        });
+        var rol = user.IdRolNavigation?.NombreRol ?? RolesApp.UsuarioRegistrado;
+        await IniciarSesion(ClaimsDe(user, rol));
 
         s.Remove("login:code");
         s.Remove("login:username");
@@ -296,7 +319,7 @@ public class AccountController : Controller
             Username = Username!,
             Correo = cliente.Correo,
             PasswordHash = cliente.PasswordHash,
-            IdRol = 2,
+            IdRol = IdRolRegistrado(),
             Estado = "Activo",
             FechaCreacion = DateTime.Now,
             IdCliente = cliente.Id,
@@ -311,6 +334,10 @@ public class AccountController : Controller
 
         return RedirectToAction(nameof(Welcome));
     }
+
+    // Antes se fijaba IdRol = 2, que en la base es "Empleado": quien se registraba entraba al panel.
+    private int IdRolRegistrado()
+        => _db.Roles.AsNoTracking().Where(r => r.NombreRol == RolesApp.UsuarioRegistrado).Select(r => r.Id).First();
 
     public IActionResult Welcome() => View();
 

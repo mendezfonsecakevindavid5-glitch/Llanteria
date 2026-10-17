@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/public.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/brand.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/avatar-menu.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Llanteria.styles.css" asp-append-version="true" />
 
     <style>
@@ -81,10 +82,11 @@
             padding-right: clamp(1rem, 3.5vw, 4rem);
         }
 
-        /* Nombre del proyecto: ya no es un enlace */
-        .brand-matrix {
+        /* Nombre del proyecto: enlace al inicio, con el MISMO estilo que el del pie de página (brand.css:
+           Orbitron 900, mayúsculas, 1.4rem, "Valledupar" en rojo). Aquí solo cambia el color según el estado del header. */
+        .michelin-nav-global .brand-matrix {
             color: #FFFFFF !important;
-            pointer-events: none;
+            cursor: pointer;
             margin-right: clamp(1rem, 2.4vw, 2.75rem);
             white-space: nowrap;
         }
@@ -101,7 +103,7 @@
             color: #FFFFFF !important;
             font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
             font-weight: 500;
-            font-size: 1.05rem;
+            font-size: 1.18rem;
             letter-spacing: .01em;
             transition: color 0.15s ease-in-out;
             text-decoration: none !important;
@@ -113,9 +115,28 @@
         }
 
         /* site.css mueve y pinta de gris los .nav-link al pasar el mouse: en el header no */
+        .michelin-nav-global .navbar-nav .nav-link,
         .michelin-nav-global .navbar-nav .nav-link:hover {
             background: transparent;
             transform: none;
+            border-bottom: 0 !important; /* public.css pintaba un borde al pasar el mouse */
+        }
+
+        /* Subrayado de los nav items: SIEMPRE negro (también sobre el hero, donde el header se vuelve blanco al pasar el mouse) */
+        .michelin-nav-global .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: #000000 !important;
+            transition: width 0.2s ease, left 0.2s ease;
+        }
+
+        .michelin-nav-global .navbar-nav .nav-link:hover::after {
+            width: 80%;
+            left: 10%;
         }
 
         .michelin-nav-global.solid-bg .navbar-nav .nav-link,
@@ -123,26 +144,6 @@
         .michelin-nav-global:hover .navbar-nav .nav-link {
             color: #000000 !important;
             text-shadow: none;
-        }
-
-        .michelin-nav-global.solid-bg .navbar-nav .nav-link::after,
-        .michelin-nav-global.scrolled .navbar-nav .nav-link::after,
-        .michelin-nav-global:hover .navbar-nav .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 50%;
-            background-color: #000000;
-            transition: width 0.2s ease, left 0.2s ease;
-        }
-
-        .michelin-nav-global.solid-bg .navbar-nav .nav-link:hover::after,
-        .michelin-nav-global.scrolled .navbar-nav .nav-link:hover::after,
-        .michelin-nav-global:hover .navbar-nav .nav-link:hover::after {
-            width: 80%;
-            left: 10%;
         }
 
         /* Página actual / clic: rojo (más específico que el color del header sólido) */
@@ -216,6 +217,9 @@
             color: #FFFFFF !important;
         }
 
+        /* Carrito + sesión: más aire entre el carrito y el botón */
+        .header-actions { gap: 1.9rem; }
+
         .main-matrix-container {
             flex: 1 0 auto;
             padding-bottom: 2rem;
@@ -223,8 +227,7 @@
 
         /* Entre 1200 y 1399 px se compacta un poco para que todo quepa en una línea */
         @@media (min-width: 1200px) and (max-width: 1399.98px) {
-            .brand-matrix { font-size: 1.2rem; }
-            .michelin-nav-global .navbar-nav .nav-link { font-size: .98rem; margin: 0 1px; }
+            .michelin-nav-global .navbar-nav .nav-link { font-size: 1.05rem; margin: 0 1px; }
             .btn-matrix-action { font-size: .96rem; padding: .5rem 1rem; }
         }
 
@@ -242,7 +245,7 @@
     <header>
         <nav class="navbar navbar-expand-xl site-nav michelin-nav-global @(!isHomeIndex ? "solid-bg" : "")" id="mainNavbar">
             <div class="container-fluid header-shell">
-                <span class="navbar-brand brand-matrix">Llantería<small class="ms-1">Valledupar</small></span>
+                <a class="navbar-brand brand-matrix" asp-controller="Home" asp-action="Index" aria-label="Llantería Valledupar, inicio">Llantería<small class="ms-1">Valledupar</small></a>
 
                 <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Menú">
                     <span class="navbar-toggler-icon"></span>
@@ -273,7 +276,7 @@
                         </li>
                     </ul>
 
-                    <ul class="navbar-nav ms-auto align-items-xl-center gap-3 mt-3 mt-xl-0">
+                    <ul class="navbar-nav ms-auto align-items-xl-center header-actions mt-3 mt-xl-0">
                         <li class="nav-item">
                             <a class="header-cart header-interactable" asp-controller="Llantas" asp-action="Index" title="Carrito" aria-label="Carrito de compras, @cartCount productos">
                                 <i class="fa-solid fa-cart-shopping"></i>
@@ -290,22 +293,8 @@
                         }
                         else
                         {
-                            var fotoClaim = User.FindFirst("Foto")?.Value;
-                            var username = User.Identity.Name ?? "Usuario";
-                            var defaultAvatar = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(username)}&background=C92B0A&color=fff&rounded=true";
-                            var avatarUrl = !string.IsNullOrEmpty(fotoClaim) ? fotoClaim : defaultAvatar;
-
-                            <li class="nav-item d-flex align-items-center me-1">
-                                <a asp-controller="User" asp-action="Perfil" title="Mi Perfil" class="header-interactable">
-                                    <img src="@avatarUrl" alt="Foto de perfil" class="rounded-circle border border-2 border-white shadow-sm" style="width: 42px; height: 42px; object-fit: cover;" />
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-outline-light btn-sm rounded-pill px-3 header-interactable">
-                                        <i class="fa-solid fa-right-from-bracket me-1"></i> Salir
-                                    </button>
-                                </form>
+                            <li class="nav-item d-flex align-items-center">
+                                @await Component.InvokeAsync("AvatarMenu", new { tamano = 44 })
                             </li>
                         }
                     </ul>
@@ -327,6 +316,8 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/protect-forms.js" asp-append-version="true"></script>
+    <script src="~/js/avatar-menu.js" asp-append-version="true"></script>
     <script>
         window.addEventListener('scroll', function () {
             const nav = document.getElementById('mainNavbar');

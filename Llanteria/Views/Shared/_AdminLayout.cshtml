@@ -3,12 +3,12 @@
     var act = (ViewContext.RouteData.Values["action"] as string) ?? "";
     var isAdmin = User.IsInRole("Administrador");
     var nombre = User.Identity?.Name ?? "Usuario";
-    var inicial = nombre.Substring(0, 1).ToUpper();
-    var foto = User.FindFirst("Foto")?.Value;
 
     var items = new List<(string C, string A, string Icon, string Text, bool AdminOnly, string Group)>
     {
         ("Dashboard", "Index", "fa-chart-line", "Panel", false, "General"),
+        // Al entrar con "Cuenta" desde el menú del avatar, este ítem queda marcado como si lo hubieran elegido aquí.
+        ("User", "Perfil", "fa-circle-user", "Mi perfil", false, "General"),
         ("Factura", "Index", "fa-file-invoice-dollar", "Ventas", false, "Operación"),
         ("Cliente", "Index", "fa-users", "Clientes", false, "Operación"),
         ("Cliente", "GestionPuntos", "fa-star", "Puntos de clientes", false, "Operación"),
@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/brand.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/avatar-menu.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
     <style>
         :root {
@@ -60,23 +61,11 @@
             <span class="brand-matrix">Llantería<small class="ms-1">Valledupar</small></span>
         </div>
         <div class="d-flex align-items-center gap-3">
-            <a asp-controller="User" asp-action="Perfil" class="user text-decoration-none text-dark d-flex align-items-center gap-2" title="Mi perfil">
-                <span class="d-none d-md-block text-end lh-sm user-meta">
-                    <strong>@nombre</strong><br />
-                    <small class="text-muted">@(isAdmin ? "Administrador" : "Empleado")</small>
-                </span>
-                @if (!string.IsNullOrEmpty(foto))
-                {
-                    <img class="user-avatar rounded-circle" src="@foto" alt="Foto de perfil" style="width: 40px; height: 40px; object-fit: cover;" />
-                }
-                else
-                {
-                    <span class="avatar-initial rounded-circle bg-danger text-white d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">@inicial</span>
-                }
-            </a>
-            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-dark btn-sm rounded-pill px-3 btn-salir" title="Cerrar sesión">
-                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i><span class="salir-txt">Salir</span>
-            </a>
+            <span class="d-none d-md-block text-end lh-sm user-meta">
+                <strong>@nombre</strong><br />
+                <small class="text-muted">@(isAdmin ? "Administrador" : "Empleado")</small>
+            </span>
+            @await Component.InvokeAsync("AvatarMenu", new { tamano = 40 })
         </div>
     </header>
 
@@ -112,6 +101,8 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/admin.js" asp-append-version="true"></script>
+    <script src="~/js/protect-forms.js" asp-append-version="true"></script>
+    <script src="~/js/avatar-menu.js" asp-append-version="true"></script>
     <partial name="_Alertas" />
     @await RenderSectionAsync("Scripts", required: false)
 </body>

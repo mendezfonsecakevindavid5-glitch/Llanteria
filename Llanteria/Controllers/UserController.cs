@@ -22,6 +22,20 @@ public class UserController : Controller
         return View(await _perfilService.ObtenerPerfilPorUsuarioIdAsync(id));
     }
 
+    /// <summary>Foto del usuario con sesión (el avatar del header la pide aquí; 404 si no tiene y se muestran las iniciales).</summary>
+    [HttpGet]
+    public async Task<IActionResult> Foto()
+    {
+        if (!TryGetUserId(out var id)) return NotFound();
+        var foto = await _perfilService.ObtenerFotoAsync(id);
+        if (foto is not { } f) return NotFound();
+
+        var etag = new Microsoft.Net.Http.Headers.EntityTagHeaderValue(
+            "\"" + Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(f.Datos))[..32] + "\"");
+        Response.Headers.CacheControl = "private, no-cache"; // el navegador revalida con ETag: si cambia la foto, se ve al instante
+        return File(f.Datos, f.Tipo, lastModified: null, entityTag: etag);
+    }
+
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> ActualizarPerfil(PerfilUsuarioViewModel model)
     {
@@ -31,6 +45,7 @@ public class UserController : Controller
         // El correo no se edita desde aquí y las facturas no vienen del formulario.
         ModelState.Remove(nameof(PerfilUsuarioViewModel.Correo));
         ModelState.Remove(nameof(PerfilUsuarioViewModel.FacturasRecientes));
+        ModelState.Remove(nameof(PerfilUsuarioViewModel.Rol));
         if (model.NuevaFoto != null && !model.NuevaFoto.ContentType.StartsWith("image/"))
             ModelState.AddModelError(nameof(PerfilUsuarioViewModel.NuevaFoto), "El archivo debe ser una imagen.");
         else if (model.NuevaFoto != null && model.NuevaFoto.Length > 3 * 1024 * 1024)
@@ -41,6 +56,7 @@ public class UserController : Controller
             var actual = await _perfilService.ObtenerPerfilPorUsuarioIdAsync(id);
             model.FotoBase64 = actual.FotoBase64;
             model.Correo = actual.Correo;
+            model.Rol = actual.Rol;
             return View("Perfil", model);
         }
 

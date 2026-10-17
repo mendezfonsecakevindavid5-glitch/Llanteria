@@ -1,5 +1,6 @@
 using Llanteria.Data;
 using Llanteria.Infrastructure;
+using Llanteria.Seguridad;
 using Llanteria.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,23 @@ CultureInfo.DefaultThreadCurrentCulture = cultura;
 CultureInfo.DefaultThreadCurrentUICulture = cultura;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configuración privada: appsettings.json ya no está dentro del proyecto. Vive en la carpeta "Llanteria_Privado"
+// (junto a la carpeta del proyecto, fuera de lo que se publica) o en la ruta de la variable LLANTERIA_CONFIG_DIR.
+// Las variables de entorno siguen teniendo prioridad sobre el archivo.
+var carpetaPrivada = Environment.GetEnvironmentVariable("LLANTERIA_CONFIG_DIR")
+    ?? Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", "Llanteria_Privado"));
+var archivoPrivado = Path.Combine(carpetaPrivada, "appsettings.json");
+if (!File.Exists(archivoPrivado) && string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ConnectionStrings__Con")))
+    throw new InvalidOperationException(
+        $"No se encontró la configuración privada en \"{archivoPrivado}\". Crea esa carpeta con appsettings.json " +
+        "o define la variable de entorno LLANTERIA_CONFIG_DIR.");
+if (Directory.Exists(carpetaPrivada))
+    builder.Configuration.AddJsonFile(new Microsoft.Extensions.FileProviders.PhysicalFileProvider(carpetaPrivada), "appsettings.json", optional: true, reloadOnChange: false);
+builder.Configuration.AddEnvironmentVariables(); // re-agregado al final para que siga ganando sobre el archivo privado
+
+// Servicio de cifrado de datos (AES-256-GCM). La clave sale de la configuración privada, nunca del código.
+ServicioCifrado.Inicializar(new ServicioCifrado(builder.Configuration["Cifrado:Clave"] ?? ""));
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -33,7 +51,7 @@ builder.Services.AddControllersWithViews(options =>
 var cadenaConexion = builder.Configuration.GetConnectionString("Con");
 if (string.IsNullOrWhiteSpace(cadenaConexion))
     throw new InvalidOperationException(
-        "Falta la cadena de conexión \"ConnectionStrings:Con\". Agrégala en appsettings.json (o en User Secrets).");
+        "Falta la cadena de conexión \"ConnectionStrings:Con\". Agrégala en Llanteria_Privado/appsettings.json (o en una variable de entorno).");
 
 builder.Services.AddDbContext<LlanteriaDbContext>(options => options.UseSqlServer(cadenaConexion));
 
@@ -82,6 +100,12 @@ using (var scope = app.Services.CreateScope())
         db.Database.EnsureCreated();
         EsquemaUpdater.Aplicar(db);
         DatosIniciales.Asegurar(db);
+        if (builder.Configuration.GetValue<bool>("Cifrado:MigrarDatosExistentes"))
+        {
+            var n = ProtegerDatos.Ejecutar(db);
+            scope.ServiceProvider.GetRequiredService<ILogger<Program>>()
+                .LogInformation("Cifrado de datos existentes: {N} valores protegidos. Pon Cifrado:MigrarDatosExistentes en false.", n);
+        }
     }
     catch (Exception ex)
     {

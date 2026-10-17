@@ -1,91 +1,123 @@
 @model Llanteria.Models.PerfilUsuarioViewModel
+@using Llanteria.Infrastructure
 
 @{
     ViewData["Title"] = "Mi perfil";
+    // Administrador y empleado ven el perfil dentro del panel; el usuario registrado, con el diseño normal del sitio.
+    var enPanel = RolesApp.EsPersonal(User);
 }
 
-@await Html.PartialAsync("_PageHeader", new PageHeader("Mi perfil", "Tus datos de contacto y tu contraseña."))
+<style>
+    .perfil-wrap { max-width: 1040px; margin: 0 auto; @(enPanel ? "" : "padding: 7.5rem 1rem 3rem;") }
+    .perfil-card { background: #fff; border: 1px solid #e3e6ea; border-radius: .75rem; box-shadow: 0 2px 10px rgba(0,0,0,.05); overflow: hidden; height: 100%; }
+    .perfil-card-head { padding: .95rem 1.25rem; border-bottom: 1px solid #e3e6ea; font-weight: 700; position: relative; }
+    .perfil-card-head::before { content: ""; position: absolute; left: 0; top: 50%; width: 3px; height: 1.1rem; transform: translateY(-50%); background: var(--llanteria-primary, #C92B0A); border-radius: 0 3px 3px 0; }
+    .perfil-card-body { padding: 1.4rem 1.25rem; }
+    .perfil-title { font-size: 1.65rem; font-weight: 800; letter-spacing: -.01em; margin: 0; }
+    .perfil-sub { color: #6c757d; margin: .25rem 0 1.5rem; }
+    .perfil-foto { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 1px solid #e3e6ea; background: #f1f3f5; }
+    .perfil-wrap .form-label { font-weight: 600; font-size: .85rem; }
+    .required-asterisk { color: var(--llanteria-primary, #C92B0A); font-weight: 700; margin-left: 2px; }
+    .perfil-actions { display: flex; justify-content: flex-end; gap: .6rem; border-top: 1px solid #e3e6ea; margin-top: 1.5rem; padding-top: 1.1rem; }
+    .perfil-btn { background: var(--llanteria-primary, #C92B0A); border: 1px solid var(--llanteria-primary, #C92B0A); color: #fff; font-weight: 600; border-radius: .5rem; padding: .55rem 1.25rem; }
+    .perfil-btn:hover { background: #a82308; border-color: #a82308; color: #fff; }
+    .perfil-btn-line { background: #fff; border: 1px solid #cfd4d9; color: #1f2328; font-weight: 600; border-radius: .5rem; padding: .55rem 1.25rem; width: 100%; }
+    .perfil-btn-line:hover { border-color: #000; color: #000; }
+    .perfil-rol { display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: .2rem .6rem; border-radius: 999px; background: rgba(201,43,10,.1); color: var(--llanteria-primary, #C92B0A); }
+</style>
 
-<div class="row g-3">
-    <div class="col-lg-8">
-        <div class="panel">
-            <div class="panel-head">Datos personales</div>
-            <div class="panel-body">
-                <form asp-controller="User" asp-action="ActualizarPerfil" method="post" enctype="multipart/form-data">
-                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
-                    <input type="hidden" asp-for="Id" />
-                    <input type="hidden" asp-for="TemaPreferencia" />
-
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        @if (!string.IsNullOrEmpty(Model.FotoBase64))
-                        {
-                            <img id="previewFoto" class="file-preview rounded-circle" src="@Model.FotoBase64" alt="Foto" />
-                        }
-                        else
-                        {
-                            <img id="previewFoto" class="file-preview rounded-circle" src="~/images/productoos/default-producto.png" alt="Foto" />
-                        }
-                        <div class="flex-grow-1">
-                            <label asp-for="NuevaFoto" class="form-label">Foto</label>
-                            <input asp-for="NuevaFoto" type="file" class="form-control" accept="image/*" data-preview="#previewFoto" />
-                            <span asp-validation-for="NuevaFoto" class="text-danger small"></span>
-                        </div>
-                    </div>
-
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label asp-for="Nombre" class="form-label">Nombre completo</label>
-                            <input asp-for="Nombre" class="form-control" maxlength="150" />
-                            <span asp-validation-for="Nombre" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-6">
-                            <label asp-for="Telefono" class="form-label">Teléfono</label>
-                            <input asp-for="Telefono" class="form-control" maxlength="20" />
-                            <span asp-validation-for="Telefono" class="text-danger small"></span>
-                        </div>
-                        <div class="col-12">
-                            <label asp-for="Correo" class="form-label">Correo</label>
-                            <input asp-for="Correo" class="form-control" readonly />
-                            <div class="form-text">El correo lo gestiona el administrador.</div>
-                        </div>
-                        <div class="col-12">
-                            <label asp-for="Bio" class="form-label">Acerca de ti</label>
-                            <textarea asp-for="Bio" class="form-control" rows="3" maxlength="500"></textarea>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-check form-switch">
-                                <input asp-for="NotificacionesActivas" class="form-check-input" />
-                                <label asp-for="NotificacionesActivas" class="form-check-label">Recibir notificaciones</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-brand">Guardar cambios</button>
-                    </div>
-                </form>
-            </div>
+<div class="perfil-wrap">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-2">
+        <div>
+            <h1 class="perfil-title">Mi perfil</h1>
+            <p class="perfil-sub">Tus datos de contacto y tu contraseña.</p>
         </div>
+        @if (!string.IsNullOrEmpty(Model.Rol))
+        {
+            <span class="perfil-rol mb-3">@Model.Rol</span>
+        }
     </div>
 
-    <div class="col-lg-4">
-        <div class="panel">
-            <div class="panel-head">Cambiar contraseña</div>
-            <div class="panel-body">
-                <form asp-controller="User" asp-action="CambiarPassword" method="post" autocomplete="off">
-                    <div class="mb-3">
-                        <label class="form-label" for="actual">Contraseña actual</label>
-                        <input id="actual" name="actual" type="password" class="form-control" required autocomplete="current-password" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="nueva">Nueva contraseña</label>
-                        <input id="nueva" name="nueva" type="password" class="form-control" minlength="6" required autocomplete="new-password" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="confirmacion">Repite la nueva contraseña</label>
-                        <input id="confirmacion" name="confirmacion" type="password" class="form-control" minlength="6" required autocomplete="new-password" />
-                    </div>
-                    <button type="submit" class="btn btn-line w-100">Actualizar contraseña</button>
-                </form>
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="perfil-card">
+                <div class="perfil-card-head">Datos personales</div>
+                <div class="perfil-card-body">
+                    <form asp-controller="User" asp-action="ActualizarPerfil" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="TemaPreferencia" />
+
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <img id="previewFoto" class="perfil-foto" alt="Foto"
+                                 src="@(string.IsNullOrEmpty(Model.FotoBase64) ? Url.Content("~/images/productoos/default-producto.png") : Model.FotoBase64)" />
+                            <div class="flex-grow-1">
+                                <label asp-for="NuevaFoto" class="form-label">Foto</label>
+                                <input asp-for="NuevaFoto" type="file" class="form-control" accept="image/*" data-preview="#previewFoto" />
+                                <span asp-validation-for="NuevaFoto" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Nombres" class="form-label">Nombres<span class="required-asterisk">*</span></label>
+                                <input asp-for="Nombres" class="form-control" maxlength="100" />
+                                <span asp-validation-for="Nombres" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Apellidos" class="form-label">Apellidos<span class="required-asterisk">*</span></label>
+                                <input asp-for="Apellidos" class="form-control" maxlength="100" />
+                                <span asp-validation-for="Apellidos" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Telefono" class="form-label">Teléfono<span class="required-asterisk">*</span></label>
+                                <input asp-for="Telefono" class="form-control" maxlength="20" />
+                                <span asp-validation-for="Telefono" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Correo" class="form-label">Correo</label>
+                                <input asp-for="Correo" class="form-control" readonly />
+                                <div class="form-text">El correo no se puede cambiar desde aquí.</div>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Bio" class="form-label">Acerca de ti</label>
+                                <textarea asp-for="Bio" class="form-control" rows="3" maxlength="500"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input asp-for="NotificacionesActivas" class="form-check-input" />
+                                    <label asp-for="NotificacionesActivas" class="form-check-label">Recibir notificaciones</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="perfil-actions">
+                            <button type="submit" class="perfil-btn">Guardar cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="perfil-card">
+                <div class="perfil-card-head">Cambiar contraseña</div>
+                <div class="perfil-card-body">
+                    <form asp-controller="User" asp-action="CambiarPassword" method="post">
+                        <div class="mb-3">
+                            <label class="form-label" for="actual">Contraseña actual<span class="required-asterisk">*</span></label>
+                            <input id="actual" name="actual" type="password" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="nueva">Nueva contraseña<span class="required-asterisk">*</span></label>
+                            <input id="nueva" name="nueva" type="password" class="form-control" minlength="6" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="confirmacion">Repite la nueva contraseña<span class="required-asterisk">*</span></label>
+                            <input id="confirmacion" name="confirmacion" type="password" class="form-control" minlength="6" required />
+                        </div>
+                        <button type="submit" class="perfil-btn-line">Actualizar contraseña</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -93,4 +125,13 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Vista previa de la foto elegida (el sitio público no carga admin.js).
+        document.querySelectorAll('input[type=file][data-preview]').forEach(function (inp) {
+            inp.addEventListener('change', function () {
+                var img = document.querySelector(inp.dataset.preview);
+                if (img && inp.files && inp.files[0]) img.src = URL.createObjectURL(inp.files[0]);
+            });
+        });
+    </script>
 }

@@ -121,6 +121,14 @@ IF COL_LENGTH('dbo.Clientes', 'PasswordHash') IS NULL
     ALTER TABLE dbo.Clientes ADD PasswordHash nvarchar(200) NULL;
 
 IF COL_LENGTH('dbo.Productos', 'PrecioPromocion') IS NULL
-    ALTER TABLE dbo.Productos ADD PrecioPromocion decimal(14,2) NULL;");
+    ALTER TABLE dbo.Productos ADD PrecioPromocion decimal(14,2) NULL;
+
+-- Columnas que ahora se guardan cifradas: el texto cifrado es más largo, así que pasan a nvarchar(max).
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'dbo.PerfilUsuario') AND name = 'Bio' AND max_length <> -1)
+    ALTER TABLE dbo.PerfilUsuario ALTER COLUMN Bio nvarchar(max) NULL;
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'dbo.Usuarios') AND name = 'MotivoSancion' AND max_length <> -1)
+    ALTER TABLE dbo.Usuarios ALTER COLUMN MotivoSancion nvarchar(max) NULL;
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'dbo.Clientes') AND name = 'Foto' AND max_length <> -1)
+    ALTER TABLE dbo.Clientes ALTER COLUMN Foto nvarchar(max) NULL;");
     }
 }

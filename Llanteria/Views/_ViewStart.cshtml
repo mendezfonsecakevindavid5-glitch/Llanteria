@@ -13,5 +13,8 @@
                || (controlador == "Resenias" && accion == "Index")
                || (controlador == "Pedidos" && accion is "Index" or "Detalle");
     var esPublico = publicos.Contains(controlador) && !gestion;
+    // El perfil (User) lo ven todos los usuarios con sesión: el personal dentro del panel (con "Mi perfil" marcado en el menú)
+    // y el usuario registrado con el diseño y el pie de página normales, sin panel.
+    if (controlador == "User") esPublico = !Llanteria.Infrastructure.RolesApp.EsPersonal(User);
     Layout = esPublico ? "_Layout" : "_AdminLayout";
 }

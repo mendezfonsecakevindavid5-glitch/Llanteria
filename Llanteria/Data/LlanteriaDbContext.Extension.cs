@@ -1,4 +1,5 @@
 using Llanteria.Models;
+using Llanteria.Seguridad;
 using Microsoft.EntityFrameworkCore;
 
 namespace Llanteria.Data;
@@ -14,6 +15,14 @@ public partial class LlanteriaDbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
+        // Columnas guardadas cifradas (AES-256-GCM). El texto cifrado es más largo que el original:
+        // por eso estas columnas pasan a nvarchar(max) (EsquemaUpdater lo aplica en bases ya creadas).
+        modelBuilder.Entity<Cliente>().Property(e => e.Foto).HasColumnType("nvarchar(max)").Cifrada("Cliente.Foto");
+        modelBuilder.Entity<Empleado>().Property(e => e.Foto).Cifrada("Empleado.Foto");
+        modelBuilder.Entity<PerfilUsuario>().Property(e => e.Bio).HasColumnType("nvarchar(max)").Cifrada("PerfilUsuario.Bio");
+        modelBuilder.Entity<PerfilUsuario>().Property(e => e.FotoCircular).Cifrada("PerfilUsuario.FotoCircular");
+        modelBuilder.Entity<Usuario>().Property(e => e.MotivoSancion).HasColumnType("nvarchar(max)").Cifrada("Usuario.MotivoSancion");
+
         modelBuilder.Entity<Cita>(e =>
         {
             e.ToTable("Citas");

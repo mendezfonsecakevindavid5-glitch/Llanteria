@@ -1,0 +1,7 @@
+
+# Configuracion privada (claves, cadenas de conexion)
+Llanteria_Privado/
+bin/
+obj/
+.vs/
+*.user

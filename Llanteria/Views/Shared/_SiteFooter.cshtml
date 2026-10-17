@@ -1,4 +1,4 @@
-﻿@* Pie de página compartido por el sitio público (_Layout) y el panel (_AdminLayout). *@
+@* Pie de página compartido por el sitio público (_Layout) y el panel (_AdminLayout). *@
 @inject Llanteria.Infrastructure.NegocioInfo Negocio
 @{
     // Redes: si en appsettings.json ("Negocio") no hay enlace, el ícono se muestra sin destino.
@@ -11,43 +11,6 @@
     };
 }
 <footer class="matrix-footer">
-    <svg class="footer-wheel" viewBox="0 0 700 700" aria-hidden="true" focusable="false">
-        <g fill="none" stroke="#fff">
-            <!-- Banda de rodamiento con tacos -->
-            <circle cx="350" cy="350" r="322" stroke-width="64" stroke-opacity=".075" pathLength="360" stroke-dasharray="5 3" />
-            <!-- Hombro y flanco -->
-            <circle cx="350" cy="350" r="290" stroke-width="3" stroke-opacity=".12" />
-            <circle cx="350" cy="350" r="268" stroke-width="10" stroke-opacity=".05" pathLength="360" stroke-dasharray="9 5" />
-            <circle cx="350" cy="350" r="236" stroke-width="2" stroke-opacity=".09" />
-            <!-- Borde del rin -->
-            <circle cx="350" cy="350" r="214" stroke-width="16" stroke-opacity=".10" />
-            <circle cx="350" cy="350" r="200" fill="#fff" fill-opacity=".02" stroke-width="2" stroke-opacity=".12" />
-            <!-- Rayos finos -->
-            <g stroke-width="11" stroke-opacity=".085">
-                <path d="M350 300V168" />
-                <path d="M350 300V168" transform="rotate(36 350 350)" />
-                <path d="M350 300V168" transform="rotate(72 350 350)" />
-                <path d="M350 300V168" transform="rotate(108 350 350)" />
-                <path d="M350 300V168" transform="rotate(144 350 350)" />
-                <path d="M350 300V168" transform="rotate(180 350 350)" />
-                <path d="M350 300V168" transform="rotate(216 350 350)" />
-                <path d="M350 300V168" transform="rotate(252 350 350)" />
-                <path d="M350 300V168" transform="rotate(288 350 350)" />
-                <path d="M350 300V168" transform="rotate(324 350 350)" />
-            </g>
-            <!-- Centro y tuercas -->
-            <circle cx="350" cy="350" r="50" fill="#fff" fill-opacity=".04" stroke-width="8" stroke-opacity=".11" />
-            <circle cx="350" cy="350" r="16" stroke-width="4" stroke-opacity=".12" />
-            <g fill="#fff" fill-opacity=".12" stroke="none">
-                <circle cx="350" cy="313" r="5" />
-                <circle cx="385.2" cy="338.6" r="5" />
-                <circle cx="371.8" cy="380" r="5" />
-                <circle cx="328.2" cy="380" r="5" />
-                <circle cx="314.8" cy="338.6" r="5" />
-            </g>
-        </g>
-    </svg>
-
     <div class="container footer-body">
         <div class="row g-4 g-lg-5">
             <div class="col-md-4">
