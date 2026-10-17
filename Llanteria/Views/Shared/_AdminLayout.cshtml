@@ -4,6 +4,7 @@
     var isAdmin = User.IsInRole("Administrador");
     var nombre = User.Identity?.Name ?? "Usuario";
     var inicial = nombre.Substring(0, 1).ToUpper();
+    var foto = User.FindFirst("Foto")?.Value;
 
     var items = new List<(string C, string A, string Icon, string Text, bool AdminOnly, string Group)>
     {
@@ -36,7 +37,8 @@
     <title>@ViewData["Title"] - Llantería Valledupar Admin</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/brand.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
     <style>
         :root {
@@ -47,34 +49,34 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #F8F9FA;
         }
-        .topbar .brand {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .topbar .brand span {
-            color: var(--llanteria-primary);
-        }
     </style>
 </head>
 <body class="admin">
     <header class="topbar bg-white shadow-sm py-3 px-4 d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-3">
-            <button class="toggle d-lg-none btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-label="Menú">
+            <button class="toggle d-lg-none btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Menú">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <a asp-controller="Dashboard" asp-action="Index" class="brand text-decoration-none text-dark fs-5">LLANTERÍA <span>VALLEDUPAR</span></a>
+            <span class="brand-matrix">Llantería<small class="ms-1">Valledupar</small></span>
         </div>
         <div class="d-flex align-items-center gap-3">
-            <a asp-controller="User" asp-action="Perfil" class="user text-decoration-none text-dark d-flex align-items-center gap-2">
-                <span class="d-none d-md-block text-end lh-sm">
+            <a asp-controller="User" asp-action="Perfil" class="user text-decoration-none text-dark d-flex align-items-center gap-2" title="Mi perfil">
+                <span class="d-none d-md-block text-end lh-sm user-meta">
                     <strong>@nombre</strong><br />
                     <small class="text-muted">@(isAdmin ? "Administrador" : "Empleado")</small>
                 </span>
-                <span class="avatar-initial rounded-circle bg-danger text-white d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">@inicial</span>
+                @if (!string.IsNullOrEmpty(foto))
+                {
+                    <img class="user-avatar rounded-circle" src="@foto" alt="Foto de perfil" style="width: 40px; height: 40px; object-fit: cover;" />
+                }
+                else
+                {
+                    <span class="avatar-initial rounded-circle bg-danger text-white d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">@inicial</span>
+                }
             </a>
-            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-dark btn-sm rounded-pill px-3"><i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Salir</a>
+            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-dark btn-sm rounded-pill px-3 btn-salir" title="Cerrar sesión">
+                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i><span class="salir-txt">Salir</span>
+            </a>
         </div>
     </header>
 
@@ -92,13 +94,17 @@
                 }
             }
             <div class="sidebar-group text-uppercase text-muted fw-bold small mt-4 mb-2 px-2">Sitio</div>
-            <a class="sidebar-link d-flex align-items-center gap-2 py-2 px-3 rounded-2 text-decoration-none text-dark" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-globe" style="width: 20px;"></i>Ver página web</a>
+            <a class="sidebar-link d-flex align-items-center gap-2 py-2 px-3 rounded-2 text-decoration-none text-dark" asp-controller="Home" asp-action="Index">
+                <i class="fa-solid fa-globe" style="width: 20px;"></i>Ver página web
+            </a>
         </aside>
 
         <main class="content flex-grow-1 p-4">
             @RenderBody()
         </main>
     </div>
+
+    <partial name="_SiteFooter" />
 
     <form id="delete-form" method="post" class="d-none">@Html.AntiForgeryToken()</form>
 

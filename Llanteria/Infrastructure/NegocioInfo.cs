@@ -10,13 +10,18 @@ namespace Llanteria.Infrastructure;
 public class NegocioInfo
 {
     public string Nombre { get; set; } = "Llantería Valledupar";
+
     /// <summary>NIT del negocio. Si se llena (appsettings.json, sección "Negocio"), aparece en facturas, reportes y Excel.</summary>
     public string Nit { get; set; } = "";
+
     /// <summary>Texto legal al pie de las facturas en PDF (por ejemplo, resolución de numeración o régimen).</summary>
     public string LeyendaFactura { get; set; } = "Documento generado por el sistema de gestión de Llantería Valledupar.";
+
     public string Telefono { get; set; } = "+57 311 772 3978";
+
     /// <summary>Solo dígitos con indicativo de país, para wa.me.</summary>
     public string WhatsApp { get; set; } = "573117723978";
+
     public string Correo { get; set; } = "superllantasmedellinsas@hotmail.com";
     public string Direccion { get; set; } = "Valledupar, Cesar";
     public string Ciudad { get; set; } = "Valledupar";
@@ -26,8 +31,15 @@ public class NegocioInfo
     public string SemanaCierra { get; set; } = "17:30";
     public string SabadoAbre { get; set; } = "08:00";
     public string SabadoCierra { get; set; } = "16:00";
+
     /// <summary>Opcional: enlace de "Cómo llegar" de Google Maps copiado de la ficha del negocio.</summary>
     public string? EnlaceMapa { get; set; }
+
+    /// <summary>Opcionales: enlaces a las redes del negocio para el pie de página. Si quedan vacíos, el ícono se muestra sin destino.</summary>
+    public string? Instagram { get; set; }
+    public string? Facebook { get; set; }
+    public string? LinkedIn { get; set; }
+    public string? YouTube { get; set; }
 
     private static string Hora(string h)
     {
@@ -69,8 +81,11 @@ public class NegocioInfo
             ["email"] = Correo,
             ["address"] = new Dictionary<string, object>
             {
-                ["@type"] = "PostalAddress", ["streetAddress"] = Direccion, ["addressLocality"] = Ciudad,
-                ["addressRegion"] = "Cesar", ["addressCountry"] = "CO"
+                ["@type"] = "PostalAddress",
+                ["streetAddress"] = Direccion,
+                ["addressLocality"] = Ciudad,
+                ["addressRegion"] = "Cesar",
+                ["addressCountry"] = "CO"
             },
             ["geo"] = new Dictionary<string, object> { ["@type"] = "GeoCoordinates", ["latitude"] = Latitud, ["longitude"] = Longitud },
             ["openingHoursSpecification"] = new object[]

@@ -4,6 +4,7 @@
 }
 
 <style>
+    /* Estilos del Banner principal */
     .banner-hero-matrix {
         position: relative;
         background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.65)), url('/images/ImageBanner.jpg') center/cover no-repeat;
@@ -15,7 +16,9 @@
         margin-top: -85px; /* Compensa el header flotante transparente */
         padding-top: 140px;
     }
-    .banner-content-box { max-width: 750px; }
+    .banner-content-box { 
+        max-width: 750px; 
+    }
     .btn-banner-explorar {
         background-color: #000000 !important;
         color: #FFFFFF !important;
@@ -32,6 +35,143 @@
         border-color: var(--llanteria-primary) !important;
         color: #FFFFFF !important;
     }
+
+    /* ---------- Buscador por medida (del segundo código) ---------- */
+    .finder {
+        background: #16181c;
+        border-radius: 1.25rem;
+        padding: 1.5rem 1.75rem 1.4rem;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, .28);
+        color: #fff;
+    }
+    .finder-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        border-bottom: 1px solid rgba(255, 255, 255, .14);
+        margin-bottom: 1.15rem;
+    }
+    .finder-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: .6rem;
+        padding: .35rem .25rem .85rem;
+        margin-bottom: -1px;
+        border-bottom: 3px solid var(--llanteria-primary);
+        font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
+        font-weight: 500;
+        font-size: 1.05rem;
+        letter-spacing: .02em;
+    }
+    .finder-tab i { 
+        color: #fff; 
+        font-size: 1.25rem; 
+    }
+    .finder-title {
+        margin: 0 0 .85rem;
+        font-size: .85rem;
+        font-weight: 600;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, .62);
+    }
+    .finder-bar {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr) auto;
+        background: #fff;
+        border-radius: .9rem;
+        overflow: hidden;
+    }
+    .finder-field {
+        position: relative;
+        padding: .8rem 1.25rem .55rem;
+        border-right: 1px solid #e5e7eb;
+        transition: box-shadow .15s ease;
+    }
+    .finder-field:focus-within { 
+        box-shadow: inset 0 -3px 0 var(--llanteria-primary); 
+    }
+    .finder-field label {
+        display: block;
+        font-size: .76rem;
+        font-weight: 600;
+        color: #6b7280;
+        margin: 0 0 .1rem;
+    }
+    .finder-field .form-select {
+        border: 0;
+        border-radius: 0;
+        background-color: transparent;
+        padding: .15rem 1.75rem .15rem 0;
+        font-size: 1.12rem;
+        font-weight: 700;
+        color: #16181c;
+        box-shadow: none;
+        cursor: pointer;
+    }
+    .finder-go {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .65rem;
+        border: 0;
+        padding: 0 2.25rem;
+        background: var(--llanteria-primary);
+        color: #fff;
+        font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        transition: background-color .2s ease;
+    }
+    .finder-go:hover, .finder-go:focus-visible { 
+        background: #A32008; 
+        color: #fff; 
+    }
+    .finder-go i { 
+        font-size: .95rem; 
+        transition: transform .2s ease; 
+    }
+    .finder-go:hover i { 
+        transform: translateX(4px); 
+    }
+    .finder-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .75rem 1.5rem;
+        flex-wrap: wrap;
+        margin-top: .95rem;
+    }
+    .finder-hint { 
+        margin: 0; 
+        font-size: .85rem; 
+        color: rgba(255, 255, 255, .6); 
+    }
+    .finder-reset {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, .35);
+        color: #fff;
+        border-radius: .5rem;
+        padding: .4rem 1.1rem;
+        font-size: .85rem;
+        font-weight: 600;
+        letter-spacing: .03em;
+        transition: background-color .2s ease, border-color .2s ease;
+    }
+    .finder-reset:hover { 
+        background: rgba(255, 255, 255, .1); 
+        border-color: #fff; 
+    }
+
+    @@media (max-width: 767.98px) {
+        .finder { padding: 1.15rem 1rem; }
+        .finder-bar { grid-template-columns: 1fr; }
+        .finder-field { border-right: 0; border-bottom: 1px solid #e5e7eb; }
+        .finder-go { padding: .95rem 1rem; }
+    }
 </style>
 
 <!-- Banner principal -->
@@ -46,40 +186,64 @@
     </div>
 </section>
 
-<!-- Buscador por medida: lleva al catálogo con los filtros ya aplicados -->
+<!-- Panel de Búsqueda por medida -->
 <div class="container search-wrap mt-4">
-    <form method="get" asp-controller="Llantas" asp-action="Index" class="search-matrix-panel p-4 bg-dark rounded-4 shadow">
-        <h2 class="h6 text-white text-uppercase mb-3" style="letter-spacing:.8px">Buscar llantas por medida</h2>
-        <div class="row g-3">
-            <div class="col-md-3">
-                <label class="small text-white-50" for="anchoSelect">Ancho</label>
-                <select id="anchoSelect" name="ancho" class="form-select">
-                    <option value="">Todos</option>
-                    @foreach (var a in (List<string>)ViewBag.Anchos) { <option value="@a">@a</option> }
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="small text-white-50" for="perfilSelect">Perfil</label>
-                <select id="perfilSelect" name="perfil" class="form-select">
-                    <option value="">Todos</option>
-                    @foreach (var p in (List<string>)ViewBag.Perfiles) { <option value="@p">@p</option> }
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="small text-white-50" for="diametroSelect">Rin</label>
-                <select id="diametroSelect" name="diametro" class="form-select">
-                    <option value="">Todos</option>
-                    @foreach (var d in (List<string>)ViewBag.Diametros) { <option value="@d">@d</option> }
-                </select>
-            </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <button type="submit" class="btn w-100 py-2 fw-bold text-white" style="background-color: var(--llanteria-primary); border:none;">Buscar</button>
-            </div>
+    <section class="finder" aria-labelledby="finderTitulo">
+        <div class="finder-head">
+            <span class="finder-tab"><i class="fa-solid fa-circle-dot"></i> Medida</span>
         </div>
-        <div class="mt-3 small text-white-50">Ejemplo: una llanta 205/55 R16 se busca con ancho 205, perfil 55 y rin 16.</div>
-    </form>
+        <h2 id="finderTitulo" class="finder-title">Buscar llantas por medida</h2>
+
+        <div class="finder-bar">
+            <div class="finder-field">
+                <label for="anchoSelect">Ancho</label>
+                <select id="anchoSelect" class="form-select">
+                    <option value="">Todos</option>
+                    @if (ViewBag.Anchos != null)
+                    {
+                        foreach (var a in (List<string>)ViewBag.Anchos) { <option value="@a">@a</option> }
+                    }
+                </select>
+            </div>
+            <div class="finder-field">
+                <label for="perfilSelect">Perfil</label>
+                <select id="perfilSelect" class="form-select">
+                    <option value="">Todos</option>
+                    @if (ViewBag.Perfiles != null)
+                    {
+                        foreach (var p in (List<string>)ViewBag.Perfiles) { <option value="@p">@p</option> }
+                    }
+                </select>
+            </div>
+            <div class="finder-field">
+                <label for="diametroSelect">Rin</label>
+                <select id="diametroSelect" class="form-select">
+                    <option value="">Todos</option>
+                    @if (ViewBag.Diametros != null)
+                    {
+                        foreach (var d in (List<string>)ViewBag.Diametros) { <option value="@d">@d</option> }
+                    }
+                </select>
+            </div>
+            <button type="button" id="btnBuscarLlantas" class="finder-go">Buscar llantas <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+
+        <div class="finder-foot">
+            <p class="finder-hint">Ejemplo: una llanta 205/55 R16 se busca con ancho 205, perfil 55 y rin 16.</p>
+            <button type="button" id="btnNuevaBusqueda" class="finder-reset">Nueva búsqueda</button>
+        </div>
+    </section>
 </div>
 
+<!-- Resultados de Búsqueda -->
+<section id="resultadosBusqueda" class="section pb-0 d-none">
+    <div class="container">
+        <h2 class="section-title mb-3">Resultados de la búsqueda</h2>
+        <div class="row g-3" id="contenedorTarjetas"></div>
+    </div>
+</section>
+
+<!-- Partials del primer código -->
 <partial name="_Marcas" model="logos" />
 <partial name="_Categorias" />
 <partial name="_Servicios" />
@@ -88,4 +252,49 @@
 
 @section Scripts {
     <script src="~/js/tienda.js" asp-append-version="true"></script>
+    <script>
+        function esc(t) {
+            const d = document.createElement('div');
+            d.textContent = t == null ? '' : String(t);
+            return d.innerHTML;
+        }
+
+        document.getElementById('btnNuevaBusqueda')?.addEventListener('click', function () {
+            ['anchoSelect', 'perfilSelect', 'diametroSelect'].forEach(function (id) { document.getElementById(id).value = ''; });
+            document.getElementById('contenedorTarjetas').innerHTML = '';
+            document.getElementById('resultadosBusqueda').classList.add('d-none');
+            document.getElementById('anchoSelect').focus();
+        });
+
+        document.getElementById('btnBuscarLlantas')?.addEventListener('click', async function () {
+            const ancho = document.getElementById('anchoSelect').value;
+            const perfil = document.getElementById('perfilSelect').value;
+            const diametro = document.getElementById('diametroSelect').value;
+            if (!ancho && !perfil && !diametro) {
+                Swal.fire({ icon: 'info', title: 'Elige una medida', text: 'Selecciona al menos un valor para buscar.', confirmButtonColor: '#C92B0A' });
+                return;
+            }
+
+            const url = '@Url.Action("BuscarLlantas", "Home")' + '?ancho=' + encodeURIComponent(ancho) +
+                '&perfil=' + encodeURIComponent(perfil) + '&diametro=' + encodeURIComponent(diametro);
+            const contenedor = document.getElementById('contenedorTarjetas');
+            try {
+                const r = await fetch(url);
+                if (!r.ok) throw new Error(r.status);
+                const lista = await r.json();
+                contenedor.innerHTML = lista.length ? lista.map(function (l) {
+                    return '<div class="col-sm-6 col-lg-4"><div class="premium-product-card h-100 d-flex flex-column border rounded-3 p-3 bg-white shadow-sm">' +
+                        '<img class="product-img img-fluid mb-3 rounded" src="' + esc(l.img) + '" alt="" style="height: 200px; object-fit: contain;">' +
+                        '<div class="d-flex flex-column flex-grow-1"><h3 class="h6 fw-bold">' + esc(l.nombre) + '</h3>' +
+                        '<div class="fs-5 fw-bold text-danger mb-3">' + esc(l.precio) + '</div>' +
+                        '<a href="@Url.Action("Index", "Contacto")" class="btn btn-danger btn-sm mt-auto fw-bold" style="background-color: var(--llanteria-primary); border:none;">Cotizar</a></div></div></div>';
+                }).join('') : '<div class="col-12 text-muted">No encontramos llantas con esa medida. Escríbenos y las conseguimos.</div>';
+                const seccion = document.getElementById('resultadosBusqueda');
+                seccion.classList.remove('d-none');
+                seccion.scrollIntoView({ behavior: 'smooth' });
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'No se pudo buscar', text: 'Inténtalo de nuevo en un momento.', confirmButtonColor: '#212529' });
+            }
+        });
+    </script>
 }

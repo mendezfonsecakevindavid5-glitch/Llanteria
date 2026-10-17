@@ -1,11 +1,21 @@
+@using Microsoft.AspNetCore.Http
 @inject Llanteria.Infrastructure.NegocioInfo Negocio
 @{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
     bool isHomeIndex = currentController.Equals("Home", StringComparison.OrdinalIgnoreCase) && currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase);
-    var unidadesCarrito = Llanteria.Infrastructure.Carrito.Unidades(Context.Request);
 
-    bool Activo(string c) => currentController.Equals(c, StringComparison.OrdinalIgnoreCase);
+    bool isInicio = isHomeIndex;
+    bool isLlantas = currentController.Equals("Llantas", StringComparison.OrdinalIgnoreCase);
+    bool isBaterias = currentController.Equals("Baterias", StringComparison.OrdinalIgnoreCase);
+    bool isPromociones = currentController.Equals("Promociones", StringComparison.OrdinalIgnoreCase);
+    bool isEmpresas = currentController.Equals("Empresas", StringComparison.OrdinalIgnoreCase);
+    bool isBlog = currentController.Equals("Blog", StringComparison.OrdinalIgnoreCase);
+    bool isContacto = currentController.Equals("Contacto", StringComparison.OrdinalIgnoreCase);
+
+    // Contador del carrito: se lee de la sesión ("CarritoCantidad"). Mientras no exista un carrito que lo llene, muestra 0.
+    int cartCount = 0;
+    try { cartCount = Context.Session.GetInt32("CarritoCantidad") ?? 0; } catch { }
 }
 <!DOCTYPE html>
 <html lang="es">
@@ -17,10 +27,10 @@
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/public.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/tienda.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/brand.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Llanteria.styles.css" asp-append-version="true" />
 
     <style>
@@ -28,8 +38,14 @@
             --llanteria-primary: #C92B0A;
             --llanteria-dark: #09090B;
             --llanteria-light: #FFFFFF;
+            --cart-red: #E11D2A;
         }
-        html, body { height: 100%; margin: 0; }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #F8F9FA;
@@ -37,97 +53,231 @@
             display: flex;
             flex-direction: column;
         }
+
+        /* ---------- Header ---------- */
         .michelin-nav-global {
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 1100;
-            background: transparent; backdrop-filter: blur(10px); padding: 1.25rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1100;
+            background: transparent;
+            backdrop-filter: blur(10px);
+            padding: 1.1rem 0;
             transition: background 0.3s ease, box-shadow 0.3s ease;
         }
+
         .michelin-nav-global.solid-bg,
         .michelin-nav-global.scrolled,
         .michelin-nav-global:hover {
             background: rgba(255, 255, 255, 0.98) !important;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
-        .brand-matrix {
-            font-family: 'Orbitron', sans-serif; font-weight: 900; text-transform: uppercase; text-decoration: none;
-            color: #FFFFFF !important; font-size: 1.4rem; text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
-            transition: color 0.3s ease; cursor: pointer;
+
+        /* Los elementos del header arrancan más a la izquierda: sin el tope del .container */
+        .michelin-nav-global .header-shell {
+            max-width: none; /* site.css limita .container-fluid a 1500px y lo centraba */
+            padding-left: clamp(1rem, 3.5vw, 4rem);
+            padding-right: clamp(1rem, 3.5vw, 4rem);
         }
+
+        /* Nombre del proyecto: ya no es un enlace */
+        .brand-matrix {
+            color: #FFFFFF !important;
+            pointer-events: none;
+            margin-right: clamp(1rem, 2.4vw, 2.75rem);
+            white-space: nowrap;
+        }
+
         .michelin-nav-global.solid-bg .brand-matrix,
         .michelin-nav-global.scrolled .brand-matrix,
-        .michelin-nav-global:hover .brand-matrix { color: #000000 !important; text-shadow: none; }
-        .brand-matrix small { color: var(--llanteria-primary) !important; }
-
-        .michelin-nav-global .navbar-nav .nav-link {
-            color: #FFFFFF !important; font-weight: 600; transition: color 0.15s ease-in-out;
-            text-decoration: none !important; text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
-            position: relative; padding-bottom: 4px; margin: 0 6px;
+        .michelin-nav-global:hover .brand-matrix {
+            color: #000000 !important;
+            text-shadow: none;
         }
+
+        /* Nav links: Roboto medio, un poco más grande (referencia: interllantas.com) */
+        .michelin-nav-global .navbar-nav .nav-link {
+            color: #FFFFFF !important;
+            font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
+            font-weight: 500;
+            font-size: 1.05rem;
+            letter-spacing: .01em;
+            transition: color 0.15s ease-in-out;
+            text-decoration: none !important;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+            position: relative;
+            padding-bottom: 4px;
+            margin: 0 4px; /* Separación nítida entre cada nav item */
+            white-space: nowrap;
+        }
+
+        /* site.css mueve y pinta de gris los .nav-link al pasar el mouse: en el header no */
+        .michelin-nav-global .navbar-nav .nav-link:hover {
+            background: transparent;
+            transform: none;
+        }
+
         .michelin-nav-global.solid-bg .navbar-nav .nav-link,
         .michelin-nav-global.scrolled .navbar-nav .nav-link,
-        .michelin-nav-global:hover .navbar-nav .nav-link { color: #000000 !important; text-shadow: none; }
+        .michelin-nav-global:hover .navbar-nav .nav-link {
+            color: #000000 !important;
+            text-shadow: none;
+        }
 
         .michelin-nav-global.solid-bg .navbar-nav .nav-link::after,
         .michelin-nav-global.scrolled .navbar-nav .nav-link::after,
         .michelin-nav-global:hover .navbar-nav .nav-link::after {
-            content: ''; position: absolute; width: 0; height: 2px; bottom: 0; left: 50%;
-            background-color: #000000; transition: width 0.2s ease, left 0.2s ease;
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: #000000;
+            transition: width 0.2s ease, left 0.2s ease;
         }
+
         .michelin-nav-global.solid-bg .navbar-nav .nav-link:hover::after,
         .michelin-nav-global.scrolled .navbar-nav .nav-link:hover::after,
-        .michelin-nav-global:hover .navbar-nav .nav-link:hover::after { width: 80%; left: 10%; }
-
-        /* Página actual */
-        .navbar-nav .nav-link.is-current { color: var(--llanteria-primary) !important; }
-        .michelin-nav-global.solid-bg .navbar-nav .nav-link.is-current::after,
-        .michelin-nav-global.scrolled .navbar-nav .nav-link.is-current::after,
-        .michelin-nav-global:hover .navbar-nav .nav-link.is-current::after { width: 80%; left: 10%; background-color: var(--llanteria-primary); }
-
-        .btn-matrix-action {
-            background: #000000 !important; color: #FFFFFF !important; border: 1px solid #000000 !important;
-            padding: 0.5rem 1.25rem; border-radius: 0.5rem; font-weight: 700; transition: background-color 0.2s ease;
-            display: inline-flex; align-items: center; gap: 10px;
+        .michelin-nav-global:hover .navbar-nav .nav-link:hover::after {
+            width: 80%;
+            left: 10%;
         }
-        .btn-matrix-action:hover { background: #212529 !important; border-color: #212529 !important; color: #FFFFFF !important; }
 
-        .main-matrix-container { flex: 1 0 auto; padding-bottom: 2rem; }
-        .matrix-footer { flex-shrink: 0; background: #000000; border-top: 1px solid rgba(255, 255, 255, 0.1); color: var(--llanteria-light); }
-        .footer-links { padding: 0; list-style: none; }
-        .footer-links li { margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: center; }
-        @@media (min-width: 768px) { .footer-links li { justify-content: flex-start; } }
+        /* Página actual / clic: rojo (más específico que el color del header sólido) */
+        .michelin-nav-global .navbar-nav .nav-item .nav-link.clicked-red {
+            color: var(--llanteria-primary) !important;
+        }
+
+        /* Carrito con contador en la esquina superior derecha */
+        .header-cart {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.5rem;
+            line-height: 1;
+            text-decoration: none;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+            transition: color .2s ease;
+        }
+
+        .michelin-nav-global.solid-bg .header-cart,
+        .michelin-nav-global.scrolled .header-cart,
+        .michelin-nav-global:hover .header-cart {
+            color: #000000;
+            text-shadow: none;
+        }
+
+        .header-cart:hover { color: var(--llanteria-primary) !important; }
+
+        .cart-badge {
+            position: absolute;
+            top: -9px;
+            right: -11px;
+            min-width: 19px;
+            height: 19px;
+            padding: 0 5px;
+            border-radius: 999px;
+            background: var(--cart-red);
+            color: #FFFFFF;
+            font-family: 'Roboto', sans-serif;
+            font-size: .72rem;
+            font-weight: 700;
+            line-height: 19px;
+            text-align: center;
+            text-shadow: none;
+            box-shadow: 0 0 0 2px rgba(255,255,255,.9);
+        }
+
+        /* Botón Iniciar Sesión (Negro, semirredondeado, con ícono de usuario) */
+        .btn-matrix-action {
+            background: #000000 !important;
+            color: #FFFFFF !important;
+            border: 1px solid #000000 !important;
+            padding: 0.55rem 1.25rem;
+            border-radius: 0.5rem;
+            font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
+            font-weight: 500;
+            font-size: 1.02rem;
+            letter-spacing: .01em;
+            white-space: nowrap;
+            transition: background-color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-matrix-action:hover {
+            background: #212529 !important;
+            border-color: #212529 !important;
+            color: #FFFFFF !important;
+        }
+
+        .main-matrix-container {
+            flex: 1 0 auto;
+            padding-bottom: 2rem;
+        }
+
+        /* Entre 1200 y 1399 px se compacta un poco para que todo quepa en una línea */
+        @@media (min-width: 1200px) and (max-width: 1399.98px) {
+            .brand-matrix { font-size: 1.2rem; }
+            .michelin-nav-global .navbar-nav .nav-link { font-size: .98rem; margin: 0 1px; }
+            .btn-matrix-action { font-size: .96rem; padding: .5rem 1rem; }
+        }
+
+        @@media (max-width: 1199.98px) {
+            /* El ícono del menú es oscuro por defecto: se invierte mientras el header es transparente */
+            .michelin-nav-global:not(.solid-bg):not(.scrolled):not(:hover) .navbar-toggler-icon { filter: invert(1); }
+            .michelin-nav-global .navbar-collapse { padding: .5rem 0 .25rem; }
+            .header-cart { align-self: flex-start; margin: .25rem .75rem; }
+        }
     </style>
     @await RenderSectionAsync("Styles", required: false)
     <script type="application/ld+json">@Html.Raw(Negocio.JsonLd($"{Context.Request.Scheme}://{Context.Request.Host}/"))</script>
 </head>
 <body class="public">
     <header>
-        <nav class="navbar navbar-expand-lg site-nav michelin-nav-global @(!isHomeIndex ? "solid-bg" : "")" id="mainNavbar">
-            <div class="container">
-                <a class="navbar-brand brand-matrix" asp-controller="Home" asp-action="Index">
-                    Llantería<small class="ms-1">Valledupar</small>
-                </a>
+        <nav class="navbar navbar-expand-xl site-nav michelin-nav-global @(!isHomeIndex ? "solid-bg" : "")" id="mainNavbar">
+            <div class="container-fluid header-shell">
+                <span class="navbar-brand brand-matrix">Llantería<small class="ms-1">Valledupar</small></span>
 
-                <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-label="Menú">
+                <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Menú">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarContent">
-                    <ul class="navbar-nav me-auto align-items-lg-center ms-lg-4 gap-lg-2" id="navMenuList">
-                        <li class="nav-item"><a class="nav-link @(isHomeIndex ? "is-current" : "")" asp-controller="Home" asp-action="Index">Inicio</a></li>
-                        <li class="nav-item"><a class="nav-link @(Activo("Llantas") ? "is-current" : "")" asp-controller="Llantas" asp-action="Index">Llantas</a></li>
-                        <li class="nav-item"><a class="nav-link @(Activo("Baterias") ? "is-current" : "")" asp-controller="Baterias" asp-action="Index">Baterías</a></li>
-                        <li class="nav-item"><a class="nav-link @(Activo("Lubricantes") ? "is-current" : "")" asp-controller="Lubricantes" asp-action="Index">Lubricantes</a></li>
-                        <li class="nav-item"><a class="nav-link @(Activo("Promociones") ? "is-current" : "")" asp-controller="Promociones" asp-action="Index">Promociones</a></li>
-                        <li class="nav-item"><a class="nav-link @(Activo("Empresas") ? "is-current" : "")" asp-controller="Empresas" asp-action="Index">Empresas</a></li>
-                        <li class="nav-item"><a class="nav-link @(Activo("Blog") ? "is-current" : "")" asp-controller="Blog" asp-action="Index">Blog</a></li>
-                        <li class="nav-item"><a class="nav-link @(Activo("Contacto") ? "is-current" : "")" asp-controller="Contacto" asp-action="Index">Contacto</a></li>
+                    <ul class="navbar-nav me-auto align-items-xl-center gap-xl-1" id="navMenuList">
+                        <li class="nav-item">
+                            <a class="nav-link @(isInicio ? "clicked-red" : "")" asp-controller="Home" asp-action="Index">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isLlantas ? "clicked-red" : "")" asp-controller="Llantas" asp-action="Index">Llantas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isBaterias ? "clicked-red" : "")" asp-controller="Baterias" asp-action="Index">Baterías</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isPromociones ? "clicked-red" : "")" asp-controller="Promociones" asp-action="Index">Promociones</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isEmpresas ? "clicked-red" : "")" asp-controller="Empresas" asp-action="Index">Empresas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isBlog ? "clicked-red" : "")" asp-controller="Blog" asp-action="Index">Blog</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isContacto ? "clicked-red" : "")" asp-controller="Contacto" asp-action="Index">Contacto</a>
+                        </li>
                     </ul>
 
-                    <ul class="navbar-nav ms-auto align-items-center gap-3 mt-3 mt-lg-0">
+                    <ul class="navbar-nav ms-auto align-items-xl-center gap-3 mt-3 mt-xl-0">
                         <li class="nav-item">
-                            <a class="nav-link tc-cart-link @(Activo("Carrito") ? "is-current" : "")" asp-controller="Carrito" asp-action="Index" title="Carrito" aria-label="Carrito de compras">
-                                <i class="fa-solid fa-cart-shopping fa-lg"></i>
-                                @if (unidadesCarrito > 0) { <span class="tc-cart-badge">@unidadesCarrito</span> }
+                            <a class="header-cart header-interactable" asp-controller="Llantas" asp-action="Index" title="Carrito" aria-label="Carrito de compras, @cartCount productos">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                                <span class="cart-badge" id="cartCount">@cartCount</span>
                             </a>
                         </li>
                         @if (!User.Identity!.IsAuthenticated)
@@ -144,10 +294,9 @@
                             var username = User.Identity.Name ?? "Usuario";
                             var defaultAvatar = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(username)}&background=C92B0A&color=fff&rounded=true";
                             var avatarUrl = !string.IsNullOrEmpty(fotoClaim) ? fotoClaim : defaultAvatar;
-                            var destinoPerfil = User.IsInRole("Cliente") ? Url.Action("Index", "MiCuenta") : Url.Action("Perfil", "User");
 
                             <li class="nav-item d-flex align-items-center me-1">
-                                <a href="@destinoPerfil" title="Mi cuenta" class="header-interactable">
+                                <a asp-controller="User" asp-action="Perfil" title="Mi Perfil" class="header-interactable">
                                     <img src="@avatarUrl" alt="Foto de perfil" class="rounded-circle border border-2 border-white shadow-sm" style="width: 42px; height: 42px; object-fit: cover;" />
                                 </a>
                             </li>
@@ -169,33 +318,7 @@
         @RenderBody()
     </main>
 
-    <footer class="matrix-footer py-4">
-        <div class="container">
-            <div class="row g-4 mb-3">
-                <div class="col-md-4">
-                    <h5 class="text-white fw-bold">Llantería Valledupar</h5>
-                    <p class="small mb-0 text-white-50">Venta de llantas, aceites y servicios de mantenimiento automotriz.</p>
-                </div>
-                <div class="col-md-4">
-                    <h5 class="text-white fw-bold">Contacto</h5>
-                    <ul class="footer-links">
-                        <li><i class="fa-solid fa-phone me-2 text-danger"></i><a href="tel:@Negocio.TelefonoLimpio" class="text-reset text-decoration-none">@Negocio.Telefono</a></li>
-                        <li><i class="fa-solid fa-envelope me-2 text-danger"></i>@Negocio.Correo</li>
-                        <li><i class="fa-solid fa-location-dot me-2 text-danger"></i><a href="@Negocio.ComoLlegar" target="_blank" rel="noopener" class="text-reset text-decoration-none">@Negocio.Direccion</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5 class="text-white fw-bold">Horario</h5>
-                    <ul class="footer-links">
-                        <li><i class="fa-solid fa-clock me-2 text-danger"></i><span class="text-white-50">Lunes a viernes: @Negocio.HorarioSemana</span></li>
-                        <li><i class="fa-solid fa-clock me-2 text-danger"></i><span class="text-white-50">Sábados: @Negocio.HorarioSabado</span></li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="border-secondary" />
-            <p class="text-center small mb-0 text-white-50">&copy; @DateTime.Now.Year Llantería Valledupar. Todos los derechos reservados.</p>
-        </div>
-    </footer>
+    <partial name="_SiteFooter" />
 
     <a class="wa-float" href="@Negocio.LinkWhatsApp(null)" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
         <i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span>
@@ -204,14 +327,35 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @if (isHomeIndex)
-    {
-        <script>
-            window.addEventListener('scroll', function () {
-                document.getElementById('mainNavbar').classList.toggle('scrolled', window.scrollY > 40);
+    <script>
+        window.addEventListener('scroll', function () {
+            const nav = document.getElementById('mainNavbar');
+            @if (isHomeIndex)
+            {
+                <text>
+                if (window.scrollY > 40) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+                </text>
+            }
+        });
+
+        // Lógica para cambiar color a rojo al hacer clic en un nav-link
+        document.querySelectorAll('#navMenuList .nav-link').forEach(link => {
+            link.addEventListener('click', function () {
+                document.querySelectorAll('#navMenuList .nav-link').forEach(l => l.classList.remove('clicked-red'));
+                this.classList.add('clicked-red');
             });
-        </script>
-    }
+        });
+
+        // Punto de enganche para el carrito: window.actualizarContadorCarrito(3) actualiza el número del ícono.
+        window.actualizarContadorCarrito = function (n) {
+            const el = document.getElementById('cartCount');
+            if (el) el.textContent = n;
+        };
+    </script>
     <partial name="_Alertas" />
     @await RenderSectionAsync("Scripts", required: false)
 </body>

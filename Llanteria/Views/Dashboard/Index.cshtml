@@ -18,16 +18,16 @@
 </div>
 
 <div class="row g-3 mb-3">
-    <div class="col-6 col-xl-3"><div class="stat accent"><div class="label">Ventas del mes</div><div class="value money">@Model.VentasMes.ToString("C0")</div></div></div>
-    <div class="col-6 col-xl-3"><div class="stat"><div class="label">Facturas del mes</div><div class="value">@Model.FacturasMes</div></div></div>
-    <div class="col-6 col-xl-3"><div class="stat"><div class="label">Clientes</div><div class="value">@Model.TotalClientes</div></div></div>
+    <div class="col-6 col-xl-3"><div class="stat accent"><span class="stat-icon"><i class="fa-solid fa-sack-dollar"></i></span><div class="label">Ventas del mes</div><div class="value money">@Model.VentasMes.ToString("C0")</div></div></div>
+    <div class="col-6 col-xl-3"><div class="stat"><span class="stat-icon"><i class="fa-solid fa-file-invoice-dollar"></i></span><div class="label">Facturas del mes</div><div class="value">@Model.FacturasMes</div></div></div>
+    <div class="col-6 col-xl-3"><div class="stat"><span class="stat-icon"><i class="fa-solid fa-users"></i></span><div class="label">Clientes</div><div class="value">@Model.TotalClientes</div></div></div>
     @if (esAdmin)
     {
-        <div class="col-6 col-xl-3"><div class="stat"><div class="label">Gastos del mes</div><div class="value money">@Model.GastosMes.ToString("C0")</div></div></div>
+        <div class="col-6 col-xl-3"><div class="stat"><span class="stat-icon"><i class="fa-solid fa-money-bill-wave"></i></span><div class="label">Gastos del mes</div><div class="value money">@Model.GastosMes.ToString("C0")</div></div></div>
     }
     else
     {
-        <div class="col-6 col-xl-3"><div class="stat"><div class="label">Productos</div><div class="value">@Model.TotalProductos</div></div></div>
+        <div class="col-6 col-xl-3"><div class="stat"><span class="stat-icon"><i class="fa-solid fa-box"></i></span><div class="label">Productos</div><div class="value">@Model.TotalProductos</div></div></div>
     }
 </div>
 
@@ -38,7 +38,7 @@
                 <span>Últimos 6 meses</span>
                 <span class="small text-muted">
                     <span class="legend-dot" style="background:var(--brand)"></span>Ventas
-                    @if (esAdmin) { <span class="legend-dot ms-2" style="background:#6b7280"></span><span>Gastos</span> }
+                    @if (esAdmin) { <span class="legend-dot ms-2" style="background:#16181c"></span><span>Gastos</span> }
                 </span>
             </div>
             <div class="panel-body">
@@ -204,7 +204,6 @@
                         </tbody>
                     </table>
                     <script>
-                        // Los reportes con periodo toman las fechas elegidas arriba.
                         (function () {
                             var desde = document.getElementById('fechaInicio'), hasta = document.getElementById('fechaFin');
                             document.querySelectorAll('[data-reporte]').forEach(function (a) {
@@ -230,9 +229,9 @@
         .bars { display:flex; align-items:flex-end; gap:.75rem; height:220px; }
         .bar-col { flex:1; height:100%; display:flex; flex-direction:column; justify-content:flex-end; }
         .bar-pair { flex:1; display:flex; align-items:flex-end; justify-content:center; gap:4px; }
-        .bar { width:42%; max-width:34px; min-height:2px; border-radius:3px 3px 0 0; }
+        .bar { width:42%; max-width:36px; min-height:2px; border-radius:6px 6px 0 0; }
         .bar-v { background:var(--brand); }
-        .bar-g { background:#6b7280; }
+        .bar-g { background:#16181c; }
         .bar-label { text-align:center; font-size:12px; color:var(--muted); margin-top:.4rem; text-transform:capitalize; }
     </style>
 }

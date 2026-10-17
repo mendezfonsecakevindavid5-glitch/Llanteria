@@ -1,0 +1,93 @@
+﻿@* Pie de página compartido por el sitio público (_Layout) y el panel (_AdminLayout). *@
+@inject Llanteria.Infrastructure.NegocioInfo Negocio
+@{
+    // Redes: si en appsettings.json ("Negocio") no hay enlace, el ícono se muestra sin destino.
+    var redes = new (string? Url, string Icono, string Nombre)[]
+    {
+        (Negocio.Instagram, "fa-instagram", "Instagram"),
+        (Negocio.Facebook, "fa-facebook-f", "Facebook"),
+        (Negocio.LinkedIn, "fa-linkedin-in", "LinkedIn"),
+        (Negocio.YouTube, "fa-youtube", "YouTube")
+    };
+}
+<footer class="matrix-footer">
+    <svg class="footer-wheel" viewBox="0 0 700 700" aria-hidden="true" focusable="false">
+        <g fill="none" stroke="#fff">
+            <!-- Banda de rodamiento con tacos -->
+            <circle cx="350" cy="350" r="322" stroke-width="64" stroke-opacity=".075" pathLength="360" stroke-dasharray="5 3" />
+            <!-- Hombro y flanco -->
+            <circle cx="350" cy="350" r="290" stroke-width="3" stroke-opacity=".12" />
+            <circle cx="350" cy="350" r="268" stroke-width="10" stroke-opacity=".05" pathLength="360" stroke-dasharray="9 5" />
+            <circle cx="350" cy="350" r="236" stroke-width="2" stroke-opacity=".09" />
+            <!-- Borde del rin -->
+            <circle cx="350" cy="350" r="214" stroke-width="16" stroke-opacity=".10" />
+            <circle cx="350" cy="350" r="200" fill="#fff" fill-opacity=".02" stroke-width="2" stroke-opacity=".12" />
+            <!-- Rayos finos -->
+            <g stroke-width="11" stroke-opacity=".085">
+                <path d="M350 300V168" />
+                <path d="M350 300V168" transform="rotate(36 350 350)" />
+                <path d="M350 300V168" transform="rotate(72 350 350)" />
+                <path d="M350 300V168" transform="rotate(108 350 350)" />
+                <path d="M350 300V168" transform="rotate(144 350 350)" />
+                <path d="M350 300V168" transform="rotate(180 350 350)" />
+                <path d="M350 300V168" transform="rotate(216 350 350)" />
+                <path d="M350 300V168" transform="rotate(252 350 350)" />
+                <path d="M350 300V168" transform="rotate(288 350 350)" />
+                <path d="M350 300V168" transform="rotate(324 350 350)" />
+            </g>
+            <!-- Centro y tuercas -->
+            <circle cx="350" cy="350" r="50" fill="#fff" fill-opacity=".04" stroke-width="8" stroke-opacity=".11" />
+            <circle cx="350" cy="350" r="16" stroke-width="4" stroke-opacity=".12" />
+            <g fill="#fff" fill-opacity=".12" stroke="none">
+                <circle cx="350" cy="313" r="5" />
+                <circle cx="385.2" cy="338.6" r="5" />
+                <circle cx="371.8" cy="380" r="5" />
+                <circle cx="328.2" cy="380" r="5" />
+                <circle cx="314.8" cy="338.6" r="5" />
+            </g>
+        </g>
+    </svg>
+
+    <div class="container footer-body">
+        <div class="row g-4 g-lg-5">
+            <div class="col-md-4">
+                <span class="brand-matrix footer-brand">Llantería<small class="ms-1">Valledupar</small></span>
+                <p class="footer-text mt-3 mb-0">Venta de llantas, aceites y servicios de mantenimiento automotriz.</p>
+                <ul class="footer-social" aria-label="Redes sociales">
+                    @foreach (var r in redes)
+                    {
+                        <li>
+                            @if (!string.IsNullOrWhiteSpace(r.Url))
+                            {
+                                <a href="@r.Url" target="_blank" rel="noopener" aria-label="@r.Nombre"><i class="fa-brands @r.Icono"></i></a>
+                            }
+                            else
+                            {
+                                <span role="img" aria-label="@r.Nombre"><i class="fa-brands @r.Icono"></i></span>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h5 class="footer-title">Contacto</h5>
+                <ul class="footer-links">
+                    <li><i class="fa-solid fa-phone"></i><a href="tel:@Negocio.TelefonoLimpio">@Negocio.Telefono</a></li>
+                    <li><i class="fa-solid fa-envelope"></i><span>@Negocio.Correo</span></li>
+                    <li><i class="fa-solid fa-location-dot"></i><a href="@Negocio.ComoLlegar" target="_blank" rel="noopener">@Negocio.Direccion</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h5 class="footer-title">Horario</h5>
+                <ul class="footer-links">
+                    <li><i class="fa-solid fa-clock"></i><span class="is-muted">Lunes a viernes: @Negocio.HorarioSemana</span></li>
+                    <li><i class="fa-solid fa-clock"></i><span class="is-muted">Sábados: @Negocio.HorarioSabado</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-legal">
+        <p>&copy; @DateTime.Now.Year Llantería Valledupar. Todos los derechos reservados.</p>
+    </div>
+</footer>
