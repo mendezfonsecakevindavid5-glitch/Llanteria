@@ -98,6 +98,7 @@
                                 <textarea id="notas" name="notas" class="form-control" rows="2" maxlength="400" placeholder="@Model.PlaceholderNotas"></textarea>
                             </div>
                         </div>
+                        <div class="mt-3"><partial name="_AvisoDatos" /></div>
                         <button type="submit" class="btn btn-hyper-action w-100 py-2 mt-3">Solicitar cita</button>
                     </form>
                 }
@@ -128,6 +129,7 @@
                             <label class="form-label" for="mensaje">Vehículo y detalles</label>
                             <textarea id="mensaje" name="mensaje" class="form-control" rows="2" maxlength="500" placeholder="@Model.PlaceholderMensaje"></textarea>
                         </div>
+                        <div class="mb-3"><partial name="_AvisoDatos" /></div>
                         <button type="submit" class="btn btn-hyper-action w-100 py-2">Enviar solicitud</button>
                     </form>
                     <hr />

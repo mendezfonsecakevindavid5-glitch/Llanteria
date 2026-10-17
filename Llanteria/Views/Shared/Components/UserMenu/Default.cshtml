@@ -1,0 +1,66 @@
+﻿@model Llanteria.ViewComponents.UserMenuModel
+
+<div class="user-menu" id="userMenu">
+    <button type="button" class="user-avatar-btn" id="userMenuBtn" aria-haspopup="true" aria-expanded="false" aria-controls="userMenuPanel"
+            title="@(string.IsNullOrEmpty(Model.Nombre) ? "Mi cuenta" : Model.Nombre)"
+            style="--av-bg:@Model.ColorFondo;--av-fg:@Model.ColorTexto">
+        <span class="user-avatar-initials">@Model.Iniciales</span>
+        @if (Model.TieneFoto)
+        {
+            <img class="user-avatar-img" src="@Url.Action("Foto", "User")" alt="" onerror="this.remove()" />
+        }
+    </button>
+
+    <div class="user-menu-panel" id="userMenuPanel" role="menu" aria-labelledby="userMenuBtn" aria-hidden="true">
+        <a class="user-menu-item" role="menuitem" asp-controller="User" asp-action="Perfil" tabindex="-1">
+            <i class="fa-regular fa-circle-user"></i><span>Cuenta</span>
+        </a>
+        <hr class="user-menu-sep" />
+        <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+            <button type="submit" class="user-menu-item" role="menuitem" tabindex="-1">
+                <i class="fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var menu = document.getElementById('userMenu');
+        if (!menu || menu.dataset.listo) return;
+        menu.dataset.listo = '1';
+        var btn = document.getElementById('userMenuBtn');
+        var panel = document.getElementById('userMenuPanel');
+        var items = panel.querySelectorAll('.user-menu-item');
+
+        function colocar() {
+            // El mensaje va centrado bajo la foto; solo si no cabe en pantalla se desplaza (la flecha sigue apuntando a la foto).
+            panel.style.setProperty('--shift', '0px');
+            var r = panel.getBoundingClientRect(), margen = 8, shift = 0;
+            if (r.right > window.innerWidth - margen) shift = r.right - (window.innerWidth - margen);
+            else if (r.left < margen) shift = r.left - margen;
+            panel.style.setProperty('--shift', shift + 'px');
+        }
+        function abrir() {
+            menu.classList.add('is-open');
+            btn.setAttribute('aria-expanded', 'true');
+            panel.setAttribute('aria-hidden', 'false');
+            items.forEach(function (i) { i.tabIndex = 0; });
+            colocar();
+        }
+        function cerrar(devolverFoco) {
+            menu.classList.remove('is-open');
+            btn.setAttribute('aria-expanded', 'false');
+            panel.setAttribute('aria-hidden', 'true');
+            items.forEach(function (i) { i.tabIndex = -1; });
+            if (devolverFoco) btn.focus();
+        }
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            menu.classList.contains('is-open') ? cerrar() : abrir();
+        });
+        document.addEventListener('click', function (e) { if (!menu.contains(e.target)) cerrar(); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && menu.classList.contains('is-open')) cerrar(true); });
+        window.addEventListener('resize', function () { if (menu.classList.contains('is-open')) colocar(); });
+    })();
+</script>

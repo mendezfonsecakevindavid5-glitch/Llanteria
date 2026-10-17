@@ -103,17 +103,8 @@
         </div>
         <div class="col-lg-6">
             <div class="auth-card h-100">
-                <h2 class="h5 fw-bold">Mis vehículos</h2>
-                @if (Model.Vehiculos.Any())
-                {
-                    <ul class="list-unstyled mb-0">
-                        @foreach (var v in Model.Vehiculos)
-                        {
-                            <li class="py-1"><strong>@v.Placa</strong> · @v.Marca @v.Modelo</li>
-                        }
-                    </ul>
-                }
-                else { <p class="text-muted mb-0">Aún no hay vehículos asociados. Pídelos en el taller en tu próxima visita.</p> }
+                <h2 class="h5 fw-bold">Mis vehículos y mantenimiento</h2>
+                <partial name="_HistorialVehiculos" model="Model.Historial" />
             </div>
         </div>
         <div class="col-lg-6">

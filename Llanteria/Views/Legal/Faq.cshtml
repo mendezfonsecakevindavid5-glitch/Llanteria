@@ -1,0 +1,82 @@
+﻿@inject Llanteria.Infrastructure.NegocioInfo Negocio
+@{
+    ViewData["Title"] = "Preguntas frecuentes";
+    ViewData["Subtitulo"] = "Respuestas rápidas sobre llantas, servicios, compras y tu cuenta.";
+
+    var grupos = new (string Titulo, (string P, string R)[] Items)[]
+    {
+        ("Llantas y mantenimiento", new (string, string)[]
+        {
+            ("¿Cómo sé qué medida de llanta necesito?",
+             "Está escrita en el costado de tu llanta, por ejemplo 205/55 R16: 205 es el ancho en milímetros, 55 el perfil y 16 el diámetro del rin en pulgadas. También aparece en la etiqueta de la puerta del conductor o en el manual del vehículo. Con esos tres números usa el buscador por medida de la página de Llantas."),
+            ("¿Cada cuánto debo revisar la presión?",
+             "Una vez al mes y antes de viajes largos, con las llantas frías. La presión recomendada está en la etiqueta del marco de la puerta o en el manual, no en el costado de la llanta."),
+            ("¿Cuándo debo alinear y balancear?",
+             "Como referencia, revisa la alineación cada 10.000 km o cuando el carro se desvíe, el volante vibre o la banda se desgaste de forma despareja. Conviene balancear cada vez que montes llantas nuevas o las rotes. Un técnico te confirma qué necesita tu vehículo."),
+            ("¿Cada cuánto se rotan las llantas?",
+             "Una guía habitual es entre 8.000 y 10.000 km, para que se desgasten de manera uniforme y duren más."),
+            ("¿Cuándo toca cambiarlas?",
+             "Cuando la banda de rodamiento llegue al indicador de desgaste (alrededor de 1,6 mm), cuando tengan cortes, bultos o grietas, o si tienen varios años de uso aunque se vean bien. Si dudas, pásate por el taller y las revisamos sin compromiso.")
+        }),
+        ("Compras y pagos", new (string, string)[]
+        {
+            ("¿Qué medios de pago aceptan?",
+             "Efectivo (en el taller o contra entrega en Colombia), transferencia bancaria, Nequi y Daviplata. Si prefieres tarjeta, puedes pagar con datáfono en el taller. El sitio no recibe datos de tarjetas."),
+            ("¿Hacen envíos?",
+             "Sí. El costo y el tiempo se confirman según el destino antes de despachar. También puedes recoger tu pedido en el taller."),
+            ("¿Cómo uso un cupón?",
+             "En el carrito escribe el código y pulsa aplicar. Verás el descuento reflejado en el resumen antes de confirmar."),
+            ("¿Puedo devolver un producto?",
+             "Si compraste en línea, tienes 5 días hábiles desde la entrega para retractarte, con el producto sin uso. Mira la política de retracto y devoluciones para ver las condiciones.")
+        }),
+        ("Servicios y citas", new (string, string)[]
+        {
+            ("¿Cómo agendo una cita?",
+             "Entra a Servicios, elige el que necesitas y completa el formulario de cita con la fecha y la hora. Recibirás la confirmación y un recordatorio por correo."),
+            ("¿Puedo cambiar o cancelar mi cita?",
+             "Sí, desde tu cuenta o escribiéndonos por WhatsApp. Avísanos con anticipación para liberar el cupo."),
+            ("¿Tienen servicio a domicilio?",
+             "Sí, la serviteca móvil va hasta donde estés. Tiene un valor de desplazamiento y se agenda como cualquier otro servicio."),
+            ("¿Atienden flotas y empresas?",
+             "Sí. Deja tu solicitud en la página de Empresas y un asesor te prepara una propuesta de mantenimiento para tus vehículos.")
+        }),
+        ("Tu cuenta", new (string, string)[]
+        {
+            ("¿Para qué me sirve crear una cuenta?",
+             "Para ver tus datos y cambiarlos, comprar más rápido y recibir recordatorios del mantenimiento de tu vehículo. Si eres cliente del taller, también acumulas puntos."),
+            ("¿Cómo funcionan los puntos?",
+             "Sumas puntos con tus compras en el taller y los canjeas por los premios del catálogo. Los puntos no se cambian por dinero. Mira los detalles en los términos y condiciones."),
+            ("Olvidé mi contraseña, ¿qué hago?",
+             "En la pantalla de inicio de sesión elige ¿Olvidaste tu contraseña? y sigue los pasos: te enviamos un código al correo registrado."),
+            ("¿Cómo pido que borren mis datos?",
+             "Escríbenos desde el formulario de PQRS o a nuestro correo. Tus derechos y los plazos de respuesta están en la política de tratamiento de datos.")
+        })
+    };
+    int n = 0;
+}
+<partial name="_Inicio" />
+
+@foreach (var g in grupos)
+{
+    <h2>@g.Titulo</h2>
+    <div class="accordion mb-3" id="faq-@(n)">
+        @foreach (var it in g.Items)
+        {
+            n++;
+            <div class="accordion-item">
+                <h3 class="accordion-header">
+                    <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq-r@(n)" aria-expanded="false" aria-controls="faq-r@(n)">@it.P</button>
+                </h3>
+                <div id="faq-r@(n)" class="accordion-collapse collapse">
+                    <div class="accordion-body">@it.R</div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="legal-aviso">
+    ¿No encontraste lo que buscabas? Escríbenos por <a href="@Negocio.LinkWhatsApp(null)" target="_blank" rel="noopener">WhatsApp</a>, llama al <a href="tel:@Negocio.TelefonoLimpio">@Negocio.Telefono</a> o radica una <a asp-controller="Legal" asp-action="Pqrs">PQRS</a>.
+</div>
+
+<partial name="_Fin" />

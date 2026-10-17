@@ -12,7 +12,7 @@ public static class DatosIniciales
 {
     public static void Asegurar(LlanteriaDbContext db)
     {
-        foreach (var n in new[] { "Administrador", "Empleado", "Cliente" })
+        foreach (var n in new[] { RolesApp.Administrador, RolesApp.Empleado, RolesApp.Cliente, RolesApp.UsuarioRegistrado })
             if (!db.Roles.Any(r => r.NombreRol == n)) db.Roles.Add(new Role { NombreRol = n });
 
         foreach (var n in new[] { Estados.Disponible, Estados.Agotado, Estados.Danado })

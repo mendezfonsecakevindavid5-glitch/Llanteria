@@ -335,3 +335,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# --- Carpeta privada (secretos, clave de cifrado, llaves de cookies) ---
+Privado/*
+!Privado/LEEME.txt
+!Privado/appsettings.ejemplo.json

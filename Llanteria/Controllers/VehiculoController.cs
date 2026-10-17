@@ -28,6 +28,16 @@ public class VehiculoController : Controller
         return View(new Vehiculo { IdCliente = idCliente ?? 0 });
     }
 
+    /// <summary>Historial de trabajos del vehículo y su próximo mantenimiento.</summary>
+    public IActionResult Historial(int id)
+    {
+        var v = ser.GetVehiculo(id);
+        if (v == null) return NotFound();
+        ViewBag.Ordenes = _db.OrdenesTrabajo.AsNoTracking().Where(o => o.IdVehiculo == id)
+            .OrderByDescending(o => o.FechaIngreso).ToList();
+        return View(v);
+    }
+
     [HttpPost, ValidateAntiForgeryToken]
     public IActionResult Create(Vehiculo v)
     {

@@ -26,13 +26,20 @@
                 {
                     <tr>
                         <td class="cell-title">@v.Placa</td>
-                        <td>@v.Marca @v.Modelo</td>
+                        <td>@v.Marca @v.Modelo
+                            @if (v.Anio.HasValue || v.Kilometraje.HasValue)
+                            {
+                                <div class="cell-sub">@(v.Anio?.ToString() ?? "") @(v.Kilometraje.HasValue ? "· " + v.Kilometraje.Value.ToString("N0") + " km" : "")</div>
+                            }
+                        </td>
                         <td>
                             <div>@v.Cliente?.Nombres @v.Cliente?.Apellidos</div>
                             <div class="cell-sub">@v.Cliente?.Telefono</div>
                         </td>
                         <td class="text-end">
                             <span class="row-actions">
+                                <a asp-action="Historial" asp-route-id="@v.Id" class="icon-btn" title="Historial de mantenimiento"><i class="fa-solid fa-clock-rotate-left"></i></a>
+                                <a asp-controller="OrdenTrabajo" asp-action="Create" asp-route-idVehiculo="@v.Id" class="icon-btn" title="Nueva orden de trabajo"><i class="fa-solid fa-clipboard-check"></i></a>
                                 <a asp-action="Edit" asp-route-id="@v.Id" class="icon-btn" title="Editar"><i class="fa-solid fa-pen"></i></a>
                                 <button type="button" class="icon-btn danger" title="Eliminar"
                                         data-delete="@Url.Action("Delete", new { id = v.Id })" data-nombre="@v.Placa"><i class="fa-solid fa-trash"></i></button>

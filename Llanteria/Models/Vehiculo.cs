@@ -25,6 +25,15 @@ public partial class Vehiculo
     [Display(Name = "Modelo")]
     public string Modelo { get; set; } = null!;
 
+    [Range(1950, 2100, ErrorMessage = "Año no válido.")]
+    [Display(Name = "Año")]
+    public int? Anio { get; set; }
+
+    /// <summary>Último kilometraje conocido (se actualiza con las órdenes de trabajo).</summary>
+    [Range(0, 2000000, ErrorMessage = "Kilometraje no válido.")]
+    [Display(Name = "Kilometraje")]
+    public int? Kilometraje { get; set; }
+
     [Required(ErrorMessage = "Debe asignar un cliente al vehículo.")]
     [Display(Name = "Propietario / Cliente")]
     [Range(1, int.MaxValue, ErrorMessage = "Selecciona el propietario.")]

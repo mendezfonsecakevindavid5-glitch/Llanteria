@@ -19,8 +19,18 @@ namespace Llanteria.Models
 
         public string? FotoBase64 { get; set; }
 
-        [Required(ErrorMessage = "El nombre es obligatorio")]
-        public string Nombre { get; set; } = null!;
+        [Required(ErrorMessage = "Los nombres son obligatorios")]
+        [StringLength(100)]
+        public string Nombres { get; set; } = null!;
+
+        [Required(ErrorMessage = "Los apellidos son obligatorios")]
+        [StringLength(100)]
+        public string Apellidos { get; set; } = null!;
+
+        public string NombreCompleto => $"{Nombres} {Apellidos}".Trim();
+
+        /// <summary>Rol con el que se muestra el perfil (solo lectura).</summary>
+        public string? Rol { get; set; }
 
         public string Correo { get; set; } = null!;
 
@@ -30,6 +40,9 @@ namespace Llanteria.Models
         public string? Direccion { get; set; }
 
         public int Puntos { get; set; }
+
+        /// <summary>Vehículos del cliente con su historial (vacío si la cuenta no es de un cliente).</summary>
+        public List<VehiculoHistorial> Vehiculos { get; set; } = new List<VehiculoHistorial>();
 
         // Ahora apunta a modelos de datos reales
         public List<FacturaViewModel> FacturasRecientes { get; set; } = new List<FacturaViewModel>();

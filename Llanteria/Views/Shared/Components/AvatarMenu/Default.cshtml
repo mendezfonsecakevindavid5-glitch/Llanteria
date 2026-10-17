@@ -1,0 +1,61 @@
+﻿@model Llanteria.ViewComponents.AvatarMenuModel
+
+@if (Model.Modal)
+{
+    @* Panel de administración: la foto abre un modal con el nombre a la izquierda. *@
+    <div class="avatar-menu" style="--avatar-size:@(Model.Tamano)px">
+        <button type="button" class="avatar-btn" data-bs-toggle="modal" data-bs-target="#perfilModal" aria-label="Mi perfil" title="@Model.Usuario">
+            <span class="avatar-circle" style="background:@Model.Fondo;color:@Model.Texto">
+                <span class="avatar-initials" aria-hidden="true">@Model.Iniciales</span>
+                <img src="@Url.Action("Foto", "User")" alt="Foto de perfil de @Model.Usuario" onerror="this.remove()" />
+            </span>
+        </button>
+    </div>
+
+    <div class="modal fade perfil-modal" id="perfilModal" tabindex="-1" aria-labelledby="perfilModalTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <button type="button" class="btn-close perfil-modal-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <div class="perfil-modal-body">
+                    <div class="perfil-modal-nombre">
+                        <h2 id="perfilModalTitulo">@Model.Usuario</h2>
+                        <span>@Model.Rol</span>
+                    </div>
+                    <span class="avatar-circle perfil-modal-foto" style="--avatar-size:96px;background:@Model.Fondo;color:@Model.Texto">
+                        <span class="avatar-initials" aria-hidden="true">@Model.Iniciales</span>
+                        <img src="@Url.Action("Foto", "User")" alt="" onerror="this.remove()" />
+                    </span>
+                </div>
+                <div class="perfil-modal-acciones">
+                    <a class="btn-perfil" asp-controller="User" asp-action="Perfil"><i class="fa-regular fa-user"></i>Cuenta</a>
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="btn-perfil btn-perfil-oscuro"><i class="fa-solid fa-arrow-right-from-bracket"></i>Cerrar sesión</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    return;
+}
+
+@* Avatar + menú. Sin foto (o si la foto falla) se ven las iniciales: la <img> se oculta sola. *@
+<div class="avatar-menu" data-avatar-menu style="--avatar-size:@(Model.Tamano)px">
+    <button type="button" class="avatar-btn" aria-haspopup="true" aria-expanded="false" aria-controls="avatarPanel" title="@Model.Usuario">
+        <span class="avatar-circle" style="background:@Model.Fondo;color:@Model.Texto">
+            <span class="avatar-initials" aria-hidden="true">@Model.Iniciales</span>
+            <img src="@Url.Action("Foto", "User")" alt="Foto de perfil de @Model.Usuario" onerror="this.remove()" />
+        </span>
+    </button>
+
+    <div class="avatar-panel" id="avatarPanel" role="menu" hidden>
+        <a class="avatar-item" role="menuitem" asp-controller="User" asp-action="Perfil">
+            <i class="fa-regular fa-user" aria-hidden="true"></i><span>Cuenta</span>
+        </a>
+        <div class="avatar-sep" role="separator"></div>
+        <form asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit" class="avatar-item" role="menuitem">
+                <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i><span>Cerrar sesión</span>
+            </button>
+        </form>
+    </div>
+</div>

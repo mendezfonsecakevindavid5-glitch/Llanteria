@@ -1,6 +1,7 @@
 using Llanteria.Data;
 using Llanteria.Infrastructure;
 using Llanteria.Models;
+using Llanteria.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,7 @@ public class MiCuentaController : Controller
                 .OrderByDescending(c => c.Fecha).ThenByDescending(c => c.Id).Take(10).ToList(),
             Canjes = _db.CanjeIncentivos.AsNoTracking().Include(c => c.IdIncentivoNavigation)
                 .Where(c => c.IdCliente == id).OrderByDescending(c => c.FechaCanje).Take(10).ToList(),
+            Historial = HistorialVehiculos.De(_db, id),
             Premios = _db.CatalogoIncentivos.AsNoTracking()
                 .Where(p => p.StockDisponible == null || p.StockDisponible > 0)
                 .OrderBy(p => p.PuntosRequeridos).ToList()
@@ -72,4 +74,5 @@ public class MiCuentaViewModel
     public List<Cita> Citas { get; set; } = new();
     public List<CanjeIncentivo> Canjes { get; set; } = new();
     public List<CatalogoIncentivo> Premios { get; set; } = new();
+    public List<VehiculoHistorial> Historial { get; set; } = new();
 }

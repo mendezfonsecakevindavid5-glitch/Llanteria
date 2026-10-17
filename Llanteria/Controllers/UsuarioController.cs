@@ -122,7 +122,7 @@ public class UsuarioController : Controller
             .Select(e => new { e.Id, Nombre = $"{e.Nombres} {e.Apellidos} ({e.NumeroDocumento})" })
             .ToList();
         ViewBag.IdEmpleado = new SelectList(libres, "Id", "Nombre", u?.IdEmpleado);
-        ViewBag.IdRol = new SelectList(rolSer.GetRoles().Where(r => r.NombreRol != "Cliente"), "Id", "NombreRol", u?.IdRol);
+        ViewBag.IdRol = new SelectList(rolSer.GetRoles().Where(r => r.NombreRol != "Cliente" && r.NombreRol != RolesApp.UsuarioRegistrado), "Id", "NombreRol", u?.IdRol);
         ViewBag.Estados = new SelectList(Estados, u?.Estado ?? "Activo");
     }
 }

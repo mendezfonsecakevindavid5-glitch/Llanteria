@@ -52,6 +52,59 @@ BEGIN
     );
 END;
 
+IF OBJECT_ID(N'dbo.Pqrs', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Pqrs (
+        Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_Pqrs PRIMARY KEY,
+        Radicado nvarchar(20) NOT NULL,
+        Tipo nvarchar(20) NOT NULL,
+        Nombre nvarchar(100) NOT NULL,
+        NumeroDocumento nvarchar(20) NULL,
+        Correo nvarchar(100) NOT NULL,
+        Telefono nvarchar(25) NULL,
+        Asunto nvarchar(120) NOT NULL,
+        Mensaje nvarchar(1500) NOT NULL,
+        AutorizaDatos bit NOT NULL,
+        IdCliente int NULL,
+        Estado nvarchar(20) NOT NULL CONSTRAINT DF_Pqrs_Estado DEFAULT ('Recibida'),
+        Respuesta nvarchar(1500) NULL,
+        FechaCreacion datetime NOT NULL CONSTRAINT DF_Pqrs_Fecha DEFAULT (GETDATE()),
+        FechaRespuesta datetime NULL
+    );
+    CREATE UNIQUE INDEX IX_Pqrs_Radicado ON dbo.Pqrs(Radicado);
+END;
+
+IF COL_LENGTH('dbo.DetalleProductos', 'TipoVehiculo') IS NULL
+    ALTER TABLE dbo.DetalleProductos ADD TipoVehiculo nvarchar(10) NOT NULL CONSTRAINT DF_DetalleProductos_TipoVehiculo DEFAULT ('Auto');
+
+IF COL_LENGTH('dbo.Vehiculos', 'Anio') IS NULL
+    ALTER TABLE dbo.Vehiculos ADD Anio int NULL;
+IF COL_LENGTH('dbo.Vehiculos', 'Kilometraje') IS NULL
+    ALTER TABLE dbo.Vehiculos ADD Kilometraje int NULL;
+
+IF OBJECT_ID(N'dbo.OrdenesTrabajo', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.OrdenesTrabajo (
+        Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_OrdenesTrabajo PRIMARY KEY,
+        Numero nvarchar(20) NOT NULL,
+        IdVehiculo int NOT NULL CONSTRAINT FK_OrdenesTrabajo_Vehiculos REFERENCES dbo.Vehiculos(Id),
+        IdEmpleado int NULL,
+        Tipo nvarchar(40) NOT NULL,
+        Descripcion nvarchar(150) NOT NULL,
+        Kilometraje int NULL,
+        Observaciones nvarchar(500) NULL,
+        Total decimal(14,2) NOT NULL,
+        Estado nvarchar(20) NOT NULL CONSTRAINT DF_OrdenesTrabajo_Estado DEFAULT ('Recibido'),
+        FechaIngreso datetime NOT NULL,
+        FechaEntrega datetime NULL,
+        ProximaFecha date NULL,
+        ProximoKm int NULL,
+        RecordatorioEnviado bit NOT NULL CONSTRAINT DF_OrdenesTrabajo_Recordatorio DEFAULT (0)
+    );
+    CREATE UNIQUE INDEX IX_OrdenesTrabajo_Numero ON dbo.OrdenesTrabajo(Numero);
+    CREATE INDEX IX_OrdenesTrabajo_IdVehiculo ON dbo.OrdenesTrabajo(IdVehiculo);
+END;
+
 IF OBJECT_ID(N'dbo.Resenias', N'U') IS NULL
 BEGIN
     CREATE TABLE dbo.Resenias (
@@ -121,6 +174,14 @@ IF COL_LENGTH('dbo.Clientes', 'PasswordHash') IS NULL
     ALTER TABLE dbo.Clientes ADD PasswordHash nvarchar(200) NULL;
 
 IF COL_LENGTH('dbo.Productos', 'PrecioPromocion') IS NULL
-    ALTER TABLE dbo.Productos ADD PrecioPromocion decimal(14,2) NULL;");
+    ALTER TABLE dbo.Productos ADD PrecioPromocion decimal(14,2) NULL;
+
+-- Columnas que ahora se guardan cifradas: el texto cifrado es más largo, así que pasan a nvarchar(max).
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'dbo.PerfilUsuario') AND name = 'Bio' AND max_length <> -1)
+    ALTER TABLE dbo.PerfilUsuario ALTER COLUMN Bio nvarchar(max) NULL;
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'dbo.Usuarios') AND name = 'MotivoSancion' AND max_length <> -1)
+    ALTER TABLE dbo.Usuarios ALTER COLUMN MotivoSancion nvarchar(max) NULL;
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'dbo.Clientes') AND name = 'Foto' AND max_length <> -1)
+    ALTER TABLE dbo.Clientes ALTER COLUMN Foto nvarchar(max) NULL;");
     }
 }

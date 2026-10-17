@@ -1,0 +1,44 @@
+﻿@model Llanteria.Models.Vehiculo
+@{
+    ViewData["Title"] = "Historial de " + Model.Placa;
+    var ordenes = (List<Llanteria.Models.OrdenTrabajo>)ViewBag.Ordenes;
+    var proximas = ordenes.Where(o => o.Estado == "Entregado" && (o.ProximaFecha.HasValue || o.ProximoKm.HasValue)).Take(3).ToList();
+    string Clase(string e) => e switch { "Recibido" => "tag-warn", "En proceso" => "tag-neutral", "Cancelado" => "tag-bad", _ => "tag-ok" };
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Historial de " + Model.Placa, $"{Model.Marca} {Model.Modelo} · {Model.Cliente.Nombres} {Model.Cliente.Apellidos}", "Vehiculo", "Index", "Nueva orden", "Create", "OrdenTrabajo"))
+
+<div class="row g-3 mb-3">
+    <div class="col-sm-6 col-lg-3"><div class="stat"><div class="label">Kilometraje</div><div class="value">@(Model.Kilometraje.HasValue ? Model.Kilometraje.Value.ToString("N0") : "—")</div></div></div>
+    <div class="col-sm-6 col-lg-3"><div class="stat"><div class="label">Trabajos registrados</div><div class="value">@ordenes.Count</div></div></div>
+    @foreach (var p in proximas)
+    {
+        <div class="col-sm-6 col-lg-3"><div class="stat accent"><div class="label">Próximo: @p.Tipo</div><div class="value" style="font-size:1.1rem">@(p.ProximaFecha.HasValue ? p.ProximaFecha.Value.ToString("dd/MM/yyyy") : "")@(p.ProximoKm.HasValue ? " · " + p.ProximoKm.Value.ToString("N0") + " km" : "")</div></div></div>
+    }
+</div>
+
+<div class="panel">
+    <div class="panel-head">Trabajos realizados</div>
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead><tr><th>Orden</th><th>Fecha</th><th>Trabajo</th><th>Km</th><th class="text-end">Valor</th><th>Estado</th></tr></thead>
+            <tbody>
+                @foreach (var o in ordenes)
+                {
+                    <tr>
+                        <td class="cell-title">@o.Numero</td>
+                        <td class="money">@o.FechaIngreso.ToString("dd/MM/yyyy")</td>
+                        <td>@o.Descripcion<div class="cell-sub">@o.Tipo</div></td>
+                        <td>@(o.Kilometraje.HasValue ? o.Kilometraje.Value.ToString("N0") : "—")</td>
+                        <td class="money text-end">@o.Total.ToString("C0")</td>
+                        <td><span class="tag @Clase(o.Estado)">@o.Estado</span></td>
+                    </tr>
+                }
+                @if (!ordenes.Any())
+                {
+                    <tr><td colspan="6" class="empty-state">Este vehículo aún no tiene trabajos registrados.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

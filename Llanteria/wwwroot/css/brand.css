@@ -20,52 +20,28 @@ Marca y pie de página compartidos (sitio público y panel de administración)
 }
 
 /* ---------- Pie de página ---------- */
+/* Fondo: se quitaron la llanta SVG, los surcos y la luz difusa. Queda negro liso.
+   Para poner la textura generada con IA: guarda la imagen como wwwroot/images/sitio/footer-bg.jpg
+   y descomenta la línea de background-image. */
 .matrix-footer {
     position: relative;
     overflow: hidden;
     flex-shrink: 0;
     margin-top: auto;
-    background: #000000; /* el negro no se altera: la llanta es solo un relieve encima */
+    background-color: #000000;
+    /* Imagen de fondo generada (wwwroot/images/footer-bg.jpg). Si el archivo no existe, queda el negro liso. */
+    background-image: linear-gradient(rgba(0, 0, 0, .55), rgba(0, 0, 0, .55)), url("../images/footer-bg.jpg");
+    background-size: cover;
+    background-position: center;
     color: #FFFFFF;
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-}
-
-    /* Banda de rodamiento: surcos en "V" muy tenues sobre el negro */
-    .matrix-footer::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='26' viewBox='0 0 44 26'%3E%3Cpath d='M0 22 22 4l22 18' fill='none' stroke='%23ffffff' stroke-opacity='.045' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E");
-        -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .95), rgba(0, 0, 0, .3));
-        mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .95), rgba(0, 0, 0, .3));
-    }
-
-    /* Luz difusa para que el caucho no se vea plano */
-    .matrix-footer::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        background: radial-gradient(ellipse 60% 90% at 12% 0%, rgba(255, 255, 255, .05), transparent 70%);
-    }
-
-/* Rueda en relieve, recortada en la esquina inferior derecha */
-.footer-wheel {
-    position: absolute;
-    right: -180px;
-    bottom: -250px;
-    width: 660px;
-    height: 660px;
-    pointer-events: none;
-    z-index: 0;
 }
 
 .footer-body {
     position: relative;
     z-index: 1;
-    padding-top: 3rem;
-    padding-bottom: 2.75rem;
+    padding-top: 2.5rem;
+    padding-bottom: 2.25rem;
 }
 
 .footer-brand {
@@ -74,9 +50,9 @@ Marca y pie de página compartidos (sitio público y panel de administración)
 
 .footer-text {
     color: rgba(255, 255, 255, .62);
-    font-size: .95rem;
+    font-size: 1.05rem;
     line-height: 1.55;
-    max-width: 330px;
+    max-width: 340px;
 }
 
 .footer-title {
@@ -99,8 +75,8 @@ Marca y pie de página compartidos (sitio público y panel de administración)
         display: flex;
         align-items: center;
         gap: .75rem;
-        margin-bottom: .9rem;
-        font-size: .98rem;
+        margin-bottom: .8rem;
+        font-size: 1.08rem;
         color: rgba(255, 255, 255, .92);
     }
 
@@ -183,13 +159,29 @@ Marca y pie de página compartidos (sitio público y panel de administración)
         letter-spacing: .02em;
     }
 
-@media (max-width: 767.98px) {
-    .footer-wheel {
-        right: -260px;
-        bottom: -300px;
-        opacity: .7;
+.footer-legal-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .35rem 1.5rem;
+    margin-bottom: .55rem;
+}
+
+    .footer-legal-links a {
+        color: #1f2328;
+        font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
+        font-size: .9rem;
+        font-weight: 500;
+        text-decoration: none;
     }
 
+        .footer-legal-links a:hover {
+            color: var(--llanteria-primary, #C92B0A);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+@media (max-width: 767.98px) {
     .footer-body {
         padding-top: 2.25rem;
     }

@@ -36,142 +36,39 @@
         color: #FFFFFF !important;
     }
 
-    /* ---------- Buscador por medida (del segundo código) ---------- */
-    .finder {
-        background: #16181c;
-        border-radius: 1.25rem;
-        padding: 1.5rem 1.75rem 1.4rem;
-        box-shadow: 0 18px 40px rgba(0, 0, 0, .28);
-        color: #fff;
-    }
-    .finder-head {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 1rem;
-        flex-wrap: wrap;
-        border-bottom: 1px solid rgba(255, 255, 255, .14);
-        margin-bottom: 1.15rem;
-    }
-    .finder-tab {
-        display: inline-flex;
-        align-items: center;
-        gap: .6rem;
-        padding: .35rem .25rem .85rem;
-        margin-bottom: -1px;
-        border-bottom: 3px solid var(--llanteria-primary);
-        font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
-        font-weight: 500;
-        font-size: 1.05rem;
-        letter-spacing: .02em;
-    }
-    .finder-tab i { 
-        color: #fff; 
-        font-size: 1.25rem; 
-    }
-    .finder-title {
-        margin: 0 0 .85rem;
-        font-size: .85rem;
-        font-weight: 600;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, .62);
-    }
-    .finder-bar {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr) auto;
-        background: #fff;
-        border-radius: .9rem;
-        overflow: hidden;
-    }
-    .finder-field {
-        position: relative;
-        padding: .8rem 1.25rem .55rem;
-        border-right: 1px solid #e5e7eb;
-        transition: box-shadow .15s ease;
-    }
-    .finder-field:focus-within { 
-        box-shadow: inset 0 -3px 0 var(--llanteria-primary); 
-    }
-    .finder-field label {
-        display: block;
-        font-size: .76rem;
-        font-weight: 600;
-        color: #6b7280;
-        margin: 0 0 .1rem;
-    }
-    .finder-field .form-select {
-        border: 0;
-        border-radius: 0;
-        background-color: transparent;
-        padding: .15rem 1.75rem .15rem 0;
-        font-size: 1.12rem;
-        font-weight: 700;
-        color: #16181c;
-        box-shadow: none;
-        cursor: pointer;
-    }
-    .finder-go {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: .65rem;
-        border: 0;
-        padding: 0 2.25rem;
-        background: var(--llanteria-primary);
-        color: #fff;
-        font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
-        font-size: 1.05rem;
-        font-weight: 700;
-        letter-spacing: .02em;
-        transition: background-color .2s ease;
-    }
-    .finder-go:hover, .finder-go:focus-visible { 
-        background: #A32008; 
-        color: #fff; 
-    }
-    .finder-go i { 
-        font-size: .95rem; 
-        transition: transform .2s ease; 
-    }
-    .finder-go:hover i { 
-        transform: translateX(4px); 
-    }
-    .finder-foot {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: .75rem 1.5rem;
-        flex-wrap: wrap;
-        margin-top: .95rem;
-    }
-    .finder-hint { 
-        margin: 0; 
-        font-size: .85rem; 
-        color: rgba(255, 255, 255, .6); 
-    }
-    .finder-reset {
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, .35);
-        color: #fff;
-        border-radius: .5rem;
-        padding: .4rem 1.1rem;
-        font-size: .85rem;
-        font-weight: 600;
-        letter-spacing: .03em;
-        transition: background-color .2s ease, border-color .2s ease;
-    }
-    .finder-reset:hover { 
-        background: rgba(255, 255, 255, .1); 
-        border-color: #fff; 
+    /* ---------- Buscador vertical por tipo de vehículo (Primer código) ---------- */
+    .search-wrap { margin-top: -3rem; }
+    .vf-grid { display: grid; grid-template-columns: minmax(320px, 430px) 1fr; border-radius: 1.1rem; overflow: hidden; box-shadow: 0 22px 50px rgba(0, 0, 0, .3); background: #0b0b0c; }
+    .vf-panel { background: #0b0b0c; color: #fff; padding: 1.5rem 1.75rem 1.75rem; display: flex; flex-direction: column; }
+    .vf-types { position: relative; display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid rgba(255, 255, 255, .16); margin-bottom: 1.35rem; }
+    .vf-type { background: transparent; border: 0; color: rgba(255, 255, 255, .55); padding: .5rem .25rem .85rem; display: flex; flex-direction: column; align-items: center; gap: .35rem; font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif; font-weight: 500; font-size: .92rem; cursor: pointer; transition: color .2s ease; }
+    .vf-type i { font-size: 1.9rem; }
+    .vf-type:hover { color: #fff; }
+    .vf-type.is-active { color: #fff; }
+    .vf-indicator { position: absolute; left: 0; bottom: -1px; width: 50%; height: 3px; background: var(--llanteria-primary); transition: transform .3s cubic-bezier(.4, 0, .2, 1); }
+    .vf-types[data-activo="Moto"] .vf-indicator { transform: translateX(100%); }
+    .vf-title { margin: 0 0 1rem; font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255, 255, 255, .6); }
+    .vf-fields { display: grid; gap: .85rem; animation: vfFade .3s ease; }
+    @@keyframes vfFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .vf-field label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .3rem; color: #fff; }
+    .vf-field label .req { color: var(--llanteria-primary); font-weight: 800; margin-left: 2px; }
+    .vf-field input { width: 100%; height: 48px; padding: 0 .95rem; border: 1px solid #fff; border-radius: .5rem; background: #fff; color: #000; font-size: 1rem; }
+    .vf-field input::placeholder { color: #7b818a; }
+    .vf-field input:focus { outline: 3px solid rgba(255, 255, 255, .35); outline-offset: 1px; }
+    .vf-submit { margin: 1.4rem auto 0; min-width: 62%; padding: .8rem 1.5rem; border: 1px solid #fff; border-radius: .5rem; background: #fff; color: #000; font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1.02rem; letter-spacing: .02em; text-align: center; transition: opacity .2s ease, background-color .2s ease; }
+    .vf-submit:hover:not(:disabled) { background: #e9eaec; }
+    .vf-submit:disabled { opacity: .35; cursor: not-allowed; }
+    .vf-hint { margin: .85rem 0 0; font-size: .8rem; color: rgba(255, 255, 255, .55); text-align: center; }
+    .vf-image { position: relative; min-height: 340px; background: #111 url('/images/Auto-target.jpg') center / cover no-repeat; }
+
+    @@media (max-width: 991.98px) {
+        .vf-grid { grid-template-columns: 1fr; }
+        .vf-image { min-height: 220px; order: -1; }
     }
 
-    @@media (max-width: 767.98px) {
-        .finder { padding: 1.15rem 1rem; }
-        .finder-bar { grid-template-columns: 1fr; }
-        .finder-field { border-right: 0; border-bottom: 1px solid #e5e7eb; }
-        .finder-go { padding: .95rem 1rem; }
-    }
+    /* ---------- Tarjetas del inicio ---------- */
+    .home-section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .home-section-head a { font-weight: 700; font-size: .92rem; color: #000; text-decoration: none; border-bottom: 2px solid var(--llanteria-primary); padding-bottom: 2px; }
 </style>
 
 <!-- Banner principal -->
@@ -186,64 +83,85 @@
     </div>
 </section>
 
-<!-- Panel de Búsqueda por medida -->
-<div class="container search-wrap mt-4">
-    <section class="finder" aria-labelledby="finderTitulo">
-        <div class="finder-head">
-            <span class="finder-tab"><i class="fa-solid fa-circle-dot"></i> Medida</span>
-        </div>
-        <h2 id="finderTitulo" class="finder-title">Buscar llantas por medida</h2>
+<!-- Panel de búsqueda vertical por tipo de vehículo -->
+<div class="container search-wrap">
+    <div class="vf-grid">
+        <section class="vf-panel" aria-labelledby="vfTitulo">
+            <div class="vf-types" id="vfTipos" data-activo="Auto" role="tablist" aria-label="Tipo de vehículo">
+                <button type="button" class="vf-type is-active" role="tab" aria-selected="true" data-tipo="Auto"><i class="fa-solid fa-car-side"></i>Autos</button>
+                <button type="button" class="vf-type" role="tab" aria-selected="false" data-tipo="Moto"><i class="fa-solid fa-motorcycle"></i>Motos</button>
+                <span class="vf-indicator" aria-hidden="true"></span>
+            </div>
 
-        <div class="finder-bar">
-            <div class="finder-field">
-                <label for="anchoSelect">Ancho</label>
-                <select id="anchoSelect" class="form-select">
-                    <option value="">Todos</option>
-                    @if (ViewBag.Anchos != null)
-                    {
-                        foreach (var a in (List<string>)ViewBag.Anchos) { <option value="@a">@a</option> }
-                    }
-                </select>
-            </div>
-            <div class="finder-field">
-                <label for="perfilSelect">Perfil</label>
-                <select id="perfilSelect" class="form-select">
-                    <option value="">Todos</option>
-                    @if (ViewBag.Perfiles != null)
-                    {
-                        foreach (var p in (List<string>)ViewBag.Perfiles) { <option value="@p">@p</option> }
-                    }
-                </select>
-            </div>
-            <div class="finder-field">
-                <label for="diametroSelect">Rin</label>
-                <select id="diametroSelect" class="form-select">
-                    <option value="">Todos</option>
-                    @if (ViewBag.Diametros != null)
-                    {
-                        foreach (var d in (List<string>)ViewBag.Diametros) { <option value="@d">@d</option> }
-                    }
-                </select>
-            </div>
-            <button type="button" id="btnBuscarLlantas" class="finder-go">Buscar llantas <i class="fa-solid fa-arrow-right"></i></button>
-        </div>
+            <h2 id="vfTitulo" class="vf-title">Busca la llanta de tu vehículo</h2>
 
-        <div class="finder-foot">
-            <p class="finder-hint">Ejemplo: una llanta 205/55 R16 se busca con ancho 205, perfil 55 y rin 16.</p>
-            <button type="button" id="btnNuevaBusqueda" class="finder-reset">Nueva búsqueda</button>
-        </div>
-    </section>
+            <div class="vf-fields" id="vfCampos" autocomplete="off">
+                <div class="vf-field">
+                    <label for="vfModelo">Modelo / Marca<span class="req">*</span></label>
+                    <input id="vfModelo" type="text" maxlength="40" autocomplete="off" data-vf />
+                </div>
+                <div class="vf-field">
+                    <label for="vfAncho">Ancho (mm)<span class="req">*</span></label>
+                    <input id="vfAncho" type="text" inputmode="numeric" maxlength="3" autocomplete="off" list="vfAnchos" data-vf />
+                </div>
+                <div class="vf-field">
+                    <label for="vfPerfil">Perfil (%)<span class="req">*</span></label>
+                    <input id="vfPerfil" type="text" inputmode="numeric" maxlength="2" autocomplete="off" list="vfPerfiles" data-vf />
+                </div>
+                <div class="vf-field">
+                    <label for="vfDiametro">Diámetro / Rin (pulgadas)<span class="req">*</span></label>
+                    <input id="vfDiametro" type="text" inputmode="numeric" maxlength="2" autocomplete="off" list="vfDiametros" data-vf />
+                </div>
+            </div>
+            <datalist id="vfAnchos"></datalist>
+            <datalist id="vfPerfiles"></datalist>
+            <datalist id="vfDiametros"></datalist>
+
+            <button type="button" id="vfConsultar" class="vf-submit" disabled>Consultar</button>
+            <p class="vf-hint">La medida está en el costado de tu llanta, por ejemplo 205/55 R16.</p>
+        </section>
+        <div class="vf-image" role="img" aria-label="Vehículo en carretera"></div>
+    </div>
 </div>
 
-<!-- Resultados de Búsqueda -->
+<!-- Resultados de la búsqueda -->
 <section id="resultadosBusqueda" class="section pb-0 d-none">
     <div class="container">
-        <h2 class="section-title mb-3">Resultados de la búsqueda</h2>
-        <div class="row g-3" id="contenedorTarjetas"></div>
+        <div class="home-section-head">
+            <h2 class="section-title mb-0">Resultados de la búsqueda</h2>
+            <a href="#" id="vfNueva">Nueva búsqueda</a>
+        </div>
+        <div class="cat-grid" id="contenedorTarjetas"></div>
     </div>
 </section>
 
-<!-- Partials del primer código -->
+<!-- Llantas destacadas -->
+@{
+    var destacadas = ViewBag.Destacadas as List<Llanteria.Models.Producto> ?? new List<Llanteria.Models.Producto>();
+    var agotados = ViewBag.Agotados as HashSet<int> ?? new HashSet<int>();
+}
+@if (destacadas.Count > 0)
+{
+    <section class="section pb-0">
+        <div class="container">
+            <div class="home-section-head">
+                <div>
+                    <span class="eyebrow">Catálogo</span>
+                    <h2 class="section-title mt-1 mb-0">Llantas para tu vehículo</h2>
+                </div>
+                <a asp-controller="Llantas" asp-action="Index">Ver todas las llantas</a>
+            </div>
+            <div class="cat-grid">
+                @foreach (var p in destacadas)
+                {
+                    <partial name="_TarjetaProducto" model="(p, agotados.Contains(p.Id))" />
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Partials adicionales -->
 <partial name="_Marcas" model="logos" />
 <partial name="_Categorias" />
 <partial name="_Servicios" />
@@ -253,48 +171,93 @@
 @section Scripts {
     <script src="~/js/tienda.js" asp-append-version="true"></script>
     <script>
-        function esc(t) {
-            const d = document.createElement('div');
-            d.textContent = t == null ? '' : String(t);
-            return d.innerHTML;
-        }
+        (function () {
+            var medidas = @Html.Raw(System.Text.Json.JsonSerializer.Serialize((object)ViewBag.Medidas));
+            var cfg = {
+                Auto: { modelo: 'Ej. Toyota Corolla', ancho: 'Ancho en mm (ej. 205)', perfil: 'Perfil en % (ej. 55)', rin: 'Rin en pulgadas (ej. 16)', a: [135, 355], p: [25, 80], d: [13, 24] },
+                Moto: { modelo: 'Ej. Yamaha MT-03', ancho: 'Ancho en mm (ej. 120)', perfil: 'Perfil en % (ej. 70)', rin: 'Rin en pulgadas (ej. 17)', a: [60, 260], p: [30, 90], d: [10, 21] }
+            };
+            var tipo = 'Auto';
+            var campos = { modelo: document.getElementById('vfModelo'), ancho: document.getElementById('vfAncho'), perfil: document.getElementById('vfPerfil'), diametro: document.getElementById('vfDiametro') };
+            var boton = document.getElementById('vfConsultar');
 
-        document.getElementById('btnNuevaBusqueda')?.addEventListener('click', function () {
-            ['anchoSelect', 'perfilSelect', 'diametroSelect'].forEach(function (id) { document.getElementById(id).value = ''; });
-            document.getElementById('contenedorTarjetas').innerHTML = '';
-            document.getElementById('resultadosBusqueda').classList.add('d-none');
-            document.getElementById('anchoSelect').focus();
-        });
+            function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
 
-        document.getElementById('btnBuscarLlantas')?.addEventListener('click', async function () {
-            const ancho = document.getElementById('anchoSelect').value;
-            const perfil = document.getElementById('perfilSelect').value;
-            const diametro = document.getElementById('diametroSelect').value;
-            if (!ancho && !perfil && !diametro) {
-                Swal.fire({ icon: 'info', title: 'Elige una medida', text: 'Selecciona al menos un valor para buscar.', confirmButtonColor: '#C92B0A' });
-                return;
+            function llenarLista(id, valores) {
+                var dl = document.getElementById(id); dl.innerHTML = '';
+                (valores || []).forEach(function (v) { var o = document.createElement('option'); o.value = v; dl.appendChild(o); });
             }
 
-            const url = '@Url.Action("BuscarLlantas", "Home")' + '?ancho=' + encodeURIComponent(ancho) +
-                '&perfil=' + encodeURIComponent(perfil) + '&diametro=' + encodeURIComponent(diametro);
-            const contenedor = document.getElementById('contenedorTarjetas');
-            try {
-                const r = await fetch(url);
-                if (!r.ok) throw new Error(r.status);
-                const lista = await r.json();
-                contenedor.innerHTML = lista.length ? lista.map(function (l) {
-                    return '<div class="col-sm-6 col-lg-4"><div class="premium-product-card h-100 d-flex flex-column border rounded-3 p-3 bg-white shadow-sm">' +
-                        '<img class="product-img img-fluid mb-3 rounded" src="' + esc(l.img) + '" alt="" style="height: 200px; object-fit: contain;">' +
-                        '<div class="d-flex flex-column flex-grow-1"><h3 class="h6 fw-bold">' + esc(l.nombre) + '</h3>' +
-                        '<div class="fs-5 fw-bold text-danger mb-3">' + esc(l.precio) + '</div>' +
-                        '<a href="@Url.Action("Index", "Contacto")" class="btn btn-danger btn-sm mt-auto fw-bold" style="background-color: var(--llanteria-primary); border:none;">Cotizar</a></div></div></div>';
-                }).join('') : '<div class="col-12 text-muted">No encontramos llantas con esa medida. Escríbenos y las conseguimos.</div>';
-                const seccion = document.getElementById('resultadosBusqueda');
-                seccion.classList.remove('d-none');
-                seccion.scrollIntoView({ behavior: 'smooth' });
-            } catch (e) {
-                Swal.fire({ icon: 'error', title: 'No se pudo buscar', text: 'Inténtalo de nuevo en un momento.', confirmButtonColor: '#212529' });
+            function aplicarTipo(t) {
+                tipo = t;
+                var c = cfg[t];
+                campos.modelo.placeholder = c.modelo; campos.ancho.placeholder = c.ancho;
+                campos.perfil.placeholder = c.perfil; campos.diametro.placeholder = c.rin;
+                var m = medidas[t] || {};
+                llenarLista('vfAnchos', m.anchos); llenarLista('vfPerfiles', m.perfiles); llenarLista('vfDiametros', m.diametros);
+                Object.keys(campos).forEach(function (k) { campos[k].value = ''; });
+                var cont = document.getElementById('vfCampos');
+                cont.style.animation = 'none'; void cont.offsetWidth; cont.style.animation = '';
+                document.getElementById('vfTipos').dataset.activo = t;
+                document.querySelectorAll('.vf-type').forEach(function (b) {
+                    var on = b.dataset.tipo === t; b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on);
+                });
+                validar();
             }
-        });
+
+            // Activa "Consultar" solo cuando todos los campos están completos.
+            function validar() {
+                var ok = campos.modelo.value.trim().length >= 2 && campos.ancho.value && campos.perfil.value && campos.diametro.value;
+                boton.disabled = !ok;
+            }
+
+            ['ancho', 'perfil', 'diametro'].forEach(function (k) {
+                campos[k].addEventListener('input', function () { campos[k].value = campos[k].value.replace(/\D/g, ''); validar(); });
+            });
+            campos.modelo.addEventListener('input', validar);
+            document.querySelectorAll('.vf-type').forEach(function (b) { b.addEventListener('click', function () { aplicarTipo(b.dataset.tipo); }); });
+
+            function tarjeta(l) {
+                return '<article class="cat-card' + (l.agotado ? ' is-out' : '') + '">' +
+                    '<div class="cat-card-img"><img src="' + esc(l.img) + '" alt="' + esc(l.nombre) + '" loading="lazy" />' +
+                    (l.agotado ? '<span class="cat-badge">Agotado</span>' : '') + '</div>' +
+                    '<div class="cat-card-body">' + (l.marca ? '<div class="cat-brand">' + esc(l.marca) + '</div>' : '') +
+                    '<h3>' + esc(l.nombre) + '</h3><div class="cat-meta">Medida ' + esc(l.medida) + '</div>' +
+                    '<div class="cat-price">' + (l.antes ? '<s class="cat-old">' + esc(l.antes) + '</s>' : '') + esc(l.precio) + '</div>' +
+                    '<a href="@Url.Action("Index", "Contacto")?producto=' + encodeURIComponent(l.nombre) + '" class="btn btn-hyper-action btn-sm">Cotizar</a></div></article>';
+            }
+
+            boton.addEventListener('click', async function () {
+                var c = cfg[tipo];
+                var a = +campos.ancho.value, p = +campos.perfil.value, d = +campos.diametro.value;
+                if (a < c.a[0] || a > c.a[1] || p < c.p[0] || p > c.p[1] || d < c.d[0] || d > c.d[1]) {
+                    Swal.fire({ icon: 'info', title: 'Revisa la medida', text: 'Para ' + (tipo === 'Moto' ? 'motos' : 'autos') + ' el ancho va de ' + c.a[0] + ' a ' + c.a[1] + ' mm, el perfil de ' + c.p[0] + ' a ' + c.p[1] + ' y el rin de ' + c.d[0] + ' a ' + c.d[1] + ' pulgadas.', confirmButtonColor: '#000' });
+                    return;
+                }
+                var url = '@Url.Action("BuscarLlantas", "Home")' + '?tipo=' + encodeURIComponent(tipo) + '&modelo=' + encodeURIComponent(campos.modelo.value.trim()) +
+                    '&ancho=' + a + '&perfil=' + p + '&diametro=' + d;
+                try {
+                    var r = await fetch(url);
+                    if (!r.ok) throw new Error(r.status);
+                    var lista = await r.json();
+                    document.getElementById('contenedorTarjetas').innerHTML = lista.length ? lista.map(tarjeta).join('') :
+                        '<div class="cat-empty" style="grid-column:1/-1"><i class="fa-solid fa-magnifying-glass"></i><p class="mt-2 mb-1 fw-bold">No encontramos llantas ' + a + '/' + p + ' R' + d + ' para ' + (tipo === 'Moto' ? 'moto' : 'auto') + '.</p><p class="text-muted mb-0">Escríbenos y te las conseguimos.</p></div>';
+                    var sec = document.getElementById('resultadosBusqueda');
+                    sec.classList.remove('d-none'); sec.scrollIntoView({ behavior: 'smooth' });
+                } catch (e) {
+                    Swal.fire({ icon: 'error', title: 'No se pudo consultar', text: 'Inténtalo de nuevo en un momento.', confirmButtonColor: '#000' });
+                }
+            });
+
+            document.getElementById('vfNueva').addEventListener('click', function (e) {
+                e.preventDefault();
+                document.getElementById('resultadosBusqueda').classList.add('d-none');
+                document.getElementById('contenedorTarjetas').innerHTML = '';
+                window.scrollTo({ top: document.querySelector('.search-wrap').offsetTop - 90, behavior: 'smooth' });
+                campos.modelo.focus();
+            });
+
+            aplicarTipo('Auto');
+        })();
     </script>
 }

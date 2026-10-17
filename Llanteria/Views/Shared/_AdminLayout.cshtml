@@ -3,8 +3,6 @@
     var act = (ViewContext.RouteData.Values["action"] as string) ?? "";
     var isAdmin = User.IsInRole("Administrador");
     var nombre = User.Identity?.Name ?? "Usuario";
-    var inicial = nombre.Substring(0, 1).ToUpper();
-    var foto = User.FindFirst("Foto")?.Value;
 
     var items = new List<(string C, string A, string Icon, string Text, bool AdminOnly, string Group)>
     {
@@ -12,10 +10,12 @@
         ("Factura", "Index", "fa-file-invoice-dollar", "Ventas", false, "Operación"),
         ("Cliente", "Index", "fa-users", "Clientes", false, "Operación"),
         ("Cliente", "GestionPuntos", "fa-star", "Puntos de clientes", false, "Operación"),
+        ("OrdenTrabajo", "Index", "fa-clipboard-check", "Órdenes de trabajo", false, "Operación"),
         ("Vehiculo", "Index", "fa-car", "Vehículos", false, "Operación"),
         ("Citas", "Index", "fa-calendar-check", "Citas", false, "Operación"),
         ("Empresas", "Solicitudes", "fa-building", "Solicitudes de empresas", false, "Operación"),
         ("Resenias", "Index", "fa-comments", "Opiniones", false, "Operación"),
+        ("Pqrs", "Index", "fa-comment-dots", "PQRS", false, "Operación"),
         ("Inventario", "Index", "fa-boxes-stacked", "Existencias", false, "Inventario"),
         ("Producto", "Index", "fa-box", "Productos", true, "Inventario"),
         ("Marca", "Index", "fa-tag", "Marcas", true, "Inventario"),
@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/brand.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/avatar-menu.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
     <style>
         :root {
@@ -52,54 +53,51 @@
     </style>
 </head>
 <body class="admin">
-    <header class="topbar bg-white shadow-sm py-3 px-4 d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center gap-3">
-            <button class="toggle d-lg-none btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Menú">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <span class="brand-matrix">Llantería<small class="ms-1">Valledupar</small></span>
-        </div>
-        <div class="d-flex align-items-center gap-3">
-            <a asp-controller="User" asp-action="Perfil" class="user text-decoration-none text-dark d-flex align-items-center gap-2" title="Mi perfil">
-                <span class="d-none d-md-block text-end lh-sm user-meta">
-                    <strong>@nombre</strong><br />
-                    <small class="text-muted">@(isAdmin ? "Administrador" : "Empleado")</small>
-                </span>
-                @if (!string.IsNullOrEmpty(foto))
-                {
-                    <img class="user-avatar rounded-circle" src="@foto" alt="Foto de perfil" style="width: 40px; height: 40px; object-fit: cover;" />
-                }
-                else
-                {
-                    <span class="avatar-initial rounded-circle bg-danger text-white d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">@inicial</span>
-                }
-            </a>
-            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-dark btn-sm rounded-pill px-3 btn-salir" title="Cerrar sesión">
-                <i class="fa-solid fa-arrow-right-from-bracket me-1"></i><span class="salir-txt">Salir</span>
-            </a>
-        </div>
-    </header>
+    @* Sin encabezado: solo la foto de perfil (abre un modal) flotando arriba a la derecha. *@
+    <div class="admin-profile">
+        @await Component.InvokeAsync("AvatarMenu", new { tamano = 42, modal = true })
+    </div>
 
-    <div class="layout d-flex">
-        <aside class="sidebar collapse d-lg-block bg-white border-end p-3" id="sidebar" style="width: 260px; min-height: calc(100vh - 70px);">
-            @foreach (var g in items.Where(i => !i.AdminOnly || isAdmin).GroupBy(i => i.Group))
-            {
-                <div class="sidebar-group text-uppercase text-muted fw-bold small mt-3 mb-2 px-2">@g.Key</div>
-                foreach (var i in g)
+    <button class="admin-menu-btn" type="button" id="adminMenuBtn" aria-label="Abrir menú" aria-controls="sidebar">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="admin-backdrop" id="adminBackdrop"></div>
+
+    <div class="layout">
+        <aside class="sidebar" id="sidebar" aria-label="Menú del panel">
+            <div class="sidebar-top">
+                <button class="sidebar-toggle" type="button" id="sidebarToggle" aria-label="Contraer o expandir el menú" title="Contraer / expandir">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
+                <a class="sidebar-brand brand-matrix" asp-controller="Dashboard" asp-action="Index" aria-label="Llantería Valledupar, panel">Llantería<small class="ms-1">Valledupar</small></a>
+            </div>
+
+            <nav class="sidebar-nav">
+                @foreach (var g in items.Where(i => !i.AdminOnly || isAdmin).GroupBy(i => i.Group))
                 {
-                    var activo = ctrl == i.C && (act == i.A || (i.A == "Index" && act != "GestionPuntos"));
-                    <a class="sidebar-link d-flex align-items-center gap-2 py-2 px-3 rounded-2 text-decoration-none @(activo ? "active bg-danger text-white fw-bold" : "text-dark")" asp-controller="@i.C" asp-action="@i.A">
-                        <i class="fa-solid @i.Icon" style="width: 20px;"></i>@i.Text
-                    </a>
+                    <div class="sidebar-group">@g.Key</div>
+                    foreach (var i in g)
+                    {
+                        var activo = ctrl == i.C && (act == i.A || (i.A == "Index" && act != "GestionPuntos"));
+                        <a class="sidebar-link @(activo ? "active" : "")" asp-controller="@i.C" asp-action="@i.A" title="@i.Text">
+                            <i class="fa-solid @i.Icon"></i><span class="sidebar-text">@i.Text</span>
+                        </a>
+                    }
                 }
-            }
-            <div class="sidebar-group text-uppercase text-muted fw-bold small mt-4 mb-2 px-2">Sitio</div>
-            <a class="sidebar-link d-flex align-items-center gap-2 py-2 px-3 rounded-2 text-decoration-none text-dark" asp-controller="Home" asp-action="Index">
-                <i class="fa-solid fa-globe" style="width: 20px;"></i>Ver página web
-            </a>
+                <div class="sidebar-group">Sitio</div>
+                <a class="sidebar-link" asp-controller="Home" asp-action="Index" title="Ver página web">
+                    <i class="fa-solid fa-globe"></i><span class="sidebar-text">Ver página web</span>
+                </a>
+            </nav>
+
+            <form class="sidebar-logout" asp-controller="Account" asp-action="Logout" method="post">
+                <button type="submit" class="sidebar-link" title="Cerrar sesión">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="sidebar-text">Cerrar sesión</span>
+                </button>
+            </form>
         </aside>
 
-        <main class="content flex-grow-1 p-4">
+        <main class="content flex-grow-1">
             @RenderBody()
         </main>
     </div>
@@ -112,6 +110,9 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/admin.js" asp-append-version="true"></script>
+    <script src="~/js/protect-forms.js" asp-append-version="true"></script>
+    <script src="~/js/avatar-menu.js" asp-append-version="true"></script>
+    <script src="~/js/admin-shell.js" asp-append-version="true"></script>
     <partial name="_Alertas" />
     @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -121,7 +121,7 @@
                         <textarea asp-for="Notas" class="form-control mb-3" rows="2" maxlength="400" placeholder="Horario de entrega, indicaciones de llegada..."></textarea>
                         <div class="form-check">
                             <input asp-for="AceptaTerminos" class="form-check-input" required />
-                            <label asp-for="AceptaTerminos" class="form-check-label small">Acepto los términos de compra y autorizo el tratamiento de mis datos personales. <span class="text-danger">*</span></label>
+                            <label asp-for="AceptaTerminos" class="form-check-label small">Acepto los <a asp-controller="Legal" asp-action="Terminos" target="_blank">términos y condiciones</a>, conozco el <a asp-controller="Legal" asp-action="Devoluciones" target="_blank">derecho de retracto</a> y autorizo el tratamiento de mis datos personales según la <a asp-controller="Legal" asp-action="Privacidad" target="_blank">política de datos</a>. <span class="text-danger">*</span></label>
                         </div>
                         <span asp-validation-for="AceptaTerminos" class="text-danger small"></span>
                     </div>

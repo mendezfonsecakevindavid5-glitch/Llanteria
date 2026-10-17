@@ -20,6 +20,16 @@
             <input asp-for="Modelo" class="form-control" maxlength="50" placeholder="Hilux 2024" />
             <span asp-validation-for="Modelo" class="text-danger small"></span>
         </div>
+        <div class="col-md-6">
+            <label asp-for="Anio" class="form-label">Año</label>
+            <input asp-for="Anio" type="number" min="1950" max="2100" class="form-control" placeholder="2022" />
+            <span asp-validation-for="Anio" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Kilometraje" class="form-label">Kilometraje actual</label>
+            <input asp-for="Kilometraje" type="number" min="0" class="form-control" placeholder="45000" />
+            <span asp-validation-for="Kilometraje" class="text-danger small"></span>
+        </div>
         <div class="col-12">
             <label asp-for="IdCliente" class="form-label">Propietario</label>
             <select asp-for="IdCliente" class="form-select" asp-items="ViewBag.IdCliente"><option value="0">Seleccione…</option></select>

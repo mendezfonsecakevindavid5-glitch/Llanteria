@@ -1,4 +1,6 @@
+using Llanteria.Infrastructure;
 using Llanteria.Models;
+using Llanteria.Seguridad;
 using Microsoft.EntityFrameworkCore;
 
 namespace Llanteria.Data;
@@ -11,9 +13,21 @@ public partial class LlanteriaDbContext
     public virtual DbSet<Resenia> Resenias { get; set; }
     public virtual DbSet<Pedido> Pedidos { get; set; }
     public virtual DbSet<PedidoItem> PedidoItems { get; set; }
+    public virtual DbSet<Pqrs> RegistrosPqrs { get; set; }
+    public virtual DbSet<OrdenTrabajo> OrdenesTrabajo { get; set; }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<DetalleProducto>().Property(e => e.TipoVehiculo).HasMaxLength(10).HasDefaultValue(TiposVehiculo.Auto);
+
+        // Columnas guardadas cifradas (AES-256-GCM). El texto cifrado es más largo que el original:
+        // por eso estas columnas pasan a nvarchar(max) (EsquemaUpdater lo aplica en bases ya creadas).
+        modelBuilder.Entity<Cliente>().Property(e => e.Foto).HasColumnType("nvarchar(max)").Cifrada("Cliente.Foto");
+        modelBuilder.Entity<Empleado>().Property(e => e.Foto).Cifrada("Empleado.Foto");
+        modelBuilder.Entity<PerfilUsuario>().Property(e => e.Bio).HasColumnType("nvarchar(max)").Cifrada("PerfilUsuario.Bio");
+        modelBuilder.Entity<PerfilUsuario>().Property(e => e.FotoCircular).Cifrada("PerfilUsuario.FotoCircular");
+        modelBuilder.Entity<Usuario>().Property(e => e.MotivoSancion).HasColumnType("nvarchar(max)").Cifrada("Usuario.MotivoSancion");
+
         modelBuilder.Entity<Cita>(e =>
         {
             e.ToTable("Citas");
@@ -30,6 +44,41 @@ public partial class LlanteriaDbContext
             e.Property(x => x.Correo).HasMaxLength(100);
             e.Property(x => x.Estado).HasMaxLength(20).HasDefaultValue("Pendiente");
             e.Property(x => x.FechaCreacion).HasColumnType("datetime").HasDefaultValueSql("(getdate())");
+        });
+
+        modelBuilder.Entity<OrdenTrabajo>(e =>
+        {
+            e.ToTable("OrdenesTrabajo");
+            e.Property(x => x.Numero).HasMaxLength(20);
+            e.HasIndex(x => x.Numero).IsUnique();
+            e.HasIndex(x => x.IdVehiculo);
+            e.Property(x => x.Tipo).HasMaxLength(40);
+            e.Property(x => x.Descripcion).HasMaxLength(150);
+            e.Property(x => x.Observaciones).HasMaxLength(500);
+            e.Property(x => x.Total).HasColumnType("decimal(14,2)");
+            e.Property(x => x.Estado).HasMaxLength(20).HasDefaultValue(OrdenTrabajo.Recibido);
+            e.Property(x => x.FechaIngreso).HasColumnType("datetime");
+            e.Property(x => x.FechaEntrega).HasColumnType("datetime");
+            e.Property(x => x.ProximaFecha).HasColumnType("date");
+            e.HasOne(x => x.Vehiculo).WithMany().HasForeignKey(x => x.IdVehiculo).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Pqrs>(e =>
+        {
+            e.ToTable("Pqrs");
+            e.Property(x => x.Radicado).HasMaxLength(20);
+            e.HasIndex(x => x.Radicado).IsUnique();
+            e.Property(x => x.Tipo).HasMaxLength(20);
+            e.Property(x => x.Nombre).HasMaxLength(100);
+            e.Property(x => x.NumeroDocumento).HasMaxLength(20);
+            e.Property(x => x.Correo).HasMaxLength(100);
+            e.Property(x => x.Telefono).HasMaxLength(25);
+            e.Property(x => x.Asunto).HasMaxLength(120);
+            e.Property(x => x.Mensaje).HasMaxLength(1500);
+            e.Property(x => x.Respuesta).HasMaxLength(1500);
+            e.Property(x => x.Estado).HasMaxLength(20).HasDefaultValue(Pqrs.Recibida);
+            e.Property(x => x.FechaCreacion).HasColumnType("datetime").HasDefaultValueSql("(getdate())");
+            e.Property(x => x.FechaRespuesta).HasColumnType("datetime");
         });
 
         modelBuilder.Entity<SolicitudEmpresa>(e =>

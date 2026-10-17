@@ -12,7 +12,7 @@ public class SeoController : Controller
     {
         var sb = new StringBuilder();
         sb.AppendLine("User-agent: *");
-        foreach (var ruta in new[] { "Dashboard", "Factura", "Cliente", "Vehiculo", "Inventario", "Producto", "Marca", "Bodega", "Proveedore", "Gasto", "Empleado", "Usuario", "Log", "Reporte", "Account", "MiCuenta", "Citas", "User" })
+        foreach (var ruta in new[] { "Dashboard", "Factura", "Cliente", "Vehiculo", "Inventario", "Producto", "Marca", "Bodega", "Proveedore", "Gasto", "Empleado", "Usuario", "Log", "Reporte", "Account", "MiCuenta", "Citas", "User", "Pqrs", "OrdenTrabajo", "Pedidos" })
             sb.AppendLine($"Disallow: /{ruta}");
         sb.AppendLine($"Sitemap: {Request.Scheme}://{Request.Host}/sitemap.xml");
         return Content(sb.ToString(), "text/plain", Encoding.UTF8);
@@ -22,7 +22,8 @@ public class SeoController : Controller
     public ContentResult Sitemap()
     {
         var baseUrl = $"{Request.Scheme}://{Request.Host}";
-        var rutas = new List<string> { "/", "/Llantas", "/Baterias", "/Promociones", "/Empresas", "/Blog", "/Contacto" };
+        var rutas = new List<string> { "/", "/Llantas", "/Baterias", "/Promociones", "/Empresas", "/Blog", "/Contacto",
+            "/Legal/Terminos", "/Legal/Privacidad", "/Legal/Garantia", "/Legal/Devoluciones", "/Legal/Faq", "/Legal/Pqrs" };
         rutas.AddRange(ServiciosCatalogo.Todos.Select(s => $"/Servicios/{s.Slug}"));
         rutas.AddRange(BlogCatalogo.Todos.Select(p => $"/Blog/{p.Slug}"));
 

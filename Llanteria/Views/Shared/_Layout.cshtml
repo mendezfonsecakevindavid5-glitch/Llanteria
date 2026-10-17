@@ -12,6 +12,7 @@
     bool isEmpresas = currentController.Equals("Empresas", StringComparison.OrdinalIgnoreCase);
     bool isBlog = currentController.Equals("Blog", StringComparison.OrdinalIgnoreCase);
     bool isContacto = currentController.Equals("Contacto", StringComparison.OrdinalIgnoreCase);
+    bool conOffset = !isHomeIndex && !currentController.Equals("Account", StringComparison.OrdinalIgnoreCase);
 
     // Contador del carrito: se lee de la sesión ("CarritoCantidad"). Mientras no exista un carrito que lo llene, muestra 0.
     int cartCount = 0;
@@ -31,6 +32,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/public.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/brand.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/avatar-menu.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Llanteria.styles.css" asp-append-version="true" />
 
     <style>
@@ -54,7 +56,10 @@
             flex-direction: column;
         }
 
-        /* ---------- Header ---------- */
+        /* ---------- Header ----------
+           Barra sobria, de una sola línea (referencia: la barra de Michelin). Transparente SOLO sobre el banner del Inicio. */
+        :root { --header-h: 68px; }
+
         .michelin-nav-global {
             position: fixed;
             top: 0;
@@ -62,30 +67,27 @@
             width: 100%;
             z-index: 1100;
             background: transparent;
-            backdrop-filter: blur(10px);
-            padding: 1.1rem 0;
-            transition: background 0.3s ease, box-shadow 0.3s ease;
+            padding: .7rem 0;
+            transition: background .25s ease, box-shadow .25s ease;
         }
 
         .michelin-nav-global.solid-bg,
         .michelin-nav-global.scrolled,
         .michelin-nav-global:hover {
-            background: rgba(255, 255, 255, 0.98) !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, .98) !important;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, .08), 0 6px 18px rgba(0, 0, 0, .06);
         }
 
-        /* Los elementos del header arrancan más a la izquierda: sin el tope del .container */
         .michelin-nav-global .header-shell {
-            max-width: none; /* site.css limita .container-fluid a 1500px y lo centraba */
+            max-width: none;
             padding-left: clamp(1rem, 3.5vw, 4rem);
             padding-right: clamp(1rem, 3.5vw, 4rem);
         }
 
-        /* Nombre del proyecto: ya no es un enlace */
-        .brand-matrix {
+        .michelin-nav-global .brand-matrix {
             color: #FFFFFF !important;
-            pointer-events: none;
-            margin-right: clamp(1rem, 2.4vw, 2.75rem);
+            cursor: pointer;
+            margin-right: clamp(1rem, 2.2vw, 2.5rem);
             white-space: nowrap;
         }
 
@@ -96,143 +98,154 @@
             text-shadow: none;
         }
 
-        /* Nav links: Roboto medio, un poco más grande (referencia: interllantas.com) */
+        /* Nav links: más pequeños y siempre del mismo color (sin rojo al pasar el cursor ni al hacer clic) */
         .michelin-nav-global .navbar-nav .nav-link {
             color: #FFFFFF !important;
             font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
             font-weight: 500;
-            font-size: 1.05rem;
-            letter-spacing: .01em;
-            transition: color 0.15s ease-in-out;
+            font-size: .94rem;
+            letter-spacing: .015em;
             text-decoration: none !important;
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, .45);
             position: relative;
-            padding-bottom: 4px;
-            margin: 0 4px; /* Separación nítida entre cada nav item */
+            padding: .45rem .15rem;
+            margin: 0 .55rem;
             white-space: nowrap;
-        }
-
-        /* site.css mueve y pinta de gris los .nav-link al pasar el mouse: en el header no */
-        .michelin-nav-global .navbar-nav .nav-link:hover {
             background: transparent;
             transform: none;
+            border-bottom: 0 !important;
+            transition: none;
         }
+
+        .michelin-nav-global .navbar-nav .nav-link:hover,
+        .michelin-nav-global .navbar-nav .nav-link:focus,
+        .michelin-nav-global .navbar-nav .nav-link:active { color: #FFFFFF !important; background: transparent; }
 
         .michelin-nav-global.solid-bg .navbar-nav .nav-link,
         .michelin-nav-global.scrolled .navbar-nav .nav-link,
-        .michelin-nav-global:hover .navbar-nav .nav-link {
+        .michelin-nav-global:hover .navbar-nav .nav-link,
+        .michelin-nav-global.solid-bg .navbar-nav .nav-link:hover,
+        .michelin-nav-global.scrolled .navbar-nav .nav-link:hover,
+        .michelin-nav-global:hover .navbar-nav .nav-link:hover {
             color: #000000 !important;
             text-shadow: none;
         }
 
-        .michelin-nav-global.solid-bg .navbar-nav .nav-link::after,
-        .michelin-nav-global.scrolled .navbar-nav .nav-link::after,
-        .michelin-nav-global:hover .navbar-nav .nav-link::after {
+        /* Subrayado fino: aparece al pasar el cursor y queda fijo en la página actual. Mismo color que el texto. */
+        .michelin-nav-global .navbar-nav .nav-link::after {
             content: '';
             position: absolute;
-            width: 0;
-            height: 2px;
+            left: 0;
+            right: 0;
             bottom: 0;
-            left: 50%;
-            background-color: #000000;
-            transition: width 0.2s ease, left 0.2s ease;
+            height: 2px;
+            background: currentColor;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .2s ease;
         }
 
-        .michelin-nav-global.solid-bg .navbar-nav .nav-link:hover::after,
-        .michelin-nav-global.scrolled .navbar-nav .nav-link:hover::after,
-        .michelin-nav-global:hover .navbar-nav .nav-link:hover::after {
-            width: 80%;
-            left: 10%;
+        .michelin-nav-global .navbar-nav .nav-link:hover::after,
+        .michelin-nav-global .navbar-nav .nav-link.is-active::after { transform: scaleX(1); }
+
+        /* Puntos del usuario: solo con sesión iniciada. Rojo, estrella a la izquierda y subrayado rojo propio. */
+        .michelin-nav-global .navbar-nav .nav-link.nav-puntos,
+        .michelin-nav-global .navbar-nav .nav-link.nav-puntos:hover,
+        .michelin-nav-global.solid-bg .navbar-nav .nav-link.nav-puntos,
+        .michelin-nav-global.scrolled .navbar-nav .nav-link.nav-puntos,
+        .michelin-nav-global:hover .navbar-nav .nav-link.nav-puntos {
+            color: var(--cart-red) !important;
+            font-weight: 700;
+            text-shadow: none;
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
         }
 
-        /* Página actual / clic: rojo (más específico que el color del header sólido) */
-        .michelin-nav-global .navbar-nav .nav-item .nav-link.clicked-red {
-            color: var(--llanteria-primary) !important;
-        }
+        .michelin-nav-global .navbar-nav .nav-link.nav-puntos i { color: var(--cart-red); font-size: .85em; }
+        .michelin-nav-global .navbar-nav .nav-link.nav-puntos::after { transform: scaleX(1); height: 2px; background: var(--cart-red); }
 
-        /* Carrito con contador en la esquina superior derecha */
+        /* Carrito */
         .header-cart {
             position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             color: #FFFFFF;
-            font-size: 1.5rem;
+            font-size: 1.15rem;
             line-height: 1;
             text-decoration: none;
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
-            transition: color .2s ease;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, .45);
         }
 
         .michelin-nav-global.solid-bg .header-cart,
         .michelin-nav-global.scrolled .header-cart,
-        .michelin-nav-global:hover .header-cart {
-            color: #000000;
-            text-shadow: none;
-        }
+        .michelin-nav-global:hover .header-cart { color: #000000; text-shadow: none; }
 
-        .header-cart:hover { color: var(--llanteria-primary) !important; }
+        .header-cart:hover { color: inherit !important; }
 
         .cart-badge {
             position: absolute;
-            top: -9px;
-            right: -11px;
-            min-width: 19px;
-            height: 19px;
-            padding: 0 5px;
+            top: -8px;
+            right: -10px;
+            min-width: 17px;
+            height: 17px;
+            padding: 0 4px;
             border-radius: 999px;
             background: var(--cart-red);
             color: #FFFFFF;
             font-family: 'Roboto', sans-serif;
-            font-size: .72rem;
+            font-size: .66rem;
             font-weight: 700;
-            line-height: 19px;
+            line-height: 17px;
             text-align: center;
             text-shadow: none;
-            box-shadow: 0 0 0 2px rgba(255,255,255,.9);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, .9);
         }
 
-        /* Botón Iniciar Sesión (Negro, semirredondeado, con ícono de usuario) */
+        /* Iniciar sesión: negro con letras blancas; sobre el banner transparente, blanco con letras negras */
         .btn-matrix-action {
             background: #000000 !important;
             color: #FFFFFF !important;
             border: 1px solid #000000 !important;
-            padding: 0.55rem 1.25rem;
-            border-radius: 0.5rem;
+            padding: .4rem 1rem;
+            border-radius: .4rem;
             font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
             font-weight: 500;
-            font-size: 1.02rem;
+            font-size: .88rem;
             letter-spacing: .01em;
             white-space: nowrap;
-            transition: background-color 0.2s ease;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: .5rem;
+            transition: background-color .2s ease, color .2s ease;
         }
 
-        .btn-matrix-action:hover {
-            background: #212529 !important;
-            border-color: #212529 !important;
-            color: #FFFFFF !important;
+        .btn-matrix-action i { font-size: .9em; }
+        .btn-matrix-action:hover { background: #212529 !important; border-color: #212529 !important; color: #FFFFFF !important; }
+
+        .michelin-nav-global:not(.solid-bg):not(.scrolled):not(:hover) .btn-matrix-action {
+            background: #FFFFFF !important;
+            border-color: #FFFFFF !important;
+            color: #000000 !important;
         }
 
-        .main-matrix-container {
-            flex: 1 0 auto;
-            padding-bottom: 2rem;
-        }
+        .header-actions { gap: 1.5rem; }
 
-        /* Entre 1200 y 1399 px se compacta un poco para que todo quepa en una línea */
+        /* Espacio bajo el header fijo: así, al llegar arriba del todo, no tapa el comienzo de la página.
+           En el Inicio no se aplica (el banner pasa por debajo del header transparente) ni en Account (tiene su propio espaciado). */
+        .main-matrix-container { flex: 1 0 auto; padding-bottom: 2rem; }
+        .main-matrix-container.main-offset { padding-top: var(--header-h); }
+
         @@media (min-width: 1200px) and (max-width: 1399.98px) {
-            .brand-matrix { font-size: 1.2rem; }
-            .michelin-nav-global .navbar-nav .nav-link { font-size: .98rem; margin: 0 1px; }
-            .btn-matrix-action { font-size: .96rem; padding: .5rem 1rem; }
+            .michelin-nav-global .navbar-nav .nav-link { font-size: .9rem; margin: 0 .35rem; }
         }
 
         @@media (max-width: 1199.98px) {
-            /* El ícono del menú es oscuro por defecto: se invierte mientras el header es transparente */
             .michelin-nav-global:not(.solid-bg):not(.scrolled):not(:hover) .navbar-toggler-icon { filter: invert(1); }
             .michelin-nav-global .navbar-collapse { padding: .5rem 0 .25rem; }
-            .header-cart { align-self: flex-start; margin: .25rem .75rem; }
+            .michelin-nav-global .navbar-nav .nav-link { margin: 0; padding: .55rem 0; }
+            .header-cart { align-self: flex-start; margin: .25rem 0; }
         }
     </style>
     @await RenderSectionAsync("Styles", required: false)
@@ -242,7 +255,7 @@
     <header>
         <nav class="navbar navbar-expand-xl site-nav michelin-nav-global @(!isHomeIndex ? "solid-bg" : "")" id="mainNavbar">
             <div class="container-fluid header-shell">
-                <span class="navbar-brand brand-matrix">Llantería<small class="ms-1">Valledupar</small></span>
+                <a class="navbar-brand brand-matrix" asp-controller="Home" asp-action="Index" aria-label="Llantería Valledupar, inicio">Llantería<small class="ms-1">Valledupar</small></a>
 
                 <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Menú">
                     <span class="navbar-toggler-icon"></span>
@@ -251,29 +264,33 @@
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav me-auto align-items-xl-center gap-xl-1" id="navMenuList">
                         <li class="nav-item">
-                            <a class="nav-link @(isInicio ? "clicked-red" : "")" asp-controller="Home" asp-action="Index">Inicio</a>
+                            <a class="nav-link @(isInicio ? "is-active" : "")" asp-controller="Home" asp-action="Index">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(isLlantas ? "clicked-red" : "")" asp-controller="Llantas" asp-action="Index">Llantas</a>
+                            <a class="nav-link @(isLlantas ? "is-active" : "")" asp-controller="Llantas" asp-action="Index">Llantas</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(isBaterias ? "clicked-red" : "")" asp-controller="Baterias" asp-action="Index">Baterías</a>
+                            <a class="nav-link @(isBaterias ? "is-active" : "")" asp-controller="Baterias" asp-action="Index">Baterías</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(isPromociones ? "clicked-red" : "")" asp-controller="Promociones" asp-action="Index">Promociones</a>
+                            <a class="nav-link @(isPromociones ? "is-active" : "")" asp-controller="Promociones" asp-action="Index">Promociones</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(isEmpresas ? "clicked-red" : "")" asp-controller="Empresas" asp-action="Index">Empresas</a>
+                            <a class="nav-link @(isEmpresas ? "is-active" : "")" asp-controller="Empresas" asp-action="Index">Empresas</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(isBlog ? "clicked-red" : "")" asp-controller="Blog" asp-action="Index">Blog</a>
+                            <a class="nav-link @(isBlog ? "is-active" : "")" asp-controller="Blog" asp-action="Index">Blog</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(isContacto ? "clicked-red" : "")" asp-controller="Contacto" asp-action="Index">Contacto</a>
+                            <a class="nav-link @(isContacto ? "is-active" : "")" asp-controller="Contacto" asp-action="Index">Contacto</a>
                         </li>
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            @await Component.InvokeAsync("PuntosNav")
+                        }
                     </ul>
 
-                    <ul class="navbar-nav ms-auto align-items-xl-center gap-3 mt-3 mt-xl-0">
+                    <ul class="navbar-nav ms-auto align-items-xl-center header-actions mt-3 mt-xl-0">
                         <li class="nav-item">
                             <a class="header-cart header-interactable" asp-controller="Llantas" asp-action="Index" title="Carrito" aria-label="Carrito de compras, @cartCount productos">
                                 <i class="fa-solid fa-cart-shopping"></i>
@@ -290,22 +307,8 @@
                         }
                         else
                         {
-                            var fotoClaim = User.FindFirst("Foto")?.Value;
-                            var username = User.Identity.Name ?? "Usuario";
-                            var defaultAvatar = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(username)}&background=C92B0A&color=fff&rounded=true";
-                            var avatarUrl = !string.IsNullOrEmpty(fotoClaim) ? fotoClaim : defaultAvatar;
-
-                            <li class="nav-item d-flex align-items-center me-1">
-                                <a asp-controller="User" asp-action="Perfil" title="Mi Perfil" class="header-interactable">
-                                    <img src="@avatarUrl" alt="Foto de perfil" class="rounded-circle border border-2 border-white shadow-sm" style="width: 42px; height: 42px; object-fit: cover;" />
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-outline-light btn-sm rounded-pill px-3 header-interactable">
-                                        <i class="fa-solid fa-right-from-bracket me-1"></i> Salir
-                                    </button>
-                                </form>
+                            <li class="nav-item d-flex align-items-center">
+                                @await Component.InvokeAsync("AvatarMenu", new { tamano = 44 })
                             </li>
                         }
                     </ul>
@@ -314,7 +317,7 @@
         </nav>
     </header>
 
-    <main role="main" class="main-matrix-container">
+    <main role="main" class="main-matrix-container @(conOffset ? "main-offset" : "")">
         @RenderBody()
     </main>
 
@@ -327,6 +330,8 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/protect-forms.js" asp-append-version="true"></script>
+    <script src="~/js/avatar-menu.js" asp-append-version="true"></script>
     <script>
         window.addEventListener('scroll', function () {
             const nav = document.getElementById('mainNavbar');
@@ -340,14 +345,6 @@
                 }
                 </text>
             }
-        });
-
-        // Lógica para cambiar color a rojo al hacer clic en un nav-link
-        document.querySelectorAll('#navMenuList .nav-link').forEach(link => {
-            link.addEventListener('click', function () {
-                document.querySelectorAll('#navMenuList .nav-link').forEach(l => l.classList.remove('clicked-red'));
-                this.classList.add('clicked-red');
-            });
         });
 
         // Punto de enganche para el carrito: window.actualizarContadorCarrito(3) actualiza el número del ícono.

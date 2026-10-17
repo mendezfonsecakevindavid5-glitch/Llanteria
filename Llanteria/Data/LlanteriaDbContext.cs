@@ -132,7 +132,7 @@ public partial class LlanteriaDbContext : DbContext
             entity.Property(e => e.NumeroDocumento).HasMaxLength(20);
             entity.Property(e => e.PuntosAcumulados).HasDefaultValue(0);
             entity.Property(e => e.Telefono).HasMaxLength(20);
-            entity.Property(e => e.Foto).HasMaxLength(255); // ✅ Configuración del campo Foto
+            // entity.Property(e => e.Foto).HasMaxLength(255); // // ✅ Configuración del campo Foto
 
             entity.HasOne(d => d.IdDocumentoNavigation).WithMany(p => p.Clientes)
                 .HasForeignKey(d => d.IdDocumento)

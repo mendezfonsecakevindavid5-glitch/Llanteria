@@ -5,7 +5,7 @@
     var publicos = new[]
     {
         "Home", "Account", "Contacto", "Servicios", "Nosotros", "Promociones", "Citas", "MiCuenta",
-        "Llantas", "Baterias", "Lubricantes", "Accesorios", "Blog", "Empresas", "Resenias", "Carrito", "Pedidos"
+        "Llantas", "Baterias", "Lubricantes", "Accesorios", "Blog", "Empresas", "Resenias", "Carrito", "Pedidos", "Legal"
     };
     // Estas acciones son la gestión del personal: van con el panel.
     var gestion = (controlador == "Citas" && accion == "Index")
@@ -13,5 +13,7 @@
                || (controlador == "Resenias" && accion == "Index")
                || (controlador == "Pedidos" && accion is "Index" or "Detalle");
     var esPublico = publicos.Contains(controlador) && !gestion;
+    // "Cuenta" (perfil) lleva directo a editar el perfil con el diseño del sitio, también para el personal: sin el menú del panel.
+    if (controlador == "User") esPublico = true;
     Layout = esPublico ? "_Layout" : "_AdminLayout";
 }
