@@ -74,6 +74,9 @@ BEGIN
     CREATE UNIQUE INDEX IX_Pqrs_Radicado ON dbo.Pqrs(Radicado);
 END;
 
+IF COL_LENGTH('dbo.DetalleProductos', 'TipoVehiculo') IS NULL
+    ALTER TABLE dbo.DetalleProductos ADD TipoVehiculo nvarchar(10) NOT NULL CONSTRAINT DF_DetalleProductos_TipoVehiculo DEFAULT ('Auto');
+
 IF COL_LENGTH('dbo.Vehiculos', 'Anio') IS NULL
     ALTER TABLE dbo.Vehiculos ADD Anio int NULL;
 IF COL_LENGTH('dbo.Vehiculos', 'Kilometraje') IS NULL

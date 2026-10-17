@@ -22,11 +22,24 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        // Buscador por medida: el formulario envía a /Llantas con estos mismos valores.
-        var detalles = _context.DetalleProductos.AsNoTracking();
-        ViewBag.Anchos = detalles.Where(d => d.Ancho != null && d.Ancho != "").Select(d => d.Ancho!).Distinct().OrderBy(a => a).ToList();
-        ViewBag.Perfiles = detalles.Where(d => d.Perfil != null && d.Perfil != "").Select(d => d.Perfil!).Distinct().OrderBy(p => p).ToList();
-        ViewBag.Diametros = detalles.Where(d => d.Diametro != null && d.Diametro != "").Select(d => d.Diametro!).Distinct().OrderBy(d => d).ToList();
+        // Buscador por tipo de vehículo: las medidas sugeridas salen de las llantas cargadas para cada tipo.
+        var detalles = _context.DetalleProductos.AsNoTracking().ToList();
+        List<string> Valores(string tipo, Func<DetalleProducto, string?> campo) => detalles
+            .Where(d => TiposVehiculo.Normalizar(d.TipoVehiculo) == tipo)
+            .Select(campo).Where(v => !string.IsNullOrWhiteSpace(v)).Select(v => v!.Trim()).Distinct()
+            .OrderBy(v => int.TryParse(v, out var n) ? n : int.MaxValue).ThenBy(v => v).ToList();
+        ViewBag.Medidas = TiposVehiculo.Todos.ToDictionary(t => t, t => new
+        {
+            anchos = Valores(t, d => d.Ancho), perfiles = Valores(t, d => d.Perfil), diametros = Valores(t, d => d.Diametro)
+        });
+
+        // Tarjetas del inicio: llantas más recientes con su disponibilidad.
+        var destacadas = _context.Productos.AsNoTracking()
+            .Include(p => p.DetalleProducto).ThenInclude(d => d!.IdMarcaNavigation)
+            .Where(p => p.Categoria == "Llantas" || (p.DetalleProducto != null && p.DetalleProducto.Ancho != null))
+            .OrderByDescending(p => p.Id).Take(8).ToList();
+        ViewBag.Destacadas = destacadas;
+        ViewBag.Agotados = Agotados(destacadas.Select(p => p.Id).ToList());
 
         ViewBag.Logos = Logos();
 
@@ -48,6 +61,52 @@ public class HomeController : Controller
         ViewBag.MiResenia = mia;
 
         return View();
+    }
+
+    private HashSet<int> Agotados(List<int> ids)
+    {
+        var danado = StockHelper.IdEstado(_context, DatosIniciales.Estados.Danado);
+        var inv = _context.Inventarios.AsNoTracking().Where(i => ids.Contains(i.IdProducto)).ToList()
+            .GroupBy(i => i.IdProducto)
+            .ToDictionary(g => g.Key, g => g.Where(i => i.IdEstado != danado).Sum(i => i.StockActual ?? 0));
+        return inv.Where(kv => kv.Value <= 0).Select(kv => kv.Key).ToHashSet();
+    }
+
+    private static string Digitos(string? v) => new string((v ?? "").Where(char.IsDigit).ToArray());
+
+    /// <summary>Búsqueda del inicio: tipo de vehículo + medida (ancho / perfil / rin). El modelo o marca solo ordena: primero las que coinciden.</summary>
+    [HttpGet]
+    public IActionResult BuscarLlantas(string? tipo, string? modelo, string? ancho, string? perfil, string? diametro)
+    {
+        tipo = TiposVehiculo.Normalizar(tipo);
+        ancho = Digitos(ancho); perfil = Digitos(perfil); diametro = Digitos(diametro);
+        if (ancho == "" || perfil == "" || diametro == "") return BadRequest();
+        modelo = (modelo ?? "").Trim();
+
+        var candidatos = _context.Productos.AsNoTracking()
+            .Include(p => p.DetalleProducto).ThenInclude(d => d!.IdMarcaNavigation)
+            .Where(p => p.DetalleProducto != null && p.DetalleProducto.Ancho == ancho && p.DetalleProducto.Perfil == perfil
+                        && p.DetalleProducto.Diametro == diametro && p.DetalleProducto.TipoVehiculo == tipo)
+            .ToList();
+
+        bool Coincide(Producto p) => modelo.Length > 0 &&
+            (p.Nombre.Contains(modelo, StringComparison.OrdinalIgnoreCase)
+             || (p.DetalleProducto?.IdMarcaNavigation?.Nombre ?? "").Contains(modelo, StringComparison.OrdinalIgnoreCase));
+
+        var agotados = Agotados(candidatos.Select(p => p.Id).ToList());
+        var lista = candidatos.OrderByDescending(Coincide).ThenBy(p => p.PrecioActual).Select(p => new
+        {
+            id = p.Id,
+            nombre = p.Nombre,
+            marca = p.DetalleProducto?.IdMarcaNavigation?.Nombre,
+            medida = $"{ancho}/{perfil} R{diametro}",
+            img = "/images/productoos/" + (string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen),
+            precio = p.PrecioActual.ToString("C0"),
+            antes = p.EnPromocion ? p.PrecioVenta.ToString("C0") : null,
+            agotado = agotados.Contains(p.Id),
+            coincide = Coincide(p)
+        });
+        return Json(lista);
     }
 
     /// <summary>

@@ -17,6 +17,8 @@ public partial class LlanteriaDbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<DetalleProducto>().Property(e => e.TipoVehiculo).HasMaxLength(10).HasDefaultValue(TiposVehiculo.Auto);
+
         // Columnas guardadas cifradas (AES-256-GCM). El texto cifrado es más largo que el original:
         // por eso estas columnas pasan a nvarchar(max) (EsquemaUpdater lo aplica en bases ya creadas).
         modelBuilder.Entity<Cliente>().Property(e => e.Foto).HasColumnType("nvarchar(max)").Cifrada("Cliente.Foto");

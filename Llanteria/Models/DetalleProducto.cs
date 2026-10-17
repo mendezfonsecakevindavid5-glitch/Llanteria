@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
@@ -18,6 +18,9 @@ public partial class DetalleProducto
 
     public string? Diametro { get; set; }
 
+    /// <summary>Tipo de vehículo al que sirve la llanta: "Auto" o "Moto" (buscador del inicio).</summary>
+    public string TipoVehiculo { get; set; } = TiposVehiculo.Auto;
+
     public string? IndiceCarga { get; set; }
 
 
@@ -32,4 +35,13 @@ public partial class DetalleProducto
     public virtual Marca? IdMarcaNavigation { get; set; } = null!;
 
     public virtual Producto? IdProductoNavigation { get; set; } = null!;
+}
+
+
+public static class TiposVehiculo
+{
+    public const string Auto = "Auto";
+    public const string Moto = "Moto";
+    public static readonly string[] Todos = { Auto, Moto };
+    public static string Normalizar(string? v) => string.Equals(v?.Trim(), Moto, StringComparison.OrdinalIgnoreCase) ? Moto : Auto;
 }

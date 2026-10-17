@@ -55,6 +55,10 @@
             </select>
             <span asp-validation-for="DetalleProducto.IdMarca" class="text-danger small"></span>
         </div>
+        <div class="col-md-2">
+            <label class="form-label" for="DetalleProducto_TipoVehiculo">Vehículo</label>
+            <select asp-for="DetalleProducto.TipoVehiculo" class="form-select" asp-items="@(new SelectList(Llanteria.Models.TiposVehiculo.Todos, Model.DetalleProducto?.TipoVehiculo ?? "Auto"))"></select>
+        </div>
         <div class="col-6 col-md-2">
             <label class="form-label" for="DetalleProducto_Ancho">Ancho</label>
             <input asp-for="DetalleProducto.Ancho" class="form-control" placeholder="205" />

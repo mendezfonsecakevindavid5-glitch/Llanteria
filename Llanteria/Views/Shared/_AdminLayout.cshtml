@@ -7,8 +7,6 @@
     var items = new List<(string C, string A, string Icon, string Text, bool AdminOnly, string Group)>
     {
         ("Dashboard", "Index", "fa-chart-line", "Panel", false, "General"),
-        // Al entrar con "Cuenta" desde el menú del avatar, este ítem queda marcado como si lo hubieran elegido aquí.
-        ("User", "Perfil", "fa-circle-user", "Mi perfil", false, "General"),
         ("Factura", "Index", "fa-file-invoice-dollar", "Ventas", false, "Operación"),
         ("Cliente", "Index", "fa-users", "Clientes", false, "Operación"),
         ("Cliente", "GestionPuntos", "fa-star", "Puntos de clientes", false, "Operación"),
@@ -55,42 +53,51 @@
     </style>
 </head>
 <body class="admin">
-    <header class="topbar bg-white shadow-sm py-3 px-4 d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center gap-3">
-            <button class="toggle d-lg-none btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Menú">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <span class="brand-matrix">Llantería<small class="ms-1">Valledupar</small></span>
-        </div>
-        <div class="d-flex align-items-center gap-3">
-            <span class="d-none d-md-block text-end lh-sm user-meta">
-                <strong>@nombre</strong><br />
-                <small class="text-muted">@(isAdmin ? "Administrador" : "Empleado")</small>
-            </span>
-            @await Component.InvokeAsync("AvatarMenu", new { tamano = 40 })
-        </div>
-    </header>
+    @* Sin encabezado: solo la foto de perfil (abre un modal) flotando arriba a la derecha. *@
+    <div class="admin-profile">
+        @await Component.InvokeAsync("AvatarMenu", new { tamano = 42, modal = true })
+    </div>
 
-    <div class="layout d-flex">
-        <aside class="sidebar collapse d-lg-block bg-white border-end p-3" id="sidebar" style="width: 260px; min-height: calc(100vh - 70px);">
-            @foreach (var g in items.Where(i => !i.AdminOnly || isAdmin).GroupBy(i => i.Group))
-            {
-                <div class="sidebar-group text-uppercase text-muted fw-bold small mt-3 mb-2 px-2">@g.Key</div>
-                foreach (var i in g)
+    <button class="admin-menu-btn" type="button" id="adminMenuBtn" aria-label="Abrir menú" aria-controls="sidebar">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="admin-backdrop" id="adminBackdrop"></div>
+
+    <div class="layout">
+        <aside class="sidebar" id="sidebar" aria-label="Menú del panel">
+            <div class="sidebar-top">
+                <button class="sidebar-toggle" type="button" id="sidebarToggle" aria-label="Contraer o expandir el menú" title="Contraer / expandir">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
+                <a class="sidebar-brand brand-matrix" asp-controller="Dashboard" asp-action="Index" aria-label="Llantería Valledupar, panel">Llantería<small class="ms-1">Valledupar</small></a>
+            </div>
+
+            <nav class="sidebar-nav">
+                @foreach (var g in items.Where(i => !i.AdminOnly || isAdmin).GroupBy(i => i.Group))
                 {
-                    var activo = ctrl == i.C && (act == i.A || (i.A == "Index" && act != "GestionPuntos"));
-                    <a class="sidebar-link d-flex align-items-center gap-2 py-2 px-3 rounded-2 text-decoration-none @(activo ? "active bg-danger text-white fw-bold" : "text-dark")" asp-controller="@i.C" asp-action="@i.A">
-                        <i class="fa-solid @i.Icon" style="width: 20px;"></i>@i.Text
-                    </a>
+                    <div class="sidebar-group">@g.Key</div>
+                    foreach (var i in g)
+                    {
+                        var activo = ctrl == i.C && (act == i.A || (i.A == "Index" && act != "GestionPuntos"));
+                        <a class="sidebar-link @(activo ? "active" : "")" asp-controller="@i.C" asp-action="@i.A" title="@i.Text">
+                            <i class="fa-solid @i.Icon"></i><span class="sidebar-text">@i.Text</span>
+                        </a>
+                    }
                 }
-            }
-            <div class="sidebar-group text-uppercase text-muted fw-bold small mt-4 mb-2 px-2">Sitio</div>
-            <a class="sidebar-link d-flex align-items-center gap-2 py-2 px-3 rounded-2 text-decoration-none text-dark" asp-controller="Home" asp-action="Index">
-                <i class="fa-solid fa-globe" style="width: 20px;"></i>Ver página web
-            </a>
+                <div class="sidebar-group">Sitio</div>
+                <a class="sidebar-link" asp-controller="Home" asp-action="Index" title="Ver página web">
+                    <i class="fa-solid fa-globe"></i><span class="sidebar-text">Ver página web</span>
+                </a>
+            </nav>
+
+            <form class="sidebar-logout" asp-controller="Account" asp-action="Logout" method="post">
+                <button type="submit" class="sidebar-link" title="Cerrar sesión">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="sidebar-text">Cerrar sesión</span>
+                </button>
+            </form>
         </aside>
 
-        <main class="content flex-grow-1 p-4">
+        <main class="content flex-grow-1">
             @RenderBody()
         </main>
     </div>
@@ -105,6 +112,7 @@
     <script src="~/js/admin.js" asp-append-version="true"></script>
     <script src="~/js/protect-forms.js" asp-append-version="true"></script>
     <script src="~/js/avatar-menu.js" asp-append-version="true"></script>
+    <script src="~/js/admin-shell.js" asp-append-version="true"></script>
     <partial name="_Alertas" />
     @await RenderSectionAsync("Scripts", required: false)
 </body>

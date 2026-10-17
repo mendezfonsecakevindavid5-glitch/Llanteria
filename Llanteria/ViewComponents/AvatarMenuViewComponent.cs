@@ -12,7 +12,7 @@ namespace Llanteria.ViewComponents;
 /// </summary>
 public class AvatarMenuViewComponent : ViewComponent
 {
-    public IViewComponentResult Invoke(int tamano = 44)
+    public IViewComponentResult Invoke(int tamano = 44, bool modal = false)
     {
         var u = HttpContext.User;
         var username = u.Identity?.Name ?? "Usuario";
@@ -20,7 +20,8 @@ public class AvatarMenuViewComponent : ViewComponent
         var apellidos = u.FindFirst("Apellidos")?.Value;
 
         var (fondo, texto) = Colores(username);
-        return View(new AvatarMenuModel(Iniciales(nombres, apellidos, username), fondo, texto, tamano, username));
+        var rol = u.IsInRole("Administrador") ? "Administrador" : u.IsInRole("Empleado") ? "Empleado" : "Usuario registrado";
+        return View(new AvatarMenuModel(Iniciales(nombres, apellidos, username), fondo, texto, tamano, username, modal, rol));
     }
 
     /// <summary>Primera letra del primer nombre + primera letra del primer apellido. Sin datos: las 2 primeras letras del usuario.</summary>
@@ -80,4 +81,4 @@ public class AvatarMenuViewComponent : ViewComponent
     }
 }
 
-public record AvatarMenuModel(string Iniciales, string Fondo, string Texto, int Tamano, string Usuario);
+public record AvatarMenuModel(string Iniciales, string Fondo, string Texto, int Tamano, string Usuario, bool Modal = false, string Rol = "");
