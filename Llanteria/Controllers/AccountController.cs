@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace Llanteria.Controllers;
@@ -299,48 +300,101 @@ public class AccountController : Controller
         if (_db.Usuarios.AsNoTracking().Any(u => u.Username == Username))
             ModelState.AddModelError("Username", "El nombre de usuario ya se encuentra en uso.");
 
+        if ((cliente.Telefono ?? "").Length > 20)
+            ModelState.AddModelError(nameof(Cliente.Telefono), "El teléfono (con el prefijo del país) no puede tener más de 20 caracteres.");
+
         if (!ModelState.IsValid)
         {
             CargarCombos(cliente);
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || Request.ContentType?.Contains("application/json") == true)
-                return Json(new { success = false, message = "Por favor, corrige los errores en el formulario." });
+            if (EsAjax())
+            {
+                var primero = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).FirstOrDefault(m => !string.IsNullOrWhiteSpace(m));
+                return Json(new { success = false, message = primero ?? "Por favor, corrige los errores en el formulario." });
+            }
             return View(cliente);
         }
 
         if (!string.IsNullOrEmpty(FotoBase64))
-        {
             cliente.Foto = FotoBase64;
-        }
 
         cliente.Id = 0;
         cliente.PuntosAcumulados = PuntosDeBienvenida;
         cliente.PasswordHash = Claves.Hash(Password!);
-        _clienteSer.AddCliente(cliente);
 
-        var nuevoUsuario = new Usuario
+        try
         {
-            Username = Username!,
-            Correo = cliente.Correo,
-            PasswordHash = cliente.PasswordHash,
-            IdRol = IdRolRegistrado(),
-            Estado = "Activo",
-            FechaCreacion = DateTime.Now,
-            IdCliente = cliente.Id,
-            IdTipoDocumento = cliente.IdDocumento
-        };
-        _userSer.AddUsuario(nuevoUsuario);
+            // Cliente y usuario se guardan en UNA sola operación: o quedan los dos o no queda ninguno
+            // (antes, si fallaba el usuario, el cliente ya había quedado guardado a medias).
+            var nuevoUsuario = new Usuario
+            {
+                Username = Username!,
+                Correo = cliente.Correo,
+                PasswordHash = cliente.PasswordHash,
+                IdRol = IdRolRegistrado(),
+                Estado = "Activo",
+                FechaCreacion = DateTime.Now,
+                IdClienteNavigation = cliente,
+                IdTipoDocumento = cliente.IdDocumento
+            };
+            _db.Usuarios.Add(nuevoUsuario);
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex)
+        {
+            _db.ChangeTracker.Clear();
+            HttpContext.RequestServices.GetRequiredService<ILogger<AccountController>>()
+                .LogError(ex, "No se pudo registrar al usuario {Username}.", Username);
+
+            var mensaje = MensajeDeBaseDeDatos(ex);
+            CargarCombos(cliente);
+            if (EsAjax()) return Json(new { success = false, message = mensaje });
+            ModelState.AddModelError(string.Empty, mensaje);
+            return View(cliente);
+        }
 
         LimpiarCodigo(Registro);
 
-        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || Request.ContentType?.Contains("application/json") == true)
+        if (EsAjax())
             return Json(new { success = true, redirectUrl = Url.Action(nameof(Welcome)) });
 
         return RedirectToAction(nameof(Welcome));
     }
 
+    private bool EsAjax()
+        => Request.Headers["X-Requested-With"] == "XMLHttpRequest" || Request.ContentType?.Contains("application/json") == true;
+
+    /// <summary>Traduce el error de SQL Server a un mensaje que el usuario entienda (el detalle técnico solo se muestra en desarrollo).</summary>
+    private string MensajeDeBaseDeDatos(DbUpdateException ex)
+    {
+        var sql = ex.GetBaseException() as SqlException;
+        var mensaje = sql?.Number switch
+        {
+            2601 or 2627 when (sql.Message.Contains("UQ__Usuarios__CE6D8B9F67398071", StringComparison.Ordinal))
+                => "La base de datos tiene un índice antiguo que impide crear más usuarios sin empleado. Reinicia la aplicación para que se corrija automáticamente.",
+            2601 or 2627 => "Ya existe una cuenta con ese documento, correo o nombre de usuario.",
+            547 => "Falta un dato base en la base de datos (rol, tipo de documento o sexo). Reinicia la aplicación para que se creen de nuevo.",
+            2628 or 8152 => "Alguno de los datos es más largo de lo que permite la base de datos. Revisa nombres, teléfono y documento.",
+            207 or 208 => "La base de datos no está actualizada con la versión de la aplicación (falta una tabla o columna). Reinicia la aplicación.",
+            _ => "No se pudo guardar el registro. Inténtalo de nuevo en un momento."
+        };
+
+        var env = HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>();
+        if (env.IsDevelopment() && sql != null) mensaje += $" [SQL {sql.Number}: {sql.Message}]";
+        return mensaje;
+    }
+
     // Antes se fijaba IdRol = 2, que en la base es "Empleado": quien se registraba entraba al panel.
+    // Si el rol aún no existe (base recién creada), se crea aquí para que el registro nunca falle por eso.
     private int IdRolRegistrado()
-        => _db.Roles.AsNoTracking().Where(r => r.NombreRol == RolesApp.UsuarioRegistrado).Select(r => r.Id).First();
+    {
+        var id = _db.Roles.AsNoTracking().Where(r => r.NombreRol == RolesApp.UsuarioRegistrado).Select(r => r.Id).FirstOrDefault();
+        if (id != 0) return id;
+
+        var rol = new Role { NombreRol = RolesApp.UsuarioRegistrado };
+        _db.Roles.Add(rol);
+        _db.SaveChanges();
+        return rol.Id;
+    }
 
     public IActionResult Welcome() => View();
 

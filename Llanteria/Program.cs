@@ -120,19 +120,22 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    try
+    // Cada paso va en su propio bloque: si uno falla (por ejemplo, un ajuste de esquema), los demás se ejecutan igual
+    // y el motivo queda en el registro. Antes un solo fallo dejaba sin roles ni catálogos y el registro de usuarios fallaba.
+    var log = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    var db = scope.ServiceProvider.GetRequiredService<LlanteriaDbContext>();
+
+    void Paso(string nombre, Action accion)
     {
-        var db = scope.ServiceProvider.GetRequiredService<LlanteriaDbContext>();
-        db.Database.EnsureCreated();
-        EsquemaUpdater.Aplicar(db);
-        DatosIniciales.Asegurar(db);
-        CifradoMigrador.Aplicar(db, scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
+        try { accion(); }
+        catch (Exception ex) { log.LogError(ex, "Fallo al iniciar la base de datos en el paso: {Paso}.", nombre); }
     }
-    catch (Exception ex)
-    {
-        scope.ServiceProvider.GetRequiredService<ILogger<Program>>()
-            .LogError(ex, "No se pudo verificar la base de datos al iniciar.");
-    }
+
+    Paso("crear la base de datos", () => db.Database.EnsureCreated());
+    Paso("actualizar el esquema", () => EsquemaUpdater.Aplicar(db));
+    Paso("datos iniciales (roles y catálogos)", () => DatosIniciales.Asegurar(db));
+    Paso("usuarios iniciales (administrador, empleado y usuario)", () => UsuariosIniciales.Asegurar(db, log));
+    Paso("cifrado de datos existentes", () => CifradoMigrador.Aplicar(db, log));
 }
 
 if (!app.Environment.IsDevelopment())

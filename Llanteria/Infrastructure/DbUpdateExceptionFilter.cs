@@ -19,6 +19,19 @@ public class DbUpdateExceptionFilter : IExceptionFilter
     {
         if (context.Exception is not DbUpdateException) return;
 
+        // Las peticiones AJAX (fetch) esperan JSON: una redirección les devolvía HTML y el navegador mostraba "Unexpected token '<'".
+        var req = context.HttpContext.Request;
+        if (req.Headers["X-Requested-With"] == "XMLHttpRequest" || (req.Headers.Accept.ToString().Contains("application/json")))
+        {
+            context.Result = new JsonResult(new
+            {
+                success = false,
+                message = "La operación no se pudo realizar: la información no es válida o ya existe."
+            });
+            context.ExceptionHandled = true;
+            return;
+        }
+
         _tempData.GetTempData(context.HttpContext)["Error"] =
             "La operación no se pudo realizar: el registro está siendo usado por otros datos o la información no es válida.";
 

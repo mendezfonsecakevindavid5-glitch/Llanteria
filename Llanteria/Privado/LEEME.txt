@@ -1,0 +1,10 @@
+Carpeta privada de Llantería (no se sube a Git ni se publica).
+
+appsettings.json  Cadena de conexión, llaves de correo (Brevo) y clave de cifrado.
+usuarios.json     "Secreto de usuarios": cuentas que SIEMPRE se recrean al iniciar si faltan
+                  (administrador, empleado y usuario registrado), por ejemplo después de borrar la base de datos.
+                  Si no existe, la aplicación lo crea sola la primera vez con contraseñas aleatorias.
+                  Ábrelo para ver el usuario y la contraseña de cada cuenta; puedes cambiarlos.
+                  Una cuenta que ya existe en la base NO se modifica (si cambias la contraseña aquí, cambia
+                  también la de la base o borra esa cuenta para que se recree).
+llaves/           Llaves que protegen las cookies de sesión.

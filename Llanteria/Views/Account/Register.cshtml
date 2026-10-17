@@ -1163,7 +1163,10 @@
                                 nombre: nombresInput.value.trim() + ' ' + apellidosInput.value.trim()
                             })
                         });
-                        const resData = await response.json();
+                        const textoRespuesta = await response.text();
+let resData;
+try { resData = JSON.parse(textoRespuesta); }
+catch (e) { resData = { success: false, message: 'El servidor no pudo guardar tus datos (código ' + response.status + '). Inténtalo de nuevo; si sigue igual, avisa al administrador.' }; }
 
                         if (resData.success) {
                             const [nombre, dominio] = emailInput.value.trim().split('\u0040');

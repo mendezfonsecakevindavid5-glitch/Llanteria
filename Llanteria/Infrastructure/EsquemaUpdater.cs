@@ -176,6 +176,13 @@ IF COL_LENGTH('dbo.Clientes', 'PasswordHash') IS NULL
 IF COL_LENGTH('dbo.Productos', 'PrecioPromocion') IS NULL
     ALTER TABLE dbo.Productos ADD PrecioPromocion decimal(14,2) NULL;
 
+-- Índice único de Usuarios.IdEmpleado sin filtro: solo dejaba un usuario sin empleado (el segundo cliente que se registraba fallaba).
+IF EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'UQ__Usuarios__CE6D8B9F67398071' AND object_id = OBJECT_ID(N'dbo.Usuarios') AND has_filter = 0)
+BEGIN
+    DROP INDEX UQ__Usuarios__CE6D8B9F67398071 ON dbo.Usuarios;
+    CREATE UNIQUE INDEX UQ__Usuarios__CE6D8B9F67398071 ON dbo.Usuarios(IdEmpleado) WHERE IdEmpleado IS NOT NULL;
+END;
+
 -- Columnas que ahora se guardan cifradas: el texto cifrado es más largo, así que pasan a nvarchar(max).
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'dbo.PerfilUsuario') AND name = 'Bio' AND max_length <> -1)
     ALTER TABLE dbo.PerfilUsuario ALTER COLUMN Bio nvarchar(max) NULL;
