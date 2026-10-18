@@ -465,7 +465,8 @@ public partial class LlanteriaDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Usuarios__3214EC07440B1D54");
 
             entity.HasIndex(e => e.Username, "UQ__Usuarios__536C85E49A6A20E7").IsUnique();
-            entity.HasIndex(e => e.IdEmpleado, "UQ__Usuarios__CE6D8B9F67398071").IsUnique();
+            // Filtrado: SQL Server solo admite UN valor NULL en un índice único; sin el filtro, solo se podía crear un usuario sin empleado (clientes).
+            entity.HasIndex(e => e.IdEmpleado, "UQ__Usuarios__CE6D8B9F67398071").IsUnique().HasFilter("[IdEmpleado] IS NOT NULL");
 
             entity.Property(e => e.Correo)
                 .HasMaxLength(100)
