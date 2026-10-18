@@ -1,4 +1,3 @@
-using System.Net.Mail;
 using Llanteria.Data;
 using Llanteria.Infrastructure;
 using Llanteria.Models;
@@ -43,7 +42,7 @@ public class EmpresasController : Controller
         if (s.Empresa.Length is 0 or > 120) error = "Escribe el nombre de la empresa.";
         else if (s.Contacto.Length is 0 or > 100) error = "Escribe el nombre de la persona de contacto.";
         else if (s.Telefono.Length is < 7 or > 20) error = "Escribe un teléfono válido.";
-        else if (s.Correo.Length > 100 || !MailAddress.TryCreate(s.Correo, out var m) || m.Address != s.Correo) error = "Escribe un correo válido.";
+        else if (!Validaciones.CorreoValido(s.Correo)) error = "Escribe un correo válido.";
         else if (!SolicitudEmpresa.TiposFlota.Contains(s.TipoFlota)) error = "Elige el tipo de flota.";
         else if (s.NumeroVehiculos is < 1 or > 10000) error = "Indica cuántos vehículos tiene la flota.";
         else if (s.Nit?.Length > 20 || s.Ciudad?.Length > 60 || s.Mensaje?.Length > 500) error = "Alguno de los textos es demasiado largo.";
@@ -56,9 +55,17 @@ public class EmpresasController : Controller
 
         _db.SolicitudesEmpresa.Add(new SolicitudEmpresa
         {
-            Empresa = s.Empresa, Nit = s.Nit, Contacto = s.Contacto, Telefono = s.Telefono, Correo = s.Correo,
-            Ciudad = s.Ciudad, TipoFlota = s.TipoFlota, NumeroVehiculos = s.NumeroVehiculos, Mensaje = s.Mensaje,
-            Estado = SolicitudEmpresa.Pendiente, FechaCreacion = DateTime.Now
+            Empresa = s.Empresa,
+            Nit = s.Nit,
+            Contacto = s.Contacto,
+            Telefono = s.Telefono,
+            Correo = s.Correo,
+            Ciudad = s.Ciudad,
+            TipoFlota = s.TipoFlota,
+            NumeroVehiculos = s.NumeroVehiculos,
+            Mensaje = s.Mensaje,
+            Estado = SolicitudEmpresa.Pendiente,
+            FechaCreacion = DateTime.Now
         });
         _db.SaveChanges();
 

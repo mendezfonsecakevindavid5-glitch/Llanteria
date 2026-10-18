@@ -99,6 +99,7 @@ builder.Services.AddScoped<CatalogoIncentivoService>();
 builder.Services.AddScoped<IPerfilService, PerfilService>();
 builder.Services.AddScoped<PaisService>();
 builder.Services.AddScoped<CredentialGenerationService>();
+builder.Services.AddScoped<AlmacenImagenes>();
 
 // Cada servicio se registra una sola vez
 builder.Services.AddSingleton<EmailService>();

@@ -1,4 +1,3 @@
-using System.Net.Mail;
 using System.Security.Claims;
 using Llanteria.Data;
 using Llanteria.Infrastructure;
@@ -402,7 +401,7 @@ public class AccountController : Controller
     public async Task<IActionResult> EnviarCodigoOtp([FromBody] SolicitudOtpDto dto)
     {
         var correo = (dto?.Correo ?? "").Trim();
-        if (!CorreoValido(correo)) return Json(new { success = false, message = "Escribe un correo válido." });
+        if (!Validaciones.CorreoValido(correo)) return Json(new { success = false, message = "Escribe un correo válido." });
 
         var correoLower = correo.ToLower();
         if (_db.Clientes.AsNoTracking().Any(c => c.Correo.ToLower() == correoLower) ||
@@ -424,7 +423,7 @@ public class AccountController : Controller
     public async Task<IActionResult> EnviarCodigoRecuperacion([FromBody] SolicitudOtpDto dto)
     {
         var correo = (dto?.Correo ?? "").Trim();
-        if (!CorreoValido(correo)) return Json(new { success = false, message = "Escribe un correo válido." });
+        if (!Validaciones.CorreoValido(correo)) return Json(new { success = false, message = "Escribe un correo válido." });
 
         var existe = _db.Usuarios.AsNoTracking().Any(u => u.Correo == correo)
                    || _db.Clientes.AsNoTracking().Any(c => c.Correo == correo);
@@ -522,9 +521,6 @@ public class AccountController : Controller
         foreach (var k in new[] { "code", "correo", "exp", "sent", "intentos", "ok" })
             HttpContext.Session.Remove(flujo + ":" + k);
     }
-
-    private static bool CorreoValido(string correo)
-        => correo.Length is > 5 and <= 100 && MailAddress.TryCreate(correo, out var m) && m.Address == correo;
 
     private void CargarCombos(Cliente? c = null)
     {

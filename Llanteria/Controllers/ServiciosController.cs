@@ -1,4 +1,5 @@
-using System.Net.Mail;
+using Llanteria.Data;
+using Llanteria.Infrastructure;
 using Llanteria.Models;
 using Llanteria.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -8,8 +9,15 @@ namespace Llanteria.Controllers;
 public class ServiciosController : Controller
 {
     private readonly EmailService _email;
+    private readonly LlanteriaDbContext _db;
+    private readonly NegocioInfo _negocio;
 
-    public ServiciosController(EmailService email) => _email = email;
+    public ServiciosController(EmailService email, LlanteriaDbContext db, NegocioInfo negocio)
+    {
+        _email = email;
+        _db = db;
+        _negocio = negocio;
+    }
 
     // /Servicios -> sección de servicios de la página de inicio
     [HttpGet("Servicios")]
@@ -19,17 +27,17 @@ public class ServiciosController : Controller
     [HttpGet("Servicios/{slug}")]
     public IActionResult Detalle(string slug)
     {
-        var servicio = ServiciosCatalogo.Buscar(slug);
+        var servicio = _db.ServicioPublicado(slug);
         return servicio == null ? NotFound() : View(servicio);
     }
 
     [HttpPost("Servicios/SolicitarContacto"), ValidateAntiForgeryToken]
     public async Task<IActionResult> SolicitarContacto(string slug, string nombre, string correo, string telefono, string? mensaje)
     {
-        var servicio = ServiciosCatalogo.Buscar(slug);
+        var servicio = _db.ServicioPublicado(slug);
         if (servicio == null) return NotFound();
 
-        if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(telefono) || !CorreoValido(correo))
+        if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(telefono) || !Validaciones.CorreoValido(correo))
         {
             TempData["Error"] = "Completa tu nombre, un correo válido y tu teléfono.";
             return RedirectToAction(nameof(Detalle), new { slug });
@@ -44,10 +52,7 @@ public class ServiciosController : Controller
             $"[Servicio] {servicio.Titulo} – {nombre}", cuerpo, responderA: correo);
 
         if (enviado) TempData["Exito"] = "Recibimos tu solicitud. Te contactaremos pronto.";
-        else TempData["Error"] = "No pudimos enviar tu solicitud en este momento. Llámanos al +57 311 772 3978.";
+        else TempData["Error"] = $"No pudimos enviar tu solicitud en este momento. Llámanos al {_negocio.Telefono}.";
         return RedirectToAction(nameof(Detalle), new { slug });
     }
-
-    private static bool CorreoValido(string? correo)
-        => !string.IsNullOrWhiteSpace(correo) && MailAddress.TryCreate(correo.Trim(), out var m) && m.Address == correo.Trim();
 }

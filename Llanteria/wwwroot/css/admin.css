@@ -216,3 +216,25 @@ body.sidebar-collapsed .sidebar-nav .sidebar-link:first-child { margin-top: .6re
 body.admin .matrix-footer { margin-top: 0; }
 
 .avatar-initial { width: 42px; height: 42px; border-radius: 50%; background: var(--brand); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+
+/* ---------- Base del panel (antes dentro de _AdminLayout) ---------- */
+:root {
+    --llanteria-primary: #C92B0A;
+    --llanteria-dark: #09090B;
+}
+body.admin {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #F8F9FA;
+}
+
+
+/* ---------- Gráfico de barras del Dashboard ---------- */
+.legend-dot { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:.3rem; }
+.bars { display:flex; align-items:flex-end; gap:.75rem; height:220px; }
+.bar-col { flex:1; height:100%; display:flex; flex-direction:column; justify-content:flex-end; }
+.bar-pair { flex:1; display:flex; align-items:flex-end; justify-content:center; gap:4px; }
+.bar { width:42%; max-width:36px; min-height:2px; border-radius:6px 6px 0 0; }
+.bar-v { background:var(--brand); }
+.bar-g { background:#16181c; }
+.bar-label { text-align:center; font-size:12px; color:var(--muted); margin-top:.4rem; text-transform:capitalize; }
+

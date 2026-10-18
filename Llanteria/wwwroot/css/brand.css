@@ -1,4 +1,4 @@
-﻿* ==========================================================================
+﻿/* ==========================================================================
 Marca y pie de página compartidos (sitio público y panel de administración)
 ========================================================================== */
 /* ---------- Nombre del proyecto (mismo estilo en header y footer) ---------- */
@@ -15,9 +15,9 @@ Marca y pie de página compartidos (sitio público y panel de administración)
     user-select: none;
 }
 
-.brand-matrix small {
-    color: var(--llanteria-primary, #C92B0A) !important;
-}
+    .brand-matrix small {
+        color: var(--llanteria-primary, #C92B0A) !important;
+    }
 
 /* ---------- Pie de página ---------- */
 /* Fondo: se quitaron la llanta SVG, los surcos y la luz difusa. Queda negro liso.

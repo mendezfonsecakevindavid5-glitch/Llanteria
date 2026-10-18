@@ -74,6 +74,49 @@ BEGIN
     CREATE UNIQUE INDEX IX_Pqrs_Radicado ON dbo.Pqrs(Radicado);
 END;
 
+IF OBJECT_ID(N'dbo.Articulos', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Articulos (
+        Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_Articulos PRIMARY KEY,
+        Titulo nvarchar(200) NOT NULL,
+        Slug nvarchar(120) NOT NULL,
+        Resumen nvarchar(400) NOT NULL,
+        Categoria nvarchar(40) NOT NULL,
+        Fecha date NOT NULL,
+        Autor nvarchar(100) NOT NULL,
+        Imagen nvarchar(120) NULL,
+        Contenido nvarchar(max) NOT NULL,
+        Publicado bit NOT NULL CONSTRAINT DF_Articulos_Publicado DEFAULT (1)
+    );
+    CREATE UNIQUE INDEX IX_Articulos_Slug ON dbo.Articulos(Slug);
+END;
+
+IF OBJECT_ID(N'dbo.ServiciosWeb', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.ServiciosWeb (
+        Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_ServiciosWeb PRIMARY KEY,
+        Slug nvarchar(120) NOT NULL,
+        Titulo nvarchar(100) NOT NULL,
+        Subtitulo nvarchar(160) NOT NULL,
+        Icono nvarchar(40) NOT NULL,
+        Imagen nvarchar(120) NULL,
+        Descripcion nvarchar(1200) NOT NULL,
+        Ventajas nvarchar(max) NULL,
+        InfoCita nvarchar(max) NULL,
+        TituloVisitante nvarchar(100) NULL,
+        TextoVisitante nvarchar(500) NULL,
+        EtiquetaPrecio nvarchar(40) NOT NULL,
+        Precio nvarchar(40) NOT NULL,
+        PlaceholderVehiculo nvarchar(100) NULL,
+        PlaceholderNotas nvarchar(150) NULL,
+        PlaceholderMensaje nvarchar(150) NULL,
+        EsDomicilio bit NOT NULL CONSTRAINT DF_ServiciosWeb_Domicilio DEFAULT (0),
+        Publicado bit NOT NULL CONSTRAINT DF_ServiciosWeb_Publicado DEFAULT (1),
+        Orden int NOT NULL CONSTRAINT DF_ServiciosWeb_Orden DEFAULT (0)
+    );
+    CREATE UNIQUE INDEX IX_ServiciosWeb_Slug ON dbo.ServiciosWeb(Slug);
+END;
+
 IF COL_LENGTH('dbo.DetalleProductos', 'TipoVehiculo') IS NULL
     ALTER TABLE dbo.DetalleProductos ADD TipoVehiculo nvarchar(10) NOT NULL CONSTRAINT DF_DetalleProductos_TipoVehiculo DEFAULT ('Auto');
 

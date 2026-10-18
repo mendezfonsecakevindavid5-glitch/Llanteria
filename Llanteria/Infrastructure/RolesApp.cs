@@ -21,4 +21,16 @@ public static class RolesApp
 
     public static bool EsPersonal(System.Security.Claims.ClaimsPrincipal user)
         => user.IsInRole(Administrador) || user.IsInRole(Empleado);
+
+    /// <summary>
+    /// Toda solicitud sin sesión recibe el rol "Usuario no registrado". La identidad se crea SIN tipo de autenticación,
+    /// así que IsAuthenticated sigue siendo false y [Authorize] sigue mandando al login.
+    /// </summary>
+    public static IApplicationBuilder UseRolVisitante(this IApplicationBuilder app) => app.Use(async (ctx, next) =>
+    {
+        if (ctx.User.Identity?.IsAuthenticated != true)
+            ctx.User = new System.Security.Claims.ClaimsPrincipal(new System.Security.Claims.ClaimsIdentity(
+                new[] { new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, UsuarioNoRegistrado) }));
+        await next();
+    });
 }

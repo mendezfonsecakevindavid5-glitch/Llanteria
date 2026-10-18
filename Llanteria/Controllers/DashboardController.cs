@@ -68,7 +68,7 @@ public class DashboardController : Controller
         if (esAdmin)
         {
             var limite = DateOnly.FromDateTime(hoy.AddDays(7));
-            var pendientes = _context.Gastos.AsNoTracking().Where(g => g.Estado != "Pagado");
+            var pendientes = _context.Gastos.AsNoTracking().Where(g => g.Estado == null || g.Estado != "Pagado");
             vm.GastosPendientes = pendientes.Sum(g => (decimal?)g.Monto) ?? 0;
             vm.GastosPorVencer = pendientes.Count(g => g.FechaVencimiento <= limite);
         }

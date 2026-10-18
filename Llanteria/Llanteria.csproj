@@ -51,6 +51,8 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Views\Nosotros\" />
+    <Folder Include="Views\Shared\Components\UserMenu\" />
     <Folder Include="wwwroot\images\servicios\" />
     <Folder Include="wwwroot\images\productoos\" />
   </ItemGroup>

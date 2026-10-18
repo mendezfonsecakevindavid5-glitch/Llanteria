@@ -6,26 +6,7 @@
     // El perfil siempre se ve con el diseño del sitio (también para el personal), sin el panel.
 }
 
-<style>
-    .perfil-wrap { max-width: 1040px; margin: 0 auto; padding: 2rem 1rem 3rem; }
-    .perfil-card { background: #fff; border: 1px solid #e3e6ea; border-radius: .75rem; box-shadow: 0 2px 10px rgba(0,0,0,.05); overflow: hidden; height: 100%; }
-    .perfil-card-head { padding: .95rem 1.25rem; border-bottom: 1px solid #e3e6ea; font-weight: 700; position: relative; }
-    .perfil-card-head::before { content: ""; position: absolute; left: 0; top: 50%; width: 3px; height: 1.1rem; transform: translateY(-50%); background: var(--llanteria-primary, #C92B0A); border-radius: 0 3px 3px 0; }
-    .perfil-card-body { padding: 1.4rem 1.25rem; }
-    .perfil-title { font-size: 1.65rem; font-weight: 800; letter-spacing: -.01em; margin: 0; }
-    .perfil-sub { color: #6c757d; margin: .25rem 0 1.5rem; }
-    .perfil-foto { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 1px solid #e3e6ea; background: #f1f3f5; }
-    .perfil-wrap .form-label { font-weight: 700; font-size: 1rem; color: #000; }
-    .perfil-wrap .form-control, .perfil-wrap .form-select { height: 52px; font-size: 1.02rem; border-radius: .5rem; }
-    .perfil-wrap textarea.form-control { height: auto; }
-    .required-asterisk { color: var(--llanteria-primary, #C92B0A); font-weight: 700; margin-left: 2px; }
-    .perfil-actions { display: flex; justify-content: flex-end; gap: .6rem; border-top: 1px solid #e3e6ea; margin-top: 1.5rem; padding-top: 1.1rem; }
-    .perfil-btn { background: var(--llanteria-primary, #C92B0A); border: 1px solid var(--llanteria-primary, #C92B0A); color: #fff; font-weight: 600; border-radius: .5rem; padding: .55rem 1.25rem; }
-    .perfil-btn:hover { background: #a82308; border-color: #a82308; color: #fff; }
-    .perfil-btn-line { background: #fff; border: 1px solid #cfd4d9; color: #1f2328; font-weight: 600; border-radius: .5rem; padding: .55rem 1.25rem; width: 100%; }
-    .perfil-btn-line:hover { border-color: #000; color: #000; }
-    .perfil-rol { display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: .2rem .6rem; border-radius: 999px; background: rgba(201,43,10,.1); color: var(--llanteria-primary, #C92B0A); }
-</style>
+<link rel="stylesheet" href="~/css/paginas/perfil.css" asp-append-version="true" />
 
 <div class="perfil-wrap">
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-2">
