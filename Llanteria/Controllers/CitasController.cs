@@ -34,7 +34,7 @@ public class CitasController : Controller
     public async Task<IActionResult> Agendar(string slug, DateTime? fecha, string hora, string vehiculo,
         string? direccion, string formaPago, string? notas)
     {
-        var servicio = ServiciosCatalogo.Buscar(slug);
+        var servicio = _db.ServicioPublicado(slug);
         if (servicio == null) return NotFound();
 
         string Volver(string clave, string mensaje)

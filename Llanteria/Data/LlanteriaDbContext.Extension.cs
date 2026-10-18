@@ -16,6 +16,16 @@ public partial class LlanteriaDbContext
     public virtual DbSet<Pqrs> RegistrosPqrs { get; set; }
     public virtual DbSet<OrdenTrabajo> OrdenesTrabajo { get; set; }
     public virtual DbSet<Articulo> Articulos { get; set; }
+    public virtual DbSet<ServicioWeb> ServiciosWeb { get; set; }
+
+    /// <summary>Servicios publicados en el sitio, en el orden que definió el administrador.</summary>
+    public List<ServicioViewModel> ServiciosPublicados()
+        => ServiciosWeb.AsNoTracking().Where(s => s.Publicado).OrderBy(s => s.Orden).ThenBy(s => s.Titulo)
+            .AsEnumerable().Select(s => s.ComoVista()).ToList();
+
+    /// <summary>Un servicio publicado por su dirección; null si no existe o está oculto.</summary>
+    public ServicioViewModel? ServicioPublicado(string slug)
+        => ServiciosWeb.AsNoTracking().FirstOrDefault(s => s.Slug == slug && s.Publicado)?.ComoVista();
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
@@ -28,6 +38,15 @@ public partial class LlanteriaDbContext
         modelBuilder.Entity<PerfilUsuario>().Property(e => e.Bio).HasColumnType("nvarchar(max)").Cifrada("PerfilUsuario.Bio");
         modelBuilder.Entity<PerfilUsuario>().Property(e => e.FotoCircular).Cifrada("PerfilUsuario.FotoCircular");
         modelBuilder.Entity<Usuario>().Property(e => e.MotivoSancion).HasColumnType("nvarchar(max)").Cifrada("Usuario.MotivoSancion");
+
+        modelBuilder.Entity<ServicioWeb>(e =>
+        {
+            e.ToTable("ServiciosWeb");
+            e.HasIndex(x => x.Slug).IsUnique();
+            e.Property(x => x.Ventajas).HasColumnType("nvarchar(max)");
+            e.Property(x => x.InfoCita).HasColumnType("nvarchar(max)");
+            e.Property(x => x.Publicado).HasDefaultValue(true);
+        });
 
         modelBuilder.Entity<Articulo>(e =>
         {

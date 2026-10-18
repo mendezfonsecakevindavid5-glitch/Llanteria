@@ -1,0 +1,119 @@
+@model Llanteria.Models.ServicioWeb
+@{
+    var imagen = string.IsNullOrEmpty(Model.Imagen) ? Llanteria.Models.ServicioWeb.ImagenPorDefecto : Model.Imagen;
+}
+
+<form asp-action="@ViewData["Accion"]" asp-route-id="@(Model.Id == 0 ? null : Model.Id.ToString())" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+
+    <div class="row g-3">
+        <div class="col-md-8">
+            <label asp-for="Titulo" class="form-label">Nombre del servicio</label>
+            <input asp-for="Titulo" class="form-control" maxlength="100" />
+            <span asp-validation-for="Titulo" class="text-danger small"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Orden" class="form-label">Posición en el inicio</label>
+            <input asp-for="Orden" type="number" min="0" class="form-control" />
+        </div>
+        <div class="col-12">
+            <label asp-for="Subtitulo" class="form-label">Frase corta</label>
+            <input asp-for="Subtitulo" class="form-control" maxlength="160" />
+            <span asp-validation-for="Subtitulo" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Slug" class="form-label">Dirección del servicio</label>
+            <div class="input-group">
+                <span class="input-group-text">/Servicios/</span>
+                <input asp-for="Slug" class="form-control" maxlength="120" placeholder="Se genera sola a partir del nombre" />
+            </div>
+            <span asp-validation-for="Slug" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Icono" class="form-label">Ícono (Font Awesome)</label>
+            <input asp-for="Icono" class="form-control" maxlength="40" placeholder="fa-oil-can" />
+            <span asp-validation-for="Icono" class="text-danger small"></span>
+        </div>
+
+        <div class="col-12"><div class="form-section">Imagen de la tarjeta</div></div>
+        <div class="col-12 d-flex align-items-center gap-3">
+            <img id="previewServicio" class="file-preview" style="width:120px" src="~/images/servicios/@imagen" alt="Vista previa de la imagen" />
+            <div class="flex-grow-1">
+                <input asp-for="ImagenArchivo" type="file" class="form-control" accept="image/*" data-preview="#previewServicio" />
+                <span asp-validation-for="ImagenArchivo" class="text-danger small"></span>
+                <div class="form-text">Déjalo vacío para conservar la imagen actual.</div>
+            </div>
+        </div>
+
+        <div class="col-12"><div class="form-section">Contenido de la página</div></div>
+        <div class="col-12">
+            <label asp-for="Descripcion" class="form-label">¿En qué consiste?</label>
+            <textarea asp-for="Descripcion" class="form-control" rows="4" maxlength="1200"></textarea>
+            <span asp-validation-for="Descripcion" class="text-danger small"></span>
+        </div>
+        <div class="col-12">
+            <label asp-for="Ventajas" class="form-label">Ventajas</label>
+            <textarea asp-for="Ventajas" class="form-control" rows="4" placeholder="fa-car-side | Conducción suave | Elimina vibraciones molestas."></textarea>
+            <div class="form-text">Una por línea: <code>ícono | título | texto</code>.</div>
+            <span asp-validation-for="Ventajas" class="text-danger small"></span>
+        </div>
+        <div class="col-12">
+            <label asp-for="InfoCita" class="form-label">Información para la cita</label>
+            <textarea asp-for="InfoCita" class="form-control" rows="4" placeholder="Tiempo estimado | 45 a 60 minutos."></textarea>
+            <div class="form-text">Una por línea: <code>etiqueta | texto</code>.</div>
+            <span asp-validation-for="InfoCita" class="text-danger small"></span>
+        </div>
+
+        <div class="col-12"><div class="form-section">Precio y atención</div></div>
+        <div class="col-md-6">
+            <label asp-for="EtiquetaPrecio" class="form-label">Etiqueta del precio</label>
+            <input asp-for="EtiquetaPrecio" class="form-control" maxlength="40" />
+            <span asp-validation-for="EtiquetaPrecio" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Precio" class="form-label">Precio que se muestra</label>
+            <input asp-for="Precio" class="form-control" maxlength="40" placeholder="$40.000 COP" />
+            <span asp-validation-for="Precio" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="TituloVisitante" class="form-label">Título para quien no tiene sesión</label>
+            <input asp-for="TituloVisitante" class="form-control" maxlength="100" />
+        </div>
+        <div class="col-md-6">
+            <label asp-for="TextoVisitante" class="form-label">Texto para quien no tiene sesión</label>
+            <input asp-for="TextoVisitante" class="form-control" maxlength="500" />
+        </div>
+
+        <div class="col-12"><div class="form-section">Ejemplos que ve el cliente en el formulario</div></div>
+        <div class="col-md-4">
+            <label asp-for="PlaceholderVehiculo" class="form-label">Vehículo</label>
+            <input asp-for="PlaceholderVehiculo" class="form-control" maxlength="100" placeholder="Ej. ABC-123 / Renault Logan" />
+        </div>
+        <div class="col-md-4">
+            <label asp-for="PlaceholderNotas" class="form-label">Notas</label>
+            <input asp-for="PlaceholderNotas" class="form-control" maxlength="150" />
+        </div>
+        <div class="col-md-4">
+            <label asp-for="PlaceholderMensaje" class="form-label">Mensaje</label>
+            <input asp-for="PlaceholderMensaje" class="form-control" maxlength="150" />
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-check form-switch">
+                <input asp-for="EsDomicilio" class="form-check-input" role="switch" />
+                <label asp-for="EsDomicilio" class="form-check-label">Se atiende a domicilio (pide dirección)</label>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-check form-switch">
+                <input asp-for="Publicado" class="form-check-input" role="switch" />
+                <label asp-for="Publicado" class="form-check-label">Visible en el sitio</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <a asp-action="Index" class="btn btn-line">Cancelar</a>
+        <button type="submit" class="btn btn-brand">Guardar servicio</button>
+    </div>
+</form>

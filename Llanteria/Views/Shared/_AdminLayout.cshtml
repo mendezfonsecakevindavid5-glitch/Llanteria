@@ -21,7 +21,8 @@
         ("Marca", "Index", "fa-tag", "Marcas", true, "Inventario"),
         ("Bodega", "Index", "fa-warehouse", "Bodegas", true, "Inventario"),
         ("Proveedore", "Index", "fa-industry", "Proveedores", true, "Inventario"),
-        ("TipoServicio", "Index", "fa-screwdriver-wrench", "Servicios", true, "Inventario"),
+        ("TipoServicio", "Index", "fa-screwdriver-wrench", "Tarifas de servicio", true, "Inventario"),
+        ("ServicioWeb", "Index", "fa-wrench", "Servicios del sitio", true, "Contenido"),
         ("Articulo", "Index", "fa-newspaper", "Blog", true, "Contenido"),
         ("Gasto", "Index", "fa-money-bill-wave", "Gastos", true, "Administración"),
         ("CatalogoIncentivo", "Index", "fa-gift", "Incentivos", true, "Administración"),
@@ -42,16 +43,6 @@
     <link rel="stylesheet" href="~/css/brand.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/avatar-menu.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
-    <style>
-        :root {
-            --llanteria-primary: #C92B0A;
-            --llanteria-dark: #09090B;
-        }
-        body.admin {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #F8F9FA;
-        }
-    </style>
 </head>
 <body class="admin">
     @* Sin encabezado: solo la foto de perfil (abre un modal) flotando arriba a la derecha. *@

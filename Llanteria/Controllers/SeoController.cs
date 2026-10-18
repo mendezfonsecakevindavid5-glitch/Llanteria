@@ -30,7 +30,7 @@ public class SeoController : Controller
         var baseUrl = $"{Request.Scheme}://{Request.Host}";
         var rutas = new List<string> { "/", "/Llantas", "/Baterias", "/Promociones", "/Empresas", "/Blog", "/Contacto",
             "/Legal/Terminos", "/Legal/Privacidad", "/Legal/Garantia", "/Legal/Devoluciones", "/Legal/Faq", "/Legal/Pqrs" };
-        rutas.AddRange(ServiciosCatalogo.Todos.Select(s => $"/Servicios/{s.Slug}"));
+        rutas.AddRange(_db.ServiciosWeb.AsNoTracking().Where(s => s.Publicado).Select(s => $"/Servicios/{s.Slug}").ToList());
         rutas.AddRange(_db.Articulos.AsNoTracking().Where(a => a.Publicado).Select(a => $"/Blog/{a.Slug}").ToList());
 
         var sb = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");

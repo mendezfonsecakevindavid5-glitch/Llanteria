@@ -1,8 +1,8 @@
 namespace Llanteria.Models;
 
 /// <summary>
-/// Contenido de las páginas de servicio. Antes eran seis vistas casi idénticas (unas 300 líneas cada una);
-/// ahora hay una sola vista (Servicios/Detalle) y estos datos.
+/// Servicios con los que arranca el sitio. Solo se usan para llenar la tabla ServiciosWeb cuando está vacía;
+/// después el administrador los edita desde el panel (ServicioWebController).
 /// </summary>
 public static class ServiciosCatalogo
 {
@@ -78,7 +78,5 @@ public static class ServiciosCatalogo
         }
     };
 
-    public static IEnumerable<ServicioViewModel> Todos => Datos.Values;
-
-    public static ServicioViewModel? Buscar(string slug) => Datos.GetValueOrDefault(slug);
+    public static IEnumerable<ServicioViewModel> Semilla => Datos.Values;
 }

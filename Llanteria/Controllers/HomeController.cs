@@ -43,6 +43,7 @@ public class HomeController : Controller
         ViewBag.Destacadas = destacadas;
         ViewBag.Agotados = Agotados(destacadas.Select(p => p.Id).ToList());
 
+        ViewBag.Servicios = _context.ServiciosPublicados();
         ViewBag.Logos = Logos();
 
         // Opiniones

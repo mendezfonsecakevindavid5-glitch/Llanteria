@@ -1,0 +1,18 @@
+@model Llanteria.Models.ServicioWeb
+
+@{
+    ViewData["Title"] = "Nuevo servicio";
+    ViewData["Accion"] = "Create";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Nuevo servicio", "Crea un servicio para mostrarlo en el sitio.", "ServicioWeb", "Index"))
+
+<div class="panel panel-medium">
+    <div class="panel-body">
+        <partial name="_Form" model="Model" />
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

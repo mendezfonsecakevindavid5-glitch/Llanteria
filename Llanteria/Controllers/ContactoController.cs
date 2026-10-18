@@ -7,8 +7,13 @@ namespace Llanteria.Controllers;
 public class ContactoController : Controller
 {
     private readonly EmailService _email;
+    private readonly NegocioInfo _negocio;
 
-    public ContactoController(EmailService email) => _email = email;
+    public ContactoController(EmailService email, NegocioInfo negocio)
+    {
+        _email = email;
+        _negocio = negocio;
+    }
 
     [HttpGet]
     public IActionResult Index(string? producto)
@@ -38,7 +43,7 @@ public class ContactoController : Controller
             $"[Contacto web] {asunto} – {nombre}", cuerpo, responderA: correo);
 
         if (enviado) TempData["Exito"] = "Mensaje enviado. Te responderemos al correo que indicaste.";
-        else TempData["Error"] = "No pudimos enviar tu mensaje en este momento. Llámanos al +57 311 772 3978.";
+        else TempData["Error"] = $"No pudimos enviar tu mensaje en este momento. Llámanos al {_negocio.Telefono}.";
         return RedirectToAction(nameof(Index));
     }
 }

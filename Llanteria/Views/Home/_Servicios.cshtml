@@ -1,7 +1,11 @@
 @inject IWebHostEnvironment Env
 @{
-    string Foto(string slug)
+    var servicios = (List<ServicioViewModel>)ViewBag.Servicios;
+
+    string Foto(ServicioViewModel s)
     {
+        if (!string.IsNullOrEmpty(s.Imagen)) return $"/images/servicios/{s.Imagen}";
+        var slug = s.Slug;
         foreach (var ext in new[] { ".jpg", ".jpeg", ".webp", ".png" })
             if (System.IO.File.Exists(System.IO.Path.Combine(Env.WebRootPath, "images", "servicios", slug + ext)))
                 return $"/images/servicios/{slug}{ext}";
@@ -15,11 +19,11 @@
             <h2 class="section-title mt-1">Todo para tu vehículo en un solo lugar</h2>
         </div>
         <div class="row g-4">
-            @foreach (var s in ServiciosCatalogo.Todos)
+            @foreach (var s in servicios)
             {
                 <div class="col-md-6 col-lg-4">
                     <a asp-controller="Servicios" asp-action="Detalle" asp-route-slug="@s.Slug" class="service-photo-card">
-                        <img src="@Foto(s.Slug)" alt="@s.Titulo" loading="lazy" />
+                        <img src="@Foto(s)" alt="@s.Titulo" loading="lazy" />
                         <div class="body">
                             <h3>@s.Titulo</h3>
                             <p>@s.Subtitulo</p>

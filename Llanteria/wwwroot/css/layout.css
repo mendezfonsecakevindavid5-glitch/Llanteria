@@ -1,0 +1,213 @@
+/* Variables y cabecera del sitio público */
+:root {
+    --llanteria-primary: #C92B0A;
+    --llanteria-dark: #09090B;
+    --llanteria-light: #FFFFFF;
+    --cart-red: #E11D2A;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #F8F9FA;
+    color: var(--llanteria-dark);
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- Header ----------
+   Barra sobria, de una sola línea (referencia: la barra de Michelin). Transparente SOLO sobre el banner del Inicio. */
+:root { --header-h: 68px; }
+
+.michelin-nav-global {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1100;
+    background: transparent;
+    padding: .7rem 0;
+    transition: background .25s ease, box-shadow .25s ease;
+}
+
+.michelin-nav-global.solid-bg,
+.michelin-nav-global.scrolled,
+.michelin-nav-global:hover {
+    background: rgba(255, 255, 255, .98) !important;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .08), 0 6px 18px rgba(0, 0, 0, .06);
+}
+
+.michelin-nav-global .header-shell {
+    max-width: none;
+    padding-left: clamp(1rem, 3.5vw, 4rem);
+    padding-right: clamp(1rem, 3.5vw, 4rem);
+}
+
+.michelin-nav-global .brand-matrix {
+    color: #FFFFFF !important;
+    cursor: pointer;
+    margin-right: clamp(1rem, 2.2vw, 2.5rem);
+    white-space: nowrap;
+}
+
+.michelin-nav-global.solid-bg .brand-matrix,
+.michelin-nav-global.scrolled .brand-matrix,
+.michelin-nav-global:hover .brand-matrix {
+    color: #000000 !important;
+    text-shadow: none;
+}
+
+/* Nav links: más pequeños y siempre del mismo color (sin rojo al pasar el cursor ni al hacer clic) */
+.michelin-nav-global .navbar-nav .nav-link {
+    color: #FFFFFF !important;
+    font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
+    font-weight: 500;
+    font-size: .94rem;
+    letter-spacing: .015em;
+    text-decoration: none !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .45);
+    position: relative;
+    padding: .45rem .15rem;
+    margin: 0 .55rem;
+    white-space: nowrap;
+    background: transparent;
+    transform: none;
+    border-bottom: 0 !important;
+    transition: none;
+}
+
+.michelin-nav-global .navbar-nav .nav-link:hover,
+.michelin-nav-global .navbar-nav .nav-link:focus,
+.michelin-nav-global .navbar-nav .nav-link:active { color: #FFFFFF !important; background: transparent; }
+
+.michelin-nav-global.solid-bg .navbar-nav .nav-link,
+.michelin-nav-global.scrolled .navbar-nav .nav-link,
+.michelin-nav-global:hover .navbar-nav .nav-link,
+.michelin-nav-global.solid-bg .navbar-nav .nav-link:hover,
+.michelin-nav-global.scrolled .navbar-nav .nav-link:hover,
+.michelin-nav-global:hover .navbar-nav .nav-link:hover {
+    color: #000000 !important;
+    text-shadow: none;
+}
+
+/* Subrayado fino: aparece al pasar el cursor y queda fijo en la página actual. Mismo color que el texto. */
+.michelin-nav-global .navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .2s ease;
+}
+
+.michelin-nav-global .navbar-nav .nav-link:hover::after,
+.michelin-nav-global .navbar-nav .nav-link.is-active::after { transform: scaleX(1); }
+
+/* Puntos del usuario: solo con sesión iniciada. Rojo, estrella a la izquierda y subrayado rojo propio. */
+.michelin-nav-global .navbar-nav .nav-link.nav-puntos,
+.michelin-nav-global .navbar-nav .nav-link.nav-puntos:hover,
+.michelin-nav-global.solid-bg .navbar-nav .nav-link.nav-puntos,
+.michelin-nav-global.scrolled .navbar-nav .nav-link.nav-puntos,
+.michelin-nav-global:hover .navbar-nav .nav-link.nav-puntos {
+    color: var(--cart-red) !important;
+    font-weight: 700;
+    text-shadow: none;
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+.michelin-nav-global .navbar-nav .nav-link.nav-puntos i { color: var(--cart-red); font-size: .85em; }
+.michelin-nav-global .navbar-nav .nav-link.nav-puntos::after { transform: scaleX(1); height: 2px; background: var(--cart-red); }
+
+/* Carrito */
+.header-cart {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-size: 1.15rem;
+    line-height: 1;
+    text-decoration: none;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .45);
+}
+
+.michelin-nav-global.solid-bg .header-cart,
+.michelin-nav-global.scrolled .header-cart,
+.michelin-nav-global:hover .header-cart { color: #000000; text-shadow: none; }
+
+.header-cart:hover { color: inherit !important; }
+
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: var(--cart-red);
+    color: #FFFFFF;
+    font-family: 'Roboto', sans-serif;
+    font-size: .66rem;
+    font-weight: 700;
+    line-height: 17px;
+    text-align: center;
+    text-shadow: none;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, .9);
+}
+
+/* Iniciar sesión: negro con letras blancas; sobre el banner transparente, blanco con letras negras */
+.btn-matrix-action {
+    background: #000000 !important;
+    color: #FFFFFF !important;
+    border: 1px solid #000000 !important;
+    padding: .4rem 1rem;
+    border-radius: .4rem;
+    font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
+    font-weight: 500;
+    font-size: .88rem;
+    letter-spacing: .01em;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    transition: background-color .2s ease, color .2s ease;
+}
+
+.btn-matrix-action i { font-size: .9em; }
+.btn-matrix-action:hover { background: #212529 !important; border-color: #212529 !important; color: #FFFFFF !important; }
+
+.michelin-nav-global:not(.solid-bg):not(.scrolled):not(:hover) .btn-matrix-action {
+    background: #FFFFFF !important;
+    border-color: #FFFFFF !important;
+    color: #000000 !important;
+}
+
+.header-actions { gap: 1.5rem; }
+
+/* Espacio bajo el header fijo: así, al llegar arriba del todo, no tapa el comienzo de la página.
+   En el Inicio no se aplica (el banner pasa por debajo del header transparente) ni en Account (tiene su propio espaciado). */
+.main-matrix-container { flex: 1 0 auto; padding-bottom: 2rem; }
+.main-matrix-container.main-offset { padding-top: var(--header-h); }
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+    .michelin-nav-global .navbar-nav .nav-link { font-size: .9rem; margin: 0 .35rem; }
+}
+
+@media (max-width: 1199.98px) {
+    .michelin-nav-global:not(.solid-bg):not(.scrolled):not(:hover) .navbar-toggler-icon { filter: invert(1); }
+    .michelin-nav-global .navbar-collapse { padding: .5rem 0 .25rem; }
+    .michelin-nav-global .navbar-nav .nav-link { margin: 0; padding: .55rem 0; }
+    .header-cart { align-self: flex-start; margin: .25rem 0; }
+}
+
