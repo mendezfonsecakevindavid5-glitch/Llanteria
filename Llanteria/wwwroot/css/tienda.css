@@ -58,18 +58,6 @@ a.tc-brand:hover { transform: scale(1.08); }
 .rv-input label:hover { transform: scale(1.15); }
 .rv-input input:focus-visible + label { outline: 2px solid var(--tc-primary); outline-offset: 2px; border-radius: 4px; }
 
-/* ---------- Carrito en la barra de navegación ---------- */
-.tc-cart-link { position: relative; }
-.tc-cart-badge {
-  position: absolute; top: -8px; right: -10px; min-width: 18px; height: 18px; padding: 0 5px;
-  border-radius: 99px; background: var(--tc-primary); color: #fff; font-size: .7rem; font-weight: 700;
-  display: grid; place-items: center; text-shadow: none;
-}
-
-/* ---------- Tarjeta de producto: precio de promoción ---------- */
-.cat-old { color: var(--tc-muted); font-size: .85rem; font-weight: 500; margin-right: .35rem; }
-.cat-badge-promo { position: absolute; top: .6rem; left: .6rem; background: var(--tc-primary); color: #fff; font-size: .72rem; font-weight: 700; padding: .2rem .55rem; border-radius: 6px; }
-
 /* ---------- Carrito y checkout ---------- */
 .tc-wrap { padding-block: 2.5rem 4rem; }
 .tc-panel { background: #fff; border: 1px solid var(--tc-line); border-radius: 14px; }

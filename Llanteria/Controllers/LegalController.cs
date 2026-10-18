@@ -1,4 +1,3 @@
-﻿using System.Net.Mail;
 using Llanteria.Data;
 using Llanteria.Infrastructure;
 using Llanteria.Models;
@@ -53,7 +52,7 @@ public class LegalController : Controller
 
         string? error = null;
         if (p.Nombre.Length is < 3 or > 100) error = "Escribe tu nombre completo.";
-        else if (p.Correo.Length > 100 || !MailAddress.TryCreate(p.Correo, out var m) || m.Address != p.Correo) error = "Escribe un correo válido para enviarte la respuesta.";
+        else if (!Validaciones.CorreoValido(p.Correo)) error = "Escribe un correo válido para enviarte la respuesta.";
         else if (p.Telefono?.Length > 25 || p.NumeroDocumento?.Length > 20) error = "El teléfono o el documento es demasiado largo.";
         else if (p.Asunto.Length is < 5 or > 120) error = "Escribe un asunto de 5 a 120 caracteres.";
         else if (p.Mensaje.Length is < 20 or > 1500) error = "Cuéntanos tu caso con al menos 20 caracteres (máximo 1.500).";

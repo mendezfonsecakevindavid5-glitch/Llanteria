@@ -2,31 +2,28 @@ using Llanteria.Models;
 using Llanteria.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Webp;
-using SixLabors.ImageSharp.Processing;
 
 namespace Llanteria.Controllers;
 
 public class ProductoController : Controller
 {
     private const string ImagenPorDefecto = "default-producto.png";
-    private static readonly string[] Extensiones = { ".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp" };
+    private const string CarpetaImagenes = "productoos";
 
     private readonly ProductoService ser;
     private readonly ProveedoreService provSer;
     private readonly MarcaService marcSer;
     private readonly BodegaService bodSer;
-    private readonly IWebHostEnvironment _env;
+    private readonly AlmacenImagenes _imagenes;
 
     public ProductoController(ProductoService productoService, ProveedoreService proveedoreService,
-        MarcaService marcaService, BodegaService bodegaService, IWebHostEnvironment env)
+        MarcaService marcaService, BodegaService bodegaService, AlmacenImagenes imagenes)
     {
         ser = productoService;
         provSer = proveedoreService;
         marcSer = marcaService;
         bodSer = bodegaService;
-        _env = env;
+        _imagenes = imagenes;
     }
 
     public IActionResult Index() => View(ser.GetProductos());
@@ -126,32 +123,13 @@ public class ProductoController : Controller
 
     private void ValidarImagen(IFormFile? archivo)
     {
-        if (archivo == null) return;
-        if (!Extensiones.Contains(Path.GetExtension(archivo.FileName).ToLowerInvariant()))
-            ModelState.AddModelError(nameof(Producto.ImagenArchivo), "El archivo debe ser una imagen (jpg, png, webp, gif o bmp).");
-        else if (archivo.Length > 5 * 1024 * 1024)
-            ModelState.AddModelError(nameof(Producto.ImagenArchivo), "La imagen no puede superar 5 MB.");
+        var error = AlmacenImagenes.Validar(archivo);
+        if (error != null) ModelState.AddModelError(nameof(Producto.ImagenArchivo), error);
     }
 
-    private string GuardarImagen(IFormFile archivo)
-    {
-        var carpeta = Path.Combine(_env.WebRootPath, "images", "productoos");
-        Directory.CreateDirectory(carpeta);
-        var nombre = Guid.NewGuid().ToString("N") + ".webp";
+    private string GuardarImagen(IFormFile archivo) => _imagenes.Guardar(archivo, CarpetaImagenes);
 
-        using var stream = archivo.OpenReadStream();
-        using var imagen = Image.Load(stream);
-        imagen.Mutate(x => x.Resize(new ResizeOptions { Size = new Size(800, 800), Mode = ResizeMode.Max }));
-        imagen.Save(Path.Combine(carpeta, nombre), new WebpEncoder { Quality = 75 });
-        return nombre;
-    }
-
-    private void EliminarImagen(string? nombre)
-    {
-        if (string.IsNullOrEmpty(nombre) || nombre == ImagenPorDefecto) return;
-        var ruta = Path.Combine(_env.WebRootPath, "images", "productoos", Path.GetFileName(nombre));
-        if (System.IO.File.Exists(ruta)) System.IO.File.Delete(ruta);
-    }
+    private void EliminarImagen(string? nombre) => _imagenes.Eliminar(nombre, CarpetaImagenes, ImagenPorDefecto);
 
     private void CargarCombos()
     {

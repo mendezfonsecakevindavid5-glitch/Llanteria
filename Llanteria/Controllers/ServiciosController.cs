@@ -1,4 +1,4 @@
-using System.Net.Mail;
+using Llanteria.Infrastructure;
 using Llanteria.Models;
 using Llanteria.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +29,7 @@ public class ServiciosController : Controller
         var servicio = ServiciosCatalogo.Buscar(slug);
         if (servicio == null) return NotFound();
 
-        if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(telefono) || !CorreoValido(correo))
+        if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(telefono) || !Validaciones.CorreoValido(correo))
         {
             TempData["Error"] = "Completa tu nombre, un correo válido y tu teléfono.";
             return RedirectToAction(nameof(Detalle), new { slug });
@@ -47,7 +47,4 @@ public class ServiciosController : Controller
         else TempData["Error"] = "No pudimos enviar tu solicitud en este momento. Llámanos al +57 311 772 3978.";
         return RedirectToAction(nameof(Detalle), new { slug });
     }
-
-    private static bool CorreoValido(string? correo)
-        => !string.IsNullOrWhiteSpace(correo) && MailAddress.TryCreate(correo.Trim(), out var m) && m.Address == correo.Trim();
 }

@@ -15,6 +15,7 @@ public partial class LlanteriaDbContext
     public virtual DbSet<PedidoItem> PedidoItems { get; set; }
     public virtual DbSet<Pqrs> RegistrosPqrs { get; set; }
     public virtual DbSet<OrdenTrabajo> OrdenesTrabajo { get; set; }
+    public virtual DbSet<Articulo> Articulos { get; set; }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
     {
@@ -27,6 +28,21 @@ public partial class LlanteriaDbContext
         modelBuilder.Entity<PerfilUsuario>().Property(e => e.Bio).HasColumnType("nvarchar(max)").Cifrada("PerfilUsuario.Bio");
         modelBuilder.Entity<PerfilUsuario>().Property(e => e.FotoCircular).Cifrada("PerfilUsuario.FotoCircular");
         modelBuilder.Entity<Usuario>().Property(e => e.MotivoSancion).HasColumnType("nvarchar(max)").Cifrada("Usuario.MotivoSancion");
+
+        modelBuilder.Entity<Articulo>(e =>
+        {
+            e.ToTable("Articulos");
+            e.Property(x => x.Titulo).HasMaxLength(200);
+            e.Property(x => x.Slug).HasMaxLength(120);
+            e.HasIndex(x => x.Slug).IsUnique();
+            e.Property(x => x.Resumen).HasMaxLength(400);
+            e.Property(x => x.Categoria).HasMaxLength(40);
+            e.Property(x => x.Fecha).HasColumnType("date");
+            e.Property(x => x.Autor).HasMaxLength(100);
+            e.Property(x => x.Imagen).HasMaxLength(120);
+            e.Property(x => x.Contenido).HasColumnType("nvarchar(max)");
+            e.Property(x => x.Publicado).HasDefaultValue(true);
+        });
 
         modelBuilder.Entity<Cita>(e =>
         {

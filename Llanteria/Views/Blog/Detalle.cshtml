@@ -2,7 +2,7 @@
 @model BlogPost
 @{
     ViewData["Title"] = Model.Titulo;
-    var relacionados = BlogCatalogo.Relacionados(Model).ToList();
+    var relacionados = (List<BlogPost>)ViewBag.Relacionados;
 }
 
 <section class="cat-hero">

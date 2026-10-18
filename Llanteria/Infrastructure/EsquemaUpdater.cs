@@ -74,6 +74,23 @@ BEGIN
     CREATE UNIQUE INDEX IX_Pqrs_Radicado ON dbo.Pqrs(Radicado);
 END;
 
+IF OBJECT_ID(N'dbo.Articulos', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Articulos (
+        Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_Articulos PRIMARY KEY,
+        Titulo nvarchar(200) NOT NULL,
+        Slug nvarchar(120) NOT NULL,
+        Resumen nvarchar(400) NOT NULL,
+        Categoria nvarchar(40) NOT NULL,
+        Fecha date NOT NULL,
+        Autor nvarchar(100) NOT NULL,
+        Imagen nvarchar(120) NULL,
+        Contenido nvarchar(max) NOT NULL,
+        Publicado bit NOT NULL CONSTRAINT DF_Articulos_Publicado DEFAULT (1)
+    );
+    CREATE UNIQUE INDEX IX_Articulos_Slug ON dbo.Articulos(Slug);
+END;
+
 IF COL_LENGTH('dbo.DetalleProductos', 'TipoVehiculo') IS NULL
     ALTER TABLE dbo.DetalleProductos ADD TipoVehiculo nvarchar(10) NOT NULL CONSTRAINT DF_DetalleProductos_TipoVehiculo DEFAULT ('Auto');
 

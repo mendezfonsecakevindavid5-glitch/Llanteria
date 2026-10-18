@@ -13,7 +13,7 @@ public class RoleConvention : IControllerModelConvention
     private static readonly HashSet<string> SoloAdmin = new()
     {
         "Producto", "Marca", "Bodega", "Proveedore", "Gasto", "Empleado",
-        "Usuario", "Log", "TipoServicio", "CatalogoIncentivo"
+        "Usuario", "Log", "TipoServicio", "CatalogoIncentivo", "Articulo"
     };
 
     private static readonly HashSet<string> Personal = new()

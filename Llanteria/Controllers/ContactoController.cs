@@ -1,4 +1,4 @@
-using System.Net.Mail;
+using Llanteria.Infrastructure;
 using Llanteria.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +23,7 @@ public class ContactoController : Controller
     public async Task<IActionResult> EnviarMensaje(string nombre, string correo, string asunto, string mensaje)
     {
         if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(asunto) || string.IsNullOrWhiteSpace(mensaje)
-            || !MailAddress.TryCreate((correo ?? "").Trim(), out var m) || m.Address != correo!.Trim())
+            || !Validaciones.CorreoValido(correo))
         {
             TempData["Error"] = "Completa todos los campos con un correo válido.";
             return RedirectToAction(nameof(Index));

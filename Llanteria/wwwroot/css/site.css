@@ -209,30 +209,17 @@ body {
     transform: scale(1.1) rotate(-5deg);
 }
 
-<style >
-/* Estilo para las tarjetas con esquinas redondeadas tipo "Dashboard" */
+/* Tarjetas con esquinas redondeadas */
 .rounded-xl {
     border-radius: 16px !important;
 }
 
-/* Ajuste para que el texto de la sidebar no se rompa */
-.nav-link {
-    transition: all 0.3s ease;
-}
-
-    .nav-link:hover {
-        background-color: #f8f9fa;
-        transform: translateX(5px);
-    }
-
-/* Estilo para fuentes negritas y legibles */
+/* Texto en negrita máxima */
 .fw-black {
     font-weight: 900 !important;
 }
 
-/* Asegurar que el dashboard sea fluido */
+/* Contenido fluido con tope de ancho */
 .container-fluid {
     max-width: 1500px;
 }
-
-</style >

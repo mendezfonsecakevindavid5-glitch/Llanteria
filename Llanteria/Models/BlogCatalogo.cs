@@ -12,20 +12,15 @@ public record BlogPost(string Slug, string Titulo, string Resumen, string Catego
 }
 
 /// <summary>
-/// Artículos del blog. Cada uno es texto con marcas simples: "## " título de sección, "- " viñeta,
-/// "> " recuadro destacado, **negrita**; una línea en blanco separa párrafos.
-/// Para agregar uno nuevo basta con añadir otro BlogPost a la lista y su portada en wwwroot/images/blog/.
+/// Formato de los artículos del blog y artículos de ejemplo. El contenido es texto con marcas simples:
+/// "## " título de sección, "- " viñeta, "> " recuadro destacado, **negrita**; una línea en blanco separa párrafos.
+/// Los artículos reales se administran desde el panel (tabla Articulos), no aquí.
 /// </summary>
 public static class BlogCatalogo
 {
     public static readonly string[] Categorias = { "Actualidad", "Rueda seguro", "Tips de compra" };
-    private const string Autor = "Equipo técnico Llantería Valledupar";
-
-    public static BlogPost? Buscar(string slug) => Todos.FirstOrDefault(p => p.Slug == slug);
-
-    public static IEnumerable<BlogPost> Relacionados(BlogPost actual, int cantidad = 3)
-        => Todos.Where(p => p.Slug != actual.Slug)
-                .OrderByDescending(p => p.Categoria == actual.Categoria).ThenByDescending(p => p.Fecha).Take(cantidad);
+    public const string AutorPorDefecto = "Equipo técnico Llantería Valledupar";
+    private const string Autor = AutorPorDefecto;
 
     /// <summary>Convierte las marcas simples a HTML seguro (todo el texto se codifica antes).</summary>
     public static string ARenderizar(string contenido)
@@ -51,7 +46,8 @@ public static class BlogCatalogo
         return sb.ToString();
     }
 
-    public static readonly List<BlogPost> Todos = new()
+    /// <summary>Artículos de ejemplo: se cargan a la base de datos una sola vez, cuando la tabla está vacía.</summary>
+    public static readonly List<BlogPost> Semilla = new()
     {
         new BlogPost("como-leer-la-medida-de-tu-llanta", "Cómo leer la medida de tu llanta: qué significa 205/55 R16 91V",
             "Los números del costado de la llanta no son un código secreto. Aprende a leerlos y compra la medida correcta sin equivocarte.",

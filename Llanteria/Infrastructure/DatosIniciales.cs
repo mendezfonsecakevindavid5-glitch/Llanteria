@@ -22,6 +22,21 @@ public static class DatosIniciales
             if (!db.CategoriaGastos.Any(c => c.Nombre == n)) db.CategoriaGastos.Add(new CategoriaGasto { Nombre = n });
 
         db.SaveChanges();
+        SembrarBlog(db);
+    }
+
+    /// <summary>Carga los artículos de ejemplo solo si el blog está vacío: después, el administrador los maneja desde el panel.</summary>
+    private static void SembrarBlog(LlanteriaDbContext db)
+    {
+        if (db.Articulos.Any()) return;
+
+        db.Articulos.AddRange(BlogCatalogo.Semilla.Select(p => new Articulo
+        {
+            Slug = p.Slug, Titulo = p.Titulo, Resumen = p.Resumen, Categoria = p.Categoria,
+            Fecha = p.Fecha.ToDateTime(TimeOnly.MinValue), Autor = p.Autor, Imagen = p.Imagen,
+            Contenido = p.Contenido, Publicado = true
+        }));
+        db.SaveChanges();
     }
 
     public static class Estados

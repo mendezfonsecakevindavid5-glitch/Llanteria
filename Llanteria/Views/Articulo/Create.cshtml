@@ -1,0 +1,18 @@
+@model Llanteria.Models.Articulo
+
+@{
+    ViewData["Title"] = "Nuevo artículo";
+    ViewData["Accion"] = "Create";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Nuevo artículo", "Escribe un artículo para el blog del sitio.", "Articulo", "Index"))
+
+<div class="panel panel-medium">
+    <div class="panel-body">
+        <partial name="_Form" model="Model" />
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
