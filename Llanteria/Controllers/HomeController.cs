@@ -23,7 +23,7 @@ public class HomeController : Controller
     public IActionResult Index()
     {
         // Buscador por tipo de vehículo: las medidas sugeridas salen de las llantas cargadas para cada tipo.
-        var detalles = _context.DetalleProductos.AsNoTracking().ToList();
+        var detalles = _context.DetalleProductos.AsNoTracking().Include(d => d.IdMarcaNavigation).ToList();
         List<string> Valores(string tipo, Func<DetalleProducto, string?> campo) => detalles
             .Where(d => TiposVehiculo.Normalizar(d.TipoVehiculo) == tipo)
             .Select(campo).Where(v => !string.IsNullOrWhiteSpace(v)).Select(v => v!.Trim()).Distinct()
@@ -32,7 +32,9 @@ public class HomeController : Controller
         {
             anchos = Valores(t, d => d.Ancho),
             perfiles = Valores(t, d => d.Perfil),
-            diametros = Valores(t, d => d.Diametro)
+            diametros = Valores(t, d => d.Diametro),
+            marcas = detalles.Where(d => TiposVehiculo.Normalizar(d.TipoVehiculo) == t && d.Ancho != null)
+                .Select(d => d.IdMarcaNavigation?.Nombre).Where(n => !string.IsNullOrWhiteSpace(n)).Select(n => n!).Distinct().OrderBy(n => n).ToList()
         });
 
         // Tarjetas del inicio: llantas más recientes con su disponibilidad.
@@ -77,27 +79,32 @@ public class HomeController : Controller
 
     private static string Digitos(string? v) => new string((v ?? "").Where(char.IsDigit).ToArray());
 
-    /// <summary>Búsqueda del inicio: tipo de vehículo + medida (ancho / perfil / rin). El modelo o marca solo ordena: primero las que coinciden.</summary>
+    /// <summary>Búsqueda del inicio: tipo de vehículo + medida (ancho / perfil / rin), con marca opcional y orden elegido.</summary>
     [HttpGet]
-    public IActionResult BuscarLlantas(string? tipo, string? modelo, string? ancho, string? perfil, string? diametro)
+    public IActionResult BuscarLlantas(string? tipo, string? marca, string? orden, string? ancho, string? perfil, string? diametro)
     {
         tipo = TiposVehiculo.Normalizar(tipo);
         ancho = Digitos(ancho); perfil = Digitos(perfil); diametro = Digitos(diametro);
         if (ancho == "" || perfil == "" || diametro == "") return BadRequest();
-        modelo = (modelo ?? "").Trim();
+        marca = (marca ?? "").Trim();
 
         var candidatos = _context.Productos.AsNoTracking()
             .Include(p => p.DetalleProducto).ThenInclude(d => d!.IdMarcaNavigation)
             .Where(p => p.DetalleProducto != null && p.DetalleProducto.Ancho == ancho && p.DetalleProducto.Perfil == perfil
                         && p.DetalleProducto.Diametro == diametro && p.DetalleProducto.TipoVehiculo == tipo)
             .ToList();
+        if (marca.Length > 0)
+            candidatos = candidatos.Where(p => string.Equals(p.DetalleProducto?.IdMarcaNavigation?.Nombre, marca, StringComparison.OrdinalIgnoreCase)).ToList();
 
-        bool Coincide(Producto p) => modelo.Length > 0 &&
-            (p.Nombre.Contains(modelo, StringComparison.OrdinalIgnoreCase)
-             || (p.DetalleProducto?.IdMarcaNavigation?.Nombre ?? "").Contains(modelo, StringComparison.OrdinalIgnoreCase));
+        var ordenados = orden switch
+        {
+            "precioDesc" => candidatos.OrderByDescending(p => p.PrecioActual),
+            "marca" => candidatos.OrderBy(p => p.DetalleProducto?.IdMarcaNavigation?.Nombre).ThenBy(p => p.PrecioActual),
+            _ => candidatos.OrderBy(p => p.PrecioActual)
+        };
 
         var agotados = Agotados(candidatos.Select(p => p.Id).ToList());
-        var lista = candidatos.OrderByDescending(Coincide).ThenBy(p => p.PrecioActual).Select(p => new
+        var lista = ordenados.Select(p => new
         {
             id = p.Id,
             nombre = p.Nombre,
@@ -106,8 +113,7 @@ public class HomeController : Controller
             img = "/images/productoos/" + (string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen),
             precio = p.PrecioActual.ToString("C0"),
             antes = p.EnPromocion ? p.PrecioVenta.ToString("C0") : null,
-            agotado = agotados.Contains(p.Id),
-            coincide = Coincide(p)
+            agotado = agotados.Contains(p.Id)
         });
         return Json(lista);
     }

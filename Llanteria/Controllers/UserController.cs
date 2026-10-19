@@ -62,14 +62,8 @@ public class UserController : Controller
         ModelState.Remove(nameof(PerfilUsuarioViewModel.Rol));
         ModelState.Remove(nameof(PerfilUsuarioViewModel.Vehiculos));
 
-        if (model.NuevaFoto != null && !model.NuevaFoto.ContentType.StartsWith("image/"))
-        {
-            ModelState.AddModelError(nameof(PerfilUsuarioViewModel.NuevaFoto), "El archivo debe ser una imagen.");
-        }
-        else if (model.NuevaFoto != null && model.NuevaFoto.Length > 3 * 1024 * 1024)
-        {
-            ModelState.AddModelError(nameof(PerfilUsuarioViewModel.NuevaFoto), "La foto no puede superar 3 MB.");
-        }
+        if (!string.IsNullOrEmpty(model.FotoRecortada) && !PerfilService.EsFotoRecortadaValida(model.FotoRecortada))
+            ModelState.AddModelError(nameof(PerfilUsuarioViewModel.FotoRecortada), "La foto no es válida. Elígela de nuevo.");
 
         if (!ModelState.IsValid)
         {

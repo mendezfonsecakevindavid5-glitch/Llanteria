@@ -1,4 +1,5 @@
-﻿using Llanteria.Data;
+using Microsoft.AspNetCore.Authorization;
+using Llanteria.Data;
 using Llanteria.Infrastructure;
 using Llanteria.Models;
 using Llanteria.Services;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Llanteria.Controllers;
 
-/// <summary>Administración de los servicios que se muestran en el sitio (solo administrador, ver RoleConvention).</summary>
+/// <summary>Administración de los servicios que se muestran en el sitio (el administrador y los editores invitados, ver RoleConvention).</summary>
 public class ServicioWebController : Controller
 {
     private const string CarpetaImagenes = "servicios";
@@ -85,7 +86,7 @@ public class ServicioWebController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpPost, ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = RolesApp.Administrador)]
     public IActionResult Delete(int id)
     {
         var s = _db.ServiciosWeb.Find(id);

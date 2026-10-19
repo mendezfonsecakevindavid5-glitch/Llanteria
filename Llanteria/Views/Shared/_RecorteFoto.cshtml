@@ -1,0 +1,19 @@
+@* Ventana para recortar la foto de perfil. La lógica está en wwwroot/js/recorte-foto.js y el estilo en recorte-foto.css. *@
+<link rel="stylesheet" href="~/css/recorte-foto.css" asp-append-version="true" />
+
+<div class="image-crop-modal-overlay" id="cropModalOverlay">
+    <div class="image-crop-modal" role="dialog" aria-modal="true" aria-label="Recortar foto de perfil">
+        <div class="crop-header-panel">
+            <div class="close-modal-icon-wrapper" id="btnCloseCropModal" role="button" tabindex="0" aria-label="Cerrar">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+        </div>
+        <div class="crop-middle-panel">
+            <canvas id="cropCanvas" width="400" height="320"></canvas>
+        </div>
+        <div class="crop-bottom-panel">
+            <span class="crop-action-text" id="btnCambiarImagen">Cambiar imagen</span>
+            <span class="crop-action-text" id="btnAceptarImagen">Aceptar</span>
+        </div>
+    </div>
+</div>

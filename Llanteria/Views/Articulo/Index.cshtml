@@ -1,4 +1,4 @@
-﻿@using Llanteria.Infrastructure
+@using Llanteria.Infrastructure
 @model Paginado<Llanteria.Models.Articulo>
 
 @{
@@ -49,7 +49,10 @@
                                 <form asp-action="CambiarPublicacion" asp-route-id="@a.Id" method="post" class="d-inline">
                                     <button class="icon-btn" type="submit" title="@(a.Publicado ? "Pasar a borrador" : "Publicar")"><i class="fa-solid @(a.Publicado ? "fa-eye-slash" : "fa-eye")"></i></button>
                                 </form>
-                                <button type="button" class="icon-btn danger" title="Eliminar" data-delete="@Url.Action("Delete", new { id = a.Id })" data-nombre="@a.Titulo"><i class="fa-solid fa-trash"></i></button>
+                                @if (User.IsInRole("Administrador"))
+                                {
+                                    <button type="button" class="icon-btn danger" title="Eliminar" data-delete="@Url.Action("Delete", new { id = a.Id })" data-nombre="@a.Titulo"><i class="fa-solid fa-trash"></i></button>
+                                }
                             </span>
                         </td>
                     </tr>
