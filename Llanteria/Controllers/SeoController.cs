@@ -18,7 +18,7 @@ public class SeoController : Controller
     {
         var sb = new StringBuilder();
         sb.AppendLine("User-agent: *");
-        foreach (var ruta in new[] { "Dashboard", "Factura", "Cliente", "Vehiculo", "Inventario", "Producto", "Marca", "Bodega", "Proveedore", "Gasto", "Empleado", "Usuario", "Log", "Reporte", "Account", "MiCuenta", "Citas", "User", "Pqrs", "OrdenTrabajo", "Pedidos", "Articulo" })
+        foreach (var ruta in new[] { "Dashboard", "Factura", "Cliente", "Vehiculo", "Inventario", "Producto", "Marca", "Bodega", "Proveedore", "Gasto", "Empleado", "Usuario", "Log", "Reporte", "Account", "MiCuenta", "Citas", "User", "Pqrs", "OrdenTrabajo", "Pedidos", "Articulo", "ServicioWeb", "Editores", "Sugerencias" })
             sb.AppendLine($"Disallow: /{ruta}");
         sb.AppendLine($"Sitemap: {Request.Scheme}://{Request.Host}/sitemap.xml");
         return Content(sb.ToString(), "text/plain", Encoding.UTF8);

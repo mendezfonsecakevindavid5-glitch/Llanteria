@@ -17,6 +17,12 @@ public partial class LlanteriaDbContext
     public virtual DbSet<OrdenTrabajo> OrdenesTrabajo { get; set; }
     public virtual DbSet<Articulo> Articulos { get; set; }
     public virtual DbSet<ServicioWeb> ServiciosWeb { get; set; }
+    public virtual DbSet<EditorContenido> EditoresContenido { get; set; }
+    public virtual DbSet<Sugerencia> Sugerencias { get; set; }
+
+    /// <summary>¿El usuario fue invitado como editor de este recurso? (El administrador no necesita invitación.)</summary>
+    public bool EsEditor(int idUsuario, string recurso)
+        => EditoresContenido.AsNoTracking().Any(e => e.IdUsuario == idUsuario && e.Recurso == recurso);
 
     /// <summary>Servicios publicados en el sitio, en el orden que definió el administrador.</summary>
     public List<ServicioViewModel> ServiciosPublicados()
@@ -38,6 +44,24 @@ public partial class LlanteriaDbContext
         modelBuilder.Entity<PerfilUsuario>().Property(e => e.Bio).HasColumnType("nvarchar(max)").Cifrada("PerfilUsuario.Bio");
         modelBuilder.Entity<PerfilUsuario>().Property(e => e.FotoCircular).Cifrada("PerfilUsuario.FotoCircular");
         modelBuilder.Entity<Usuario>().Property(e => e.MotivoSancion).HasColumnType("nvarchar(max)").Cifrada("Usuario.MotivoSancion");
+
+        modelBuilder.Entity<EditorContenido>(e =>
+        {
+            e.ToTable("EditoresContenido");
+            e.Property(x => x.Recurso).HasMaxLength(20);
+            e.HasIndex(x => new { x.IdUsuario, x.Recurso }).IsUnique();
+            e.HasOne(x => x.IdUsuarioNavigation).WithMany().HasForeignKey(x => x.IdUsuario).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Sugerencia>(e =>
+        {
+            e.ToTable("Sugerencias");
+            e.Property(x => x.Area).HasMaxLength(40);
+            e.Property(x => x.Mensaje).HasMaxLength(1000);
+            e.Property(x => x.Nombre).HasMaxLength(100);
+            e.Property(x => x.Correo).HasMaxLength(100);
+            e.Property(x => x.Estado).HasMaxLength(20).HasDefaultValue(Sugerencia.Nueva);
+        });
 
         modelBuilder.Entity<ServicioWeb>(e =>
         {

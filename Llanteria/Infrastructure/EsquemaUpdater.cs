@@ -210,6 +210,33 @@ BEGIN
     CREATE INDEX IX_PedidoItems_IdPedido ON dbo.PedidoItems(IdPedido);
 END;
 
+IF OBJECT_ID(N'dbo.EditoresContenido', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.EditoresContenido (
+        Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_EditoresContenido PRIMARY KEY,
+        IdUsuario int NOT NULL CONSTRAINT FK_EditoresContenido_Usuarios REFERENCES dbo.Usuarios(Id) ON DELETE CASCADE,
+        Recurso nvarchar(20) NOT NULL,
+        IdInvitadoPor int NOT NULL,
+        Fecha datetime NOT NULL CONSTRAINT DF_EditoresContenido_Fecha DEFAULT (GETDATE())
+    );
+    CREATE UNIQUE INDEX IX_EditoresContenido_Usuario_Recurso ON dbo.EditoresContenido(IdUsuario, Recurso);
+END;
+
+IF OBJECT_ID(N'dbo.Sugerencias', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Sugerencias (
+        Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_Sugerencias PRIMARY KEY,
+        Area nvarchar(40) NOT NULL,
+        Calificacion int NOT NULL,
+        Mensaje nvarchar(1000) NOT NULL,
+        Nombre nvarchar(100) NULL,
+        Correo nvarchar(100) NULL,
+        IdUsuario int NULL,
+        Estado nvarchar(20) NOT NULL CONSTRAINT DF_Sugerencias_Estado DEFAULT ('Nueva'),
+        Fecha datetime NOT NULL CONSTRAINT DF_Sugerencias_Fecha DEFAULT (GETDATE())
+    );
+END;
+
 IF COL_LENGTH('dbo.Citas', 'RecordatorioEnviado') IS NULL
     ALTER TABLE dbo.Citas ADD RecordatorioEnviado bit NOT NULL CONSTRAINT DF_Citas_Recordatorio DEFAULT (0);
 

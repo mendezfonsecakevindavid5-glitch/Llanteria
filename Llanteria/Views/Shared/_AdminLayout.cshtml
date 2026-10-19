@@ -1,7 +1,19 @@
+@inject Llanteria.Data.LlanteriaDbContext Db
+@using Microsoft.EntityFrameworkCore
 @{
     var ctrl = (ViewContext.RouteData.Values["controller"] as string) ?? "";
     var act = (ViewContext.RouteData.Values["action"] as string) ?? "";
     var isAdmin = User.IsInRole("Administrador");
+    var esPersonal = isAdmin || User.IsInRole("Empleado");
+    // Un usuario invitado como editor solo ve el contenido que se le compartió.
+    var recursosEditor = new HashSet<string>();
+    if (!isAdmin && int.TryParse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value, out var idUsuario))
+        recursosEditor = Db.EditoresContenido.AsNoTracking().Where(e => e.IdUsuario == idUsuario).Select(e => e.Recurso).ToHashSet();
+    bool Visible((string C, string A, string Icon, string Text, bool AdminOnly, string Group) i) =>
+        isAdmin
+        || i.C == "Articulo" && recursosEditor.Contains("Blog")
+        || i.C == "ServicioWeb" && recursosEditor.Contains("Servicios")
+        || esPersonal && !i.AdminOnly && i.C != "Articulo" && i.C != "ServicioWeb";
     var nombre = User.Identity?.Name ?? "Usuario";
 
     var items = new List<(string C, string A, string Icon, string Text, bool AdminOnly, string Group)>
@@ -24,6 +36,8 @@
         ("TipoServicio", "Index", "fa-screwdriver-wrench", "Tarifas de servicio", true, "Inventario"),
         ("ServicioWeb", "Index", "fa-wrench", "Servicios del sitio", true, "Contenido"),
         ("Articulo", "Index", "fa-newspaper", "Blog", true, "Contenido"),
+        ("Editores", "Index", "fa-user-pen", "Editores invitados", true, "Contenido"),
+        ("Sugerencias", "Index", "fa-lightbulb", "Sugerencias del sitio", true, "Contenido"),
         ("Gasto", "Index", "fa-money-bill-wave", "Gastos", true, "Administración"),
         ("CatalogoIncentivo", "Index", "fa-gift", "Incentivos", true, "Administración"),
         ("Empleado", "Index", "fa-id-card", "Empleados", true, "Administración"),
@@ -61,11 +75,11 @@
                 <button class="sidebar-toggle" type="button" id="sidebarToggle" aria-label="Contraer o expandir el menú" title="Contraer / expandir">
                     <i class="fa-solid fa-bars-staggered"></i>
                 </button>
-                <a class="sidebar-brand brand-matrix" asp-controller="Dashboard" asp-action="Index" aria-label="Llantería Valledupar, panel">Llantería<small class="ms-1">Valledupar</small></a>
+                <a class="sidebar-brand brand-matrix" asp-controller="@(esPersonal ? "Dashboard" : items.First(Visible).C)" asp-action="Index" aria-label="Llantería Valledupar, panel">Llantería<small class="ms-1">Valledupar</small></a>
             </div>
 
             <nav class="sidebar-nav">
-                @foreach (var g in items.Where(i => !i.AdminOnly || isAdmin).GroupBy(i => i.Group))
+                @foreach (var g in items.Where(Visible).GroupBy(i => i.Group))
                 {
                     <div class="sidebar-group">@g.Key</div>
                     foreach (var i in g)

@@ -1,0 +1,62 @@
+@model List<Llanteria.Models.EditorContenido>
+
+@{
+    ViewData["Title"] = "Editores invitados";
+    var recursos = (string[])ViewBag.Recursos;
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Editores invitados", "Da permiso a otros usuarios para crear y editar el blog o los servicios del sitio."))
+
+<div class="row g-3">
+    <div class="col-lg-4">
+        <div class="panel">
+            <div class="panel-head">Invitar a un usuario</div>
+            <div class="panel-body">
+                <form asp-action="Invitar" method="post">
+                    <div class="mb-3">
+                        <label class="form-label" for="username">Nombre de usuario</label>
+                        <input id="username" name="username" class="form-control" maxlength="50" required autocomplete="off" placeholder="Por ejemplo: carlos_perez" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="recurso">Contenido que podrá editar</label>
+                        <select id="recurso" name="recurso" class="form-select">
+                            @foreach (var r in recursos) { <option value="@r">@r</option> }
+                        </select>
+                    </div>
+                    <p class="small text-muted">La persona recibirá un correo con la invitación y podrá crear, editar y publicar. Eliminar sigue siendo solo del administrador.</p>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-brand">Enviar invitación</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="panel">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead><tr><th>Usuario</th><th>Contenido</th><th>Desde</th><th class="text-end">Acciones</th></tr></thead>
+                    <tbody>
+                        @foreach (var e in Model)
+                        {
+                            <tr>
+                                <td><div class="cell-title">@e.IdUsuarioNavigation.Username</div><div class="cell-sub">@e.IdUsuarioNavigation.Correo</div></td>
+                                <td><span class="tag tag-neutral">@e.Recurso</span></td>
+                                <td class="money">@e.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td class="text-end">
+                                    <form asp-action="Revocar" asp-route-id="@e.Id" method="post" class="d-inline">
+                                        <button class="icon-btn danger" type="submit" title="Quitar permiso" aria-label="Quitar permiso a @e.IdUsuarioNavigation.Username"><i class="fa-solid fa-user-minus"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.Any())
+                        {
+                            <tr><td colspan="4" class="empty-state">Todavía no has invitado a nadie.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
