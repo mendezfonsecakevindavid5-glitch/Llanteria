@@ -248,24 +248,10 @@
     </div>
 </div>
 
-<div class="image-crop-modal-overlay" id="cropModalOverlay">
-    <div class="image-crop-modal">
-        <div class="crop-header-panel">
-            <div class="close-modal-icon-wrapper" id="btnCloseCropModal">
-                <i class="fa-solid fa-xmark"></i>
-            </div>
-        </div>
-        <div class="crop-middle-panel">
-            <canvas id="cropCanvas" width="400" height="320"></canvas>
-        </div>
-        <div class="crop-bottom-panel">
-            <span class="crop-action-text" id="btnCambiarImagen">Cambiar imagen</span>
-            <span class="crop-action-text" id="btnAceptarImagen">Aceptar</span>
-        </div>
-    </div>
-</div>
+<partial name="_RecorteFoto" />
 
 @section Scripts {
+    <script src="~/js/recorte-foto.js" asp-append-version="true"></script>
     <script>
                 document.addEventListener('DOMContentLoaded', function () {
                     const etapa1 = document.getElementById('etapa1');
@@ -321,24 +307,12 @@
                     const requirementsListContainer = document.getElementById('requirementsListContainer');
                     let viewingUsernameReqs = false;
 
-                    const btnSelectFoto = document.getElementById('btnSelectFoto');
-                    const fileFotoInput = document.getElementById('fileFotoInput');
-                    const cropModalOverlay = document.getElementById('cropModalOverlay');
-                    const btnCloseCropModal = document.getElementById('btnCloseCropModal');
-                    const btnCambiarImagen = document.getElementById('btnCambiarImagen');
-                    const btnAceptarImagen = document.getElementById('btnAceptarImagen');
-                    const cropCanvas = document.getElementById('cropCanvas');
-                    const ctx = cropCanvas.getContext('2d');
                     const avatarIcon = document.getElementById('avatarIcon');
                     const avatarImgPreview = document.getElementById('avatarImgPreview');
                     const hiddenFotoBase64 = document.getElementById('hiddenFotoBase64');
 
                     let countdownInterval;
                     let currentStep = 1;
-                    let loadedImage = new Image();
-                    let imgScale = 1;
-                    let imgX = 0, imgY = 0;
-                    let isDragging = false, startX = 0, startY = 0;
 
                     const allowedEmailRegex = /^[a-zA-Z0-9._%+-]+@@(gmail|outlook|hotmail)\.[a-zA-Z]{2,}$/i;
 
@@ -535,111 +509,15 @@
                     const chkTerminos = document.getElementById('aceptaTerminosReg');
                     if (chkTerminos) chkTerminos.addEventListener('change', validarRequisitosEtapa3);
 
-                    btnSelectFoto.addEventListener('click', () => fileFotoInput.click());
-
-                    fileFotoInput.addEventListener('change', function (e) {
-                        if (e.target.files && e.target.files[0]) {
-                            const reader = new FileReader();
-                            reader.onload = function (evt) {
-                                loadedImage = new Image();
-                                loadedImage.onload = function () {
-                                    imgScale = Math.max(200 / loadedImage.width, 200 / loadedImage.height);
-                                    imgX = (cropCanvas.width - loadedImage.width * imgScale) / 2;
-                                    imgY = (cropCanvas.height - loadedImage.height * imgScale) / 2;
-                                    drawCropCanvas();
-                                    cropModalOverlay.style.display = 'flex';
-                                };
-                                loadedImage.src = evt.target.result;
-                            };
-                            reader.readAsDataURL(e.target.files[0]);
+                    RecorteFoto.iniciar({
+                        boton: '#btnSelectFoto',
+                        archivo: '#fileFotoInput',
+                        alAceptar: function (foto) {
+                            hiddenFotoBase64.value = foto;
+                            avatarImgPreview.src = foto;
+                            avatarImgPreview.style.display = 'block';
+                            avatarIcon.style.display = 'none';
                         }
-                    });
-
-                    function drawCropCanvas() {
-                        ctx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
-                        ctx.save();
-                        ctx.drawImage(loadedImage, imgX, imgY, loadedImage.width * imgScale, loadedImage.height * imgScale);
-                        ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
-                        ctx.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
-
-                        ctx.beginPath();
-                        ctx.arc(cropCanvas.width / 2, cropCanvas.height / 2, 90, 0, Math.PI * 2);
-                        ctx.clip();
-                        ctx.drawImage(loadedImage, imgX, imgY, loadedImage.width * imgScale, loadedImage.height * imgScale);
-                        ctx.restore();
-
-                        ctx.beginPath();
-                        ctx.arc(cropCanvas.width / 2, cropCanvas.height / 2, 90, 0, Math.PI * 2);
-                        ctx.strokeStyle = '#ffffff';
-                        ctx.lineWidth = 2;
-                        ctx.stroke();
-                    }
-
-                    cropCanvas.addEventListener('mousedown', (e) => {
-                        isDragging = true;
-                        startX = e.clientX - imgX;
-                        startY = e.clientY - imgY;
-                    });
-
-                    cropCanvas.addEventListener('mousemove', (e) => {
-                        if (!isDragging) return;
-                        imgX = e.clientX - startX;
-                        imgY = e.clientY - startY;
-                        drawCropCanvas();
-                    });
-
-                    window.addEventListener('mouseup', () => { isDragging = false; });
-
-                    cropCanvas.addEventListener('touchstart', (e) => {
-                        if (e.touches.length === 1) {
-                            isDragging = true;
-                            startX = e.touches[0].clientX - imgX;
-                            startY = e.touches[0].clientY - imgY;
-                        }
-                    });
-
-                    cropCanvas.addEventListener('touchmove', (e) => {
-                        if (!isDragging || e.touches.length !== 1) return;
-                        imgX = e.touches[0].clientX - startX;
-                        imgY = e.touches[0].clientY - startY;
-                        drawCropCanvas();
-                    });
-
-                    cropCanvas.addEventListener('touchend', () => { isDragging = false; });
-
-                    btnCloseCropModal.addEventListener('click', () => {
-                        cropModalOverlay.style.display = 'none';
-                        fileFotoInput.value = '';
-                    });
-
-                    btnCambiarImagen.addEventListener('click', () => {
-                        cropModalOverlay.style.display = 'none';
-                        fileFotoInput.click();
-                    });
-
-                    btnAceptarImagen.addEventListener('click', () => {
-                        const tempCanvas = document.createElement('canvas');
-                        tempCanvas.width = 200;
-                        tempCanvas.height = 200;
-                        const tempCtx = tempCanvas.getContext('2d');
-
-                        tempCtx.beginPath();
-                        tempCtx.arc(100, 100, 100, 0, Math.PI * 2);
-                        tempCtx.clip();
-
-                        const sourceX = (cropCanvas.width / 2 - 90 - imgX) / imgScale;
-                        const sourceY = (cropCanvas.height / 2 - 90 - imgY) / imgScale;
-                        const sourceSize = 180 / imgScale;
-
-                        tempCtx.drawImage(loadedImage, sourceX, sourceY, sourceSize, sourceSize, 0, 0, 200, 200);
-
-                        const base64String = tempCanvas.toDataURL('image/jpeg', 0.9);
-                        hiddenFotoBase64.value = base64String;
-                        avatarImgPreview.src = base64String;
-                        avatarImgPreview.style.display = 'block';
-                        avatarIcon.style.display = 'none';
-
-                        cropModalOverlay.style.display = 'none';
                     });
 
                     registerForm.addEventListener('submit', async function(e) {

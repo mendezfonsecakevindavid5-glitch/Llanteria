@@ -49,6 +49,17 @@ namespace Llanteria.Services
             };
         }
 
+        private const string PrefijoFoto = "data:image/jpeg;base64,";
+        private const int MaxCaracteresFoto = 400_000;
+
+        /// <summary>La foto recortada por el navegador es un JPEG pequeño en base64; cualquier otra cosa se rechaza.</summary>
+        public static bool EsFotoRecortadaValida(string? foto)
+        {
+            if (string.IsNullOrEmpty(foto) || foto.Length > MaxCaracteresFoto || !foto.StartsWith(PrefijoFoto, StringComparison.Ordinal))
+                return false;
+            return Convert.TryFromBase64String(foto[PrefijoFoto.Length..], new byte[MaxCaracteresFoto], out _);
+        }
+
         public async Task<(byte[] Datos, string Tipo)?> ObtenerFotoAsync(int usuarioId)
         {
             var perfil = await _context.Set<PerfilUsuario>().AsNoTracking().FirstOrDefaultAsync(p => p.IdUsuario == usuarioId);
@@ -134,12 +145,8 @@ namespace Llanteria.Services
                 e.Telefono = model.Telefono;
             }
 
-            if (model.NuevaFoto != null && model.NuevaFoto.Length > 0)
-            {
-                using var ms = new MemoryStream();
-                await model.NuevaFoto.CopyToAsync(ms);
-                perfil.FotoCircular = ms.ToArray();
-            }
+            if (EsFotoRecortadaValida(model.FotoRecortada))
+                perfil.FotoCircular = Convert.FromBase64String(model.FotoRecortada![PrefijoFoto.Length..]);
 
             try
             {

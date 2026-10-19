@@ -1,4 +1,5 @@
-﻿using Llanteria.Data;
+using Microsoft.AspNetCore.Authorization;
+using Llanteria.Data;
 using Llanteria.Infrastructure;
 using Llanteria.Models;
 using Llanteria.Services;
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Llanteria.Controllers;
 
-/// <summary>Administración del blog (solo administrador, ver RoleConvention).</summary>
+/// <summary>Administración del blog: el administrador y los editores que él invita (ver RoleConvention). Eliminar es solo del administrador.</summary>
 public class ArticuloController : Controller
 {
     private const string CarpetaImagenes = "blog";
@@ -119,7 +120,7 @@ public class ArticuloController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpPost, ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = RolesApp.Administrador)]
     public IActionResult Delete(int id)
     {
         var a = _db.Articulos.Find(id);

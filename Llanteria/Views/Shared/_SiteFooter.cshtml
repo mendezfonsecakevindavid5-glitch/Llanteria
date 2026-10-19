@@ -1,4 +1,4 @@
-﻿@* Pie de página compartido por el sitio público (_Layout) y el panel (_AdminLayout). *@
+@* Pie de página compartido por el sitio público (_Layout) y el panel (_AdminLayout). *@
 @inject Llanteria.Infrastructure.NegocioInfo Negocio
 @{
     // Redes: si en appsettings.json ("Negocio") no hay enlace, el ícono se muestra sin destino.
@@ -38,6 +38,7 @@
                     <li><i class="fa-solid fa-phone"></i><a href="tel:@Negocio.TelefonoLimpio">@Negocio.Telefono</a></li>
                     <li><i class="fa-solid fa-envelope"></i><span>@Negocio.Correo</span></li>
                     <li><i class="fa-solid fa-location-dot"></i><a href="@Negocio.ComoLlegar" target="_blank" rel="noopener">@Negocio.Direccion</a></li>
+                    <li><i class="fa-solid fa-lightbulb"></i><a asp-controller="Feedback" asp-action="Index">Ayúdanos a mejorar</a></li>
                 </ul>
             </div>
             <div class="col-md-4">

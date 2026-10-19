@@ -17,46 +17,66 @@
     </div>
 </section>
 
-<!-- Panel de búsqueda vertical por tipo de vehículo -->
+<!-- Buscador de llantas (como el de Michelin: tipo de vehículo y medida) -->
 <div class="container search-wrap">
-    <div class="vf-grid">
-        <section class="vf-panel" aria-labelledby="vfTitulo">
+    <section class="vf-panel" aria-labelledby="vfTitulo">
+        <div class="vf-head">
+            <h2 id="vfTitulo" class="vf-title">Busca la llanta de tu vehículo</h2>
             <div class="vf-types" id="vfTipos" data-activo="Auto" role="tablist" aria-label="Tipo de vehículo">
                 <button type="button" class="vf-type is-active" role="tab" aria-selected="true" data-tipo="Auto"><i class="fa-solid fa-car-side"></i>Autos</button>
                 <button type="button" class="vf-type" role="tab" aria-selected="false" data-tipo="Moto"><i class="fa-solid fa-motorcycle"></i>Motos</button>
                 <span class="vf-indicator" aria-hidden="true"></span>
             </div>
+        </div>
 
-            <h2 id="vfTitulo" class="vf-title">Busca la llanta de tu vehículo</h2>
-
-            <div class="vf-fields" id="vfCampos" autocomplete="off">
-                <div class="vf-field">
-                    <label for="vfModelo">Modelo / Marca<span class="req">*</span></label>
-                    <input id="vfModelo" type="text" maxlength="40" autocomplete="off" data-vf />
-                </div>
-                <div class="vf-field">
-                    <label for="vfAncho">Ancho (mm)<span class="req">*</span></label>
-                    <input id="vfAncho" type="text" inputmode="numeric" maxlength="3" autocomplete="off" list="vfAnchos" data-vf />
-                </div>
-                <div class="vf-field">
-                    <label for="vfPerfil">Perfil (%)<span class="req">*</span></label>
-                    <input id="vfPerfil" type="text" inputmode="numeric" maxlength="2" autocomplete="off" list="vfPerfiles" data-vf />
-                </div>
-                <div class="vf-field">
-                    <label for="vfDiametro">Diámetro / Rin (pulgadas)<span class="req">*</span></label>
-                    <input id="vfDiametro" type="text" inputmode="numeric" maxlength="2" autocomplete="off" list="vfDiametros" data-vf />
-                </div>
+        <div class="vf-fields" id="vfCampos" autocomplete="off">
+            <div class="vf-field">
+                <label for="vfAncho">Ancho (mm)<span class="req">*</span></label>
+                <input id="vfAncho" type="text" inputmode="numeric" maxlength="3" autocomplete="off" list="vfAnchos" data-vf />
             </div>
-            <datalist id="vfAnchos"></datalist>
-            <datalist id="vfPerfiles"></datalist>
-            <datalist id="vfDiametros"></datalist>
-
+            <div class="vf-field">
+                <label for="vfPerfil">Perfil (%)<span class="req">*</span></label>
+                <input id="vfPerfil" type="text" inputmode="numeric" maxlength="2" autocomplete="off" list="vfPerfiles" data-vf />
+            </div>
+            <div class="vf-field">
+                <label for="vfDiametro">Diámetro / Rin (pulgadas)<span class="req">*</span></label>
+                <input id="vfDiametro" type="text" inputmode="numeric" maxlength="2" autocomplete="off" list="vfDiametros" data-vf />
+            </div>
+            <div class="vf-field">
+                <label for="vfMarca">Marca de llanta</label>
+                <select id="vfMarca"><option value="">Todas las marcas</option></select>
+            </div>
+            <div class="vf-field">
+                <label for="vfOrden">Ordenar por</label>
+                <select id="vfOrden">
+                    <option value="precio">Menor precio</option>
+                    <option value="precioDesc">Mayor precio</option>
+                    <option value="marca">Marca (A-Z)</option>
+                </select>
+            </div>
             <button type="button" id="vfConsultar" class="vf-submit" disabled>Consultar</button>
-            <p class="vf-hint">La medida está en el costado de tu llanta, por ejemplo 205/55 R16.</p>
-        </section>
-        <div class="vf-image" role="img" aria-label="Vehículo en carretera"></div>
-    </div>
+        </div>
+        <datalist id="vfAnchos"></datalist>
+        <datalist id="vfPerfiles"></datalist>
+        <datalist id="vfDiametros"></datalist>
+
+        <p class="vf-hint">La medida está en el costado de tu llanta, por ejemplo 205/55 R16.</p>
+    </section>
 </div>
+
+<!-- Imagen aparte del formulario -->
+<section class="vf-foto-sec">
+    <div class="container">
+        <div class="vf-foto" role="img" aria-label="Vehículo en carretera">
+            <div class="vf-foto-texto">
+                <span class="eyebrow text-white-50">Medidas</span>
+                <h2>¿No sabes qué medida necesita tu vehículo?</h2>
+                <p>Escríbenos con la placa o el modelo y te asesoramos sin costo.</p>
+                <a asp-controller="Contacto" asp-action="Index" class="btn btn-banner-explorar">Consultar con un asesor</a>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- Resultados de la búsqueda -->
 <section id="resultadosBusqueda" class="section pb-0 d-none">
@@ -108,11 +128,12 @@
         (function () {
             var medidas = @Html.Raw(System.Text.Json.JsonSerializer.Serialize((object)ViewBag.Medidas));
             var cfg = {
-                Auto: { modelo: 'Ej. Toyota Corolla', ancho: 'Ancho en mm (ej. 205)', perfil: 'Perfil en % (ej. 55)', rin: 'Rin en pulgadas (ej. 16)', a: [135, 355], p: [25, 80], d: [13, 24] },
-                Moto: { modelo: 'Ej. Yamaha MT-03', ancho: 'Ancho en mm (ej. 120)', perfil: 'Perfil en % (ej. 70)', rin: 'Rin en pulgadas (ej. 17)', a: [60, 260], p: [30, 90], d: [10, 21] }
+                Auto: { ancho: 'Ancho en mm (ej. 205)', perfil: 'Perfil en % (ej. 55)', rin: 'Rin en pulgadas (ej. 16)', a: [135, 355], p: [25, 80], d: [13, 24] },
+                Moto: { ancho: 'Ancho en mm (ej. 120)', perfil: 'Perfil en % (ej. 70)', rin: 'Rin en pulgadas (ej. 17)', a: [60, 260], p: [30, 90], d: [10, 21] }
             };
             var tipo = 'Auto';
-            var campos = { modelo: document.getElementById('vfModelo'), ancho: document.getElementById('vfAncho'), perfil: document.getElementById('vfPerfil'), diametro: document.getElementById('vfDiametro') };
+            var campos = { ancho: document.getElementById('vfAncho'), perfil: document.getElementById('vfPerfil'), diametro: document.getElementById('vfDiametro') };
+            var marca = document.getElementById('vfMarca'), orden = document.getElementById('vfOrden');
             var boton = document.getElementById('vfConsultar');
 
             function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
@@ -125,11 +146,13 @@
             function aplicarTipo(t) {
                 tipo = t;
                 var c = cfg[t];
-                campos.modelo.placeholder = c.modelo; campos.ancho.placeholder = c.ancho;
+                campos.ancho.placeholder = c.ancho;
                 campos.perfil.placeholder = c.perfil; campos.diametro.placeholder = c.rin;
                 var m = medidas[t] || {};
                 llenarLista('vfAnchos', m.anchos); llenarLista('vfPerfiles', m.perfiles); llenarLista('vfDiametros', m.diametros);
+                marca.innerHTML = '<option value="">Todas las marcas</option>' + (m.marcas || []).map(function (x) { return '<option value="' + esc(x) + '">' + esc(x) + '</option>'; }).join('');
                 Object.keys(campos).forEach(function (k) { campos[k].value = ''; });
+                orden.value = 'precio';
                 var cont = document.getElementById('vfCampos');
                 cont.style.animation = 'none'; void cont.offsetWidth; cont.style.animation = '';
                 document.getElementById('vfTipos').dataset.activo = t;
@@ -141,14 +164,13 @@
 
             // Activa "Consultar" solo cuando todos los campos están completos.
             function validar() {
-                var ok = campos.modelo.value.trim().length >= 2 && campos.ancho.value && campos.perfil.value && campos.diametro.value;
+                var ok = campos.ancho.value && campos.perfil.value && campos.diametro.value;
                 boton.disabled = !ok;
             }
 
             ['ancho', 'perfil', 'diametro'].forEach(function (k) {
                 campos[k].addEventListener('input', function () { campos[k].value = campos[k].value.replace(/\D/g, ''); validar(); });
             });
-            campos.modelo.addEventListener('input', validar);
             document.querySelectorAll('.vf-type').forEach(function (b) { b.addEventListener('click', function () { aplicarTipo(b.dataset.tipo); }); });
 
             function tarjeta(l) {
@@ -168,7 +190,7 @@
                     Swal.fire({ icon: 'info', title: 'Revisa la medida', text: 'Para ' + (tipo === 'Moto' ? 'motos' : 'autos') + ' el ancho va de ' + c.a[0] + ' a ' + c.a[1] + ' mm, el perfil de ' + c.p[0] + ' a ' + c.p[1] + ' y el rin de ' + c.d[0] + ' a ' + c.d[1] + ' pulgadas.', confirmButtonColor: '#000' });
                     return;
                 }
-                var url = '@Url.Action("BuscarLlantas", "Home")' + '?tipo=' + encodeURIComponent(tipo) + '&modelo=' + encodeURIComponent(campos.modelo.value.trim()) +
+                var url = '@Url.Action("BuscarLlantas", "Home")' + '?tipo=' + encodeURIComponent(tipo) + '&marca=' + encodeURIComponent(marca.value) + '&orden=' + encodeURIComponent(orden.value) +
                     '&ancho=' + a + '&perfil=' + p + '&diametro=' + d;
                 try {
                     var r = await fetch(url);
@@ -188,7 +210,7 @@
                 document.getElementById('resultadosBusqueda').classList.add('d-none');
                 document.getElementById('contenedorTarjetas').innerHTML = '';
                 window.scrollTo({ top: document.querySelector('.search-wrap').offsetTop - 90, behavior: 'smooth' });
-                campos.modelo.focus();
+                campos.ancho.focus();
             });
 
             aplicarTipo('Auto');
