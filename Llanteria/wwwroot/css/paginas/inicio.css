@@ -1,4 +1,4 @@
-﻿/* Página de inicio: buscador por tipo de vehículo */
+/* Página de inicio: buscador por tipo de vehículo */
 /* Estilos del Banner principal */
 .banner-hero-matrix {
     position: relative;
@@ -39,21 +39,23 @@
     margin-top: -3rem;
 }
 
-.vf-grid {
-    display: grid;
-    grid-template-columns: minmax(320px, 430px) 1fr;
-    border-radius: 1.1rem;
-    overflow: hidden;
-    box-shadow: 0 22px 50px rgba(0, 0, 0, .3);
-    background: #0b0b0c;
-}
-
 .vf-panel {
     background: #0b0b0c;
     color: #fff;
-    padding: 1.5rem 1.75rem 1.75rem;
+    padding: 1.5rem 1.75rem 1.5rem;
+    border-radius: 1.1rem;
+    box-shadow: 0 22px 50px rgba(0, 0, 0, .3);
     display: flex;
     flex-direction: column;
+}
+
+.vf-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
 }
 
 .vf-types {
@@ -61,7 +63,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     border-bottom: 1px solid rgba(255, 255, 255, .16);
-    margin-bottom: 1.35rem;
+    width: 240px;
 }
 
 .vf-type {
@@ -107,7 +109,7 @@
 }
 
 .vf-title {
-    margin: 0 0 1rem;
+    margin: 0;
     font-size: .8rem;
     font-weight: 700;
     letter-spacing: .1em;
@@ -117,6 +119,8 @@
 
 .vf-fields {
     display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
+    align-items: end;
     gap: .85rem;
     animation: vfFade .3s ease;
 }
@@ -147,7 +151,8 @@
         margin-left: 2px;
     }
 
-.vf-field input {
+.vf-field input,
+.vf-field select {
     width: 100%;
     height: 48px;
     padding: 0 .95rem;
@@ -158,18 +163,24 @@
     font-size: 1rem;
 }
 
+    .vf-field select {
+        appearance: auto;
+    }
+
     .vf-field input::placeholder {
         color: #7b818a;
     }
 
-    .vf-field input:focus {
+    .vf-field input:focus,
+    .vf-field select:focus {
         outline: 3px solid rgba(255, 255, 255, .35);
         outline-offset: 1px;
     }
 
 .vf-submit {
-    margin: 1.4rem auto 0;
-    min-width: 62%;
+    margin: 0;
+    height: 48px;
+    min-width: 140px;
     padding: .8rem 1.5rem;
     border: 1px solid #fff;
     border-radius: .5rem;
@@ -199,22 +210,34 @@
     text-align: center;
 }
 
-.vf-image {
-    position: relative;
-    min-height: 340px;
-    background: #111 url('/images/Auto-target.jpg') center / cover no-repeat;
+.vf-foto-sec {
+    padding: 2.5rem 0 0;
 }
 
-@media (max-width: 991.98px) {
-    .vf-grid {
-        grid-template-columns: 1fr;
+.vf-foto {
+    min-height: 300px;
+    border-radius: 1.1rem;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(90deg, rgba(0, 0, 0, .78), rgba(0, 0, 0, .15)), #111 url('/images/Auto-target.jpg') center / cover no-repeat;
+}
+
+.vf-foto-texto {
+    max-width: 520px;
+    padding: 2rem;
+    color: #fff;
+}
+
+    .vf-foto-texto h2 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin: .35rem 0 .5rem;
     }
 
-    .vf-image {
-        min-height: 220px;
-        order: -1;
+    .vf-foto-texto p {
+        color: rgba(255, 255, 255, .8);
+        margin-bottom: 1.1rem;
     }
-}
 
 /* ---------- Tarjetas del inicio ---------- */
 .home-section-head {
@@ -234,3 +257,23 @@
         border-bottom: 2px solid var(--llanteria-primary);
         padding-bottom: 2px;
     }
+
+@media (max-width: 1199.98px) {
+    .vf-fields {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .vf-submit {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .vf-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .vf-types {
+        width: 100%;
+    }
+}

@@ -1,4 +1,3 @@
-﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,7 +14,8 @@ namespace Llanteria.Models
 
         public bool NotificacionesActivas { get; set; }
 
-        public IFormFile? NuevaFoto { get; set; }
+        /// <summary>Foto nueva ya recortada en el navegador (JPEG de 200x200 como data URL). Vacía si no se cambió.</summary>
+        public string? FotoRecortada { get; set; }
 
         public string? FotoBase64 { get; set; }
 

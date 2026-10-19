@@ -1,4 +1,4 @@
-﻿@model List<Llanteria.Models.ServicioWeb>
+@model List<Llanteria.Models.ServicioWeb>
 
 @{
     ViewData["Title"] = "Servicios del sitio";
@@ -30,7 +30,10 @@
                                 <form asp-action="CambiarPublicacion" asp-route-id="@s.Id" method="post" class="d-inline">
                                     <button class="icon-btn" type="submit" title="@(s.Publicado ? "Ocultar" : "Mostrar")"><i class="fa-solid @(s.Publicado ? "fa-eye-slash" : "fa-eye")"></i></button>
                                 </form>
-                                <button type="button" class="icon-btn danger" title="Eliminar" data-delete="@Url.Action("Delete", new { id = s.Id })" data-nombre="@s.Titulo"><i class="fa-solid fa-trash"></i></button>
+                                @if (User.IsInRole("Administrador"))
+                                {
+                                    <button type="button" class="icon-btn danger" title="Eliminar" data-delete="@Url.Action("Delete", new { id = s.Id })" data-nombre="@s.Titulo"><i class="fa-solid fa-trash"></i></button>
+                                }
                             </span>
                         </td>
                     </tr>

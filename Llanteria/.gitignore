@@ -336,7 +336,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# --- Carpeta privada (secretos, clave de cifrado, llaves de cookies) ---
-Privado/*
-!Privado/LEEME.txt
-!Privado/appsettings.ejemplo.json
+# --- Carpeta privada (secretos, clave de cifrado, llaves de cookies). TODO su contenido queda fuera de Git, sin excepciones:
+# ni siquiera un "appsettings.ejemplo.json" debe subirse, porque es fácil copiarlo con datos reales por error (ya pasó una vez). ---
+Privado/

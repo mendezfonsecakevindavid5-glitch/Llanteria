@@ -25,19 +25,21 @@
             <div class="perfil-card">
                 <div class="perfil-card-head">Datos personales</div>
                 <div class="perfil-card-body">
-                    <form asp-controller="User" asp-action="ActualizarPerfil" method="post" enctype="multipart/form-data">
+                    <form asp-controller="User" asp-action="ActualizarPerfil" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
                         <input type="hidden" asp-for="Id" />
                         <input type="hidden" asp-for="TemaPreferencia" />
 
-                        <div class="d-flex align-items-center gap-3 mb-3">
-                            <img id="previewFoto" class="perfil-foto" alt="Foto"
-                                 src="@(string.IsNullOrEmpty(Model.FotoBase64) ? Url.Content("~/images/productoos/default-producto.png") : Model.FotoBase64)" />
-                            <div class="flex-grow-1">
-                                <label asp-for="NuevaFoto" class="form-label">Foto</label>
-                                <input asp-for="NuevaFoto" type="file" class="form-control" accept="image/*" data-preview="#previewFoto" />
-                                <span asp-validation-for="NuevaFoto" class="text-danger small"></span>
-                            </div>
+                        <div class="perfil-foto-bloque">
+                            <button type="button" class="perfil-foto-btn" id="btnFotoPerfil" aria-label="Cambiar foto de perfil" title="Cambiar foto de perfil">
+                                <img id="previewFoto" class="perfil-foto" alt="Tu foto de perfil"
+                                     src="@(string.IsNullOrEmpty(Model.FotoBase64) ? Url.Content("~/images/productoos/default-producto.png") : Model.FotoBase64)" />
+                                <span class="perfil-foto-camara"><i class="fa-solid fa-camera"></i></span>
+                            </button>
+                            <input type="file" id="archivoFoto" accept="image/*" class="d-none" />
+                            <input asp-for="FotoRecortada" type="hidden" />
+                            <div class="form-text">Haz clic en la foto para cambiarla.</div>
+                            <span asp-validation-for="FotoRecortada" class="text-danger small"></span>
                         </div>
 
                         <div class="row g-3">
@@ -117,15 +119,19 @@
     </div>
 }
 
+<partial name="_RecorteFoto" />
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/recorte-foto.js" asp-append-version="true"></script>
     <script>
-        // Vista previa de la foto elegida (el sitio público no carga admin.js).
-        document.querySelectorAll('input[type=file][data-preview]').forEach(function (inp) {
-            inp.addEventListener('change', function () {
-                var img = document.querySelector(inp.dataset.preview);
-                if (img && inp.files && inp.files[0]) img.src = URL.createObjectURL(inp.files[0]);
-            });
+        RecorteFoto.iniciar({
+            boton: '#btnFotoPerfil',
+            archivo: '#archivoFoto',
+            alAceptar: function (foto) {
+                document.getElementById('FotoRecortada').value = foto;
+                document.getElementById('previewFoto').src = foto;
+            }
         });
     </script>
 }

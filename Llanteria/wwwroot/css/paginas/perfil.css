@@ -1,4 +1,4 @@
-﻿/* Perfil de usuario */
+/* Perfil de usuario */
 .perfil-wrap {
     max-width: 1040px;
     margin: 0 auto;
@@ -49,9 +49,52 @@
     margin: .25rem 0 1.5rem;
 }
 
+.perfil-foto-bloque {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.perfil-foto-btn {
+    position: relative;
+    padding: 0;
+    border: 0;
+    background: none;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-bottom: .5rem;
+}
+
+    .perfil-foto-btn:focus-visible {
+        outline: 3px solid var(--llanteria-primary, #C92B0A);
+        outline-offset: 3px;
+    }
+
+.perfil-foto-camara {
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--llanteria-primary, #C92B0A);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    font-size: .85rem;
+}
+
+.perfil-foto-btn:hover .perfil-foto {
+    filter: brightness(.88);
+}
+
 .perfil-foto {
-    width: 84px;
-    height: 84px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid #e3e6ea;
