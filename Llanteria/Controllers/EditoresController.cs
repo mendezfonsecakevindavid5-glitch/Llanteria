@@ -80,7 +80,8 @@ public class EditoresController : Controller
         if (usuario == null) return $"No existe ningún usuario llamado «{username}». Revisa que esté bien escrito.";
         if (usuario.Estado != "Activo") return $"El usuario {usuario.Username} no está activo.";
         if (usuario.IdRol == AdminRolId()) return $"{usuario.Username} ya es administrador y tiene acceso completo.";
-        if (_db.EditoresContenido.Any(e => e.IdUsuario == usuario.Id && e.Recurso == recurso))
+        var idUsuarioEncontrado = usuario.Id;
+        if (_db.EditoresContenido.Any(e => e.IdUsuario == idUsuarioEncontrado && e.Recurso == recurso))
             return $"{usuario.Username} ya es editor de «{recurso}».";
         return null;
     }
