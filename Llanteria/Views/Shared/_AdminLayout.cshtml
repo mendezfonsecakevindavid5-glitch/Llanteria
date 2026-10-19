@@ -7,8 +7,12 @@
     var esPersonal = isAdmin || User.IsInRole("Empleado");
     // Un usuario invitado como editor solo ve el contenido que se le compartió.
     var recursosEditor = new HashSet<string>();
-    if (!isAdmin && int.TryParse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value, out var idUsuario))
+    var idUsuarioTexto = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var idUsuarioValido = int.TryParse(idUsuarioTexto, out var idUsuario);
+    if (!isAdmin && idUsuarioValido)
+    {
         recursosEditor = Db.EditoresContenido.AsNoTracking().Where(e => e.IdUsuario == idUsuario).Select(e => e.Recurso).ToHashSet();
+    }
     bool Visible((string C, string A, string Icon, string Text, bool AdminOnly, string Group) i) =>
         isAdmin
         || i.C == "Articulo" && recursosEditor.Contains("Blog")
