@@ -10,6 +10,12 @@ public partial class Empleado
 
     public byte[]? Foto { get; set; }
 
+    /// <summary>Foto del documento de identidad (cédula). Se guarda cifrada, igual que la foto del rostro.</summary>
+    public byte[]? FotoDocumento { get; set; }
+
+    /// <summary>Foto del rostro del empleado para verificación, distinta de la foto de perfil (<see cref="Foto"/>).</summary>
+    public byte[]? FotoRostro { get; set; }
+
     [Required(ErrorMessage = "Los nombres son obligatorios.")]
 
     [StringLength(100)]

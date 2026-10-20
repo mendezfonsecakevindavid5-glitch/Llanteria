@@ -22,7 +22,13 @@
                 </div>
                 <div class="col-md-6">
                     <label asp-for="IdRol" class="form-label">Rol</label>
-                    <select asp-for="IdRol" class="form-select" asp-items="ViewBag.IdRol"><option value="0">Seleccione…</option></select>
+                    <select asp-for="IdRol" class="form-select" asp-items="ViewBag.IdRol">
+                        @if (!(bool)ViewBag.EsSecretario) { <option value="0">Seleccione…</option> }
+                    </select>
+                    @if ((bool)ViewBag.EsSecretario)
+                    {
+                        <div class="form-text">Como secretario, solo puedes crear usuarios con rol Empleado.</div>
+                    }
                     <span asp-validation-for="IdRol" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">

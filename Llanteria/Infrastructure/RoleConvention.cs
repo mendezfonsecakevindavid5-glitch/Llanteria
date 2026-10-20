@@ -11,15 +11,33 @@ namespace Llanteria.Infrastructure;
 /// </summary>
 public class RoleConvention : IControllerModelConvention
 {
-    private static readonly HashSet<string> SoloAdmin = new()
+    /// <summary>Qué roles pueden entrar a cada controlador del panel. El que no aparece aquí es público
+    /// (sitio) o tiene su propia regla (ver <see cref="ContenidoCompartido"/>).</summary>
+    private static readonly Dictionary<string, string[]> RolesPorControlador = new()
     {
-        "Producto", "Marca", "Bodega", "Proveedore", "Gasto", "Empleado",
-        "Usuario", "Log", "TipoServicio", "CatalogoIncentivo", "Editores", "Sugerencias"
-    };
+        ["Producto"] = new[] { RolesApp.Administrador },
+        ["Marca"] = new[] { RolesApp.Administrador },
+        ["Bodega"] = new[] { RolesApp.Administrador },
+        ["Proveedore"] = new[] { RolesApp.Administrador },
+        ["Gasto"] = new[] { RolesApp.Administrador },
+        ["Empleado"] = new[] { RolesApp.Administrador },
+        ["Log"] = new[] { RolesApp.Administrador },
+        ["TipoServicio"] = new[] { RolesApp.Administrador },
+        ["CatalogoIncentivo"] = new[] { RolesApp.Administrador },
+        ["Editores"] = new[] { RolesApp.Administrador },
+        ["Sugerencias"] = new[] { RolesApp.Administrador },
 
-    private static readonly HashSet<string> Personal = new()
-    {
-        "Dashboard", "Factura", "Cliente", "Vehiculo", "Inventario", "Pqrs", "OrdenTrabajo"
+        ["Dashboard"] = new[] { RolesApp.Administrador, RolesApp.Secretario, RolesApp.Empleado },
+        ["Factura"] = new[] { RolesApp.Administrador, RolesApp.Empleado },
+        ["Cliente"] = new[] { RolesApp.Administrador, RolesApp.Empleado },
+        ["Vehiculo"] = new[] { RolesApp.Administrador, RolesApp.Empleado },
+        ["Inventario"] = new[] { RolesApp.Administrador, RolesApp.Empleado },
+        ["Pqrs"] = new[] { RolesApp.Administrador, RolesApp.Empleado },
+        ["OrdenTrabajo"] = new[] { RolesApp.Administrador, RolesApp.Empleado },
+
+        // El secretario entra al panel y puede crear usuarios, pero solo con rol "Empleado"
+        // (esa restricción de qué rol puede asignar va en UsuarioController, no aquí).
+        ["Usuario"] = new[] { RolesApp.Administrador, RolesApp.Secretario }
     };
 
     // Contenido que el administrador puede compartir con editores invitados (ver EditorContenido).
@@ -37,14 +55,7 @@ public class RoleConvention : IControllerModelConvention
             return;
         }
 
-        string[]? roles = null;
-
-        if (SoloAdmin.Contains(controller.ControllerName))
-            roles = new[] { "Administrador" };
-        else if (Personal.Contains(controller.ControllerName))
-            roles = new[] { "Administrador", "Empleado" };
-
-        if (roles == null) return;
+        if (!RolesPorControlador.TryGetValue(controller.ControllerName, out var roles)) return;
 
         var policy = new AuthorizationPolicyBuilder().RequireRole(roles).Build();
         controller.Filters.Add(new AuthorizeFilter(policy));

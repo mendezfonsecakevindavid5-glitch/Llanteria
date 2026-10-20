@@ -38,6 +38,24 @@ public class EmpleadoController : Controller
         return File(e.Foto, "image/jpeg");
     }
 
+    /// <summary>Foto del documento de identidad, solo para administración (datos sensibles).</summary>
+    [HttpGet]
+    public IActionResult FotoDocumento(int id)
+    {
+        var e = ser.GetEmpleado(id);
+        if (e?.FotoDocumento == null || e.FotoDocumento.Length == 0) return NotFound();
+        return File(e.FotoDocumento, "image/jpeg");
+    }
+
+    /// <summary>Foto del rostro del empleado, solo para administración (datos sensibles).</summary>
+    [HttpGet]
+    public IActionResult FotoRostro(int id)
+    {
+        var e = ser.GetEmpleado(id);
+        if (e?.FotoRostro == null || e.FotoRostro.Length == 0) return NotFound();
+        return File(e.FotoRostro, "image/jpeg");
+    }
+
     public IActionResult Create()
     {
         CargarCombos();
@@ -45,16 +63,20 @@ public class EmpleadoController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public IActionResult Create(Empleado e, IFormFile? fotoArchivo)
+    public IActionResult Create(Empleado e, IFormFile? fotoArchivo, IFormFile? documentoArchivo, IFormFile? rostroArchivo)
     {
-        ValidarFoto(fotoArchivo);
+        ValidarFoto(fotoArchivo, nameof(fotoArchivo));
+        ValidarFoto(documentoArchivo, nameof(documentoArchivo));
+        ValidarFoto(rostroArchivo, nameof(rostroArchivo));
         if (!ModelState.IsValid)
         {
             CargarCombos(e);
             return View(e);
         }
 
-        if (fotoArchivo != null) e.Foto = ProcesarFoto(fotoArchivo);
+        if (fotoArchivo != null) e.Foto = ProcesarFoto(fotoArchivo, cuadrada: true);
+        if (documentoArchivo != null) e.FotoDocumento = ProcesarFoto(documentoArchivo, cuadrada: false);
+        if (rostroArchivo != null) e.FotoRostro = ProcesarFoto(rostroArchivo, cuadrada: true);
         ser.AddEmpleado(e);
         TempData["Exito"] = "Empleado registrado.";
         return RedirectToAction(nameof(Index));
@@ -69,15 +91,19 @@ public class EmpleadoController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public IActionResult Edit(int id, Empleado e, IFormFile? fotoArchivo)
+    public IActionResult Edit(int id, Empleado e, IFormFile? fotoArchivo, IFormFile? documentoArchivo, IFormFile? rostroArchivo)
     {
-        ValidarFoto(fotoArchivo);
+        ValidarFoto(fotoArchivo, nameof(fotoArchivo));
+        ValidarFoto(documentoArchivo, nameof(documentoArchivo));
+        ValidarFoto(rostroArchivo, nameof(rostroArchivo));
         var original = ser.GetEmpleado(id);
         if (original == null) return NotFound();
         if (!ModelState.IsValid)
         {
             e.Id = id;
             e.Foto = original.Foto;
+            e.FotoDocumento = original.FotoDocumento;
+            e.FotoRostro = original.FotoRostro;
             CargarCombos(e);
             return View(e);
         }
@@ -95,7 +121,9 @@ public class EmpleadoController : Controller
         original.IdSexo = e.IdSexo;
         original.FechaNacimiento = e.FechaNacimiento;
         original.IdRol = e.IdRol;
-        if (fotoArchivo != null) original.Foto = ProcesarFoto(fotoArchivo);
+        if (fotoArchivo != null) original.Foto = ProcesarFoto(fotoArchivo, cuadrada: true);
+        if (documentoArchivo != null) original.FotoDocumento = ProcesarFoto(documentoArchivo, cuadrada: false);
+        if (rostroArchivo != null) original.FotoRostro = ProcesarFoto(rostroArchivo, cuadrada: true);
 
         ser.UpdateEmpleado(original);
         TempData["Exito"] = "Empleado actualizado.";
@@ -110,20 +138,25 @@ public class EmpleadoController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private void ValidarFoto(IFormFile? archivo)
+    private void ValidarFoto(IFormFile? archivo, string campo)
     {
         if (archivo == null) return;
         if (!Extensiones.Contains(Path.GetExtension(archivo.FileName).ToLowerInvariant()))
-            ModelState.AddModelError("fotoArchivo", "El archivo debe ser una imagen.");
+            ModelState.AddModelError(campo, "El archivo debe ser una imagen.");
         else if (archivo.Length > 5 * 1024 * 1024)
-            ModelState.AddModelError("fotoArchivo", "La foto no puede superar 5 MB.");
+            ModelState.AddModelError(campo, "La foto no puede superar 5 MB.");
     }
 
-    private static byte[] ProcesarFoto(IFormFile foto)
+    /// <summary>Redimensiona la foto antes de guardarla. "cuadrada" recorta a 400x400 (foto de perfil o rostro);
+    /// si no, solo limita el ancho máximo sin recortar (foto del documento, para no perder información).</summary>
+    private static byte[] ProcesarFoto(IFormFile foto, bool cuadrada)
     {
         using var stream = foto.OpenReadStream();
         using var imagen = Image.Load(stream);
-        imagen.Mutate(x => x.Resize(new ResizeOptions { Size = new Size(400, 400), Mode = ResizeMode.Crop }));
+        var opciones = cuadrada
+            ? new ResizeOptions { Size = new Size(400, 400), Mode = ResizeMode.Crop }
+            : new ResizeOptions { Size = new Size(1200, 0), Mode = ResizeMode.Max };
+        imagen.Mutate(x => x.Resize(opciones));
         using var salida = new MemoryStream();
         imagen.Save(salida, new JpegEncoder { Quality = 80 });
         return salida.ToArray();

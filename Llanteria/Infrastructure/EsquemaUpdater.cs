@@ -237,6 +237,12 @@ BEGIN
     );
 END;
 
+IF COL_LENGTH('dbo.Empleados', 'FotoDocumento') IS NULL
+    ALTER TABLE dbo.Empleados ADD FotoDocumento varbinary(max) NULL;
+
+IF COL_LENGTH('dbo.Empleados', 'FotoRostro') IS NULL
+    ALTER TABLE dbo.Empleados ADD FotoRostro varbinary(max) NULL;
+
 IF COL_LENGTH('dbo.Citas', 'RecordatorioEnviado') IS NULL
     ALTER TABLE dbo.Citas ADD RecordatorioEnviado bit NOT NULL CONSTRAINT DF_Citas_Recordatorio DEFAULT (0);
 

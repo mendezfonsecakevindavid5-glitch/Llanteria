@@ -4,6 +4,7 @@
     var ctrl = (ViewContext.RouteData.Values["controller"] as string) ?? "";
     var act = (ViewContext.RouteData.Values["action"] as string) ?? "";
     var isAdmin = User.IsInRole("Administrador");
+    var esSecretario = User.IsInRole("Secretario");
     var esPersonal = isAdmin || User.IsInRole("Empleado");
     // Un usuario invitado como editor solo ve el contenido que se le compartió.
     var recursosEditor = new HashSet<string>();
@@ -17,7 +18,9 @@
         isAdmin
         || i.C == "Articulo" && recursosEditor.Contains("Blog")
         || i.C == "ServicioWeb" && recursosEditor.Contains("Servicios")
-        || esPersonal && !i.AdminOnly && i.C != "Articulo" && i.C != "ServicioWeb";
+        || esPersonal && !i.AdminOnly && i.C != "Articulo" && i.C != "ServicioWeb"
+        // El secretario solo ve el panel y la gestión de usuarios (puede crear usuarios con rol Empleado).
+        || esSecretario && (i.C == "Dashboard" || i.C == "Usuario");
     var nombre = User.Identity?.Name ?? "Usuario";
 
     var items = new List<(string C, string A, string Icon, string Text, bool AdminOnly, string Group)>

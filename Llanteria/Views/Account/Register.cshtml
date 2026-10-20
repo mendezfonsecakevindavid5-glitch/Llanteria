@@ -118,7 +118,7 @@
                     <div id="generalErrorStage1" class="custom-error-text text-center mb-3"></div>
 
                     <div class="d-grid mt-4 mb-4">
-                        <button type="submit" id="btnSiguiente" class="btn btn-register-submit text-uppercase rounded-3 btn-muted">
+                        <button type="submit" id="btnSiguiente" class="btn btn-register-submit text-uppercase btn-muted">
                             Siguiente
                         </button>
                     </div>
@@ -160,7 +160,7 @@
                     <div id="generalErrorStage2" class="custom-error-text text-center mb-3"></div>
 
                     <div class="d-grid mt-5">
-                        <button type="button" id="btnVerificar" class="btn btn-register-submit text-uppercase rounded-3 btn-muted">
+                        <button type="button" id="btnVerificar" class="btn btn-register-submit text-uppercase btn-muted">
                             Verificar
                         </button>
                     </div>
@@ -216,7 +216,7 @@
                         <button type="button" id="btnTabPass" class="req-tab-btn active-req">Contraseña</button>
                     </div>
 
-                    <div class="mb-4" style="background-color: transparent; font-size: 0.85rem;">
+                    <div class="req-box mb-4" style="font-size: 0.85rem;">
                         <span class="fw-bold d-block mb-2 text-dark" id="requirementsHeaderTitle">La contraseña debe cumplir con:</span>
                         <ul id="requirementsListContainer" class="mb-0 ps-0" style="line-height: 1.6; list-style: none;">
                             <li id="req-len" class="req-item"><i class="fa-solid fa-circle me-2 req-icon" style="font-size: 0.4rem;"></i><span>Mínimo 15 caracteres en total</span></li>
@@ -238,7 +238,7 @@
                     <div id="generalErrorStage3" class="custom-error-text text-center mb-3"></div>
 
                     <div class="d-grid mt-4">
-                        <button type="submit" id="btnFinalizarRegister" class="btn btn-register-submit text-uppercase rounded-3 btn-muted" disabled>
+                        <button type="submit" id="btnFinalizarRegister" class="btn btn-register-submit text-uppercase btn-muted" disabled>
                             Finalizar
                         </button>
                     </div>
@@ -557,7 +557,7 @@
                                     currentStep = 2;
                                     etapa1.style.display = 'none';
                                     etapa2.style.display = 'block';
-                                    iniciarTemporizador(60);
+                                    iniciarTemporizador(80);
                                     otpInputs[0].focus();
                                 } else {
                                     errorStage1.innerHTML = "&bull; " + (resData.message || "Error al enviar correo.");
@@ -716,7 +716,7 @@
                                     nombre: nombresInput.value.trim() + ' ' + apellidosInput.value.trim()
                                 })
                             });
-                            iniciarTemporizador(60);
+                            iniciarTemporizador(80);
                         } catch (err) {
                             errorStage2.innerHTML = "&bull; No se pudo reenviar el código.";
                             errorStage2.style.display = 'block';

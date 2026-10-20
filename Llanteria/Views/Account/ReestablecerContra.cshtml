@@ -28,7 +28,7 @@
                     <div id="generalErrorStage1" class="custom-error-text text-center mb-3"></div>
 
                     <div class="d-grid mt-4 mb-4">
-                        <button type="submit" id="btnSiguiente" class="btn btn-register-submit text-uppercase rounded-3 btn-muted">
+                        <button type="submit" id="btnSiguiente" class="btn btn-register-submit text-uppercase btn-muted">
                             Siguiente
                         </button>
                     </div>
@@ -69,7 +69,7 @@
                     <div id="generalErrorStage2" class="custom-error-text text-center mb-3"></div>
 
                     <div class="d-grid mt-5">
-                        <button type="button" id="btnVerificar" class="btn btn-register-submit text-uppercase rounded-3 btn-muted">
+                        <button type="button" id="btnVerificar" class="btn btn-register-submit text-uppercase btn-muted">
                             Verificar
                         </button>
                     </div>
@@ -113,7 +113,7 @@
                     <div id="generalErrorStage3" class="custom-error-text text-center mb-3"></div>
 
                     <div class="d-grid mt-4">
-                        <button type="submit" id="btnFinalizar" class="btn btn-register-submit text-uppercase rounded-3 btn-muted">
+                        <button type="submit" id="btnFinalizar" class="btn btn-register-submit text-uppercase btn-muted">
                             Finalizar
                         </button>
                     </div>
@@ -277,7 +277,7 @@
                             currentStep = 2;
                             etapa1.style.display = 'none';
                             etapa2.style.display = 'block';
-                            iniciarTemporizador(60);
+                            iniciarTemporizador(80);
                             otpInputs[0].focus();
                         } else {
                             errorStage1.innerHTML = "&bull; " + (resData.message || "El correo electrónico no se encuentra registrado.");
