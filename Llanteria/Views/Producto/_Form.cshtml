@@ -4,7 +4,17 @@
     var categorias = new[] { "Llantas", "Aceites", "Baterías", "Accesorios", "Otros" };
 }
 
-<form asp-action="@ViewData["Accion"]" asp-route-id="@(Model.Id == 0 ? null : Model.Id.ToString())" method="post" enctype="multipart/form-data">
+<div class="panel-importar-excel mb-3">
+    <div class="d-flex flex-wrap align-items-center gap-2">
+        <label for="archivoExcelProducto" class="form-label mb-0 small fw-semibold">Cargar datos desde Excel (.xlsx)</label>
+        <input type="file" id="archivoExcelProducto" accept=".xlsx" class="form-control form-control-sm" style="max-width: 280px" />
+        <button type="button" id="btnImportarExcel" class="btn btn-line btn-sm">Llenar formulario</button>
+    </div>
+    <div class="form-text">La primera fila debe tener los títulos de columna (Nombre, Categoria, Proveedor, Bodega, PrecioCompra, PrecioVenta, Marca, Ancho, Perfil, Diametro, Viscosidad, TipoAceite...) y los datos en la fila 2.</div>
+    <div id="avisosImportarExcel" class="small mt-1"></div>
+</div>
+
+<form asp-action="@ViewData["Accion"]" asp-route-id="@(Model.Id == 0 ? null : Model.Id.ToString())" method="post" enctype="multipart/form-data" id="formProducto">
     <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
     <input type="hidden" asp-for="Id" />
 
@@ -100,3 +110,5 @@
         <button type="submit" class="btn btn-brand">Guardar</button>
     </div>
 </form>
+
+<script src="~/js/producto-importar.js"></script>

@@ -3,6 +3,7 @@ using Llanteria.Infrastructure;
 using Llanteria.Models;
 using Llanteria.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 
@@ -44,6 +45,11 @@ public class UsuarioController : Controller
         if (!string.IsNullOrEmpty(u.PasswordHash) && u.PasswordHash.Length < 6)
             ModelState.AddModelError(nameof(Usuario.PasswordHash), "La contraseña debe tener al menos 6 caracteres.");
 
+        // El secretario puede crear usuarios, pero solo con rol "Empleado" (el administrador puede asignar cualquiera).
+        // Se valida aquí también por si alguien manipula el formulario: el combo ya viene limitado en CargarCombos.
+        if (!User.IsInRole(RolesApp.Administrador) && u.IdRol != IdRolEmpleado())
+            ModelState.AddModelError(nameof(Usuario.IdRol), "Solo puedes crear usuarios con rol Empleado.");
+
         if (!ModelState.IsValid)
         {
             CargarCombos(u);
@@ -60,6 +66,8 @@ public class UsuarioController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    // Editar rol/estado de un usuario existente es solo del administrador: el secretario únicamente crea usuarios nuevos.
+    [Authorize(Roles = RolesApp.Administrador)]
     public IActionResult Edit(int id)
     {
         var u = ser.GetUsuario(id);
@@ -68,7 +76,7 @@ public class UsuarioController : Controller
         return View(u);
     }
 
-    [HttpPost, ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = RolesApp.Administrador)]
     public IActionResult Edit(int id, int idRol, string estado, string? motivoSancion, DateTime? fechaFinBaneo)
     {
         var u = ser.GetUsuario(id);
@@ -101,7 +109,7 @@ public class UsuarioController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpPost, ValidateAntiForgeryToken]
+    [HttpPost, ValidateAntiForgeryToken, Authorize(Roles = RolesApp.Administrador)]
     public IActionResult Delete(int id)
     {
         if (User.FindFirst(ClaimTypes.NameIdentifier)?.Value == id.ToString())
@@ -114,6 +122,8 @@ public class UsuarioController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    private int IdRolEmpleado() => rolSer.GetRoles().Where(r => r.NombreRol == RolesApp.Empleado).Select(r => r.Id).FirstOrDefault();
+
     private void CargarCombos(Usuario? u = null)
     {
         var conUsuario = _db.Usuarios.Select(x => x.IdEmpleado).ToList();
@@ -122,7 +132,13 @@ public class UsuarioController : Controller
             .Select(e => new { e.Id, Nombre = $"{e.Nombres} {e.Apellidos} ({e.NumeroDocumento})" })
             .ToList();
         ViewBag.IdEmpleado = new SelectList(libres, "Id", "Nombre", u?.IdEmpleado);
-        ViewBag.IdRol = new SelectList(rolSer.GetRoles().Where(r => r.NombreRol != "Cliente" && r.NombreRol != RolesApp.UsuarioRegistrado), "Id", "NombreRol", u?.IdRol);
+
+        // El secretario solo ve y puede elegir el rol "Empleado"; el administrador ve todos (menos Cliente y Usuario registrado).
+        var roles = User.IsInRole(RolesApp.Administrador)
+            ? rolSer.GetRoles().Where(r => r.NombreRol != RolesApp.Cliente && r.NombreRol != RolesApp.UsuarioRegistrado)
+            : rolSer.GetRoles().Where(r => r.NombreRol == RolesApp.Empleado);
+        ViewBag.IdRol = new SelectList(roles, "Id", "NombreRol", u?.IdRol ?? IdRolEmpleado());
         ViewBag.Estados = new SelectList(Estados, u?.Estado ?? "Activo");
+        ViewBag.EsSecretario = !User.IsInRole(RolesApp.Administrador);
     }
 }

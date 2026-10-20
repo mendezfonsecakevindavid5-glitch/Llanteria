@@ -15,6 +15,26 @@
             </div>
         </div>
 
+        <div class="col-12"><div class="form-section">Documentos (uso interno, no se muestran en el sitio)</div></div>
+        <div class="col-md-6 d-flex align-items-center gap-3">
+            <img id="previewDocumento" class="file-preview" alt="Documento"
+                 src="@(Model.Id > 0 && Model.FotoDocumento != null ? Url.Action("FotoDocumento", new { id = Model.Id }) : Url.Content("~/images/productoos/default-producto.png"))" />
+            <div class="flex-grow-1">
+                <label class="form-label" for="documentoArchivo">Foto del documento (cédula)</label>
+                <input id="documentoArchivo" name="documentoArchivo" type="file" class="form-control" accept="image/*" data-preview="#previewDocumento" />
+                <span class="text-danger small">@Html.ValidationMessage("documentoArchivo")</span>
+            </div>
+        </div>
+        <div class="col-md-6 d-flex align-items-center gap-3">
+            <img id="previewRostro" class="file-preview" alt="Rostro"
+                 src="@(Model.Id > 0 && Model.FotoRostro != null ? Url.Action("FotoRostro", new { id = Model.Id }) : Url.Content("~/images/productoos/default-producto.png"))" />
+            <div class="flex-grow-1">
+                <label class="form-label" for="rostroArchivo">Foto del rostro</label>
+                <input id="rostroArchivo" name="rostroArchivo" type="file" class="form-control" accept="image/*" data-preview="#previewRostro" />
+                <span class="text-danger small">@Html.ValidationMessage("rostroArchivo")</span>
+            </div>
+        </div>
+
         <div class="col-12"><div class="form-section">Datos personales</div></div>
         <div class="col-md-6">
             <label asp-for="Nombres" class="form-label">Nombres</label>

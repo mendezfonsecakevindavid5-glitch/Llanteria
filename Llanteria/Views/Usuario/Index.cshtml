@@ -36,12 +36,15 @@
                         </td>
                         <td>@(u.UltimaConexion?.ToString("dd/MM/yyyy HH:mm") ?? "Nunca")</td>
                         <td class="text-end">
-                            <span class="row-actions">
-                                <a asp-action="Edit" asp-route-id="@u.Id" class="icon-btn" title="Editar"><i class="fa-solid fa-pen"></i></a>
-                                <button type="button" class="icon-btn danger" title="Eliminar"
-                                        data-delete="@Url.Action("Delete", new { id = u.Id })" data-nombre="@u.Username"
-                                        data-aviso="Se perderá el acceso de este usuario."><i class="fa-solid fa-trash"></i></button>
-                            </span>
+                            @if (User.IsInRole("Administrador"))
+                            {
+                                <span class="row-actions">
+                                    <a asp-action="Edit" asp-route-id="@u.Id" class="icon-btn" title="Editar"><i class="fa-solid fa-pen"></i></a>
+                                    <button type="button" class="icon-btn danger" title="Eliminar"
+                                            data-delete="@Url.Action("Delete", new { id = u.Id })" data-nombre="@u.Username"
+                                            data-aviso="Se perderá el acceso de este usuario."><i class="fa-solid fa-trash"></i></button>
+                                </span>
+                            }
                         </td>
                     </tr>
                 }

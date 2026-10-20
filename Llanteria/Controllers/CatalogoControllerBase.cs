@@ -29,7 +29,9 @@ public abstract class CatalogoControllerBase : Controller
 
         var vm = new CatalogoViewModel
         {
-            Ancho = Limpio(ancho), Perfil = Limpio(perfil), Diametro = Limpio(diametro),
+            Ancho = Limpio(ancho),
+            Perfil = Limpio(perfil),
+            Diametro = Limpio(diametro),
             Marcas = (marca ?? Array.Empty<string>()).Where(m => !string.IsNullOrWhiteSpace(m)).Select(m => m.Trim()).Distinct().ToArray(),
             PrecioMin = min is > 0 ? min : null,
             PrecioMax = max is > 0 ? max : null,

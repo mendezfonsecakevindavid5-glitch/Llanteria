@@ -1,4 +1,4 @@
-﻿namespace Llanteria.Infrastructure;
+namespace Llanteria.Infrastructure;
 
 /// <summary>
 /// Nombres de rol. "Usuario registrado" es el rol por defecto de quien se registra (solo ve su perfil).
@@ -8,6 +8,8 @@
 public static class RolesApp
 {
     public const string Administrador = "Administrador";
+    /// <summary>Como el administrador, puede crear usuarios, pero solo con rol "Empleado" (ver UsuarioController).</summary>
+    public const string Secretario = "Secretario";
     public const string Empleado = "Empleado";
     public const string Cliente = "Cliente";
     public const string UsuarioRegistrado = "Usuario registrado";
@@ -20,7 +22,7 @@ public static class RolesApp
     }
 
     public static bool EsPersonal(System.Security.Claims.ClaimsPrincipal user)
-        => user.IsInRole(Administrador) || user.IsInRole(Empleado);
+        => user.IsInRole(Administrador) || user.IsInRole(Secretario) || user.IsInRole(Empleado);
 
     /// <summary>
     /// Toda solicitud sin sesión recibe el rol "Usuario no registrado". La identidad se crea SIN tipo de autenticación,

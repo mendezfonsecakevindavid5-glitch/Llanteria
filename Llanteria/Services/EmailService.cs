@@ -78,25 +78,10 @@ namespace Llanteria.Services
             return sb.ToString();
         }
 
+        /// <summary>Correo del código OTP (login, registro y recuperación de contraseña). Mensaje corto, en negro, sin adornos.</summary>
         public async Task<bool> EnviarTokenRecuperacionAsync(string destinatarioEmail, string otp)
         {
-            // Plantilla de correo simplificada, moderna y profesional
-            var cuerpo = $@"
-            <div style='font-family: -apple-system, BlinkMacSystemFont, ""Segoe UI"", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f5f7; padding: 40px 0;'>
-                <div style='max-width: 480px; margin: 0 auto; background: #ffffff; border-radius: 8px; border: 1px solid #e1e4e8; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);'>
-                    <div style='background-color: #C92B0A; padding: 22px; text-align: center;'>
-                        <h2 style='color: #ffffff; margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 0.5px;'>LLANTERÍA VALLEDUPAR</h2>
-                    </div>
-                    <div style='padding: 32px 24px; text-align: center;'>
-                        <p style='font-size: 15px; color: #2d3748; margin-top: 0; margin-bottom: 20px;'>Tu código de verificación es:</p>
-                        <div style='background-color: #f8f9fa; border: 1px dashed #cbd5e0; border-radius: 6px; padding: 14px; margin-bottom: 24px;'>
-                            <span style='font-size: 30px; font-weight: 800; letter-spacing: 6px; color: #1a202c;'>{otp}</span>
-                        </div>
-                        <p style='font-size: 13px; color: #718096; margin: 0; line-height: 1.5;'>Este código expirará en 10 minutos.<br>Si no solicitaste este código, puedes ignorar este mensaje.</p>
-                    </div>
-                </div>
-            </div>";
-
+            var cuerpo = $"<p style='font-family:Arial,sans-serif;font-size:15px;color:#000;margin:0'>Código de verificación: <strong>{WebUtility.HtmlEncode(otp)}</strong>. No compartir.</p>";
             return await EnviarCorreoAsync(destinatarioEmail, "Usuario", "Código de verificación - Llantería Valledupar", cuerpo);
         }
     }

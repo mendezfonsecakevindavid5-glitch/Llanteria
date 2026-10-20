@@ -130,7 +130,12 @@ public class FacturaController : Controller
 
         var vm = new FacturaFormViewModel
         {
-            Id = f.Id, Fecha = f.Fecha, IdCliente = f.IdCliente, Iva = f.Iva, RteFte = f.RteFte, Observaciones = f.Observaciones,
+            Id = f.Id,
+            Fecha = f.Fecha,
+            IdCliente = f.IdCliente,
+            Iva = f.Iva,
+            RteFte = f.RteFte,
+            Observaciones = f.Observaciones,
             Lineas = f.DetalleFacturas.Select(d => new LineaFacturaVM
             {
                 Tipo = d.IdProducto.HasValue ? "P" : "S",
@@ -229,8 +234,12 @@ public class FacturaController : Controller
                 if (s == null) { ModelState.AddModelError("", "Hay un servicio que ya no existe."); continue; }
                 detalles.Add(new DetalleFactura
                 {
-                    IdServicio = s.Id, CodigoItem = $"S-{s.Id}", Descripción = s.NombreServicio,
-                    Cantidad = l.Cantidad, ValorUnitario = l.ValorUnitario, Subtotal = l.Cantidad * l.ValorUnitario
+                    IdServicio = s.Id,
+                    CodigoItem = $"S-{s.Id}",
+                    Descripción = s.NombreServicio,
+                    Cantidad = l.Cantidad,
+                    ValorUnitario = l.ValorUnitario,
+                    Subtotal = l.Cantidad * l.ValorUnitario
                 });
             }
             else
@@ -241,8 +250,12 @@ public class FacturaController : Controller
                 if (error != null) { ModelState.AddModelError("", error); continue; }
                 detalles.Add(new DetalleFactura
                 {
-                    IdProducto = p.Id, CodigoItem = $"P-{p.Id}", Descripción = p.Nombre,
-                    Cantidad = l.Cantidad, ValorUnitario = l.ValorUnitario, Subtotal = l.Cantidad * l.ValorUnitario
+                    IdProducto = p.Id,
+                    CodigoItem = $"P-{p.Id}",
+                    Descripción = p.Nombre,
+                    Cantidad = l.Cantidad,
+                    ValorUnitario = l.ValorUnitario,
+                    Subtotal = l.Cantidad * l.ValorUnitario
                 });
             }
         }

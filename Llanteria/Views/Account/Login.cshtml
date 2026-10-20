@@ -47,7 +47,7 @@
                 }
 
                 <div class="d-grid mt-4">
-                    <button type="button" id="btnStage1" class="btn btn-login-submit text-uppercase rounded-3 btn-muted">
+                    <button type="button" id="btnStage1" class="btn btn-login-submit text-uppercase btn-muted">
                         Ingresar
                     </button>
                 </div>
@@ -92,7 +92,7 @@
                 <div id="clientErrorStage2" class="custom-error-text text-center mb-3" style="display: none;"></div>
 
                 <div class="d-grid mt-5">
-                    <button type="button" id="btnVerify" class="btn btn-login-submit text-uppercase rounded-3 btn-muted">
+                    <button type="button" id="btnVerify" class="btn btn-login-submit text-uppercase btn-muted">
                         Verificar
                     </button>
                 </div>
@@ -184,7 +184,7 @@
                         stage1.style.display = 'none';
                         stage2.style.display = 'block';
                         formTitle.textContent = 'Verificación de Código';
-                        iniciarTemporizador(120);
+                        iniciarTemporizador(80);
                         otpInputs[0].focus();
                     } else {
                         clientErrorStage1.innerHTML = '&bull; ' + (res.message || 'Credenciales incorrectas');
@@ -286,7 +286,7 @@
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: new URLSearchParams({ username: currentUsername })
                     });
-                    iniciarTemporizador(120);
+                    iniciarTemporizador(80);
                 } catch (err) {
                     clientErrorStage2.innerHTML = '&bull; No se pudo reenviar el código';
                     clientErrorStage2.style.display = 'block';
