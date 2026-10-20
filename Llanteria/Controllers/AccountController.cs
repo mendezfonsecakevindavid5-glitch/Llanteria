@@ -353,6 +353,10 @@ public class AccountController : Controller
 
         LimpiarCodigo(Registro);
 
+        // Inicia sesión de una vez: no tiene sentido pedirle al usuario que vuelva a loguearse
+        // justo después de crear la cuenta. El header queda actualizado desde la siguiente petición.
+        await IniciarSesion(ClaimsDe(nuevoUsuario, RolesApp.UsuarioRegistrado));
+
         if (EsAjax())
             return Json(new { success = true, redirectUrl = Url.Action(nameof(Welcome)) });
 

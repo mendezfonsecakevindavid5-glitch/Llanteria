@@ -66,10 +66,10 @@
     min-width: 190px;
     padding: .4rem;
     background: #FFFFFF;
-    border: 1.5px solid var(--avatar-accent);
-    border-radius: .6rem;
+    border: 1px solid var(--line, #e3ddd4);
+    border-radius: .5rem;
     box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
-    z-index: 1200;
+    z-index: 9999;
 }
 
     .avatar-panel[hidden] {
@@ -80,13 +80,13 @@
     .avatar-panel::before {
         content: "";
         position: absolute;
-        top: -8px;
+        top: -7px;
         left: 50%;
         width: 14px;
         height: 14px;
         background: #FFFFFF;
-        border-top: 1.5px solid var(--avatar-accent);
-        border-left: 1.5px solid var(--avatar-accent);
+        border-top: 1px solid var(--line, #e3ddd4);
+        border-left: 1px solid var(--line, #e3ddd4);
         transform: translateX(-50%) rotate(45deg);
     }
 

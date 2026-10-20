@@ -13,9 +13,6 @@
 <section class="banner-hero-matrix">
     <div class="container">
         <div class="banner-content-box">
-            <span class="eyebrow text-white-50">Valledupar, Cesar</span>
-            <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -0.5px; text-shadow: 2px 2px 8px rgba(0,0,0,0.7);">Explora y encuentra la llanta que deseas</h1>
-            <p class="lead mb-4 text-white-75" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">Llantas, aceites y el mejor mantenimiento automotriz para tu vehículo en Valledupar.</p>
             <a asp-controller="Llantas" asp-action="Index" class="btn btn-banner-explorar">Explorar</a>
         </div>
     </div>
@@ -27,15 +24,11 @@
         <div class="vb" id="vbSlider" role="region" aria-roledescription="carrusel" aria-label="Autos y motocicletas">
             <div class="vb-slide is-active" data-tipo="Auto" style="@(imgAuto != null ? $"--vb-img:url({imgAuto})" : "")">
                 <div class="vb-texto">
-                    <h2><strong>Llantas para tu auto,</strong><span>agarre y confort en cada viaje</span></h2>
-                    <p>Encuentra la medida exacta para tu automóvil, camioneta o SUV y recibe asesoría en tienda.</p>
                     <a asp-controller="Llantas" asp-action="Index" asp-route-tipo="Auto" class="vb-btn">Explorar</a>
                 </div>
             </div>
             <div class="vb-slide" data-tipo="Moto" aria-hidden="true" style="@(imgMoto != null ? $"--vb-img:url({imgMoto})" : "")">
                 <div class="vb-texto">
-                    <h2><strong>Llantas para tu moto,</strong><span>control y adherencia en cada curva</span></h2>
-                    <p>Llantas para motocicleta de calle y de trabajo, con la medida y el rin que tu moto necesita.</p>
                     <a asp-controller="Llantas" asp-action="Index" asp-route-tipo="Moto" class="vb-btn" tabindex="-1">Explorar</a>
                 </div>
             </div>

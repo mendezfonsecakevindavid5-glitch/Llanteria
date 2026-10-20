@@ -25,6 +25,117 @@ public static class DatosIniciales
         CorregirRolDeClientesAntiguos(db);
         SembrarBlog(db);
         SembrarServicios(db);
+        SembrarAdministrador(db);
+        SembrarCatalogoDemo(db);
+    }
+
+    /// <summary>
+    /// Productos de ejemplo (llantas, aceites, baterías) solo para tener algo con qué probar la búsqueda
+    /// y los filtros mientras se cargan los productos reales. Solo se ejecuta si no hay ningún producto todavía.
+    /// </summary>
+    private static void SembrarCatalogoDemo(LlanteriaDbContext db)
+    {
+        if (db.Productos.Any()) return;
+
+        var proveedor = db.Proveedores.FirstOrDefault();
+        if (proveedor == null)
+        {
+            proveedor = new Proveedore { NombreEmpresa = "Distribuidora Valledupar S.A.S.", Contacto = "Ventas", Telefono = "3000000000" };
+            db.Proveedores.Add(proveedor);
+        }
+
+        var bodega = db.Bodegas.FirstOrDefault();
+        if (bodega == null)
+        {
+            bodega = new Bodega { NombreBodega = "Bodega Principal", Ubicacion = "Valledupar", CapacidadMaxima = 1000 };
+            db.Bodegas.Add(bodega);
+        }
+
+        var nombresMarca = new[] { "Michelin", "Pirelli", "Bridgestone", "Goodyear", "Mobil", "Castrol", "Varta" };
+        var marcas = nombresMarca.ToDictionary(n => n, n => db.Marcas.FirstOrDefault(m => m.Nombre == n));
+        foreach (var n in nombresMarca)
+            if (marcas[n] == null) { marcas[n] = new Marca { Nombre = n }; db.Marcas.Add(marcas[n]!); }
+
+        db.SaveChanges(); // para tener los Id antes de armar los productos
+
+        Producto Llanta(string nombre, string marca, string ancho, string perfil, string diametro, string tipoVehiculo, decimal compra, decimal venta) => new()
+        {
+            Nombre = nombre,
+            Categoria = "Llantas",
+            Descripcion = $"Llanta {ancho}/{perfil} R{diametro}.",
+            PrecioCompra = compra,
+            PrecioVenta = venta,
+            IdProveedor = proveedor.Id,
+            IdBodega = bodega.Id,
+            DetalleProducto = new DetalleProducto { IdMarca = marcas[marca]!.Id, Ancho = ancho, Perfil = perfil, Diametro = diametro, TipoVehiculo = tipoVehiculo }
+        };
+
+        Producto Aceite(string nombre, string marca, string viscosidad, string tipo, decimal compra, decimal venta) => new()
+        {
+            Nombre = nombre,
+            Categoria = "Aceites",
+            Descripcion = $"Aceite {tipo.ToLowerInvariant()} {viscosidad}.",
+            PrecioCompra = compra,
+            PrecioVenta = venta,
+            IdProveedor = proveedor.Id,
+            IdBodega = bodega.Id,
+            DetalleProducto = new DetalleProducto { IdMarca = marcas[marca]!.Id, Viscosidad = viscosidad, TipoAceite = tipo }
+        };
+
+        Producto Bateria(string nombre, string marca, decimal compra, decimal venta) => new()
+        {
+            Nombre = nombre,
+            Categoria = "Baterías",
+            Descripcion = "Batería para automóvil.",
+            PrecioCompra = compra,
+            PrecioVenta = venta,
+            IdProveedor = proveedor.Id,
+            IdBodega = bodega.Id,
+            DetalleProducto = new DetalleProducto { IdMarca = marcas[marca]!.Id }
+        };
+
+        db.Productos.AddRange(
+            Llanta("Michelin Energy XM2", "Michelin", "185", "65", "15", TiposVehiculo.Auto, 180000, 260000),
+            Llanta("Pirelli Cinturato P1", "Pirelli", "195", "55", "16", TiposVehiculo.Auto, 210000, 295000),
+            Llanta("Bridgestone Turanza T005", "Bridgestone", "205", "55", "16", TiposVehiculo.Auto, 230000, 320000),
+            Llanta("Goodyear Assurance", "Goodyear", "175", "70", "13", TiposVehiculo.Auto, 150000, 215000),
+            Llanta("Pirelli Angel GT", "Pirelli", "110", "70", "17", TiposVehiculo.Moto, 160000, 230000),
+            Aceite("Mobil Super 20W-50", "Mobil", "20W-50", "Mineral", 28000, 42000),
+            Aceite("Mobil 1 5W-30", "Mobil", "5W-30", "Sintético", 55000, 79000),
+            Aceite("Castrol GTX 15W-40", "Castrol", "15W-40", "Semisintético", 32000, 47000),
+            Aceite("Castrol Edge 5W-40", "Castrol", "5W-40", "Sintético", 58000, 84000),
+            Bateria("Varta Blue Dynamic 34R", "Varta", 240000, 340000),
+            Bateria("Varta Silver Dynamic 47R", "Varta", 310000, 430000)
+        );
+        db.SaveChanges();
+    }
+
+    /// <summary>
+    /// Crea un administrador inicial solo si ese correo todavía no tiene cuenta (no toca nada si ya existe).
+    /// La contraseña queda documentada aquí mismo porque, una vez guardada, el hash no se puede revertir:
+    /// si se pierde, hay que restablecerla por el flujo normal de "Olvidé mi contraseña".
+    /// </summary>
+    private static void SembrarAdministrador(LlanteriaDbContext db)
+    {
+        const string correo = "lsantiagolgame@gmail.com";
+        const string username = "lsantiagolgame";
+        const string passwordInicial = "Ta#Llanteria2026$18"; // Cámbiala después de iniciar sesión por primera vez.
+
+        if (db.Usuarios.Any(u => u.Correo == correo)) return;
+
+        var idAdmin = db.Roles.Where(r => r.NombreRol == RolesApp.Administrador).Select(r => r.Id).FirstOrDefault();
+        if (idAdmin == 0) return;
+
+        db.Usuarios.Add(new Usuario
+        {
+            Username = username,
+            Correo = correo,
+            PasswordHash = Llanteria.Infrastructure.Claves.Hash(passwordInicial),
+            IdRol = idAdmin,
+            Estado = "Activo",
+            FechaCreacion = DateTime.Now
+        });
+        db.SaveChanges();
     }
 
     /// <summary>
