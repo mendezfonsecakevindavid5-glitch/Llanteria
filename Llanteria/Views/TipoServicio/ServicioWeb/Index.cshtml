@@ -1,0 +1,48 @@
+@model List<Llanteria.Models.ServicioWeb>
+
+@{
+    ViewData["Title"] = "Servicios del sitio";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Servicios del sitio", "Los servicios que ven los clientes en el inicio y en su página de detalle.", BotonTexto: "Nuevo servicio", BotonAction: "Create", BotonController: "ServicioWeb"))
+
+<div class="panel">
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr><th>Orden</th><th>Servicio</th><th>Precio</th><th>Estado</th><th class="text-end">Acciones</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr>
+                        <td class="money">@s.Orden</td>
+                        <td>
+                            <div class="cell-title"><i class="fa-solid @s.Icono me-2 text-muted"></i>@s.Titulo</div>
+                            <div class="cell-sub">/Servicios/@s.Slug@(s.EsDomicilio ? " · A domicilio" : "")</div>
+                        </td>
+                        <td class="money">@s.Precio</td>
+                        <td><span class="tag @(s.Publicado ? "tag-ok" : "tag-neutral")">@(s.Publicado ? "Visible" : "Oculto")</span></td>
+                        <td class="text-end">
+                            <span class="row-actions">
+                                <a class="icon-btn" title="Ver en el sitio" target="_blank" rel="noopener" asp-controller="Servicios" asp-action="Detalle" asp-route-slug="@s.Slug"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                                <a class="icon-btn" title="Editar" asp-action="Edit" asp-route-id="@s.Id"><i class="fa-solid fa-pen"></i></a>
+                                <form asp-action="CambiarPublicacion" asp-route-id="@s.Id" method="post" class="d-inline">
+                                    <button class="icon-btn" type="submit" title="@(s.Publicado ? "Ocultar" : "Mostrar")"><i class="fa-solid @(s.Publicado ? "fa-eye-slash" : "fa-eye")"></i></button>
+                                </form>
+                                @if (User.IsInRole("Administrador"))
+                                {
+                                    <button type="button" class="icon-btn danger" title="Eliminar" data-delete="@Url.Action("Delete", new { id = s.Id })" data-nombre="@s.Titulo"><i class="fa-solid fa-trash"></i></button>
+                                }
+                            </span>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="5" class="empty-state">Todavía no hay servicios. Crea el primero con «Nuevo servicio».</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

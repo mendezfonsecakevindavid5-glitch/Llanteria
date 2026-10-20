@@ -1,0 +1,18 @@
+@model Llanteria.Models.Cliente
+
+@{
+    ViewData["Title"] = "Editar cliente";
+    ViewData["Accion"] = "Edit";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Editar cliente", "Actualiza los datos de contacto del cliente.", "Cliente", "Index"))
+
+<div class="panel panel-medium">
+    <div class="panel-body">
+        <partial name="_Form" model="Model" />
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

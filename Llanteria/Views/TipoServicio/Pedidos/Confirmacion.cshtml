@@ -1,0 +1,91 @@
+@model Llanteria.Models.Pedido
+@inject Llanteria.Infrastructure.NegocioInfo Negocio
+@inject Llanteria.Infrastructure.PagoInfo Pago
+@{
+    ViewData["Title"] = "Pedido recibido";
+}
+
+<div class="container tc-wrap" style="max-width: 900px;">
+    <div class="text-center mb-4">
+        <div class="tc-ok"><i class="fa-solid fa-check"></i></div>
+        <h1 class="h3 fw-bold">¡Recibimos tu pedido!</h1>
+        <p class="text-muted mb-1">Tu número de pedido es</p>
+        <div class="h4 tc-num text-llanteria-primary">@Model.Numero</div>
+        <p class="small text-muted">Guárdalo: lo necesitas para cualquier consulta. También te enviamos un correo a @Model.Correo.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="tc-panel h-100">
+                <div class="tc-panel-head">Cómo pagar</div>
+                <div class="tc-panel-body">
+                    @if (Model.MetodoPago == Llanteria.Models.Pedido.Efectivo)
+                    {
+                        <p class="mb-2"><strong>Pago en efectivo</strong></p>
+                        <p class="small text-muted mb-0">Pagas al recibir tu pedido o al recogerlo en el taller. Un asesor te llamará para coordinar la entrega.</p>
+                    }
+                    else
+                    {
+                        <p class="mb-2"><strong>Pago por transferencia: @Model.Total.ToString("C0")</strong></p>
+                        @if (Pago.HayCuenta)
+                        {
+                            <dl class="row small mb-2">
+                                @if (!string.IsNullOrWhiteSpace(Pago.Titular)) { <dt class="col-5">Titular</dt><dd class="col-7">@Pago.Titular</dd> }
+                                @if (!string.IsNullOrWhiteSpace(Pago.Nit)) { <dt class="col-5">NIT</dt><dd class="col-7">@Pago.Nit</dd> }
+                                @if (!string.IsNullOrWhiteSpace(Pago.NumeroCuenta)) { <dt class="col-5">@Pago.Banco · @Pago.TipoCuenta</dt><dd class="col-7">@Pago.NumeroCuenta</dd> }
+                                @if (!string.IsNullOrWhiteSpace(Pago.Nequi)) { <dt class="col-5">Nequi / Daviplata</dt><dd class="col-7">@Pago.Nequi</dd> }
+                            </dl>
+                        }
+                        else
+                        {
+                            <p class="small text-muted">Un asesor te enviará los datos de pago por WhatsApp o correo.</p>
+                        }
+                        <a class="btn btn-outline-llanteria-primary btn-sm" target="_blank" rel="noopener"
+                           href="@Negocio.LinkWhatsApp($"Hola, adjunto el comprobante del pedido {Model.Numero}.")">
+                            <i class="fa-brands fa-whatsapp me-1"></i>Enviar comprobante
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="tc-panel h-100">
+                <div class="tc-panel-head">Entrega</div>
+                <div class="tc-panel-body small">
+                    <div class="fw-bold">@Model.NombreCompleto</div>
+                    <div>@Model.Direccion@(string.IsNullOrEmpty(Model.Complemento) ? "" : ", " + Model.Complemento)</div>
+                    <div>@Model.Ciudad, @Model.Departamento, @Model.Pais</div>
+                    <div>Código postal: @Model.CodigoPostal</div>
+                    <div class="mt-2">@Model.Telefono · @Model.Correo</div>
+                    <div class="mt-2"><span class="badge text-bg-secondary">@Model.Estado</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="tc-panel">
+                <div class="tc-panel-head">Detalle del pedido</div>
+                <div class="tc-panel-body">
+                    @foreach (var i in Model.Items)
+                    {
+                        <div class="tc-row"><span>@i.Cantidad × @i.Descripcion</span><span>@i.Subtotal.ToString("C0")</span></div>
+                    }
+                    <hr />
+                    <div class="tc-row"><span>Subtotal</span><span>@Model.Subtotal.ToString("C0")</span></div>
+                    @if (Model.Descuento > 0)
+                    {
+                        <div class="tc-row desc"><span>Descuento @(Model.CodigoCupon)</span><span>− @Model.Descuento.ToString("C0")</span></div>
+                    }
+                    <div class="tc-row muted"><span>Base gravable</span><span>@Model.BaseGravable.ToString("C0")</span></div>
+                    <div class="tc-row muted"><span>IVA</span><span>@Model.Iva.ToString("C0")</span></div>
+                    <div class="tc-row muted"><span>Envío</span><span>Se confirma según destino</span></div>
+                    <div class="tc-row total"><span>Total</span><span>@Model.Total.ToString("C0")</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-hyper-action">Volver al inicio</a>
+    </div>
+</div>

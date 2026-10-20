@@ -1,0 +1,178 @@
+@using Llanteria.Infrastructure
+@model Llanteria.Models.CheckoutViewModel
+@{
+    ViewData["Title"] = "Finalizar compra";
+    var r = (ResumenCompra)ViewBag.Resumen;
+}
+
+<div class="container tc-wrap">
+    <header class="page-head">
+        <nav class="cat-crumbs" aria-label="Ruta"><a asp-controller="Home" asp-action="Index">Inicio</a><span>/</span><a asp-controller="Carrito" asp-action="Index">Carrito</a><span>/</span>Finalizar compra</nav>
+        <h1>Finalizar compra</h1>
+        <p>Los campos con <span class="text-danger">*</span> son obligatorios.</p>
+    </header>
+
+    <form asp-action="Checkout" method="post" id="formCheckout">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger small"></div>
+
+                <div class="tc-panel mb-4">
+                    <div class="tc-panel-head"><span class="tc-step">1</span>Datos del comprador</div>
+                    <div class="tc-panel-body row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Nombres" class="form-label">Nombres <span class="text-danger">*</span></label>
+                            <input asp-for="Nombres" class="form-control" maxlength="60" autocomplete="given-name" required />
+                            <span asp-validation-for="Nombres" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Apellidos" class="form-label">Apellidos <span class="text-danger">*</span></label>
+                            <input asp-for="Apellidos" class="form-control" maxlength="60" autocomplete="family-name" required />
+                            <span asp-validation-for="Apellidos" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="TipoDocumento" class="form-label">Tipo de documento <span class="text-danger">*</span></label>
+                            <select asp-for="TipoDocumento" class="form-select" asp-items="@(new SelectList(Llanteria.Models.CheckoutViewModel.TiposDocumento))"></select>
+                        </div>
+                        <div class="col-md-8">
+                            <label asp-for="NumeroDocumento" class="form-label">Número de documento <span class="text-danger">*</span></label>
+                            <input asp-for="NumeroDocumento" class="form-control" maxlength="20" required />
+                            <span asp-validation-for="NumeroDocumento" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-7">
+                            <label asp-for="Correo" class="form-label">Correo electrónico <span class="text-danger">*</span></label>
+                            <input asp-for="Correo" type="email" class="form-control" maxlength="100" autocomplete="email" required />
+                            <span asp-validation-for="Correo" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-5">
+                            <label asp-for="Telefono" class="form-label">Teléfono / WhatsApp <span class="text-danger">*</span></label>
+                            <input asp-for="Telefono" type="tel" class="form-control" maxlength="25" autocomplete="tel" required />
+                            <span asp-validation-for="Telefono" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tc-panel mb-4">
+                    <div class="tc-panel-head"><span class="tc-step">2</span>Dirección de entrega</div>
+                    <div class="tc-panel-body row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Pais" class="form-label">País <span class="text-danger">*</span></label>
+                            <select asp-for="Pais" class="form-select" asp-items="@(new SelectList(Llanteria.Models.CheckoutViewModel.Paises))"></select>
+                            <span asp-validation-for="Pais" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Departamento" class="form-label">Departamento / Estado <span class="text-danger">*</span></label>
+                            <input asp-for="Departamento" class="form-control" maxlength="60" placeholder="Cesar" required />
+                            <span asp-validation-for="Departamento" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Ciudad" class="form-label">Ciudad <span class="text-danger">*</span></label>
+                            <input asp-for="Ciudad" class="form-control" maxlength="60" placeholder="Valledupar" required />
+                            <span asp-validation-for="Ciudad" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="CodigoPostal" class="form-label">Código postal <span class="text-danger">*</span></label>
+                            <input asp-for="CodigoPostal" class="form-control" maxlength="12" autocomplete="postal-code" required />
+                            <span asp-validation-for="CodigoPostal" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Direccion" class="form-label">Dirección <span class="text-danger">*</span></label>
+                            <input asp-for="Direccion" class="form-control" maxlength="200" placeholder="Calle, carrera, número" autocomplete="street-address" required />
+                            <span asp-validation-for="Direccion" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Complemento" class="form-label">Apartamento, barrio o referencia (opcional)</label>
+                            <input asp-for="Complemento" class="form-control" maxlength="100" />
+                        </div>
+                        <div class="col-12 d-none" id="avisoInternacional">
+                            <div class="alert alert-light border small mb-0"><i class="fa-solid fa-earth-americas me-1"></i>Para envíos internacionales te confirmamos el costo y el tiempo de entrega antes de despachar. El pago es por transferencia.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tc-panel mb-4">
+                    <div class="tc-panel-head"><span class="tc-step">3</span>Forma de pago</div>
+                    <div class="tc-panel-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="tc-pay" id="lblEfectivo">
+                                    <input type="radio" asp-for="MetodoPago" value="Efectivo" id="pagoEfectivo" />
+                                    <span><strong><i class="fa-solid fa-money-bill-wave text-success me-1"></i>Efectivo</strong><small>Pagas al recibir tu pedido o al recogerlo en el taller (solo Colombia).</small></span>
+                                </label>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="tc-pay">
+                                    <input type="radio" asp-for="MetodoPago" value="Transferencia" id="pagoTransferencia" />
+                                    <span><strong><i class="fa-solid fa-building-columns text-primary me-1"></i>Transferencia</strong><small>Nequi, Daviplata o transferencia bancaria. Al confirmar verás los datos.</small></span>
+                                </label>
+                            </div>
+                        </div>
+                        <span asp-validation-for="MetodoPago" class="text-danger small d-block mt-2"></span>
+                        <p class="small text-muted mt-3 mb-0"><i class="fa-solid fa-lock me-1"></i>Por seguridad, este sitio no recibe números de tarjeta ni códigos CVV. Si prefieres tarjeta, puedes pagar con datáfono en el taller.</p>
+                    </div>
+                </div>
+
+                <div class="tc-panel">
+                    <div class="tc-panel-head"><span class="tc-step">4</span>Confirmación</div>
+                    <div class="tc-panel-body">
+                        <label asp-for="Notas" class="form-label">Notas del pedido (opcional)</label>
+                        <textarea asp-for="Notas" class="form-control mb-3" rows="2" maxlength="400" placeholder="Horario de entrega, indicaciones de llegada..."></textarea>
+                        <div class="form-check">
+                            <input asp-for="AceptaTerminos" class="form-check-input" required />
+                            <label asp-for="AceptaTerminos" class="form-check-label small">Acepto los <a asp-controller="Legal" asp-action="Terminos" target="_blank">términos y condiciones</a>, conozco el <a asp-controller="Legal" asp-action="Devoluciones" target="_blank">derecho de retracto</a> y autorizo el tratamiento de mis datos personales según la <a asp-controller="Legal" asp-action="Privacidad" target="_blank">política de datos</a>. <span class="text-danger">*</span></label>
+                        </div>
+                        <span asp-validation-for="AceptaTerminos" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="tc-panel tc-summary">
+                    <div class="tc-panel-head justify-content-between">Detalle de la compra <a asp-controller="Carrito" asp-action="Index" class="small fw-normal">Editar</a></div>
+                    <div class="tc-panel-body">
+                        @foreach (var l in r.Lineas)
+                        {
+                            <div class="tc-row">
+                                <span>@l.Cantidad × @l.Nombre</span>
+                                <span class="text-nowrap">@l.Subtotal.ToString("C0")</span>
+                            </div>
+                        }
+                        <hr />
+                        <div class="tc-row"><span>Subtotal</span><span>@r.Subtotal.ToString("C0")</span></div>
+                        @if (r.Descuento > 0)
+                        {
+                            <div class="tc-row desc"><span>Descuento (@r.Cupon)</span><span>− @r.Descuento.ToString("C0")</span></div>
+                        }
+                        <div class="tc-row muted"><span>Base gravable</span><span>@r.BaseGravable.ToString("C0")</span></div>
+                        <div class="tc-row muted"><span>IVA (@((ResumenCompra.TasaIva * 100).ToString("0")) %)</span><span>@r.Iva.ToString("C0")</span></div>
+                        <div class="tc-row muted"><span>Envío</span><span>Se confirma según destino</span></div>
+                        <div class="tc-row total"><span>Total</span><span>@r.Total.ToString("C0")</span></div>
+                        <button type="submit" class="btn btn-hyper-action w-100 mt-3">Confirmar pedido</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const pais = document.getElementById('Pais');
+            const efectivo = document.getElementById('pagoEfectivo');
+            const transf = document.getElementById('pagoTransferencia');
+            const etiqueta = document.getElementById('lblEfectivo');
+            const aviso = document.getElementById('avisoInternacional');
+            function sincronizar() {
+                const nacional = pais.value === 'Colombia';
+                efectivo.disabled = !nacional;
+                etiqueta.classList.toggle('is-off', !nacional);
+                aviso.classList.toggle('d-none', nacional);
+                if (!nacional && efectivo.checked) transf.checked = true;
+            }
+            pais.addEventListener('change', sincronizar);
+            sincronizar();
+        })();
+    </script>
+}

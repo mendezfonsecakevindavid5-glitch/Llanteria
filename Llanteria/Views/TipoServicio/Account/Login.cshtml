@@ -1,0 +1,298 @@
+@{
+    ViewData["Title"] = "Iniciar sesión";
+}
+
+<link rel="stylesheet" href="~/css/paginas/login.css" asp-append-version="true" />
+
+<div class="login-container-wrapper">
+    <div class="entrance-login-card">
+        <div class="header-group">
+            <h2 class="form-main-title m-0 fw-bold" id="formTitle">Iniciar sesión</h2>
+        </div>
+
+        <form id="loginForm" method="post" autocomplete="off" novalidate>
+            <!-- Campos trampa invisibles para evitar autofill del navegador -->
+            <input type="text" style="display:none" name="prevent_autofill_user" autocomplete="username" />
+            <input type="password" style="display:none" name="prevent_autofill_pass" autocomplete="current-password" />
+
+            <div id="stage1">
+                <div class="mb-4">
+                    <label class="custom-field-label">
+                        Usuario
+                        <span class="required-asterisk">*<span class="tooltip-text">Este campo es obligatorio</span></span>
+                    </label>
+                    <div class="input-wrapper">
+                        <input type="text" id="usernameInput" name="username" class="form-control custom-input validate-field-s1" placeholder="Usuario" autocomplete="off" data-lpignore="true" autocapitalize="off" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <label class="custom-field-label">
+                        Contraseña
+                        <span class="required-asterisk">*<span class="tooltip-text">Este campo es obligatorio</span></span>
+                    </label>
+                    <div class="input-wrapper">
+                        <button type="button" id="togglePasswordBtn" class="password-toggle-btn" title="Mostrar/Ocultar contraseña">
+                            <i id="eyeIcon" class="fa-regular fa-eye-slash"></i>
+                        </button>
+                        <input type="password" id="passwordInput" name="password" class="form-control custom-input custom-input-password validate-field-s1" placeholder="Contraseña" autocomplete="new-password" data-lpignore="true" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
+                    </div>
+                </div>
+
+                <div id="clientErrorStage1" class="custom-error-text text-center" style="display: none;"></div>
+
+                @if (!string.IsNullOrEmpty(ViewBag.Error))
+                {
+                    <div class="custom-error-text text-center">&bull; @ViewBag.Error</div>
+                }
+
+                <div class="d-grid mt-4">
+                    <button type="button" id="btnStage1" class="btn btn-login-submit text-uppercase btn-muted">
+                        Ingresar
+                    </button>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a asp-controller="Account" asp-action="ReestablecerContra" class="text-danger fw-bold text-decoration-none" style="font-size: 0.95rem;">
+                        Reestablecer contraseña
+                    </a>
+                    <div class="partial-divider"></div>
+                    <span class="text-muted">¿No tienes cuenta?</span>
+                    <a asp-controller="Account" asp-action="Register" class="text-danger fw-bold text-decoration-none ms-2">Regístrate aquí</a>
+                </div>
+            </div>
+
+            <div id="stage2" style="display: none;">
+                <p class="text-center text-muted mb-4" style="font-size: 0.95rem;">
+                    Ingrese el código enviado a <br/>
+                    <span class="fw-bold text-dark" id="censoredEmailDisplay"></span>
+                </p>
+
+                <div class="text-center">
+                    <div class="otp-wrapper my-4" id="otpContainer">
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                    </div>
+                    <input type="hidden" id="codeInput" name="code" />
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center my-4">
+                    <div class="timer-container m-0">
+                        <span id="timerCountdown">01:20</span>
+                    </div>
+                    <div>
+                        <span id="resendCodeBtn" class="resend-link" style="display: none;">Enviar nuevo código</span>
+                    </div>
+                </div>
+
+                <div id="clientErrorStage2" class="custom-error-text text-center mb-3" style="display: none;"></div>
+
+                <div class="d-grid mt-5">
+                    <button type="button" id="btnVerify" class="btn btn-login-submit text-uppercase btn-muted">
+                        Verificar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleBtn = document.getElementById('togglePasswordBtn');
+            const passwordInput = document.getElementById('passwordInput');
+            const eyeIcon = document.getElementById('eyeIcon');
+            const usernameInput = document.getElementById('usernameInput');
+            const btnStage1 = document.getElementById('btnStage1');
+            const clientErrorStage1 = document.getElementById('clientErrorStage1');
+            const inputsS1 = document.querySelectorAll('.validate-field-s1');
+
+            const stage1 = document.getElementById('stage1');
+            const stage2 = document.getElementById('stage2');
+            const formTitle = document.getElementById('formTitle');
+            const codeInput = document.getElementById('codeInput');
+            const btnVerify = document.getElementById('btnVerify');
+            const timerCountdown = document.getElementById('timerCountdown');
+            const resendCodeBtn = document.getElementById('resendCodeBtn');
+            const clientErrorStage2 = document.getElementById('clientErrorStage2');
+            const otpInputs = document.querySelectorAll('.otp-input');
+
+            let timerInterval = null;
+            let currentUsername = "";
+
+            document.querySelectorAll('input').forEach(inp => {
+                ['paste', 'copy', 'cut', 'drop'].forEach(ev => {
+                    inp.addEventListener(ev, e => e.preventDefault());
+                });
+            });
+
+            toggleBtn.addEventListener('click', function () {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                eyeIcon.classList.toggle('fa-eye-slash', !isPassword);
+                eyeIcon.classList.toggle('fa-eye', isPassword);
+            });
+
+            function estanLlenosS1() {
+                return Array.from(inputsS1).every(input => input.value.trim() !== '');
+            }
+
+            function actualizarEstadoBotonS1() {
+                if (estanLlenosS1()) {
+                    btnStage1.classList.remove('btn-muted');
+                    clientErrorStage1.style.display = 'none';
+                } else {
+                    btnStage1.classList.add('btn-muted');
+                }
+            }
+
+            inputsS1.forEach(input => input.addEventListener('input', actualizarEstadoBotonS1));
+            actualizarEstadoBotonS1();
+
+            btnStage1.addEventListener('click', async function (e) {
+                if (!estanLlenosS1()) {
+                    clientErrorStage1.innerHTML = '&bull; Todos los campos tienen que estar llenos';
+                    clientErrorStage1.style.display = 'block';
+                    return;
+                }
+
+                btnStage1.style.pointerEvents = 'none';
+                btnStage1.innerHTML = '<span class="wave-dot">.</span><span class="wave-dot">.</span><span class="wave-dot">.</span><span class="wave-dot">.</span>';
+
+                try {
+                    const response = await fetch('@Url.Action("IniciarAutenticacion", "Account")', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({
+                            username: usernameInput.value.trim(),
+                            password: passwordInput.value
+                        })
+                    });
+
+                    const res = await response.json();
+
+                    if (res.success) {
+                        currentUsername = usernameInput.value.trim();
+                        let textoCensurado = res.correoCensurado || currentUsername;
+                        document.getElementById('censoredEmailDisplay').textContent = textoCensurado;
+
+                        stage1.style.display = 'none';
+                        stage2.style.display = 'block';
+                        formTitle.textContent = 'Verificación de Código';
+                        iniciarTemporizador(80);
+                        otpInputs[0].focus();
+                    } else {
+                        clientErrorStage1.innerHTML = '&bull; ' + (res.message || 'Credenciales incorrectas');
+                        clientErrorStage1.style.display = 'block';
+                        btnStage1.style.pointerEvents = 'auto';
+                        btnStage1.textContent = 'INGRESAR';
+                    }
+                } catch (err) {
+                    clientErrorStage1.innerHTML = '&bull; Error en la conexión con el servidor';
+                    clientErrorStage1.style.display = 'block';
+                    btnStage1.style.pointerEvents = 'auto';
+                    btnStage1.textContent = 'INGRESAR';
+                }
+            });
+
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    if (this.value !== '' && index < otpInputs.length - 1) otpInputs[index + 1].focus();
+                    compilarToken();
+                });
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && this.value === '' && index > 0) otpInputs[index - 1].focus();
+                });
+            });
+
+            function compilarToken() {
+                let token = '';
+                otpInputs.forEach(input => token += input.value);
+                codeInput.value = token;
+                if (token.length === 6) {
+                    btnVerify.classList.remove('btn-muted');
+                    clientErrorStage2.style.display = 'none';
+                    btnVerify.click();
+                } else {
+                    btnVerify.classList.add('btn-muted');
+                }
+            }
+
+            btnVerify.addEventListener('click', async function () {
+                if (!codeInput.value || codeInput.value.length < 6) return;
+                clearInterval(timerInterval);
+
+                btnVerify.style.pointerEvents = 'none';
+                btnVerify.classList.remove('btn-incorrect');
+                btnVerify.innerHTML = '<span class="wave-dot">.</span><span class="wave-dot">.</span><span class="wave-dot">.</span><span class="wave-dot">.</span>';
+
+                try {
+                    const response = await fetch('@Url.Action("VerificarCodigoLogin", "Account")', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({ username: currentUsername, code: codeInput.value.trim() })
+                    });
+                    const res = await response.json();
+
+                    if (res.success) {
+                        btnVerify.innerHTML = '<i class="fa-solid fa-check me-2"></i>CORRECTO';
+                        setTimeout(() => { window.location.href = '@Url.Action("Index", "Home")'; }, 800);
+                    } else {
+                        btnVerify.classList.add('btn-incorrect');
+                        btnVerify.innerHTML = '<i class="fa-solid fa-xmark me-2"></i>INCORRECTO';
+                        resendCodeBtn.style.display = 'inline-block';
+                        btnVerify.style.pointerEvents = 'auto';
+                    }
+                } catch (err) {
+                    btnVerify.classList.add('btn-incorrect');
+                    btnVerify.innerHTML = '<i class="fa-solid fa-xmark me-2"></i>INCORRECTO';
+                    btnVerify.style.pointerEvents = 'auto';
+                }
+            });
+
+            function iniciarTemporizador(duracionSegundos) {
+                clearInterval(timerInterval);
+                let tiempo = duracionSegundos;
+                resendCodeBtn.style.display = 'none';
+
+                timerInterval = setInterval(() => {
+                    let minutos = Math.floor(tiempo / 60);
+                    let segundos = tiempo % 60;
+                    timerCountdown.textContent = `${minutos < 10 ? '0' + minutos : minutos}:${segundos < 10 ? '0' + segundos : segundos}`;
+                    if (--tiempo < 0) {
+                        clearInterval(timerInterval);
+                        resendCodeBtn.style.display = 'inline-block';
+                    }
+                }, 1000);
+            }
+
+            resendCodeBtn.addEventListener('click', async function () {
+                resendCodeBtn.style.display = 'none';
+                otpInputs.forEach(input => input.value = '');
+                compilarToken();
+                btnVerify.classList.remove('btn-incorrect');
+                btnVerify.classList.add('btn-muted');
+                btnVerify.textContent = 'Verificar';
+
+                try {
+                    await fetch('@Url.Action("ReenviarCodigoLogin", "Account")', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({ username: currentUsername })
+                    });
+                    iniciarTemporizador(80);
+                } catch (err) {
+                    clientErrorStage2.innerHTML = '&bull; No se pudo reenviar el código';
+                    clientErrorStage2.style.display = 'block';
+                    resendCodeBtn.style.display = 'inline-block';
+                }
+            });
+        });
+    </script>
+}

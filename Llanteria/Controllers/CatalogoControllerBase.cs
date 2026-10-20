@@ -18,7 +18,7 @@ public abstract class CatalogoControllerBase : Controller
     protected virtual bool PorMedida => false;
 
     protected CatalogoViewModel Armar(string? ancho, string? perfil, string? diametro, string[]? marca,
-        int? min, int? max, string? orden, int pagina)
+        int? min, int? max, string? orden, int pagina, string? tipo = null)
     {
         // Base: productos de la categoría. Las llantas también se reconocen por tener medida cargada.
         IQueryable<Producto> baseQ = _db.Productos.AsNoTracking()
@@ -32,6 +32,7 @@ public abstract class CatalogoControllerBase : Controller
             Ancho = Limpio(ancho),
             Perfil = Limpio(perfil),
             Diametro = Limpio(diametro),
+            Tipo = string.IsNullOrWhiteSpace(tipo) ? null : TiposVehiculo.Normalizar(tipo), // "Auto" o "Moto" (banner del inicio)
             Marcas = (marca ?? Array.Empty<string>()).Where(m => !string.IsNullOrWhiteSpace(m)).Select(m => m.Trim()).Distinct().ToArray(),
             PrecioMin = min is > 0 ? min : null,
             PrecioMax = max is > 0 ? max : null,
@@ -60,6 +61,7 @@ public abstract class CatalogoControllerBase : Controller
         if (vm.Ancho != null) q = q.Where(p => p.DetalleProducto!.Ancho == vm.Ancho);
         if (vm.Perfil != null) q = q.Where(p => p.DetalleProducto!.Perfil == vm.Perfil);
         if (vm.Diametro != null) q = q.Where(p => p.DetalleProducto!.Diametro == vm.Diametro);
+        if (vm.Tipo != null) q = q.Where(p => p.DetalleProducto!.TipoVehiculo == vm.Tipo);
         if (vm.Marcas.Length > 0)
         {
             var marcas = vm.Marcas;

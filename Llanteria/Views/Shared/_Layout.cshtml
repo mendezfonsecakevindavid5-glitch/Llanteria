@@ -7,6 +7,7 @@
     bool isInicio = isHomeIndex;
     bool isLlantas = currentController.Equals("Llantas", StringComparison.OrdinalIgnoreCase);
     bool isBaterias = currentController.Equals("Baterias", StringComparison.OrdinalIgnoreCase);
+    bool isLubricantes = currentController.Equals("Lubricantes", StringComparison.OrdinalIgnoreCase);
     bool isPromociones = currentController.Equals("Promociones", StringComparison.OrdinalIgnoreCase);
     bool isEmpresas = currentController.Equals("Empresas", StringComparison.OrdinalIgnoreCase);
     bool isBlog = currentController.Equals("Blog", StringComparison.OrdinalIgnoreCase);
@@ -30,20 +31,22 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/public.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/tienda.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nombre-proyecto.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/brand.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/avatar-menu.css" asp-append-version="true" />
 
     <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/vistas-publicas.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
     <script type="application/ld+json">@Html.Raw(Negocio.JsonLd($"{Context.Request.Scheme}://{Context.Request.Host}/"))</script>
 </head>
 <body class="public">
-    <header>
-        <nav class="navbar navbar-expand-xl site-nav michelin-nav-global @(!isHomeIndex ? "solid-bg" : "")" id="mainNavbar">
+    <header class="site-header">
+        <nav class="navbar navbar-expand-xl site-nav michelin-nav-global" id="mainNavbar">
             <div class="container-fluid header-shell">
                 <a class="navbar-brand brand-matrix" asp-controller="Home" asp-action="Index" aria-label="Llantería Valledupar, inicio">Llantería<small class="ms-1">Valledupar</small></a>
 
-                <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Menú">
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Menú">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -57,6 +60,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @(isBaterias ? "is-active" : "")" asp-controller="Baterias" asp-action="Index">Baterías</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isLubricantes ? "is-active" : "")" asp-controller="Lubricantes" asp-action="Index">Lubricantes</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @(isPromociones ? "is-active" : "")" asp-controller="Promociones" asp-action="Index">Promociones</a>
@@ -118,21 +124,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/protect-forms.js" asp-append-version="true"></script>
     <script src="~/js/avatar-menu.js" asp-append-version="true"></script>
-    <script>
-        window.addEventListener('scroll', function () {
-            const nav = document.getElementById('mainNavbar');
-            @if (isHomeIndex)
-            {
-                <text>
-                if (window.scrollY > 40) {
-                    nav.classList.add('scrolled');
-                } else {
-                    nav.classList.remove('scrolled');
-                }
-                </text>
-            }
-        });
-    </script>
     <partial name="_Alertas" />
     @await RenderSectionAsync("Scripts", required: false)
 </body>

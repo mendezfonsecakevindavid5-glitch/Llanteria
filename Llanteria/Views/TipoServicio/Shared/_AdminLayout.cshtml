@@ -1,0 +1,133 @@
+@inject Llanteria.Data.LlanteriaDbContext Db
+@using Microsoft.EntityFrameworkCore
+@{
+    var ctrl = (ViewContext.RouteData.Values["controller"] as string) ?? "";
+    var act = (ViewContext.RouteData.Values["action"] as string) ?? "";
+    var isAdmin = User.IsInRole("Administrador");
+    var esSecretario = User.IsInRole("Secretario");
+    var esPersonal = isAdmin || User.IsInRole("Empleado");
+    // Un usuario invitado como editor solo ve el contenido que se le compartió.
+    var recursosEditor = new HashSet<string>();
+    var idUsuarioTexto = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var idUsuarioValido = int.TryParse(idUsuarioTexto, out var idUsuario);
+    if (!isAdmin && idUsuarioValido)
+    {
+        recursosEditor = Db.EditoresContenido.AsNoTracking().Where(e => e.IdUsuario == idUsuario).Select(e => e.Recurso).ToHashSet();
+    }
+    bool Visible((string C, string A, string Icon, string Text, bool AdminOnly, string Group) i) =>
+        isAdmin
+        || i.C == "Articulo" && recursosEditor.Contains("Blog")
+        || i.C == "ServicioWeb" && recursosEditor.Contains("Servicios")
+        || esPersonal && !i.AdminOnly && i.C != "Articulo" && i.C != "ServicioWeb"
+        // El secretario solo ve el panel y la gestión de usuarios (puede crear usuarios con rol Empleado).
+        || esSecretario && (i.C == "Dashboard" || i.C == "Usuario");
+    var nombre = User.Identity?.Name ?? "Usuario";
+
+    var items = new List<(string C, string A, string Icon, string Text, bool AdminOnly, string Group)>
+    {
+        ("Dashboard", "Index", "fa-chart-line", "Panel", false, "General"),
+        ("Factura", "Index", "fa-file-invoice-dollar", "Ventas", false, "Operación"),
+        ("Cliente", "Index", "fa-users", "Clientes", false, "Operación"),
+        ("Cliente", "GestionPuntos", "fa-star", "Puntos de clientes", false, "Operación"),
+        ("OrdenTrabajo", "Index", "fa-clipboard-check", "Órdenes de trabajo", false, "Operación"),
+        ("Vehiculo", "Index", "fa-car", "Vehículos", false, "Operación"),
+        ("Citas", "Index", "fa-calendar-check", "Citas", false, "Operación"),
+        ("Empresas", "Solicitudes", "fa-building", "Solicitudes de empresas", false, "Operación"),
+        ("Resenias", "Index", "fa-comments", "Opiniones", false, "Operación"),
+        ("Pqrs", "Index", "fa-comment-dots", "PQRS", false, "Operación"),
+        ("Inventario", "Index", "fa-boxes-stacked", "Existencias", false, "Inventario"),
+        ("Producto", "Index", "fa-box", "Productos", true, "Inventario"),
+        ("Marca", "Index", "fa-tag", "Marcas", true, "Inventario"),
+        ("Bodega", "Index", "fa-warehouse", "Bodegas", true, "Inventario"),
+        ("Proveedore", "Index", "fa-industry", "Proveedores", true, "Inventario"),
+        ("TipoServicio", "Index", "fa-screwdriver-wrench", "Tarifas de servicio", true, "Inventario"),
+        ("ServicioWeb", "Index", "fa-wrench", "Servicios del sitio", true, "Contenido"),
+        ("Articulo", "Index", "fa-newspaper", "Blog", true, "Contenido"),
+        ("Editores", "Index", "fa-user-pen", "Editores invitados", true, "Contenido"),
+        ("Sugerencias", "Index", "fa-lightbulb", "Sugerencias del sitio", true, "Contenido"),
+        ("Gasto", "Index", "fa-money-bill-wave", "Gastos", true, "Administración"),
+        ("CatalogoIncentivo", "Index", "fa-gift", "Incentivos", true, "Administración"),
+        ("Empleado", "Index", "fa-id-card", "Empleados", true, "Administración"),
+        ("Usuario", "Index", "fa-user-gear", "Usuarios", true, "Administración"),
+        ("Log", "Index", "fa-clipboard-list", "Registro de actividad", true, "Administración"),
+    };
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Llantería Valledupar Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/nombre-proyecto.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/brand.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/avatar-menu.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin">
+    @* Sin encabezado: solo la foto de perfil (abre un modal) flotando arriba a la derecha. *@
+    <div class="admin-profile">
+        @await Component.InvokeAsync("AvatarMenu", new { tamano = 42, modal = true })
+    </div>
+
+    <button class="admin-menu-btn" type="button" id="adminMenuBtn" aria-label="Abrir menú" aria-controls="sidebar">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="admin-backdrop" id="adminBackdrop"></div>
+
+    <div class="layout">
+        <aside class="sidebar" id="sidebar" aria-label="Menú del panel">
+            <div class="sidebar-top">
+                <button class="sidebar-toggle" type="button" id="sidebarToggle" aria-label="Contraer o expandir el menú" title="Contraer / expandir">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
+                <a class="sidebar-brand brand-matrix" asp-controller="@(esPersonal ? "Dashboard" : items.First(Visible).C)" asp-action="Index" aria-label="Llantería Valledupar, panel">Llantería<small class="ms-1">Valledupar</small></a>
+            </div>
+
+            <nav class="sidebar-nav">
+                @foreach (var g in items.Where(Visible).GroupBy(i => i.Group))
+                {
+                    <div class="sidebar-group">@g.Key</div>
+                    foreach (var i in g)
+                    {
+                        var activo = ctrl == i.C && (act == i.A || (i.A == "Index" && act != "GestionPuntos"));
+                        <a class="sidebar-link @(activo ? "active" : "")" asp-controller="@i.C" asp-action="@i.A" title="@i.Text">
+                            <i class="fa-solid @i.Icon"></i><span class="sidebar-text">@i.Text</span>
+                        </a>
+                    }
+                }
+                <div class="sidebar-group">Sitio</div>
+                <a class="sidebar-link" asp-controller="Home" asp-action="Index" title="Ver página web">
+                    <i class="fa-solid fa-globe"></i><span class="sidebar-text">Ver página web</span>
+                </a>
+            </nav>
+
+            <form class="sidebar-logout" asp-controller="Account" asp-action="Logout" method="post">
+                <button type="submit" class="sidebar-link" title="Cerrar sesión">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="sidebar-text">Cerrar sesión</span>
+                </button>
+            </form>
+        </aside>
+
+        <main class="content flex-grow-1">
+            @RenderBody()
+        </main>
+    </div>
+
+    <partial name="_SiteFooter" />
+
+    <form id="delete-form" method="post" class="d-none">@Html.AntiForgeryToken()</form>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+    <script src="~/js/protect-forms.js" asp-append-version="true"></script>
+    <script src="~/js/avatar-menu.js" asp-append-version="true"></script>
+    <script src="~/js/admin-shell.js" asp-append-version="true"></script>
+    <partial name="_Alertas" />
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

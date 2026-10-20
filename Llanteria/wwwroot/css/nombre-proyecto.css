@@ -1,0 +1,21 @@
+﻿/* ==========================================================================
+   Nombre del proyecto ("Llantería Valledupar")
+   Un solo estilo para todos los sitios donde aparece: header, footer y panel.
+   Uso:  <span class="brand-matrix">Llantería<small class="ms-1">Valledupar</small></span>
+   ========================================================================== */
+.brand-matrix {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #FFFFFF;
+    font-size: 1.4rem;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, .6);
+    transition: color .3s ease;
+    cursor: default;
+    user-select: none;
+}
+
+    .brand-matrix small {
+        color: var(--llanteria-primary, #C92B0A) !important;
+    }

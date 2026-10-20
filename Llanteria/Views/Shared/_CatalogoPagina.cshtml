@@ -8,18 +8,16 @@
     var r = Model.Resultados;
 }
 
-<section class="cat-hero">
-    <div class="container">
-        <nav class="cat-crumbs" aria-label="Ruta"><a asp-controller="Home" asp-action="Index">Inicio</a><span>/</span>@titulo</nav>
+<div class="container cat-wrap">
+    <header class="page-head">
         <h1>@titulo</h1>
         <p>@intro</p>
-    </div>
-</section>
+    </header>
 
-<div class="container cat-wrap">
     <div class="row g-4">
         <aside class="col-lg-3">
             <form id="filtros" method="get" asp-controller="@controlador" asp-action="Index" class="cat-filters">
+                @if (!string.IsNullOrEmpty(Model.Tipo)) { <input type="hidden" name="tipo" value="@Model.Tipo" /> }
                 <div class="cat-filters-head">
                     <strong>Filtrar por</strong>
                     @if (Model.HayFiltros) { <a asp-controller="@controlador" asp-action="Index">Limpiar</a> }

@@ -1,5 +1,9 @@
+@inject IWebHostEnvironment Env
 @{
     ViewData["Title"] = "Inicio";
+    // Imágenes del banner de vehículos: wwwroot/images/banner-auto.* y banner-moto.* (si no existen, queda un fondo oscuro).
+    var imgAuto = Llanteria.Infrastructure.ImagenSitio.Url(Env, "banner-auto", "Auto-target");
+    var imgMoto = Llanteria.Infrastructure.ImagenSitio.Url(Env, "banner-moto", "moto");
     var logos = (List<Llanteria.Models.MarcaVitrina>)ViewBag.Logos;
 }
 
@@ -17,75 +21,29 @@
     </div>
 </section>
 
-<!-- Buscador de llantas (como el de Michelin: tipo de vehículo y medida) -->
-<div class="container search-wrap">
-    <section class="vf-panel" aria-labelledby="vfTitulo">
-        <div class="vf-head">
-            <h2 id="vfTitulo" class="vf-title">Busca la llanta de tu vehículo</h2>
-            <div class="vf-types" id="vfTipos" data-activo="Auto" role="tablist" aria-label="Tipo de vehículo">
-                <button type="button" class="vf-type is-active" role="tab" aria-selected="true" data-tipo="Auto"><i class="fa-solid fa-car-side"></i>Autos</button>
-                <button type="button" class="vf-type" role="tab" aria-selected="false" data-tipo="Moto"><i class="fa-solid fa-motorcycle"></i>Motos</button>
-                <span class="vf-indicator" aria-hidden="true"></span>
-            </div>
-        </div>
-
-        <div class="vf-fields" id="vfCampos" autocomplete="off">
-            <div class="vf-field">
-                <label for="vfAncho">Ancho (mm)<span class="req">*</span></label>
-                <input id="vfAncho" type="text" inputmode="numeric" maxlength="3" autocomplete="off" list="vfAnchos" data-vf />
-            </div>
-            <div class="vf-field">
-                <label for="vfPerfil">Perfil (%)<span class="req">*</span></label>
-                <input id="vfPerfil" type="text" inputmode="numeric" maxlength="2" autocomplete="off" list="vfPerfiles" data-vf />
-            </div>
-            <div class="vf-field">
-                <label for="vfDiametro">Diámetro / Rin (pulgadas)<span class="req">*</span></label>
-                <input id="vfDiametro" type="text" inputmode="numeric" maxlength="2" autocomplete="off" list="vfDiametros" data-vf />
-            </div>
-            <div class="vf-field">
-                <label for="vfMarca">Marca de llanta</label>
-                <select id="vfMarca"><option value="">Todas las marcas</option></select>
-            </div>
-            <div class="vf-field">
-                <label for="vfOrden">Ordenar por</label>
-                <select id="vfOrden">
-                    <option value="precio">Menor precio</option>
-                    <option value="precioDesc">Mayor precio</option>
-                    <option value="marca">Marca (A-Z)</option>
-                </select>
-            </div>
-            <button type="button" id="vfConsultar" class="vf-submit" disabled>Consultar</button>
-        </div>
-        <datalist id="vfAnchos"></datalist>
-        <datalist id="vfPerfiles"></datalist>
-        <datalist id="vfDiametros"></datalist>
-
-        <p class="vf-hint">La medida está en el costado de tu llanta, por ejemplo 205/55 R16.</p>
-    </section>
-</div>
-
-<!-- Imagen aparte del formulario -->
-<section class="vf-foto-sec">
+<!-- Banner de vehículos: autos y motocicletas se alternan (imagen y texto) -->
+<section class="vb-sec" aria-label="Llantas para autos y motocicletas">
     <div class="container">
-        <div class="vf-foto" role="img" aria-label="Vehículo en carretera">
-            <div class="vf-foto-texto">
-                <span class="eyebrow text-white-50">Medidas</span>
-                <h2>¿No sabes qué medida necesita tu vehículo?</h2>
-                <p>Escríbenos con la placa o el modelo y te asesoramos sin costo.</p>
-                <a asp-controller="Contacto" asp-action="Index" class="btn btn-banner-explorar">Consultar con un asesor</a>
+        <div class="vb" id="vbSlider" role="region" aria-roledescription="carrusel" aria-label="Autos y motocicletas">
+            <div class="vb-slide is-active" data-tipo="Auto" style="@(imgAuto != null ? $"--vb-img:url({imgAuto})" : "")">
+                <div class="vb-texto">
+                    <h2><strong>Llantas para tu auto,</strong><span>agarre y confort en cada viaje</span></h2>
+                    <p>Encuentra la medida exacta para tu automóvil, camioneta o SUV y recibe asesoría en tienda.</p>
+                    <a asp-controller="Llantas" asp-action="Index" asp-route-tipo="Auto" class="vb-btn">Explorar</a>
+                </div>
+            </div>
+            <div class="vb-slide" data-tipo="Moto" aria-hidden="true" style="@(imgMoto != null ? $"--vb-img:url({imgMoto})" : "")">
+                <div class="vb-texto">
+                    <h2><strong>Llantas para tu moto,</strong><span>control y adherencia en cada curva</span></h2>
+                    <p>Llantas para motocicleta de calle y de trabajo, con la medida y el rin que tu moto necesita.</p>
+                    <a asp-controller="Llantas" asp-action="Index" asp-route-tipo="Moto" class="vb-btn" tabindex="-1">Explorar</a>
+                </div>
+            </div>
+            <div class="vb-dots" role="tablist" aria-label="Elegir banner">
+                <button type="button" class="vb-dot is-active" role="tab" aria-selected="true" aria-label="Autos" data-i="0"><i class="fa-solid fa-car-side"></i></button>
+                <button type="button" class="vb-dot" role="tab" aria-selected="false" aria-label="Motocicletas" data-i="1"><i class="fa-solid fa-motorcycle"></i></button>
             </div>
         </div>
-    </div>
-</section>
-
-<!-- Resultados de la búsqueda -->
-<section id="resultadosBusqueda" class="section pb-0 d-none">
-    <div class="container">
-        <div class="home-section-head">
-            <h2 class="section-title mb-0">Resultados de la búsqueda</h2>
-            <a href="#" id="vfNueva">Nueva búsqueda</a>
-        </div>
-        <div class="cat-grid" id="contenedorTarjetas"></div>
     </div>
 </section>
 
@@ -125,95 +83,34 @@
 @section Scripts {
     <script src="~/js/tienda.js" asp-append-version="true"></script>
     <script>
+        // Banner de vehículos: se alterna solo cada 7 s (imagen y texto); se detiene al pasar el cursor o enfocarlo.
         (function () {
-            var medidas = @Html.Raw(System.Text.Json.JsonSerializer.Serialize((object)ViewBag.Medidas));
-            var cfg = {
-                Auto: { ancho: 'Ancho en mm (ej. 205)', perfil: 'Perfil en % (ej. 55)', rin: 'Rin en pulgadas (ej. 16)', a: [135, 355], p: [25, 80], d: [13, 24] },
-                Moto: { ancho: 'Ancho en mm (ej. 120)', perfil: 'Perfil en % (ej. 70)', rin: 'Rin en pulgadas (ej. 17)', a: [60, 260], p: [30, 90], d: [10, 21] }
-            };
-            var tipo = 'Auto';
-            var campos = { ancho: document.getElementById('vfAncho'), perfil: document.getElementById('vfPerfil'), diametro: document.getElementById('vfDiametro') };
-            var marca = document.getElementById('vfMarca'), orden = document.getElementById('vfOrden');
-            var boton = document.getElementById('vfConsultar');
+            var cont = document.getElementById('vbSlider');
+            if (!cont) return;
+            var slides = cont.querySelectorAll('.vb-slide'), dots = cont.querySelectorAll('.vb-dot');
+            var actual = 0, timer = null;
+            var reducir = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-            function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
-
-            function llenarLista(id, valores) {
-                var dl = document.getElementById(id); dl.innerHTML = '';
-                (valores || []).forEach(function (v) { var o = document.createElement('option'); o.value = v; dl.appendChild(o); });
-            }
-
-            function aplicarTipo(t) {
-                tipo = t;
-                var c = cfg[t];
-                campos.ancho.placeholder = c.ancho;
-                campos.perfil.placeholder = c.perfil; campos.diametro.placeholder = c.rin;
-                var m = medidas[t] || {};
-                llenarLista('vfAnchos', m.anchos); llenarLista('vfPerfiles', m.perfiles); llenarLista('vfDiametros', m.diametros);
-                marca.innerHTML = '<option value="">Todas las marcas</option>' + (m.marcas || []).map(function (x) { return '<option value="' + esc(x) + '">' + esc(x) + '</option>'; }).join('');
-                Object.keys(campos).forEach(function (k) { campos[k].value = ''; });
-                orden.value = 'precio';
-                var cont = document.getElementById('vfCampos');
-                cont.style.animation = 'none'; void cont.offsetWidth; cont.style.animation = '';
-                document.getElementById('vfTipos').dataset.activo = t;
-                document.querySelectorAll('.vf-type').forEach(function (b) {
-                    var on = b.dataset.tipo === t; b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on);
+            function mostrar(i) {
+                actual = (i + slides.length) % slides.length;
+                slides.forEach(function (s, n) {
+                    var on = n === actual;
+                    s.classList.toggle('is-active', on);
+                    s.setAttribute('aria-hidden', on ? 'false' : 'true');
+                    var a = s.querySelector('a'); if (a) a.tabIndex = on ? 0 : -1;
                 });
-                validar();
+                dots.forEach(function (d, n) { d.classList.toggle('is-active', n === actual); d.setAttribute('aria-selected', n === actual ? 'true' : 'false'); });
             }
+            function iniciar() { if (reducir || timer) return; timer = setInterval(function () { mostrar(actual + 1); }, 7000); }
+            function detener() { clearInterval(timer); timer = null; }
 
-            // Activa "Consultar" solo cuando todos los campos están completos.
-            function validar() {
-                var ok = campos.ancho.value && campos.perfil.value && campos.diametro.value;
-                boton.disabled = !ok;
-            }
-
-            ['ancho', 'perfil', 'diametro'].forEach(function (k) {
-                campos[k].addEventListener('input', function () { campos[k].value = campos[k].value.replace(/\D/g, ''); validar(); });
-            });
-            document.querySelectorAll('.vf-type').forEach(function (b) { b.addEventListener('click', function () { aplicarTipo(b.dataset.tipo); }); });
-
-            function tarjeta(l) {
-                return '<article class="cat-card' + (l.agotado ? ' is-out' : '') + '">' +
-                    '<div class="cat-card-img"><img src="' + esc(l.img) + '" alt="' + esc(l.nombre) + '" loading="lazy" />' +
-                    (l.agotado ? '<span class="cat-badge">Agotado</span>' : '') + '</div>' +
-                    '<div class="cat-card-body">' + (l.marca ? '<div class="cat-brand">' + esc(l.marca) + '</div>' : '') +
-                    '<h3>' + esc(l.nombre) + '</h3><div class="cat-meta">Medida ' + esc(l.medida) + '</div>' +
-                    '<div class="cat-price">' + (l.antes ? '<s class="cat-old">' + esc(l.antes) + '</s>' : '') + esc(l.precio) + '</div>' +
-                    '<a href="@Url.Action("Index", "Contacto")?producto=' + encodeURIComponent(l.nombre) + '" class="btn btn-hyper-action btn-sm">Cotizar</a></div></article>';
-            }
-
-            boton.addEventListener('click', async function () {
-                var c = cfg[tipo];
-                var a = +campos.ancho.value, p = +campos.perfil.value, d = +campos.diametro.value;
-                if (a < c.a[0] || a > c.a[1] || p < c.p[0] || p > c.p[1] || d < c.d[0] || d > c.d[1]) {
-                    Swal.fire({ icon: 'info', title: 'Revisa la medida', text: 'Para ' + (tipo === 'Moto' ? 'motos' : 'autos') + ' el ancho va de ' + c.a[0] + ' a ' + c.a[1] + ' mm, el perfil de ' + c.p[0] + ' a ' + c.p[1] + ' y el rin de ' + c.d[0] + ' a ' + c.d[1] + ' pulgadas.', confirmButtonColor: '#000' });
-                    return;
-                }
-                var url = '@Url.Action("BuscarLlantas", "Home")' + '?tipo=' + encodeURIComponent(tipo) + '&marca=' + encodeURIComponent(marca.value) + '&orden=' + encodeURIComponent(orden.value) +
-                    '&ancho=' + a + '&perfil=' + p + '&diametro=' + d;
-                try {
-                    var r = await fetch(url);
-                    if (!r.ok) throw new Error(r.status);
-                    var lista = await r.json();
-                    document.getElementById('contenedorTarjetas').innerHTML = lista.length ? lista.map(tarjeta).join('') :
-                        '<div class="cat-empty" style="grid-column:1/-1"><i class="fa-solid fa-magnifying-glass"></i><p class="mt-2 mb-1 fw-bold">No encontramos llantas ' + a + '/' + p + ' R' + d + ' para ' + (tipo === 'Moto' ? 'moto' : 'auto') + '.</p><p class="text-muted mb-0">Escríbenos y te las conseguimos.</p></div>';
-                    var sec = document.getElementById('resultadosBusqueda');
-                    sec.classList.remove('d-none'); sec.scrollIntoView({ behavior: 'smooth' });
-                } catch (e) {
-                    Swal.fire({ icon: 'error', title: 'No se pudo consultar', text: 'Inténtalo de nuevo en un momento.', confirmButtonColor: '#000' });
-                }
-            });
-
-            document.getElementById('vfNueva').addEventListener('click', function (e) {
-                e.preventDefault();
-                document.getElementById('resultadosBusqueda').classList.add('d-none');
-                document.getElementById('contenedorTarjetas').innerHTML = '';
-                window.scrollTo({ top: document.querySelector('.search-wrap').offsetTop - 90, behavior: 'smooth' });
-                campos.ancho.focus();
-            });
-
-            aplicarTipo('Auto');
+            dots.forEach(function (d) { d.addEventListener('click', function () { mostrar(parseInt(d.dataset.i, 10)); detener(); iniciar(); }); });
+            cont.addEventListener('mouseenter', detener);
+            cont.addEventListener('mouseleave', iniciar);
+            cont.addEventListener('focusin', detener);
+            cont.addEventListener('focusout', iniciar);
+            document.addEventListener('visibilitychange', function () { document.hidden ? detener() : iniciar(); });
+            iniciar();
         })();
     </script>
 }

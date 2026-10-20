@@ -20,28 +20,21 @@ body {
 }
 
 /* ---------- Header ----------
-   Barra sobria, de una sola línea (referencia: la barra de Michelin). Transparente SOLO sobre el banner del Inicio. */
-:root {
-    --header-h: 68px;
+   Siempre blanco, con los nav links en negro. Ocupa su propio espacio (queda pegado arriba al desplazarse),
+   así nunca tapa el comienzo de ninguna página. */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1100;
+    background: #FFFFFF;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .08), 0 6px 18px rgba(0, 0, 0, .05);
 }
 
 .michelin-nav-global {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1100;
-    background: transparent;
+    position: relative;
+    background: #FFFFFF !important;
     padding: .7rem 0;
-    transition: background .25s ease, box-shadow .25s ease;
 }
-
-    .michelin-nav-global.solid-bg,
-    .michelin-nav-global.scrolled,
-    .michelin-nav-global:hover {
-        background: rgba(255, 255, 255, .98) !important;
-        box-shadow: 0 1px 0 rgba(0, 0, 0, .08), 0 6px 18px rgba(0, 0, 0, .06);
-    }
 
     .michelin-nav-global .header-shell {
         max-width: none;
@@ -50,190 +43,211 @@ body {
     }
 
     .michelin-nav-global .brand-matrix {
-        color: #FFFFFF !important;
+        color: #000000 !important;
+        text-shadow: none;
         cursor: pointer;
         margin-right: clamp(1rem, 2.2vw, 2.5rem);
         white-space: nowrap;
     }
 
-    .michelin-nav-global.solid-bg .brand-matrix,
-    .michelin-nav-global.scrolled .brand-matrix,
-    .michelin-nav-global:hover .brand-matrix {
-        color: #000000 !important;
-        text-shadow: none;
-    }
-
-    /* Nav links: más pequeños y siempre del mismo color (sin rojo al pasar el cursor ni al hacer clic) */
+    /* Nav links: negros, siempre del mismo color (sin cambio al pasar el cursor ni al hacer clic) */
     .michelin-nav-global .navbar-nav .nav-link {
-        color: #FFFFFF !important;
+        color: #000000 !important;
         font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
         font-weight: 500;
         font-size: .94rem;
         letter-spacing: .015em;
         text-decoration: none !important;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, .45);
         position: relative;
         padding: .45rem .15rem;
         margin: 0 .55rem;
         white-space: nowrap;
         background: transparent;
-        transform: none;
         border-bottom: 0 !important;
-        transition: none;
     }
 
         .michelin-nav-global .navbar-nav .nav-link:hover,
         .michelin-nav-global .navbar-nav .nav-link:focus,
         .michelin-nav-global .navbar-nav .nav-link:active {
-            color: #FFFFFF !important;
+            color: #000000 !important;
             background: transparent;
         }
 
-    .michelin-nav-global.solid-bg .navbar-nav .nav-link,
-    .michelin-nav-global.scrolled .navbar-nav .nav-link,
-    .michelin-nav-global:hover .navbar-nav .nav-link,
-    .michelin-nav-global.solid-bg .navbar-nav .nav-link:hover,
-    .michelin-nav-global.scrolled .navbar-nav .nav-link:hover,
-    .michelin-nav-global:hover .navbar-nav .nav-link:hover {
-        color: #000000 !important;
-        text-shadow: none;
-    }
-
-    /* Subrayado fino: aparece al pasar el cursor y queda fijo en la página actual. Mismo color que el texto. */
-    .michelin-nav-global .navbar-nav .nav-link::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 2px;
-        background: currentColor;
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform .2s ease;
-    }
-
-    .michelin-nav-global .navbar-nav .nav-link:hover::after,
-    .michelin-nav-global .navbar-nav .nav-link.is-active::after {
-        transform: scaleX(1);
-    }
-
-    /* Puntos del usuario: solo con sesión iniciada. Rojo, estrella a la izquierda y subrayado rojo propio. */
-    .michelin-nav-global .navbar-nav .nav-link.nav-puntos,
-    .michelin-nav-global .navbar-nav .nav-link.nav-puntos:hover,
-    .michelin-nav-global.solid-bg .navbar-nav .nav-link.nav-puntos,
-    .michelin-nav-global.scrolled .navbar-nav .nav-link.nav-puntos,
-    .michelin-nav-global:hover .navbar-nav .nav-link.nav-puntos {
-        color: var(--cart-red) !important;
-        font-weight: 700;
-        text-shadow: none;
-        display: inline-flex;
-        align-items: center;
-        gap: .4rem;
-    }
-
-        .michelin-nav-global .navbar-nav .nav-link.nav-puntos i {
-            color: var(--cart-red);
-            font-size: .85em;
-        }
-
-        .michelin-nav-global .navbar-nav .nav-link.nav-puntos::after {
-            transform: scaleX(1);
+        /* Subrayado fino: aparece al pasar el cursor y queda fijo en la página actual */
+        .michelin-nav-global .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
             height: 2px;
-            background: var(--cart-red);
+            background: currentColor;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .2s ease;
         }
 
-/* Carrito */
+        .michelin-nav-global .navbar-nav .nav-link:hover::after,
+        .michelin-nav-global .navbar-nav .nav-link.is-active::after {
+            transform: scaleX(1);
+        }
+
+        /* Puntos del usuario: solo con sesión iniciada. Rojo, estrella a la izquierda y subrayado rojo propio. */
+        .michelin-nav-global .navbar-nav .nav-link.nav-puntos,
+        .michelin-nav-global .navbar-nav .nav-link.nav-puntos:hover {
+            color: var(--cart-red) !important;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+        }
+
+            .michelin-nav-global .navbar-nav .nav-link.nav-puntos i {
+                color: var(--cart-red);
+                font-size: .85em;
+            }
+
+            .michelin-nav-global .navbar-nav .nav-link.nav-puntos::after {
+                transform: scaleX(1);
+                height: 2px;
+                background: var(--cart-red);
+            }
+
+/* Carrito: mismo color y tamaño que los nav links */
 .header-cart {
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #FFFFFF;
-    font-size: 1.15rem;
+    color: #000000;
+    font-size: .98rem;
     line-height: 1;
     text-decoration: none;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, .45);
 }
 
-.michelin-nav-global.solid-bg .header-cart,
-.michelin-nav-global.scrolled .header-cart,
-.michelin-nav-global:hover .header-cart {
-    color: #000000;
-    text-shadow: none;
-}
-
-.header-cart:hover {
-    color: inherit !important;
-}
+    .header-cart:hover,
+    .header-cart:focus {
+        color: #000000 !important;
+    }
 
 .cart-badge {
     position: absolute;
     top: -8px;
     right: -10px;
-    min-width: 17px;
-    height: 17px;
+    min-width: 16px;
+    height: 16px;
     padding: 0 4px;
     border-radius: 999px;
     background: var(--cart-red);
     color: #FFFFFF;
     font-family: 'Roboto', sans-serif;
-    font-size: .66rem;
+    font-size: .64rem;
     font-weight: 700;
-    line-height: 17px;
+    line-height: 16px;
     text-align: center;
-    text-shadow: none;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, .9);
+    box-shadow: 0 0 0 2px #FFFFFF;
 }
 
-/* Iniciar sesión: negro con letras blancas; sobre el banner transparente, blanco con letras negras */
+/* Iniciar sesión: fondo transparente; borde, texto e ícono del mismo color que los nav links */
 .btn-matrix-action {
-    background: #000000 !important;
-    color: #FFFFFF !important;
+    background: transparent !important;
+    color: #000000 !important;
     border: 1px solid #000000 !important;
-    padding: .4rem 1rem;
+    padding: .38rem 1rem;
     border-radius: .4rem;
     font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
     font-weight: 500;
-    font-size: .88rem;
-    letter-spacing: .01em;
+    font-size: .94rem;
+    letter-spacing: .015em;
     white-space: nowrap;
     display: inline-flex;
     align-items: center;
     gap: .5rem;
-    transition: background-color .2s ease, color .2s ease;
+    transition: background-color .2s ease;
 }
 
     .btn-matrix-action i {
         font-size: .9em;
     }
 
-    .btn-matrix-action:hover {
-        background: #212529 !important;
-        border-color: #212529 !important;
-        color: #FFFFFF !important;
+    .btn-matrix-action:hover,
+    .btn-matrix-action:focus {
+        background: rgba(0, 0, 0, .06) !important;
+        color: #000000 !important;
     }
-
-.michelin-nav-global:not(.solid-bg):not(.scrolled):not(:hover) .btn-matrix-action {
-    background: #FFFFFF !important;
-    border-color: #FFFFFF !important;
-    color: #000000 !important;
-}
 
 .header-actions {
     gap: 1.5rem;
 }
 
-/* Espacio bajo el header fijo: así, al llegar arriba del todo, no tapa el comienzo de la página.
-   En el Inicio no se aplica (el banner pasa por debajo del header transparente) ni en Account (tiene su propio espaciado). */
+/* Espacio entre el header y el comienzo de la página. El Layout detecta la vista: el Inicio (el banner va pegado al header) y
+   Account (tiene su propio espaciado) no lo llevan; las demás reciben este margen. */
 .main-matrix-container {
     flex: 1 0 auto;
     padding-bottom: 2rem;
 }
 
     .main-matrix-container.main-offset {
-        padding-top: var(--header-h);
+        padding-top: 1.75rem;
     }
+
+/* ---------- Organización del header ----------
+   Marca a la izquierda, enlaces centrados y carrito + sesión a la derecha (misma distribución de interllantas.com).
+   Solo cambia la ubicación de los elementos: colores, tipografías y tamaños siguen siendo los definidos arriba. */
+@media (min-width: 1200px) {
+    .michelin-nav-global .header-shell {
+        gap: 1.25rem;
+    }
+
+    .michelin-nav-global .navbar-brand {
+        flex: 0 0 auto;
+    }
+
+    .michelin-nav-global .navbar-collapse {
+        flex: 1 1 auto;
+        align-items: center;
+    }
+
+    .michelin-nav-global #navMenuList {
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .michelin-nav-global .header-actions {
+        margin-left: 0 !important;
+        padding-left: 1rem;
+        flex: 0 0 auto;
+        align-items: center;
+    }
+}
+
+/* En pantallas amplias los enlaces quedan centrados respecto de toda la página (columnas laterales iguales). */
+@media (min-width: 1400px) {
+    .michelin-nav-global .header-shell {
+        display: grid;
+        grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
+        align-items: center;
+    }
+
+    .michelin-nav-global .navbar-collapse {
+        display: contents !important;
+    }
+
+    .michelin-nav-global .navbar-brand {
+        grid-column: 1;
+        justify-self: start;
+    }
+
+    .michelin-nav-global #navMenuList {
+        grid-column: 2;
+        justify-self: center;
+    }
+
+    .michelin-nav-global .header-actions {
+        grid-column: 3;
+        justify-self: end;
+    }
+}
 
 @media (min-width: 1200px) and (max-width: 1399.98px) {
     .michelin-nav-global .navbar-nav .nav-link {
@@ -243,10 +257,6 @@ body {
 }
 
 @media (max-width: 1199.98px) {
-    .michelin-nav-global:not(.solid-bg):not(.scrolled):not(:hover) .navbar-toggler-icon {
-        filter: invert(1);
-    }
-
     .michelin-nav-global .navbar-collapse {
         padding: .5rem 0 .25rem;
     }

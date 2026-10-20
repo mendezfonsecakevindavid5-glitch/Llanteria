@@ -1,0 +1,137 @@
+@model Llanteria.Models.PerfilUsuarioViewModel
+@using Llanteria.Infrastructure
+
+@{
+    ViewData["Title"] = "Mi perfil";
+    // El perfil siempre se ve con el diseño del sitio (también para el personal), sin el panel.
+}
+
+<link rel="stylesheet" href="~/css/paginas/perfil.css" asp-append-version="true" />
+
+<div class="perfil-wrap">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-2">
+        <div>
+            <h1 class="perfil-title">Mi perfil</h1>
+            <p class="perfil-sub">Tus datos de contacto y tu contraseña.</p>
+        </div>
+        @if (!string.IsNullOrEmpty(Model.Rol))
+        {
+            <span class="perfil-rol mb-3">@Model.Rol</span>
+        }
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="perfil-card">
+                <div class="perfil-card-head">Datos personales</div>
+                <div class="perfil-card-body">
+                    <form asp-controller="User" asp-action="ActualizarPerfil" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="TemaPreferencia" />
+
+                        <div class="perfil-foto-bloque">
+                            <button type="button" class="perfil-foto-btn" id="btnFotoPerfil" aria-label="Cambiar foto de perfil" title="Cambiar foto de perfil">
+                                <img id="previewFoto" class="perfil-foto" alt="Tu foto de perfil"
+                                     src="@(string.IsNullOrEmpty(Model.FotoBase64) ? Url.Content("~/images/productoos/default-producto.png") : Model.FotoBase64)" />
+                                <span class="perfil-foto-camara"><i class="fa-solid fa-camera"></i></span>
+                            </button>
+                            <input type="file" id="archivoFoto" accept="image/*" class="d-none" />
+                            <input asp-for="FotoRecortada" type="hidden" />
+                            <div class="form-text">Haz clic en la foto para cambiarla.</div>
+                            <span asp-validation-for="FotoRecortada" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Nombres" class="form-label">Nombres<span class="required-asterisk">*</span></label>
+                                <input asp-for="Nombres" class="form-control" maxlength="100" />
+                                <span asp-validation-for="Nombres" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Apellidos" class="form-label">Apellidos<span class="required-asterisk">*</span></label>
+                                <input asp-for="Apellidos" class="form-control" maxlength="100" />
+                                <span asp-validation-for="Apellidos" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Telefono" class="form-label">Teléfono<span class="required-asterisk">*</span></label>
+                                <input asp-for="Telefono" class="form-control" maxlength="20" />
+                                <span asp-validation-for="Telefono" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Correo" class="form-label">Correo</label>
+                                <input asp-for="Correo" class="form-control" readonly />
+                                <div class="form-text">El correo no se puede cambiar desde aquí.</div>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Bio" class="form-label">Acerca de ti</label>
+                                <textarea asp-for="Bio" class="form-control" rows="3" maxlength="500"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input asp-for="NotificacionesActivas" class="form-check-input" />
+                                    <label asp-for="NotificacionesActivas" class="form-check-label">Recibir notificaciones</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="perfil-actions">
+                            <button type="submit" class="perfil-btn">Guardar cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="perfil-card">
+                <div class="perfil-card-head">Cambiar contraseña</div>
+                <div class="perfil-card-body">
+                    <form asp-controller="User" asp-action="CambiarPassword" method="post">
+                        <div class="mb-3">
+                            <label class="form-label" for="actual">Contraseña actual<span class="required-asterisk">*</span></label>
+                            <input id="actual" name="actual" type="password" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="nueva">Nueva contraseña<span class="required-asterisk">*</span></label>
+                            <input id="nueva" name="nueva" type="password" class="form-control" minlength="6" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="confirmacion">Repite la nueva contraseña<span class="required-asterisk">*</span></label>
+                            <input id="confirmacion" name="confirmacion" type="password" class="form-control" minlength="6" required />
+                        </div>
+                        <button type="submit" class="perfil-btn-line">Actualizar contraseña</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Vehiculos.Any())
+{
+    <div class="perfil-wrap pt-0" style="padding-top:0 !important">
+        <div class="perfil-card">
+            <div class="perfil-card-head">Mis vehículos y mantenimiento</div>
+            <div class="perfil-card-body">
+                <partial name="_HistorialVehiculos" model="Model.Vehiculos" />
+            </div>
+        </div>
+    </div>
+}
+
+<partial name="_RecorteFoto" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/recorte-foto.js" asp-append-version="true"></script>
+    <script>
+        RecorteFoto.iniciar({
+            boton: '#btnFotoPerfil',
+            archivo: '#archivoFoto',
+            alAceptar: function (foto) {
+                document.getElementById('FotoRecortada').value = foto;
+                document.getElementById('previewFoto').src = foto;
+            }
+        });
+    </script>
+}

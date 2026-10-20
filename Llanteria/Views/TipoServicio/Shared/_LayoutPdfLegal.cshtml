@@ -1,0 +1,53 @@
+@* Diseño de los documentos legales en PDF (Términos, Tratamiento de datos, Garantía, Retracto y devoluciones).
+   Lo elige _ViewStart cuando LegalController marca la petición con Items["LegalPdf"]. wkhtmltopdf usa un WebKit antiguo:
+   se maqueta con tablas, sin flexbox ni grid, y sin íconos (Font Awesome no se carga aquí). *@
+@inject Llanteria.Infrastructure.NegocioInfo Negocio
+@{
+    var palabras = Negocio.Nombre.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    var inicio = palabras.Length > 1 ? string.Join(' ', palabras.Take(palabras.Length - 1)) : Negocio.Nombre;
+    var final = palabras.Length > 1 ? palabras.Last() : "";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - @Negocio.Nombre</title>
+    @* Para que los enlaces internos del documento (otras políticas, PQRS) funcionen desde el PDF. *@
+    <base href="@Context.Request.Scheme://@Context.Request.Host/" />
+    <partial name="_PdfEstilos" />
+    <style>
+        body { font-size: 11.5px; line-height: 1.6; color: #1F2328; }
+        .doc-titulo { font-size: 21px; font-weight: bold; margin: 0 0 4px; line-height: 1.2; }
+        .doc-subtitulo { font-size: 11.5px; color: #6B7280; margin: 0 0 14px; }
+        .doc-cuerpo h2 { font-size: 13px; font-weight: bold; margin: 20px 0 6px; padding-left: 8px; border-left: 3px solid #C92B0A; line-height: 1.3; page-break-after: avoid; }
+        .doc-cuerpo p { margin: 0 0 8px; text-align: justify; }
+        .doc-cuerpo ul, .doc-cuerpo ol { margin: 0 0 10px; padding-left: 20px; }
+        .doc-cuerpo li { margin-bottom: 4px; text-align: justify; page-break-inside: avoid; }
+        .doc-cuerpo a { color: #C92B0A; text-decoration: none; }
+        .doc-cuerpo i { display: none; }
+        .legal-meta { font-size: 10.5px; color: #6B7280; margin: 0 0 8px; }
+        .legal-aviso { border-left: 3px solid #C92B0A; background: #F7F8FA; padding: 8px 10px; margin: 10px 0; font-size: 10.5px; color: #4B5563; page-break-inside: avoid; }
+    </style>
+</head>
+<body>
+    <table class="doc-head">
+        <tr>
+            <td style="width:60%">
+                <div class="brand">@inicio <span>@final</span></div>
+                <div class="muted small" style="margin-top:6px">
+                    @if (!string.IsNullOrWhiteSpace(Negocio.Nit)) { <span>NIT @Negocio.Nit</span><br /> }
+                    @Negocio.Direccion<br />
+                    Tel. @Negocio.Telefono · @Negocio.Correo
+                </div>
+            </td>
+            <td class="doc-title">
+                <div class="muted small">Documento legal</div>
+                <div class="small" style="margin-top:2px">@Context.Request.Host</div>
+            </td>
+        </tr>
+    </table>
+    <div class="rule"></div>
+
+    @RenderBody()
+</body>
+</html>

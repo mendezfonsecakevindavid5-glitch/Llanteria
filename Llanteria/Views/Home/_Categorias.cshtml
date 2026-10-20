@@ -1,12 +1,12 @@
-@* Imágenes: wwwroot/images/tienda/{llantas,lubricantes,baterias,accesorios,flotas}.png. Si falta una, se muestra un ícono. *@
+@* Imágenes: wwwroot/images/tienda/{llantas,lubricantes,baterias,accesorios,flotas}.png (todas del mismo tamaño). Si falta una, el recuadro queda gris. *@
 @{
-    var categorias = new (string Nombre, string Imagen, string Icono, string Controlador)[]
+    var categorias = new (string Nombre, string Imagen, string Controlador)[]
     {
-        ("Llantas", "llantas", "fa-circle-notch", "Llantas"),
-        ("Lubricantes", "lubricantes", "fa-oil-can", "Lubricantes"),
-        ("Baterías", "baterias", "fa-car-battery", "Baterias"),
-        ("Accesorios", "accesorios", "fa-gears", "Accesorios"),
-        ("Mantenimiento de flotas", "flotas", "fa-truck", "Empresas")
+        ("Llantas", "llantas", "Llantas"),
+        ("Lubricantes", "lubricantes", "Lubricantes"),
+        ("Baterías", "baterias", "Baterias"),
+        ("Accesorios", "accesorios", "Accesorios"),
+        ("Mantenimiento de flotas", "flotas", "Empresas")
     };
 }
 <section id="categorias" class="tc-cats">
@@ -18,9 +18,7 @@
                 <div class="col">
                     <a class="tc-cat" asp-controller="@c.Controlador" asp-action="Index">
                         <span class="tc-cat-art">
-                            <img src="~/images/tienda/@(c.Imagen).png" alt="" loading="lazy" style="animation-delay:@(i * 0.4)s"
-                                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
-                            <i class="fa-solid @c.Icono" style="display:none;animation-delay:@(i * 0.4)s"></i>
+                            <img src="~/images/tienda/@(c.Imagen).png" alt="@c.Nombre" loading="lazy" onerror="this.style.visibility='hidden'" />
                         </span>
                         <span class="tc-cat-label">@c.Nombre</span>
                     </a>

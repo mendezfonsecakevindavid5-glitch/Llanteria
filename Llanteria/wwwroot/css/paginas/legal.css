@@ -1,8 +1,8 @@
 ﻿/* Páginas legales */
 .legal-wrap {
-    max-width: 1120px;
+    max-width: 880px;
     margin: 0 auto;
-    padding: 8rem 1rem 3.5rem;
+    padding: 1.5rem 1rem 3.5rem;
 }
 
 .legal-head {
@@ -21,47 +21,6 @@
         color: #6c757d;
         margin: 0;
     }
-
-.legal-nav {
-    position: sticky;
-    top: 6.5rem;
-    background: #fff;
-    border: 1px solid #e3e6ea;
-    border-radius: .75rem;
-    padding: .5rem;
-}
-
-    .legal-nav a {
-        display: flex;
-        align-items: center;
-        gap: .7rem;
-        padding: .62rem .8rem;
-        border-radius: .5rem;
-        color: #1f2328;
-        text-decoration: none;
-        font-weight: 500;
-        font-size: .95rem;
-    }
-
-        .legal-nav a i {
-            width: 1.1rem;
-            text-align: center;
-            color: #6c757d;
-        }
-
-        .legal-nav a:hover {
-            background: #f1f3f5;
-        }
-
-        .legal-nav a.activo {
-            background: rgba(201, 43, 10, .09);
-            color: var(--llanteria-primary, #C92B0A);
-            font-weight: 700;
-        }
-
-            .legal-nav a.activo i {
-                color: var(--llanteria-primary, #C92B0A);
-            }
 
 .legal-card {
     background: #fff;
@@ -136,12 +95,3 @@
         border-color: #a82308;
         color: #fff;
     }
-
-@media (max-width: 991.98px) {
-    .legal-nav {
-        position: static;
-        margin-bottom: 1.25rem;
-        display: flex;
-        flex-wrap: wrap;
-    }
-}

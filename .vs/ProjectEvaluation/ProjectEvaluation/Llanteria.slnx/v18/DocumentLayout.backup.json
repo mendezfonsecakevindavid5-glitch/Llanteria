@@ -1,0 +1,308 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\wwwroot\\css\\nombre-proyecto.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:wwwroot\\css\\nombre-proyecto.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\wwwroot\\css\\layout.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:wwwroot\\css\\layout.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\wwwroot\\css\\brand.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:wwwroot\\css\\brand.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\wwwroot\\css\\paginas\\inicio.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:wwwroot\\css\\paginas\\inicio.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\views\\shared\\_sitefooter.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:views\\shared\\_sitefooter.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\views\\shared\\_catalogopagina.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:views\\shared\\_catalogopagina.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\views\\shared\\_adminlayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:views\\shared\\_adminlayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\views\\promociones\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:views\\promociones\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\views\\blog\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:views\\blog\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\models\\catalogoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:models\\catalogoviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\infrastructure\\imagensitio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:infrastructure\\imagensitio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\controllers\\llantascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:controllers\\llantascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|c:\\users\\acer\\source\\repos\\llanteria\\llanteria\\controllers\\catalogocontrollerbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F4ADB125-6334-1C0D-3646-45E827666B93}|Llanteria.csproj|solutionrelative:controllers\\catalogocontrollerbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "nombre-proyecto.css",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\wwwroot\\css\\nombre-proyecto.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\nombre-proyecto.css",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\wwwroot\\css\\nombre-proyecto.css",
+              "RelativeToolTip": "wwwroot\\css\\nombre-proyecto.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-20T19:43:59.096Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "layout.css",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\wwwroot\\css\\layout.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\layout.css",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\wwwroot\\css\\layout.css",
+              "RelativeToolTip": "wwwroot\\css\\layout.css",
+              "ViewState": "AgIAAKwAAAAAAAAAAAAqwNcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-20T19:43:14.289Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "brand.css",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\wwwroot\\css\\brand.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\brand.css",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\wwwroot\\css\\brand.css",
+              "RelativeToolTip": "wwwroot\\css\\brand.css",
+              "ViewState": "AgIAAIEAAAAAAAAAAAAqwKwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-20T19:43:08.027Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "inicio.css",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\wwwroot\\css\\paginas\\inicio.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\paginas\\inicio.css",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\wwwroot\\css\\paginas\\inicio.css",
+              "RelativeToolTip": "wwwroot\\css\\paginas\\inicio.css",
+              "ViewState": "AgIAAK0AAAAAAAAAAAAqwNgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-10-20T19:42:42.764Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "_SiteFooter.cshtml",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Views\\Shared\\_SiteFooter.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_SiteFooter.cshtml",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Views\\Shared\\_SiteFooter.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_SiteFooter.cshtml",
+              "ViewState": "AgIAABcAAAAAAAAAAAAqwEIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-20T19:41:54.719Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "_CatalogoPagina.cshtml",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Views\\Shared\\_CatalogoPagina.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_CatalogoPagina.cshtml",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Views\\Shared\\_CatalogoPagina.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_CatalogoPagina.cshtml",
+              "ViewState": "AgIAAEEAAAAAAAAAAAAqwGwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-20T19:41:44.469Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAFYAAAAAAAAAAAAqwIEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-20T19:41:22.917Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "_AdminLayout.cshtml",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Views\\Shared\\_AdminLayout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_AdminLayout.cshtml",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Views\\Shared\\_AdminLayout.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_AdminLayout.cshtml",
+              "ViewState": "AgIAAFkAAAAAAAAAAAAqwIQAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-20T19:41:15.399Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Views\\Promociones\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Promociones\\Index.cshtml",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Views\\Promociones\\Index.cshtml",
+              "RelativeToolTip": "Views\\Promociones\\Index.cshtml",
+              "ViewState": "AgIAACcAAAAAAAAAAAAqwFIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-20T19:40:41.927Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAAEgAAAAAAAAAAADwv3QAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-20T19:40:02.65Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Views\\Blog\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Blog\\Index.cshtml",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Views\\Blog\\Index.cshtml",
+              "RelativeToolTip": "Views\\Blog\\Index.cshtml",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAowDkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-20T19:39:38.168Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "CatalogoViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Models\\CatalogoViewModel.cs",
+              "RelativeDocumentMoniker": "Models\\CatalogoViewModel.cs",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Models\\CatalogoViewModel.cs",
+              "RelativeToolTip": "Models\\CatalogoViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-20T19:38:52.786Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ImagenSitio.cs",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Infrastructure\\ImagenSitio.cs",
+              "RelativeDocumentMoniker": "Infrastructure\\ImagenSitio.cs",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Infrastructure\\ImagenSitio.cs",
+              "RelativeToolTip": "Infrastructure\\ImagenSitio.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-20T19:38:23.146Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "LlantasController.cs",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Controllers\\LlantasController.cs",
+              "RelativeDocumentMoniker": "Controllers\\LlantasController.cs",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Controllers\\LlantasController.cs",
+              "RelativeToolTip": "Controllers\\LlantasController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-20T19:37:09.323Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "Controllers\\HomeController.cs",
+              "ViewState": "AgIAADoAAAAAAAAAAAAowGUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-20T19:36:39.415Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "CatalogoControllerBase.cs",
+              "DocumentMoniker": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Controllers\\CatalogoControllerBase.cs",
+              "RelativeDocumentMoniker": "Controllers\\CatalogoControllerBase.cs",
+              "ToolTip": "C:\\Users\\ACER\\source\\repos\\Llanteria\\Llanteria\\Controllers\\CatalogoControllerBase.cs",
+              "RelativeToolTip": "Controllers\\CatalogoControllerBase.cs",
+              "ViewState": "AgIAADIAAAAAAAAAAAAowF0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-20T19:36:04.063Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{328af5ec-350f-4a96-b847-90f38b18e9bf}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

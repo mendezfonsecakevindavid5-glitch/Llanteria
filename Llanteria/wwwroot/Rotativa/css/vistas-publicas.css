@@ -1,0 +1,275 @@
+/* ==========================================================================
+   Acabado de las vistas del menú principal y del carrito
+   Llantas, Baterías, Lubricantes, Accesorios, Promociones, Empresas, Blog, Contacto y Carrito.
+   Solo afecta al diseño (espacios, bordes, sombras y jerarquía); no toca la lógica ni los colores de marca.
+   Se carga al final del Layout, por eso reemplaza los valores anteriores sin tocar los demás archivos.
+   Criterio: bordes finos, esquinas poco redondeadas, sin sombras ni elevaciones al pasar el cursor,
+   y una escala de tamaños sobria.
+   ========================================================================== */
+:root {
+    --vp-line: #dfe2e6;
+    --vp-line-strong: #111317;
+    --vp-radius: 6px;
+}
+
+/* ---------- Encabezado de página (reemplaza al banner negro) ---------- */
+.page-head {
+    padding: 0 0 1.5rem;
+    margin-bottom: 1.75rem;
+    border-bottom: 1px solid var(--vp-line);
+}
+
+    .page-head h1 {
+        margin: .35rem 0 .3rem;
+        font-size: 1.9rem;
+        font-weight: 800;
+        letter-spacing: -.01em;
+        color: #111317;
+    }
+
+    .page-head p {
+        margin: 0;
+        max-width: 660px;
+        color: #5b626b;
+        font-size: .98rem;
+    }
+
+    .page-head .cat-crumbs {
+        color: #6b7280;
+        font-size: .82rem;
+    }
+
+        .page-head .cat-crumbs a {
+            color: #3f454d;
+            text-decoration: none;
+        }
+
+            .page-head .cat-crumbs a:hover {
+                color: var(--llanteria-primary);
+            }
+
+    .page-head .blog-meta {
+        margin-top: .9rem;
+        color: #6b7280;
+    }
+
+/* Sin el banner, el contenido ya no debe montarse hacia arriba */
+.cat-wrap {
+    margin-top: 0;
+    padding-bottom: 4rem;
+}
+
+.tc-wrap {
+    padding-block: 0 4rem;
+}
+
+/* ---------- Catálogo: filtros, barra de orden y tarjetas ---------- */
+.cat-filters,
+.cat-toolbar,
+.cat-empty {
+    border-color: var(--vp-line);
+    border-radius: var(--vp-radius);
+}
+
+.cat-filters {
+    padding: 1.15rem 1.15rem 1.25rem;
+}
+
+.cat-filters-head strong {
+    font-size: .95rem;
+    letter-spacing: .01em;
+}
+
+.cat-group-title {
+    letter-spacing: .08em;
+}
+
+.cat-toolbar {
+    padding: .55rem .9rem;
+}
+
+.cat-grid {
+    gap: 1.25rem;
+}
+
+.cat-card {
+    border-color: var(--vp-line);
+    border-radius: var(--vp-radius);
+    transition: border-color .15s ease;
+}
+
+    .cat-card:hover {
+        box-shadow: none;
+        transform: none;
+        border-color: var(--vp-line-strong);
+    }
+
+        .cat-card:hover .cat-card-img img {
+            transform: none;
+        }
+
+.cat-card-img {
+    border-bottom-color: var(--vp-line);
+}
+
+.cat-badge,
+.cat-badge-promo {
+    border-radius: 3px;
+}
+
+.cat-card-body {
+    padding: 1rem 1rem 1.1rem;
+}
+
+.cat-card h3 {
+    font-size: .98rem;
+}
+
+.cat-meta {
+    border-radius: 3px;
+    font-weight: 500;
+}
+
+.cat-price {
+    font-size: 1.25rem;
+}
+
+.pager a {
+    border-radius: 4px;
+}
+
+/* ---------- Promociones ---------- */
+.promo-card {
+    border-color: var(--vp-line);
+    border-radius: var(--vp-radius);
+    padding: 1.4rem;
+}
+
+/* ---------- Blog ---------- */
+.blog-wrap {
+    padding: 0 0 4rem;
+}
+
+.blog-chips a {
+    border-color: var(--vp-line);
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.blog-card {
+    border-color: var(--vp-line);
+    border-radius: var(--vp-radius);
+    transition: border-color .15s ease;
+}
+
+    .blog-card:hover {
+        box-shadow: none;
+        transform: none;
+        border-color: var(--vp-line-strong);
+    }
+
+.blog-tag {
+    border-radius: 3px;
+}
+
+.blog-card h2 {
+    font-size: 1.1rem;
+}
+
+.blog-cover {
+    border-radius: var(--vp-radius);
+}
+
+.blog-callout {
+    border-radius: 0 4px 4px 0;
+}
+
+.blog-cta {
+    border-radius: var(--vp-radius);
+}
+
+.blog-side {
+    border-color: var(--vp-line);
+    border-radius: var(--vp-radius);
+}
+
+/* ---------- Empresas y flotas ---------- */
+.emp-hero {
+    background: #16181c;
+    padding: 4.5rem 0 4rem;
+}
+
+    .emp-hero::after {
+        display: none;
+    }
+
+.emp-card {
+    border-color: var(--vp-line);
+    border-radius: var(--vp-radius);
+}
+
+    .emp-card:hover {
+        box-shadow: none;
+        border-color: var(--vp-line-strong);
+    }
+
+.emp-icon {
+    border-radius: 4px;
+}
+
+.emp-tags span {
+    border-color: var(--vp-line);
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* ---------- Contacto ---------- */
+.contact-info-card,
+.contact-form-card {
+    border-color: var(--vp-line);
+    border-radius: var(--vp-radius);
+}
+
+.contact-info-icon {
+    border-radius: 4px;
+}
+
+.map-frame {
+    border-color: var(--vp-line);
+    border-radius: var(--vp-radius);
+}
+
+/* ---------- Carrito ---------- */
+.tc-panel {
+    border-color: var(--vp-line);
+    border-radius: var(--vp-radius);
+}
+
+.tc-panel-head {
+    border-bottom-color: var(--vp-line);
+    font-size: .95rem;
+}
+
+.tc-line {
+    border-bottom-color: var(--vp-line);
+}
+
+    .tc-line img {
+        border-radius: 4px;
+    }
+
+.tc-row.total {
+    border-top-color: var(--vp-line);
+}
+
+/* ---------- Secciones sueltas de estas vistas ---------- */
+.section-title {
+    font-size: 1.6rem;
+}
+
+.service-card,
+.service-photo-card,
+.review-card,
+.rating-form {
+    border-radius: var(--vp-radius);
+}

@@ -1,0 +1,130 @@
+@inject Llanteria.Infrastructure.NegocioInfo Negocio
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    bool isHomeIndex = currentController.Equals("Home", StringComparison.OrdinalIgnoreCase) && currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase);
+
+    bool isInicio = isHomeIndex;
+    bool isLlantas = currentController.Equals("Llantas", StringComparison.OrdinalIgnoreCase);
+    bool isBaterias = currentController.Equals("Baterias", StringComparison.OrdinalIgnoreCase);
+    bool isLubricantes = currentController.Equals("Lubricantes", StringComparison.OrdinalIgnoreCase);
+    bool isPromociones = currentController.Equals("Promociones", StringComparison.OrdinalIgnoreCase);
+    bool isEmpresas = currentController.Equals("Empresas", StringComparison.OrdinalIgnoreCase);
+    bool isBlog = currentController.Equals("Blog", StringComparison.OrdinalIgnoreCase);
+    bool isContacto = currentController.Equals("Contacto", StringComparison.OrdinalIgnoreCase);
+    bool conOffset = !isHomeIndex && !currentController.Equals("Account", StringComparison.OrdinalIgnoreCase);
+
+    // Unidades en el carrito: el carrito vive en una cookie (ver Infrastructure/Carrito.cs).
+    int cartCount = Llanteria.Infrastructure.Carrito.Unidades(Context.Request);
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Llantería Valledupar</title>
+    <meta name="description" content="@(ViewData["Description"] ?? "Llantas, baterías, aceites y servicio automotriz en Valledupar: montaje, balanceo, alineación 3D y mantenimiento de flotas.")" />
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/public.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/tienda.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nombre-proyecto.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/brand.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/avatar-menu.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/vistas-publicas.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+    <script type="application/ld+json">@Html.Raw(Negocio.JsonLd($"{Context.Request.Scheme}://{Context.Request.Host}/"))</script>
+</head>
+<body class="public">
+    <header class="site-header">
+        <nav class="navbar navbar-expand-xl site-nav michelin-nav-global" id="mainNavbar">
+            <div class="container-fluid header-shell">
+                <a class="navbar-brand brand-matrix" asp-controller="Home" asp-action="Index" aria-label="Llantería Valledupar, inicio">Llantería<small class="ms-1">Valledupar</small></a>
+
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Menú">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto align-items-xl-center gap-xl-1" id="navMenuList">
+                        <li class="nav-item">
+                            <a class="nav-link @(isInicio ? "is-active" : "")" asp-controller="Home" asp-action="Index">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isLlantas ? "is-active" : "")" asp-controller="Llantas" asp-action="Index">Llantas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isBaterias ? "is-active" : "")" asp-controller="Baterias" asp-action="Index">Baterías</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isLubricantes ? "is-active" : "")" asp-controller="Lubricantes" asp-action="Index">Lubricantes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isPromociones ? "is-active" : "")" asp-controller="Promociones" asp-action="Index">Promociones</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isEmpresas ? "is-active" : "")" asp-controller="Empresas" asp-action="Index">Empresas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isBlog ? "is-active" : "")" asp-controller="Blog" asp-action="Index">Blog</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isContacto ? "is-active" : "")" asp-controller="Contacto" asp-action="Index">Contacto</a>
+                        </li>
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            @await Component.InvokeAsync("PuntosNav")
+                        }
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto align-items-xl-center header-actions mt-3 mt-xl-0">
+                        <li class="nav-item">
+                            <a class="header-cart header-interactable" asp-controller="Carrito" asp-action="Index" title="Carrito" aria-label="Carrito de compras, @cartCount productos">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                                <span class="cart-badge" id="cartCount">@cartCount</span>
+                            </a>
+                        </li>
+                        @if (!User.Identity!.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="btn btn-matrix-action header-interactable" asp-controller="Account" asp-action="Login">
+                                    <i class="fa-regular fa-user"></i> Iniciar sesión
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item d-flex align-items-center">
+                                @await Component.InvokeAsync("AvatarMenu", new { tamano = 44 })
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main" class="main-matrix-container @(conOffset ? "main-offset" : "")">
+        @RenderBody()
+    </main>
+
+    <partial name="_SiteFooter" />
+
+    <a class="wa-float" href="@Negocio.LinkWhatsApp(null)" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i><span>WhatsApp</span>
+    </a>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/protect-forms.js" asp-append-version="true"></script>
+    <script src="~/js/avatar-menu.js" asp-append-version="true"></script>
+    <partial name="_Alertas" />
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

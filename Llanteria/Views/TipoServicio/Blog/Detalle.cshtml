@@ -1,0 +1,44 @@
+@using Llanteria.Models
+@model BlogPost
+@{
+    ViewData["Title"] = Model.Titulo;
+    var relacionados = (List<BlogPost>)ViewBag.Relacionados;
+}
+
+<div class="container blog-wrap">
+    <header class="page-head blog-article-head">
+        <nav class="cat-crumbs" aria-label="Ruta"><a asp-controller="Home" asp-action="Index">Inicio</a><span>/</span><a asp-action="Index">Blog</a><span>/</span>@Model.Categoria</nav>
+        <h1>@Model.Titulo</h1>
+        <p>@Model.Resumen</p>
+        <div class="blog-meta">@Model.Autor · @Model.Fecha.ToString("dd 'de' MMMM 'de' yyyy") · @Model.MinutosLectura min de lectura</div>
+    </header>
+
+    <div class="row g-4">
+        <article class="col-lg-8">
+            <img class="blog-cover" src="~/images/blog/@Model.Imagen" alt="" />
+            <div class="blog-body">@Html.Raw(BlogCatalogo.ARenderizar(Model.Contenido))</div>
+
+            <div class="blog-cta">
+                <div>
+                    <strong>¿Tienes dudas sobre tu carro?</strong>
+                    <span>Escríbenos o agenda una revisión; te respondemos sin compromiso.</span>
+                </div>
+                <a asp-controller="Contacto" asp-action="Index" class="btn btn-hyper-action">Contactar al taller</a>
+            </div>
+        </article>
+
+        <aside class="col-lg-4">
+            <div class="blog-side">
+                <h2>Sigue leyendo</h2>
+                @foreach (var r in relacionados)
+                {
+                    <a asp-action="Detalle" asp-route-slug="@r.Slug" class="blog-side-item">
+                        <img src="~/images/blog/@r.Imagen" alt="" loading="lazy" />
+                        <span><small>@r.Categoria</small>@r.Titulo</span>
+                    </a>
+                }
+                <a asp-action="Index" class="btn btn-line w-100 mt-2">Ver todos los artículos</a>
+            </div>
+        </aside>
+    </div>
+</div>

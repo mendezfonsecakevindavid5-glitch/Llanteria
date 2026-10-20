@@ -1,0 +1,30 @@
+@* Encabezado común de los PDF: datos del negocio a la izquierda, título y datos del documento a la derecha. *@
+@model Llanteria.Models.PdfCabecera
+@inject Llanteria.Infrastructure.NegocioInfo Negocio
+@{
+    var palabras = Negocio.Nombre.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    var inicio = palabras.Length > 1 ? string.Join(' ', palabras.Take(palabras.Length - 1)) : Negocio.Nombre;
+    var final = palabras.Length > 1 ? palabras.Last() : "";
+}
+<table class="doc-head">
+    <tr>
+        <td style="width:50%">
+            <div class="brand">@inicio <span>@final</span></div>
+            <div class="muted small" style="margin-top:6px">
+                @if (!string.IsNullOrWhiteSpace(Negocio.Nit)) { <span>NIT @Negocio.Nit</span><br /> }
+                @Negocio.Direccion<br />
+                Tel. @Negocio.Telefono · @Negocio.Correo
+            </div>
+        </td>
+        <td class="doc-title">
+            <div class="t">@Model.Titulo</div>
+            <table class="meta">
+                <tr><td class="k">Código</td><td class="b">@Model.Codigo</td></tr>
+                @if (!string.IsNullOrWhiteSpace(Model.Periodo)) { <tr><td class="k">Periodo</td><td class="b">@Model.Periodo</td></tr> }
+                <tr><td class="k">Generado</td><td>@Model.Generado.ToString("dd/MM/yyyy HH:mm")</td></tr>
+                @if (!string.IsNullOrWhiteSpace(Model.GeneradoPor)) { <tr><td class="k">Por</td><td>@Model.GeneradoPor</td></tr> }
+            </table>
+        </td>
+    </tr>
+</table>
+<div class="rule"></div>

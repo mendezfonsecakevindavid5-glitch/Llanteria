@@ -1,0 +1,6 @@
+﻿@model int
+<li class="nav-item">
+    <a class="nav-link nav-puntos" asp-controller="MiCuenta" asp-action="Index" title="Tus puntos del club">
+        <i class="fa-solid fa-star" aria-hidden="true"></i>@Model.ToString("N0") puntos
+    </a>
+</li>

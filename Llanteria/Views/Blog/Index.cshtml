@@ -5,15 +5,12 @@
     string orden = ViewBag.Orden;
 }
 
-<section class="cat-hero">
-    <div class="container">
-        <nav class="cat-crumbs" aria-label="Ruta"><a asp-controller="Home" asp-action="Index">Inicio</a><span>/</span>Blog</nav>
+<div class="container blog-wrap">
+    <header class="page-head">
         <h1>Blog</h1>
         <p>Guías prácticas sobre llantas, aceites, baterías y seguridad vial, escritas por el equipo del taller.</p>
-    </div>
-</section>
+    </header>
 
-<div class="container blog-wrap">
     <form method="get" class="blog-toolbar">
         <div class="blog-chips">
             <a asp-action="Index" asp-route-orden="@orden" class="@(categoria == null ? "active" : "")">Todos</a>

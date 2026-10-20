@@ -1,0 +1,67 @@
+@inject Llanteria.Infrastructure.NegocioInfo Negocio
+@{
+    ViewData["Title"] = "Contacto";
+}
+
+<div class="container py-5">
+    <div class="mb-4">
+        <span class="eyebrow">Contacto</span>
+        <h1 class="section-title mt-1">Escríbenos</h1>
+        <p class="section-sub">Cuéntanos qué necesitas y te respondemos al correo que indiques.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="contact-info-card">
+                <div class="contact-info-item">
+                    <div class="contact-info-icon"><i class="fa-solid fa-phone"></i></div>
+                    <div class="contact-info-text"><label>Teléfono</label><a href="tel:@Negocio.TelefonoLimpio">@Negocio.Telefono</a></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-info-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                    <div class="contact-info-text"><label>WhatsApp</label><a href="@Negocio.LinkWhatsApp(null)" target="_blank" rel="noopener">Escríbenos ahora</a></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-info-icon"><i class="fa-solid fa-envelope"></i></div>
+                    <div class="contact-info-text"><label>Correo</label><a href="mailto:@Negocio.Correo">@Negocio.Correo</a></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-info-icon"><i class="fa-solid fa-clock"></i></div>
+                    <div class="contact-info-text"><label>Horario</label><p>Lunes a viernes: @Negocio.HorarioSemana</p><p>Sábados: @Negocio.HorarioSabado</p></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-info-icon"><i class="fa-solid fa-location-dot"></i></div>
+                    <div class="contact-info-text"><label>Ubicación</label><p>@Negocio.Direccion</p><a href="@Negocio.ComoLlegar" target="_blank" rel="noopener">Cómo llegar</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="contact-form-card">
+                <form asp-action="EnviarMensaje" method="post">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <input name="nombre" class="form-control contact-form-input" placeholder="Nombre" required maxlength="100" />
+                        </div>
+                        <div class="col-md-6">
+                            <input name="correo" type="email" class="form-control contact-form-input" placeholder="Correo" required maxlength="100" />
+                        </div>
+                        <div class="col-12">
+                            <input name="asunto" value="@ViewBag.Asunto" class="form-control contact-form-input" placeholder="Asunto" required maxlength="100" />
+                        </div>
+                        <div class="col-12">
+                            <textarea name="mensaje" rows="5" class="form-control contact-form-input" placeholder="Mensaje" required maxlength="1000"></textarea>
+                        </div>
+                        <div class="col-12"><partial name="_AvisoDatos" /></div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-hyper-action px-4 py-2">Enviar mensaje</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="map-frame mt-4">
+        <iframe title="Ubicación de @Negocio.Nombre" src="@Negocio.MapaIncrustado" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+    </div>
+</div>

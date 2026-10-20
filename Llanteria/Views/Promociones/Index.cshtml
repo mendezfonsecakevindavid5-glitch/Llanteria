@@ -8,13 +8,12 @@
         return "Promoción";
     }
 }
-<section class="cat-hero">
-    <div class="container">
-        <nav class="cat-crumbs" aria-label="Ruta"><a asp-controller="Home" asp-action="Index">Inicio</a><span>/</span>Promociones</nav>
+<div class="container">
+    <header class="page-head">
         <h1>Promociones</h1>
         <p>Productos con precio especial y cupones vigentes en nuestra sucursal de Valledupar.</p>
-    </div>
-</section>
+    </header>
+</div>
 
 @if (Model.Productos.Any())
 {

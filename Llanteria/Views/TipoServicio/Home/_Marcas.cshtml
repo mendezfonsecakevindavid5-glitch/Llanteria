@@ -1,0 +1,28 @@
+@* Franja de logos que va de un extremo al otro y regresa (tienda.js). Logos en wwwroot/images/marcas *@
+@model List<Llanteria.Models.MarcaVitrina>
+@if (Model.Count > 0)
+{
+    <section id="marcas" class="tc-brands" aria-label="Marcas con las que trabajamos">
+        <div class="tc-brands-viewport" data-marquee>
+            <div class="tc-brands-track">
+                @foreach (var m in Model)
+                {
+                    if (!string.IsNullOrEmpty(m.Catalogo))
+                    {
+                        <a class="tc-brand" asp-controller="@m.Catalogo" asp-action="Index" asp-route-marca="@m.Nombre" title="Ver productos @m.Nombre">
+                            @if (m.Logo != null) { <img src="@m.Logo" alt="@m.Nombre" loading="lazy" /> }
+                            else { <span class="tc-brand-word">@m.Nombre</span> }
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="tc-brand" title="@m.Nombre">
+                            @if (m.Logo != null) { <img src="@m.Logo" alt="@m.Nombre" loading="lazy" /> }
+                            else { <span class="tc-brand-word">@m.Nombre</span> }
+                        </span>
+                    }
+                }
+            </div>
+        </div>
+    </section>
+}

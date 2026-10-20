@@ -1,0 +1,71 @@
+@model IEnumerable<Llanteria.Models.Gasto>
+
+@{
+    ViewData["Title"] = "Gastos";
+    var hoy = DateOnly.FromDateTime(DateTime.Today);
+    var pendiente = Model.Where(g => g.Estado != "Pagado").Sum(g => g.Monto);
+    var vencido = Model.Where(g => g.Estado != "Pagado" && g.FechaVencimiento < hoy).Sum(g => g.Monto);
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Gastos", "Egresos y cuentas por pagar del negocio.", BotonTexto: "Nuevo gasto", BotonAction: "Create", BotonController: "Gasto"))
+
+<div class="row g-3 mb-3">
+    <div class="col-sm-6 col-lg-3"><div class="stat"><div class="label">Por pagar</div><div class="value money">@pendiente.ToString("C0")</div></div></div>
+    <div class="col-sm-6 col-lg-3"><div class="stat accent"><div class="label">Vencido</div><div class="value money">@vencido.ToString("C0")</div></div></div>
+</div>
+
+<div class="panel">
+    <div class="panel-head">
+        <span>@Model.Count() gastos registrados</span>
+        <a asp-action="Exportar" class="btn btn-line btn-sm ms-auto"><i class="fa-solid fa-file-excel me-1"></i>Exportar a Excel</a>
+    </div>
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Descripción</th>
+                    <th>Categoría</th>
+                    <th>Vence</th>
+                    <th>Estado</th>
+                    <th class="text-end">Monto</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var g in Model)
+                {
+                    var pagado = g.Estado == "Pagado";
+                    var vence = !pagado && g.FechaVencimiento < hoy;
+                    <tr>
+                        <td>
+                            <div class="cell-title">@(string.IsNullOrWhiteSpace(g.Descripcion) ? "Sin descripción" : g.Descripcion)</div>
+                            @if (!string.IsNullOrEmpty(g.ArchivoSupport))
+                            {
+                                <a class="cell-sub" href="~/uploads/gastos/@g.ArchivoSupport" target="_blank"><i class="fa-solid fa-paperclip me-1"></i>Soporte</a>
+                            }
+                        </td>
+                        <td>@g.IdCategoriaNavigation?.Nombre</td>
+                        <td>@g.FechaVencimiento.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @if (pagado) { <span class="tag tag-ok">Pagado</span> }
+                            else if (vence) { <span class="tag tag-bad">Vencido</span> }
+                            else { <span class="tag tag-warn">Pendiente</span> }
+                        </td>
+                        <td class="text-end money">@g.Monto.ToString("C0")</td>
+                        <td class="text-end">
+                            <span class="row-actions">
+                                <a asp-action="Edit" asp-route-id="@g.Id" class="icon-btn" title="Editar"><i class="fa-solid fa-pen"></i></a>
+                                <button type="button" class="icon-btn danger" title="Eliminar"
+                                        data-delete="@Url.Action("Delete", new { id = g.Id })" data-nombre="@g.Descripcion"><i class="fa-solid fa-trash"></i></button>
+                            </span>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6" class="empty-state">Aún no hay gastos registrados.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

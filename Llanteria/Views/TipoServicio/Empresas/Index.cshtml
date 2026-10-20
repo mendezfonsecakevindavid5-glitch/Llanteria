@@ -1,0 +1,159 @@
+@model Llanteria.Models.SolicitudEmpresa
+@{
+    ViewData["Title"] = "Empresas y flotas";
+    var beneficios = new (string Icono, string Titulo, string Texto)[]
+    {
+        ("fa-calendar-check", "Mantenimiento programado", "Calendario de revisiones por vehículo para que ninguna unidad se quede parada por sorpresa."),
+        ("fa-truck-pickup", "Servicio en tu sede", "Nuestra serviteca móvil atiende en tu patio o bodega: montaje, rotación, revisión y cambio de batería."),
+        ("fa-clipboard-list", "Historial por vehículo", "Cada intervención queda registrada con fecha, kilometraje y repuestos usados."),
+        ("fa-file-invoice-dollar", "Facturación ordenada", "Una sola factura consolidada al mes con el detalle de cada placa."),
+        ("fa-user-tie", "Un asesor asignado", "Una persona conoce tu operación y responde por ella, sin pasar por una línea general."),
+        ("fa-shield-halved", "Repuestos con garantía", "Llantas, aceites y baterías de marcas reconocidas, con respaldo por escrito.")
+    };
+    var pasos = new (string Titulo, string Texto)[]
+    {
+        ("Nos cuentas tu flota", "Tipo de vehículos, cantidad y qué tanto ruedan. Con eso medimos qué necesitas."),
+        ("Diagnóstico inicial", "Revisamos una muestra o toda la flota y te entregamos un informe del estado de llantas, frenos y batería."),
+        ("Plan a tu medida", "Definimos frecuencias, prioridades y presupuesto mensual, sin cláusulas escondidas."),
+        ("Seguimiento continuo", "Atendemos, registramos y te avisamos cuando una unidad esté por cumplir su revisión.")
+    };
+    var sectores = new[] { "Transporte de carga", "Transporte de pasajeros", "Taxis y plataformas", "Vehículos de empresa", "Maquinaria y obra", "Transporte escolar" };
+}
+
+<section class="emp-hero">
+    <div class="container">
+        <span class="eyebrow text-white-50">Empresas y flotas</span>
+        <h1>Tu flota en la vía,<br />nuestro trabajo en el taller.</h1>
+        <p>Mantenimiento planificado para camiones, buses, taxis y vehículos de empresa en Valledupar y el Cesar. Menos paradas imprevistas, más control de costos.</p>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="#solicitud" class="btn btn-hyper-action px-4 py-2">Solicitar propuesta</a>
+            <a href="#como-funciona" class="btn btn-outline-light px-4 py-2">Cómo funciona</a>
+        </div>
+    </div>
+</section>
+
+<section class="emp-strip">
+    <div class="container">
+        <div><i class="fa-solid fa-circle-check"></i> Atención prioritaria</div>
+        <div><i class="fa-solid fa-circle-check"></i> Servicio en sitio</div>
+        <div><i class="fa-solid fa-circle-check"></i> Historial por placa</div>
+        <div><i class="fa-solid fa-circle-check"></i> Facturación mensual</div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="mb-4">
+            <span class="eyebrow">Qué incluye</span>
+            <h2 class="section-title mt-1">Un servicio pensado para operaciones con varios vehículos</h2>
+        </div>
+        <div class="row g-3">
+            @foreach (var b in beneficios)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="emp-card">
+                        <span class="emp-icon"><i class="fa-solid @b.Icono"></i></span>
+                        <h3>@b.Titulo</h3>
+                        <p>@b.Texto</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="section section-alt" id="como-funciona">
+    <div class="container">
+        <div class="mb-4">
+            <span class="eyebrow">Cómo funciona</span>
+            <h2 class="section-title mt-1">De la primera llamada al seguimiento mensual</h2>
+        </div>
+        <div class="row g-3">
+            @for (var i = 0; i < pasos.Length; i++)
+            {
+                <div class="col-md-6 col-lg-3">
+                    <div class="emp-step">
+                        <span class="emp-step-n">@(i + 1)</span>
+                        <h3>@pasos[i].Titulo</h3>
+                        <p>@pasos[i].Texto</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-5">
+                <span class="eyebrow">A quién atendemos</span>
+                <h2 class="section-title mt-1 mb-3">Si tu negocio depende de que los vehículos rueden, hablemos</h2>
+                <p class="text-muted mb-0">No importa si tienes tres unidades o treinta: armamos un plan que se ajuste a tu operación y a tu presupuesto.</p>
+            </div>
+            <div class="col-lg-7">
+                <div class="emp-tags">
+                    @foreach (var s in sectores) { <span>@s</span> }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section section-alt" id="solicitud">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-8">
+                <div class="auth-card">
+                    <h2 class="h4 fw-bold">Solicita tu propuesta</h2>
+                    <p class="text-muted">Déjanos los datos de tu empresa y te contactamos para agendar el diagnóstico inicial.</p>
+                    <form asp-action="Solicitar" method="post" class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label" for="Empresa">Empresa</label>
+                            <input id="Empresa" name="Empresa" class="form-control" maxlength="120" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="Nit">NIT (opcional)</label>
+                            <input id="Nit" name="Nit" class="form-control" maxlength="20" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="Contacto">Persona de contacto</label>
+                            <input id="Contacto" name="Contacto" class="form-control" maxlength="100" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="Telefono">Teléfono</label>
+                            <input id="Telefono" name="Telefono" class="form-control" maxlength="20" inputmode="tel" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="Correo">Correo</label>
+                            <input id="Correo" name="Correo" type="email" class="form-control" maxlength="100" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="Ciudad">Ciudad (opcional)</label>
+                            <input id="Ciudad" name="Ciudad" class="form-control" maxlength="60" value="Valledupar" />
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label" for="TipoFlota">Tipo de flota</label>
+                            <select id="TipoFlota" name="TipoFlota" class="form-select" required>
+                                <option value="">Selecciona…</option>
+                                @foreach (var t in Llanteria.Models.SolicitudEmpresa.TiposFlota) { <option value="@t">@t</option> }
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="NumeroVehiculos">N.º de vehículos</label>
+                            <input id="NumeroVehiculos" name="NumeroVehiculos" type="number" min="1" max="10000" class="form-control" required />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="Mensaje">¿Algo que debamos saber? (opcional)</label>
+                            <textarea id="Mensaje" name="Mensaje" class="form-control" rows="3" maxlength="500" placeholder="Rutas, horarios de operación, problemas frecuentes…"></textarea>
+                        </div>
+                        <div class="col-12"><partial name="_AvisoDatos" /></div>
+                        <div class="col-12">
+                            <button class="btn btn-hyper-action px-4 py-2">Enviar solicitud</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

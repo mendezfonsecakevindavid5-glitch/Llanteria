@@ -1,31 +1,24 @@
-﻿@* Marco compartido de las páginas legales: encabezado + menú lateral. Se cierra con _Fin. *@
+﻿@* Marco compartido de las páginas legales. Se cierra con _Fin.
+   - Términos, tratamiento de datos, garantía y devoluciones se muestran como PDF (LegalController.DocumentoPdf): sin cabecera del sitio.
+   - Preguntas frecuentes y PQRS son páginas normales del sitio, sin tabla de contenidos para cambiar entre vistas. *@
 @{
     var titulo = ViewData["Title"] as string ?? "";
-    var actual = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
-    var paginas = new (string Accion, string Texto, string Icono)[]
-    {
-        ("Terminos", "Términos y condiciones", "fa-file-contract"),
-        ("Privacidad", "Tratamiento de datos", "fa-user-shield"),
-        ("Garantia", "Garantía", "fa-certificate"),
-        ("Devoluciones", "Retracto y devoluciones", "fa-rotate-left"),
-        ("Faq", "Preguntas frecuentes", "fa-circle-question"),
-        ("Pqrs", "PQRS", "fa-comment-dots")
-    };
+    var subtitulo = ViewData["Subtitulo"] as string ?? "";
+    bool esPdf = Context.Items["LegalPdf"] is true;
 }
-<link rel="stylesheet" href="~/css/paginas/legal.css" asp-append-version="true" />
-<div class="legal-wrap">
+@if (esPdf)
+{
+    <h1 class="doc-titulo">@titulo</h1>
+    <p class="doc-subtitulo">@subtitulo</p>
+    @Html.Raw("<div class=\"doc-cuerpo\">")
+}
+else
+{
+    <link rel="stylesheet" href="~/css/paginas/legal.css" asp-append-version="true" />
+    @Html.Raw("<div class=\"legal-wrap\">")
     <div class="legal-head">
         <h1>@titulo</h1>
-        <p>@(ViewData["Subtitulo"] as string)</p>
+        <p>@subtitulo</p>
     </div>
-    <div class="row g-4">
-        <div class="col-lg-3">
-            <nav class="legal-nav" aria-label="Información legal">
-                @foreach (var p in paginas)
-                {
-                    <a asp-controller="Legal" asp-action="@p.Accion" class="@(actual == p.Accion || (p.Accion == "Pqrs" && actual == "PqrsRecibida") ? "activo" : "")"><i class="fa-solid @p.Icono"></i>@p.Texto</a>
-                }
-            </nav>
-        </div>
-        <div class="col-lg-9">
-            <div class="legal-card">
+    @Html.Raw("<div class=\"legal-card\">")
+}

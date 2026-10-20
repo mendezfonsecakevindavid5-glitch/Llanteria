@@ -3,13 +3,12 @@
 .banner-hero-matrix {
     position: relative;
     background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.65)), url('/images/ImageBanner.jpg') center/cover no-repeat;
-    min-height: 85vh;
+    min-height: 68vh;
     display: flex;
     align-items: flex-end;
-    padding-bottom: 5rem;
+    padding-bottom: 4rem;
     color: #FFFFFF;
-    margin-top: -85px; /* Compensa el header flotante transparente */
-    padding-top: 140px;
+    padding-top: 56px;
 }
 
 .banner-content-box {
@@ -34,210 +33,162 @@
         color: #FFFFFF !important;
     }
 
-/* ---------- Buscador vertical por tipo de vehículo (Primer código) ---------- */
-.search-wrap {
-    margin-top: -3rem;
+/* ---------- Banner de vehículos (autos y motocicletas) ---------- */
+.vb-sec {
+    padding: 4rem 0 0;
 }
 
-.vf-panel {
+.vb {
+    position: relative;
+    min-height: 440px;
+    border-radius: 1.5rem;
+    overflow: hidden;
     background: #0b0b0c;
     color: #fff;
-    padding: 1.5rem 1.75rem 1.5rem;
-    border-radius: 1.1rem;
-    box-shadow: 0 22px 50px rgba(0, 0, 0, .3);
-    display: flex;
-    flex-direction: column;
 }
 
-.vf-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-}
-
-.vf-types {
-    position: relative;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    border-bottom: 1px solid rgba(255, 255, 255, .16);
-    width: 240px;
-}
-
-.vf-type {
-    background: transparent;
-    border: 0;
-    color: rgba(255, 255, 255, .55);
-    padding: .5rem .25rem .85rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: .35rem;
-    font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
-    font-weight: 500;
-    font-size: .92rem;
-    cursor: pointer;
-    transition: color .2s ease;
-}
-
-    .vf-type i {
-        font-size: 1.9rem;
-    }
-
-    .vf-type:hover {
-        color: #fff;
-    }
-
-    .vf-type.is-active {
-        color: #fff;
-    }
-
-.vf-indicator {
+.vb-slide {
     position: absolute;
-    left: 0;
-    bottom: -1px;
-    width: 50%;
-    height: 3px;
-    background: var(--llanteria-primary);
-    transition: transform .3s cubic-bezier(.4, 0, .2, 1);
-}
-
-.vf-types[data-activo="Moto"] .vf-indicator {
-    transform: translateX(100%);
-}
-
-.vf-title {
-    margin: 0;
-    font-size: .8rem;
-    font-weight: 700;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, .6);
-}
-
-.vf-fields {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
-    align-items: end;
-    gap: .85rem;
-    animation: vfFade .3s ease;
-}
-
-@keyframes vfFade {
-    from {
-        opacity: 0;
-        transform: translateY(6px);
-    }
-
-    to {
-        opacity: 1;
-        transform: none;
-    }
-}
-
-.vf-field label {
-    display: block;
-    font-size: .85rem;
-    font-weight: 600;
-    margin-bottom: .3rem;
-    color: #fff;
-}
-
-    .vf-field label .req {
-        color: var(--llanteria-primary);
-        font-weight: 800;
-        margin-left: 2px;
-    }
-
-.vf-field input,
-.vf-field select {
-    width: 100%;
-    height: 48px;
-    padding: 0 .95rem;
-    border: 1px solid #fff;
-    border-radius: .5rem;
-    background: #fff;
-    color: #000;
-    font-size: 1rem;
-}
-
-    .vf-field select {
-        appearance: auto;
-    }
-
-    .vf-field input::placeholder {
-        color: #7b818a;
-    }
-
-    .vf-field input:focus,
-    .vf-field select:focus {
-        outline: 3px solid rgba(255, 255, 255, .35);
-        outline-offset: 1px;
-    }
-
-.vf-submit {
-    margin: 0;
-    height: 48px;
-    min-width: 140px;
-    padding: .8rem 1.5rem;
-    border: 1px solid #fff;
-    border-radius: .5rem;
-    background: #fff;
-    color: #000;
-    font-family: 'Roboto', 'Plus Jakarta Sans', sans-serif;
-    font-weight: 700;
-    font-size: 1.02rem;
-    letter-spacing: .02em;
-    text-align: center;
-    transition: opacity .2s ease, background-color .2s ease;
-}
-
-    .vf-submit:hover:not(:disabled) {
-        background: #e9eaec;
-    }
-
-    .vf-submit:disabled {
-        opacity: .35;
-        cursor: not-allowed;
-    }
-
-.vf-hint {
-    margin: .85rem 0 0;
-    font-size: .8rem;
-    color: rgba(255, 255, 255, .55);
-    text-align: center;
-}
-
-.vf-foto-sec {
-    padding: 2.5rem 0 0;
-}
-
-.vf-foto {
-    min-height: 300px;
-    border-radius: 1.1rem;
+    inset: 0;
     display: flex;
     align-items: center;
-    background: linear-gradient(90deg, rgba(0, 0, 0, .78), rgba(0, 0, 0, .15)), #111 url('/images/Auto-target.jpg') center / cover no-repeat;
+    opacity: 0;
+    visibility: hidden;
+    background: linear-gradient(90deg, rgba(0, 0, 0, .92) 0%, rgba(0, 0, 0, .75) 38%, rgba(0, 0, 0, .05) 75%), var(--vb-img, linear-gradient(135deg, #111, #2b2b2b)) center / cover no-repeat;
+    transition: opacity .9s ease, visibility .9s ease;
 }
 
-.vf-foto-texto {
-    max-width: 520px;
-    padding: 2rem;
-    color: #fff;
+    .vb-slide.is-active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+.vb-texto {
+    max-width: 640px;
+    padding: 2.5rem 3.5rem 4.5rem;
+    transform: translateY(14px);
+    opacity: 0;
+    transition: transform .8s ease .2s, opacity .8s ease .2s;
 }
 
-    .vf-foto-texto h2 {
-        font-size: 1.6rem;
+.vb-slide.is-active .vb-texto {
+    transform: none;
+    opacity: 1;
+}
+
+.vb-texto h2 {
+    margin: 0 0 1.1rem;
+    font-size: clamp(1.7rem, 3.2vw, 2.7rem);
+    line-height: 1.12;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: .005em;
+}
+
+    .vb-texto h2 strong {
+        display: block;
         font-weight: 800;
-        margin: .35rem 0 .5rem;
     }
 
-    .vf-foto-texto p {
-        color: rgba(255, 255, 255, .8);
-        margin-bottom: 1.1rem;
+    .vb-texto h2 span {
+        display: block;
+        font-weight: 300;
     }
+
+.vb-texto p {
+    margin: 0 0 1.5rem;
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, .92);
+}
+
+.vb-btn {
+    display: inline-block;
+    padding: .65rem 1.6rem;
+    border: 1px solid #fff;
+    border-radius: .5rem;
+    background: transparent;
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color .2s ease, color .2s ease;
+}
+
+    .vb-btn:hover,
+    .vb-btn:focus-visible {
+        background: #fff;
+        color: #000;
+    }
+
+/* Íconos que cambian entre autos y motocicletas */
+.vb-dots {
+    position: absolute;
+    left: 3.5rem;
+    bottom: 1.5rem;
+    z-index: 3;
+    display: flex;
+    gap: .5rem;
+}
+
+.vb-dot {
+    width: 44px;
+    height: 36px;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    color: rgba(255, 255, 255, .55);
+    font-size: 1.15rem;
+    cursor: pointer;
+    transition: color .2s ease, border-color .2s ease;
+}
+
+    .vb-dot:hover {
+        color: #fff;
+    }
+
+    .vb-dot.is-active {
+        color: #fff;
+        border-bottom-color: #fff;
+    }
+
+@media (max-width: 767.98px) {
+    .vb {
+        min-height: 480px;
+        border-radius: 1.1rem;
+    }
+
+    .vb-slide {
+        align-items: flex-end;
+        background: linear-gradient(0deg, rgba(0, 0, 0, .92) 0%, rgba(0, 0, 0, .7) 55%, rgba(0, 0, 0, .1) 100%), var(--vb-img, linear-gradient(135deg, #111, #2b2b2b)) center / cover no-repeat;
+    }
+
+    .vb-texto {
+        padding: 1.5rem 1.5rem 4.5rem;
+    }
+
+    .vb-dots {
+        left: 1.5rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vb-slide, .vb-texto {
+        transition: none;
+    }
+}
+
+/* ---------- Separación entre las secciones del inicio ----------
+   Este archivo solo se carga en el inicio, así que no afecta a las demás páginas. */
+.section {
+    padding: 5.5rem 0;
+}
+
+.tc-brands {
+    margin-top: 5rem;
+}
+
+.tc-cats {
+    padding: 5rem 0 1.5rem;
+}
 
 /* ---------- Tarjetas del inicio ---------- */
 .home-section-head {

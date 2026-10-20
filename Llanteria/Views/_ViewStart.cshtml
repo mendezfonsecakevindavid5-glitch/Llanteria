@@ -15,5 +15,6 @@
     var esPublico = publicos.Contains(controlador) && !gestion;
     // "Cuenta" (perfil) lleva directo a editar el perfil con el diseño del sitio, también para el personal: sin el menú del panel.
     if (controlador == "User") esPublico = true;
-    Layout = esPublico ? "_Layout" : "_AdminLayout";
+    // Los documentos legales en PDF (LegalController.DocumentoPdf) llevan su propio diseño, sin cabecera ni menú del sitio.
+    Layout = Context.Items["LegalPdf"] is true ? "_LayoutPdfLegal" : esPublico ? "_Layout" : "_AdminLayout";
 }

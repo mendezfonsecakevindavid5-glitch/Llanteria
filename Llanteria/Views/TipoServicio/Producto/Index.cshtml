@@ -1,0 +1,70 @@
+@model IEnumerable<Llanteria.Models.Producto>
+
+@{
+    ViewData["Title"] = "Productos";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Productos", "Llantas, aceites y demás artículos en venta.", BotonTexto: "Nuevo producto", BotonAction: "Create", BotonController: "Producto"))
+
+<div class="panel">
+    <div class="panel-head">
+        <span>@Model.Count() productos</span>
+        <input id="buscar" type="search" class="form-control form-control-sm" style="max-width:260px" placeholder="Buscar por nombre o categoría" />
+    </div>
+    <div class="table-responsive">
+        <table class="data-table" id="tabla">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th>Medida</th>
+                    <th class="text-end">Compra</th>
+                    <th class="text-end">Venta</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model.OrderBy(x => x.Nombre))
+                {
+                    var d = p.DetalleProducto;
+                    var medida = d != null && !string.IsNullOrEmpty(d.Ancho) ? $"{d.Ancho}/{d.Perfil} R{d.Diametro}" : "—";
+                    <tr>
+                        <td><img class="thumb" src="~/images/productoos/@(string.IsNullOrEmpty(p.RutaImagen) ? "default-producto.png" : p.RutaImagen)" alt="" /></td>
+                        <td>
+                            <div class="cell-title">@p.Nombre</div>
+                            <div class="cell-sub">@(p.IdProveedorNavigation?.NombreEmpresa ?? "Sin proveedor")</div>
+                        </td>
+                        <td>@(p.Categoria ?? "Llantas")</td>
+                        <td>@medida</td>
+                        <td class="text-end money">@p.PrecioCompra.ToString("C0")</td>
+                        <td class="text-end money">@p.PrecioVenta.ToString("C0")</td>
+                        <td class="text-end">
+                            <span class="row-actions">
+                                <a asp-action="Edit" asp-route-id="@p.Id" class="icon-btn" title="Editar"><i class="fa-solid fa-pen"></i></a>
+                                <button type="button" class="icon-btn danger" title="Eliminar"
+                                        data-delete="@Url.Action("Delete", new { id = p.Id })" data-nombre="@p.Nombre"
+                                        data-aviso="No se puede eliminar si ya fue facturado."><i class="fa-solid fa-trash"></i></button>
+                            </span>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" class="empty-state">Aún no hay productos registrados.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('buscar').addEventListener('input', function () {
+            const q = this.value.toLowerCase();
+            document.querySelectorAll('#tabla tbody tr').forEach(function (tr) {
+                tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        });
+    </script>
+}

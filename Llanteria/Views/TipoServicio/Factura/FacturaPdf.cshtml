@@ -1,0 +1,130 @@
+@model Llanteria.Models.Factura
+@inject Llanteria.Infrastructure.NegocioInfo Negocio
+@using Llanteria.Infrastructure
+@{
+    Layout = null;
+    var f = Model;
+    var c = f.IdClienteNavigation;
+    string Money(decimal v) => v.ToString("C0");
+    var numero = f.Id.ToString("D6");
+    var tarifa = f.TotalBruto > 0 ? Math.Round(f.Iva / f.TotalBruto * 100, 1) : 0;
+    var retencion = f.RteFte ?? 0;
+    var palabras = Negocio.Nombre.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    var inicio = palabras.Length > 1 ? string.Join(' ', palabras.Take(palabras.Length - 1)) : Negocio.Nombre;
+    var final = palabras.Length > 1 ? palabras.Last() : "";
+    var detalles = f.DetalleFacturas.OrderBy(d => d.Id).ToList();
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Factura de venta @numero · @Negocio.Nombre</title>
+    <partial name="_PdfEstilos" />
+    <style>
+        .inv-box { border: 1px solid #1F2328; }
+        .inv-box .h { background: #1F2328; color: #fff; text-align: center; font-weight: bold; text-transform: uppercase; letter-spacing: .8px; padding: 6px 10px; font-size: 11px; }
+        .inv-box .n { text-align: center; font-size: 22px; font-weight: bold; padding: 8px 10px 2px; }
+        .inv-box .d { text-align: center; padding: 0 10px 9px; color: #374151; font-size: 11px; }
+        table.cli td { padding: 5px 10px; border: 1px solid #DDE1E6; }
+        table.cli td.k { width: 17%; background: #F7F8FA; color: #6B7280; font-size: 10px; text-transform: uppercase; letter-spacing: .4px; }
+        table.tot td { padding: 6px 10px; border-bottom: 1px solid #E6E8EC; }
+        table.tot tr.final td { background: #1F2328; color: #fff; font-size: 14px; font-weight: bold; border-bottom: 0; padding: 9px 10px; }
+        .son { border: 1px solid #DDE1E6; padding: 8px 10px; font-size: 10.5px; margin-bottom: 8px; }
+        .son b { display: block; font-size: 9.5px; text-transform: uppercase; letter-spacing: .5px; color: #6B7280; margin-bottom: 2px; }
+    </style>
+</head>
+<body>
+    <table class="doc-head">
+        <tr>
+            <td style="width:58%">
+                <div class="brand">@inicio <span>@final</span></div>
+                <div class="muted small" style="margin-top:6px">
+                    @if (!string.IsNullOrWhiteSpace(Negocio.Nit)) { <span>NIT @Negocio.Nit</span><br /> }
+                    @Negocio.Direccion<br />
+                    Tel. @Negocio.Telefono<br />
+                    @Negocio.Correo
+                </div>
+            </td>
+            <td style="width:42%">
+                <div class="inv-box">
+                    <div class="h">Factura de venta</div>
+                    <div class="n">N.º @numero</div>
+                    <div class="d">Fecha de emisión: <b>@f.Fecha?.ToString("dd 'de' MMMM 'de' yyyy")</b></div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div class="rule"></div>
+
+    <h2 class="sec" style="margin-top:0">Datos del cliente</h2>
+    <table class="cli">
+        <tr>
+            <td class="k">Cliente</td><td class="b">@c?.Nombres @c?.Apellidos</td>
+            <td class="k">Documento</td><td>@c?.IdDocumentoNavigation?.SiglasPresentacion @c?.NumeroDocumento</td>
+        </tr>
+        <tr>
+            <td class="k">Teléfono</td><td>@c?.Telefono</td>
+            <td class="k">Correo</td><td>@c?.Correo</td>
+        </tr>
+    </table>
+
+    <h2 class="sec">Detalle</h2>
+    <table class="dt">
+        <thead>
+            <tr><th style="width:5%">#</th><th style="width:14%">Código</th><th>Descripción</th><th class="num" style="width:9%">Cant.</th><th class="num" style="width:17%">Vr. unitario</th><th class="num" style="width:17%">Vr. total</th></tr>
+        </thead>
+        <tbody>
+            @for (var i = 0; i < detalles.Count; i++)
+            {
+                var d = detalles[i];
+                <tr class="@(i % 2 == 1 ? "alt" : "")">
+                    <td class="muted">@(i + 1)</td>
+                    <td>@d.CodigoItem</td>
+                    <td>@d.Descripción</td>
+                    <td class="num">@d.Cantidad</td>
+                    <td class="num">@Money(d.ValorUnitario)</td>
+                    <td class="num">@Money(d.Subtotal)</td>
+                </tr>
+            }
+            @if (!detalles.Any())
+            {
+                <tr><td colspan="6" class="muted c" style="padding:14px">Esta factura no tiene líneas de detalle.</td></tr>
+            }
+        </tbody>
+    </table>
+
+    <table class="avoid" style="margin-top:16px">
+        <tr>
+            <td style="width:56%;padding-right:16px">
+                <div class="son"><b>Son</b>@NumeroALetras.Pesos(f.TotalPagar)</div>
+                @if (!string.IsNullOrWhiteSpace(f.Observaciones))
+                {
+                    <div class="son"><b>Observaciones</b>@f.Observaciones</div>
+                }
+                <div class="small muted">Puntos de fidelización ganados con esta compra: <b>@((int)(f.TotalPagar / 1000))</b></div>
+            </td>
+            <td style="width:44%">
+                <table class="tot">
+                    <tr><td>Subtotal</td><td class="num">@Money(f.TotalBruto)</td></tr>
+                    <tr><td>IVA (@tarifa.ToString("0.#") %)</td><td class="num">@Money(f.Iva)</td></tr>
+                    @if (retencion > 0)
+                    {
+                        <tr><td>(-) Retención en la fuente</td><td class="num">@Money(-retencion)</td></tr>
+                    }
+                    <tr class="final"><td>TOTAL A PAGAR</td><td class="num">@Money(f.TotalPagar)</td></tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <table class="firmas" style="margin-top:52px">
+        <tr>
+            <td><div class="linea">Elaboró@(string.IsNullOrWhiteSpace(User.Identity?.Name) ? "" : ": " + User.Identity!.Name)</div></td>
+            <td></td>
+            <td><div class="linea">Recibí conforme (firma y documento)</div></td>
+        </tr>
+    </table>
+
+    <div class="nota">@Negocio.LeyendaFactura</div>
+</body>
+</html>

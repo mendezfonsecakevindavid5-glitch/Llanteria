@@ -1,0 +1,393 @@
+@{
+    ViewData["Title"] = "Reestablecer contraseña";
+}
+
+<link rel="stylesheet" href="~/css/paginas/reestablecer.css" asp-append-version="true" />
+
+<div class="register-container-wrapper">
+    <div class="entrance-register-card">
+        <div class="header-group">
+            <h2 id="mainTitle" class="form-main-title m-0 fw-bold">Reestablecer contraseña</h2>
+        </div>
+
+        <form asp-controller="Account" asp-action="ProcesarReestablecimiento" method="post" id="resetForm" autocomplete="off" novalidate>
+            @Html.AntiForgeryToken()
+            <input type="email" style="display:none" name="prevent_autofill_email" autocomplete="email" />
+
+            <div>
+                <!-- ETAPA 1 -->
+                <div id="etapa1">
+                    <div class="mb-4">
+                        <label class="custom-field-label">
+                            Correo electrónico
+                            <span class="required-asterisk">*<span class="tooltip-text">Este campo es obligatorio</span></span>
+                        </label>
+                        <input type="email" name="Correo" id="emailInput" class="form-control custom-input" placeholder="Dirección de correo electrónico" autocomplete="off" data-lpignore="true" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
+                    </div>
+
+                    <div id="generalErrorStage1" class="custom-error-text text-center mb-3"></div>
+
+                    <div class="d-grid mt-4 mb-4">
+                        <button type="submit" id="btnSiguiente" class="btn btn-register-submit text-uppercase btn-muted">
+                            Siguiente
+                        </button>
+                    </div>
+
+                    <div class="text-center pt-4 border-top">
+                        <span style="color: #000000;">¿Recordaste tu contraseña?</span>
+                        <a id="btnRegresar" class="text-danger fw-bold text-decoration-none ms-2" style="cursor: pointer;">Inicia sesión aquí</a>
+                    </div>
+                </div>
+
+                <!-- ETAPA 2 -->
+                <div id="etapa2" style="display: none;">
+                    <p class="text-center text-muted mb-4" style="font-size: 0.95rem;">
+                        Ingrese el código enviado a <br />
+                        <span class="fw-bold text-dark" id="censoredEmailDisplay"></span>
+                    </p>
+
+                    <div class="text-center">
+                        <div class="otp-wrapper my-4" id="otpContainer">
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" autocomplete="off" data-lpignore="true" onpaste="return false;" oncopy="return false;" oncut="return false;" />
+                        </div>
+
+                        <div class="timer-container my-4">
+                            <span id="timerText">01:20</span>
+                        </div>
+                        <div class="text-end my-4">
+                            <span id="resendCodeBtn" class="resend-link" style="display: none;">Enviar nuevo código</span>
+                        </div>
+
+                        <input type="hidden" id="TokenCompleto" name="TokenVerificacion" />
+                    </div>
+
+                    <div id="generalErrorStage2" class="custom-error-text text-center mb-3"></div>
+
+                    <div class="d-grid mt-5">
+                        <button type="button" id="btnVerificar" class="btn btn-register-submit text-uppercase btn-muted">
+                            Verificar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ETAPA 3 -->
+                <div id="etapa3" style="display: none;">
+                    <div class="mb-4">
+                        <label class="custom-field-label">
+                            Nueva contraseña
+                            <span class="required-asterisk">*<span class="tooltip-text">Este campo es obligatorio</span></span>
+                        </label>
+                        <div class="input-wrapper">
+                            <button type="button" id="togglePass1" class="password-toggle-btn"><i id="eyeIcon1" class="fa-regular fa-eye-slash"></i></button>
+                            <input type="password" name="NuevaContrasena" id="pass1" class="form-control custom-input custom-input-password" placeholder="Nueva contraseña" autocomplete="new-password" data-lpignore="true" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="custom-field-label">
+                            Confirmar nueva contraseña
+                            <span class="required-asterisk">*<span class="tooltip-text">Este campo es obligatorio</span></span>
+                        </label>
+                        <div class="input-wrapper">
+                            <button type="button" id="togglePass2" class="password-toggle-btn"><i id="eyeIcon2" class="fa-regular fa-eye-slash"></i></button>
+                            <input type="password" id="pass2" class="form-control custom-input custom-input-password" placeholder="Confirmar contraseña" autocomplete="new-password" data-lpignore="true" spellcheck="false" onpaste="return false;" oncopy="return false;" oncut="return false;" ondrop="return false;" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-4" style="background-color: transparent; font-size: 0.85rem;">
+                        <span class="fw-bold d-block mb-3 text-dark">La contraseña debe cumplir con:</span>
+                        <ul class="mb-0 ps-0" style="line-height: 1.6; list-style: none;">
+                            <li id="req-len" class="req-item"><i class="fa-solid fa-circle me-2 req-icon" style="font-size: 0.4rem;"></i><span>Mínimo 15 caracteres en total</span></li>
+                            <li id="req-upper" class="req-item"><i class="fa-solid fa-circle me-2 req-icon" style="font-size: 0.4rem;"></i><span>Por lo menos 2 letras mayúsculas</span></li>
+                            <li id="req-lower" class="req-item"><i class="fa-solid fa-circle me-2 req-icon" style="font-size: 0.4rem;"></i><span>Por lo menos 3 letras minúsculas</span></li>
+                            <li id="req-num" class="req-item"><i class="fa-solid fa-circle me-2 req-icon" style="font-size: 0.4rem;"></i><span>Por lo menos 6 números</span></li>
+                            <li id="req-spec" class="req-item"><i class="fa-solid fa-circle me-2 req-icon" style="font-size: 0.4rem;"></i><span>Por lo menos 2 caracteres especiales</span></li>
+                        </ul>
+                    </div>
+
+                    <div id="generalErrorStage3" class="custom-error-text text-center mb-3"></div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" id="btnFinalizar" class="btn btn-register-submit text-uppercase btn-muted">
+                            Finalizar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const etapa1 = document.getElementById('etapa1');
+            const etapa2 = document.getElementById('etapa2');
+            const etapa3 = document.getElementById('etapa3');
+            const btnRegresar = document.getElementById('btnRegresar');
+            const resetForm = document.getElementById('resetForm');
+            const btnSiguiente = document.getElementById('btnSiguiente');
+            const btnVerificar = document.getElementById('btnVerificar');
+            const btnFinalizar = document.getElementById('btnFinalizar');
+            const resendCodeBtn = document.getElementById('resendCodeBtn');
+
+            const errorStage1 = document.getElementById('generalErrorStage1');
+            const errorStage2 = document.getElementById('generalErrorStage2');
+            const errorStage3 = document.getElementById('generalErrorStage3');
+
+            const otpInputs = document.querySelectorAll('.otp-input');
+            const timerText = document.getElementById('timerText');
+            const emailInput = document.getElementById('emailInput');
+            const pass1 = document.getElementById('pass1');
+            const pass2 = document.getElementById('pass2');
+
+            const togglePass1 = document.getElementById('togglePass1');
+            const eyeIcon1 = document.getElementById('eyeIcon1');
+            const togglePass2 = document.getElementById('togglePass2');
+            const eyeIcon2 = document.getElementById('eyeIcon2');
+
+            document.querySelectorAll('input').forEach(inp => {
+                ['paste', 'copy', 'cut', 'drop'].forEach(ev => {
+                    inp.addEventListener(ev, e => e.preventDefault());
+                });
+            });
+
+            togglePass1.addEventListener('click', function () {
+                const isPassword = pass1.type === 'password';
+                pass1.type = isPassword ? 'text' : 'password';
+                eyeIcon1.classList.toggle('fa-eye-slash', !isPassword);
+                eyeIcon1.classList.toggle('fa-eye', isPassword);
+            });
+
+            togglePass2.addEventListener('click', function () {
+                const isPassword = pass2.type === 'password';
+                pass2.type = isPassword ? 'text' : 'password';
+                eyeIcon2.classList.toggle('fa-eye-slash', !isPassword);
+                eyeIcon2.classList.toggle('fa-eye', isPassword);
+            });
+
+            const reqLen = document.getElementById('req-len');
+            const reqUpper = document.getElementById('req-upper');
+            const reqLower = document.getElementById('req-lower');
+            const reqNum = document.getElementById('req-num');
+            const reqSpec = document.getElementById('req-spec');
+
+            let countdownInterval;
+            let currentStep = 1;
+
+            const allowedEmailRegex = /^[a-zA-Z0-9._%+-]+@@(gmail|outlook|hotmail)\.[a-zA-Z]{2,}$/i;
+
+            emailInput.addEventListener('input', function () {
+                if (emailInput.value.trim() !== '') {
+                    btnSiguiente.classList.remove('btn-muted');
+                    errorStage1.style.display = 'none';
+                } else {
+                    btnSiguiente.classList.add('btn-muted');
+                }
+            });
+
+            btnRegresar.addEventListener('click', function (e) {
+                e.preventDefault();
+                window.location.href = '@Url.Action("Login", "Account")';
+            });
+
+            function actualizarReqItem(elem, cumplit) {
+                const icon = elem.querySelector('.req-icon');
+                if (cumplit) {
+                    elem.classList.add('valid');
+                    icon.className = 'fa-solid fa-check me-2 req-icon';
+                    icon.style.fontSize = '0.9rem';
+                } else {
+                    elem.classList.remove('valid');
+                    icon.className = 'fa-solid fa-circle me-2 req-icon';
+                    icon.style.fontSize = '0.4rem';
+                }
+            }
+
+            function evaluarContrasena(val) {
+                const lenOk = val.length >= 15;
+                const upperOk = (val.match(/[A-Z]/g) || []).length >= 2;
+                const lowerOk = (val.match(/[a-z]/g) || []).length >= 3;
+                const numOk = (val.match(/[0-9]/g) || []).length >= 6;
+                const specOk = (val.match(/[^a-zA-Z0-9]/g) || []).length >= 2;
+
+                actualizarReqItem(reqLen, lenOk);
+                actualizarReqItem(reqUpper, upperOk);
+                actualizarReqItem(reqLower, lowerOk);
+                actualizarReqItem(reqNum, numOk);
+                actualizarReqItem(reqSpec, specOk);
+
+                return lenOk && upperOk && lowerOk && numOk && specOk;
+            }
+
+            function validarEtapa3() {
+                const esValida = evaluarContrasena(pass1.value);
+                const coinciden = pass1.value !== '' && pass1.value === pass2.value;
+
+                if (esValida && coinciden) {
+                    btnFinalizar.classList.remove('btn-muted');
+                    errorStage3.style.display = 'none';
+                } else {
+                    btnFinalizar.classList.add('btn-muted');
+                }
+            }
+
+            pass1.addEventListener('input', validarEtapa3);
+            pass2.addEventListener('input', validarEtapa3);
+
+            resetForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                if (currentStep === 1) {
+                    errorStage1.style.display = 'none';
+                    if (!emailInput.value.trim()) {
+                        errorStage1.innerHTML = "&bull; Por favor, ingresa tu correo electrónico.";
+                        errorStage1.style.display = 'block';
+                        return;
+                    }
+
+                    if (!allowedEmailRegex.test(emailInput.value.trim())) {
+                        errorStage1.innerHTML = "&bull; Solo se permiten correos con dominio Gmail, Outlook o Hotmail.";
+                        errorStage1.style.display = 'block';
+                        return;
+                    }
+
+                    btnSiguiente.disabled = true;
+                    btnSiguiente.innerHTML = '<span class="wave-dot">.</span><span class="wave-dot">.</span><span class="wave-dot">.</span><span class="wave-dot">.</span>';
+
+                    try {
+                        const response = await fetch('@Url.Action("EnviarCodigoRecuperacion", "Account")', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ correo: emailInput.value.trim() })
+                        });
+                        const resData = await response.json();
+
+                        if (resData.success) {
+                            const correoVal = emailInput.value.trim();
+                            const [nombre, dominio] = correoVal.split('\u0040');
+                            let correoCensurado = nombre.length <= 2 ? nombre + '***\u0040' + dominio : nombre.substring(0, 2) + '*'.repeat(nombre.length - 2) + '\u0040' + dominio;
+                            document.getElementById('censoredEmailDisplay').textContent = correoCensurado;
+
+                            currentStep = 2;
+                            etapa1.style.display = 'none';
+                            etapa2.style.display = 'block';
+                            iniciarTemporizador(80);
+                            otpInputs[0].focus();
+                        } else {
+                            errorStage1.innerHTML = "&bull; " + (resData.message || "El correo electrónico no se encuentra registrado.");
+                            errorStage1.style.display = 'block';
+                        }
+                    } catch (err) {
+                        errorStage1.innerHTML = "&bull; Error de conexión con el servidor.";
+                        errorStage1.style.display = 'block';
+                    } finally {
+                        btnSiguiente.disabled = false;
+                        btnSiguiente.innerHTML = 'SIGUIENTE';
+                    }
+                } else if (currentStep === 3) {
+                    errorStage3.style.display = 'none';
+                    if (!pass1.value || !pass2.value) {
+                        errorStage3.innerHTML = "&bull; Por favor, completa ambos campos de contraseña.";
+                        errorStage3.style.display = 'block';
+                        return;
+                    }
+
+                    if (!evaluarContrasena(pass1.value)) {
+                        errorStage3.innerHTML = "&bull; La contraseña no cumple con los requisitos de seguridad.";
+                        errorStage3.style.display = 'block';
+                        return;
+                    }
+
+                    if (pass1.value !== pass2.value) {
+                        errorStage3.innerHTML = "&bull; Las contraseñas no coinciden.";
+                        errorStage3.style.display = 'block';
+                        return;
+                    }
+
+                    btnFinalizar.disabled = true;
+                    btnFinalizar.innerHTML = '<span class="wave-dot">.</span><span class="wave-dot">.</span><span class="wave-dot">.</span><span class="wave-dot">.</span>';
+                    resetForm.submit();
+                }
+            });
+
+            btnVerificar.addEventListener('click', async function () {
+                const token = document.getElementById('TokenCompleto').value;
+                errorStage2.style.display = 'none';
+                if (token.length < 6) return;
+
+                btnVerificar.style.pointerEvents = 'none';
+                btnVerificar.innerHTML = '<span class="wave-dot">.</span><span class="wave-dot">.</span><span class="wave-dot">.</span><span class="wave-dot">.</span>';
+
+                try {
+                    const response = await fetch('@Url.Action("VerificarTokenRecuperacion", "Account")', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(token)
+                    });
+                    const resData = await response.json();
+
+                    if (resData.success) {
+                        clearInterval(countdownInterval);
+                        btnVerificar.innerHTML = '<i class="fa-solid fa-check me-2"></i>CORRECTO';
+                        setTimeout(() => {
+                            currentStep = 3;
+                            etapa2.style.display = 'none';
+                            etapa3.style.display = 'block';
+                        }, 600);
+                    } else {
+                        btnVerificar.classList.add('btn-incorrect');
+                        btnVerificar.innerHTML = '<i class="fa-solid fa-xmark me-2"></i>INCORRECTO';
+                        errorStage2.innerHTML = "&bull; Código incorrecto.";
+                        errorStage2.style.display = 'block';
+                        resendCodeBtn.style.display = 'inline-block';
+                        btnVerificar.style.pointerEvents = 'auto';
+                    }
+                } catch (err) {
+                    btnVerificar.classList.add('btn-incorrect');
+                    btnVerificar.innerHTML = '<i class="fa-solid fa-xmark me-2"></i>INCORRECTO';
+                    btnVerificar.style.pointerEvents = 'auto';
+                }
+            });
+
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    if (this.value !== '' && index < otpInputs.length - 1) otpInputs[index + 1].focus();
+                    let token = '';
+                    otpInputs.forEach(i => token += i.value);
+                    document.getElementById('TokenCompleto').value = token;
+                    if (token.length === 6) {
+                        btnVerificar.classList.remove('btn-muted');
+                        btnVerificar.click();
+                    } else {
+                        btnVerificar.classList.add('btn-muted');
+                    }
+                });
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && this.value === '' && index > 0) otpInputs[index - 1].focus();
+                });
+            });
+
+            function iniciarTemporizador(segundos) {
+                clearInterval(countdownInterval);
+                resendCodeBtn.style.display = 'none';
+                let tiempoRestante = segundos;
+                countdownInterval = setInterval(() => {
+                    let min = Math.floor(tiempoRestante / 60);
+                    let seg = tiempoRestante % 60;
+                    timerText.textContent = `${min < 10 ? '0' + min : min}:${seg < 10 ? '0' + seg : seg}`;
+                    if (--tiempoRestante < 0) {
+                        clearInterval(countdownInterval);
+                        resendCodeBtn.style.display = 'inline-block';
+                    }
+                }, 1000);
+            }
+        });
+    </script>
+}

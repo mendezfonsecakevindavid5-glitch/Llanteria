@@ -12,6 +12,7 @@ public class CatalogoViewModel
     public string? Ancho { get; set; }
     public string? Perfil { get; set; }
     public string? Diametro { get; set; }
+    public string? Tipo { get; set; }
     public string[] Marcas { get; set; } = Array.Empty<string>();
     public int? PrecioMin { get; set; }
     public int? PrecioMax { get; set; }
@@ -25,6 +26,6 @@ public class CatalogoViewModel
     public int PrecioMasBajo { get; set; }
     public int PrecioMasAlto { get; set; }
 
-    public bool HayFiltros => !string.IsNullOrEmpty(Ancho) || !string.IsNullOrEmpty(Perfil) || !string.IsNullOrEmpty(Diametro)
+    public bool HayFiltros => !string.IsNullOrEmpty(Ancho) || !string.IsNullOrEmpty(Perfil) || !string.IsNullOrEmpty(Diametro) || !string.IsNullOrEmpty(Tipo)
                               || Marcas.Length > 0 || PrecioMin.HasValue || PrecioMax.HasValue;
 }

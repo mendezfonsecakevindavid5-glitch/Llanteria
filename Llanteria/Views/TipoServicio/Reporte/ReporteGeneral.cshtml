@@ -1,0 +1,223 @@
+@model Llanteria.Models.ReporteFinancieroVM
+@{
+    Layout = null;
+    var m = Model;
+    string Money(decimal v) => v.ToString("C0");
+    string Pct(decimal v) => v.ToString("P1");
+    string Cls(decimal v) => v >= 0 ? "pos" : "neg";
+    var hoy = DateOnly.FromDateTime(DateTime.Today);
+    var topClientes = m.TopClientes.Take(5).ToList();
+    var topProductos = m.TopProductos.Take(5).ToList();
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>@m.Cabecera.Titulo · @m.Cabecera.Codigo</title>
+    <partial name="_PdfEstilos" />
+</head>
+<body>
+    <partial name="_PdfEncabezado" model="m.Cabecera" />
+
+    <!-- Indicadores principales -->
+    <table class="kpis">
+        <tr>
+            <td><div class="kpi-l">Ingresos por ventas</div><div class="kpi-v">@Money(m.Ventas)</div><div class="kpi-s">Sin IVA · @m.Facturas.Count facturas</div></td>
+            <td><div class="kpi-l">Egresos</div><div class="kpi-v">@Money(m.Egresos)</div><div class="kpi-s">@m.Gastos.Count gastos registrados</div></td>
+            <td class="hl"><div class="kpi-l">@(m.Utilidad >= 0 ? "Utilidad del periodo" : "Pérdida del periodo")</div><div class="kpi-v @Cls(m.Utilidad)">@Money(m.Utilidad)</div><div class="kpi-s">Después de costo y egresos</div></td>
+            <td><div class="kpi-l">Margen neto</div><div class="kpi-v @Cls(m.MargenNeto)">@Pct(m.MargenNeto)</div><div class="kpi-s">Margen bruto @Pct(m.MargenBruto)</div></td>
+        </tr>
+    </table>
+    <table class="kpis">
+        <tr>
+            <td><div class="kpi-l">Total facturado</div><div class="kpi-v">@Money(m.TotalFacturado)</div><div class="kpi-s">Con IVA, menos retenciones</div></td>
+            <td><div class="kpi-l">Ticket promedio</div><div class="kpi-v">@Money(m.TicketPromedio)</div><div class="kpi-s">Por factura</div></td>
+            <td><div class="kpi-l">IVA facturado</div><div class="kpi-v">@Money(m.IvaFacturado)</div><div class="kpi-s">Impuesto por declarar</div></td>
+            <td><div class="kpi-l">Egresos por pagar</div><div class="kpi-v">@Money(m.EgresosPendientes)</div><div class="kpi-s">@Money(m.EgresosVencidos) vencidos</div></td>
+        </tr>
+    </table>
+
+    <!-- Estado de resultados -->
+    <h2 class="sec">Estado de resultados<small>@m.Cabecera.Periodo</small></h2>
+    <table class="er">
+        <tr class="sec"><td colspan="2">Ingresos</td></tr>
+        <tr><td class="ind">Ventas facturadas (base, sin IVA)</td><td class="num">@Money(m.Ventas)</td></tr>
+        <tr><td class="ind">(-) Costo de la mercancía vendida <span class="muted">(estimado)</span></td><td class="num">@Money(-m.CostoVentas)</td></tr>
+        <tr class="sub"><td>Utilidad bruta</td><td class="num">@Money(m.UtilidadBruta)</td></tr>
+        <tr class="sec"><td colspan="2">Egresos operativos</td></tr>
+        @foreach (var c in m.GastosPorCategoria)
+        {
+            <tr><td class="ind">(-) @c.Categoria</td><td class="num">@Money(-c.Monto)</td></tr>
+        }
+        @if (!m.GastosPorCategoria.Any())
+        {
+            <tr><td class="ind muted">Sin egresos registrados en el periodo</td><td class="num">@Money(0)</td></tr>
+        }
+        <tr class="sub"><td>Total egresos</td><td class="num">@Money(-m.Egresos)</td></tr>
+        <tr class="tot"><td>@(m.Utilidad >= 0 ? "UTILIDAD DEL PERIODO" : "PÉRDIDA DEL PERIODO")</td><td class="num">@Money(m.Utilidad)</td></tr>
+    </table>
+
+    <!-- Impuestos y flujo -->
+    <h2 class="sec">Impuestos y flujo de caja<small>base facturación</small></h2>
+    <table class="er">
+        <tr><td class="ind">Total facturado con IVA (antes de retenciones)</td><td class="num">@Money(m.TotalFacturado + m.Retenciones)</td></tr>
+        <tr><td class="ind">  de los cuales IVA por declarar</td><td class="num">@Money(m.IvaFacturado)</td></tr>
+        <tr><td class="ind">(-) Retención en la fuente practicada</td><td class="num">@Money(-m.Retenciones)</td></tr>
+        <tr class="sub"><td>Total a cobrar</td><td class="num">@Money(m.TotalFacturado)</td></tr>
+        <tr><td class="ind">(-) Egresos pagados</td><td class="num">@Money(-m.EgresosPagados)</td></tr>
+        <tr class="sub"><td>Flujo neto del periodo</td><td class="num @Cls(m.FlujoNeto)">@Money(m.FlujoNeto)</td></tr>
+        <tr><td class="ind muted">Egresos pendientes de pago (no incluidos arriba)</td><td class="num muted">@Money(m.EgresosPendientes)</td></tr>
+    </table>
+
+    <!-- Egresos por categoría -->
+    @if (m.GastosPorCategoria.Any())
+    {
+        <h2 class="sec">Egresos por categoría</h2>
+        <table class="dt">
+            <thead><tr><th>Categoría</th><th class="num">Gastos</th><th class="num">Monto</th><th class="num">%</th><th style="width:28%">Participación</th></tr></thead>
+            <tbody>
+                @for (var i = 0; i < m.GastosPorCategoria.Count; i++)
+                {
+                    var c = m.GastosPorCategoria[i];
+                    <tr class="@(i % 2 == 1 ? "alt" : "")">
+                        <td>@c.Categoria</td>
+                        <td class="num">@c.Cantidad</td>
+                        <td class="num">@Money(c.Monto)</td>
+                        <td class="num">@Pct(c.Porcentaje)</td>
+                        <td><div class="bar"><i style="width:@((int)Math.Round(c.Porcentaje * 100))%"></i></div></td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot><tr><td>Total</td><td class="num">@m.Gastos.Count</td><td class="num">@Money(m.Egresos)</td><td class="num">100,0 %</td><td></td></tr></tfoot>
+        </table>
+    }
+
+    <!-- Evolución -->
+    @if (m.Evolucion.Any())
+    {
+        <h2 class="sec">Ingresos vs. egresos<small>agrupado @m.AgrupadoPor</small></h2>
+        <table class="dt">
+            <thead><tr><th>Periodo</th><th class="num">Facturas</th><th class="num">Ventas (sin IVA)</th><th class="num">Egresos</th><th class="num">Resultado</th></tr></thead>
+            <tbody>
+                @for (var i = 0; i < m.Evolucion.Count; i++)
+                {
+                    var e = m.Evolucion[i];
+                    <tr class="@(i % 2 == 1 ? "alt" : "")">
+                        <td>@e.Etiqueta</td>
+                        <td class="num">@e.Facturas</td>
+                        <td class="num">@Money(e.Ventas)</td>
+                        <td class="num">@Money(e.Gastos)</td>
+                        <td class="num @Cls(e.Resultado)">@Money(e.Resultado)</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot><tr><td>Total</td><td class="num">@m.Facturas.Count</td><td class="num">@Money(m.Ventas)</td><td class="num">@Money(m.Egresos)</td><td class="num">@Money(m.Ventas - m.Egresos)</td></tr></tfoot>
+        </table>
+    }
+
+    <!-- Rankings -->
+    @if (topClientes.Any() || topProductos.Any())
+    {
+        <div class="avoid">
+            <h2 class="sec">Rankings del periodo</h2>
+            <table>
+                <tr>
+                    <td style="width:50%;padding-right:10px">
+                        <div class="b small" style="margin-bottom:4px">MEJORES CLIENTES</div>
+                        <table class="dt">
+                            <thead><tr><th>Cliente</th><th class="num">Fact.</th><th class="num">Valor</th></tr></thead>
+                            <tbody>
+                                @for (var i = 0; i < topClientes.Count; i++)
+                                {
+                                    <tr class="@(i % 2 == 1 ? "alt" : "")"><td>@topClientes[i].Nombre</td><td class="num">@topClientes[i].Cantidad</td><td class="num">@Money(topClientes[i].Valor)</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                    <td style="width:50%;padding-left:10px">
+                        <div class="b small" style="margin-bottom:4px">PRODUCTOS Y SERVICIOS MÁS VENDIDOS</div>
+                        <table class="dt">
+                            <thead><tr><th>Descripción</th><th class="num">Unid.</th><th class="num">Valor</th></tr></thead>
+                            <tbody>
+                                @for (var i = 0; i < topProductos.Count; i++)
+                                {
+                                    <tr class="@(i % 2 == 1 ? "alt" : "")"><td>@topProductos[i].Nombre</td><td class="num">@topProductos[i].Cantidad</td><td class="num">@Money(topProductos[i].Valor)</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    }
+
+    <!-- Detalle de ventas -->
+    <div style="page-break-before:always"></div>
+    <h2 class="sec" style="margin-top:0">Detalle de ventas<small>@m.Facturas.Count facturas</small></h2>
+    @if (m.Facturas.Any())
+    {
+        <table class="dt">
+            <thead><tr><th>N.º</th><th>Fecha</th><th>Cliente</th><th class="num">Subtotal</th><th class="num">IVA</th><th class="num">Retención</th><th class="num">Total</th></tr></thead>
+            <tbody>
+                @for (var i = 0; i < m.Facturas.Count; i++)
+                {
+                    var f = m.Facturas[i];
+                    <tr class="@(i % 2 == 1 ? "alt" : "")">
+                        <td>@f.Id.ToString("D6")</td>
+                        <td>@f.Fecha?.ToString("dd/MM/yyyy")</td>
+                        <td>@f.IdClienteNavigation?.Nombres @f.IdClienteNavigation?.Apellidos</td>
+                        <td class="num">@Money(f.TotalBruto)</td>
+                        <td class="num">@Money(f.Iva)</td>
+                        <td class="num">@Money(f.RteFte ?? 0)</td>
+                        <td class="num">@Money(f.TotalPagar)</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr><td colspan="3">Total</td><td class="num">@Money(m.Ventas)</td><td class="num">@Money(m.IvaFacturado)</td><td class="num">@Money(m.Retenciones)</td><td class="num">@Money(m.TotalFacturado)</td></tr>
+            </tfoot>
+        </table>
+    }
+    else
+    {
+        <p class="muted">No hay ventas registradas en el periodo.</p>
+    }
+
+    <!-- Detalle de egresos -->
+    <h2 class="sec">Detalle de egresos<small>@m.Gastos.Count gastos</small></h2>
+    @if (m.Gastos.Any())
+    {
+        <table class="dt">
+            <thead><tr><th>Registro</th><th>Categoría</th><th>Descripción</th><th>Vence</th><th>Estado</th><th class="num">Monto</th></tr></thead>
+            <tbody>
+                @for (var i = 0; i < m.Gastos.Count; i++)
+                {
+                    var g = m.Gastos[i];
+                    var pagado = g.Estado == "Pagado";
+                    var vencido = !pagado && g.FechaVencimiento < hoy;
+                    <tr class="@(i % 2 == 1 ? "alt" : "")">
+                        <td>@g.FechaRegistro?.ToString("dd/MM/yyyy")</td>
+                        <td>@g.IdCategoriaNavigation?.Nombre</td>
+                        <td>@g.Descripcion</td>
+                        <td>@g.FechaVencimiento.ToString("dd/MM/yyyy")</td>
+                        <td><span class="tag @(pagado ? "ok" : vencido ? "bad" : "warn")">@(pagado ? "Pagado" : vencido ? "Vencido" : "Pendiente")</span></td>
+                        <td class="num">@Money(g.Monto)</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot><tr><td colspan="5">Total egresos</td><td class="num">@Money(m.Egresos)</td></tr></tfoot>
+        </table>
+    }
+    else
+    {
+        <p class="muted">No hay egresos registrados en el periodo.</p>
+    }
+
+    <div class="nota">
+        <b>Notas.</b> El costo de la mercancía vendida se estima con el precio de compra actual de cada producto; los servicios no tienen costo registrado.
+        Los egresos se toman por fecha de registro. El flujo de caja asume que lo facturado fue cobrado. Este reporte es de gestión interna y no reemplaza los estados financieros contables.
+    </div>
+
+    <partial name="_PdfFirmas" />
+</body>
+</html>

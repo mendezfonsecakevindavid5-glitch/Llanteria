@@ -13,6 +13,6 @@ public class LlantasController : CatalogoControllerBase
 
     [HttpGet]
     public IActionResult Index(string? ancho, string? perfil, string? diametro, string[]? marca,
-        int? min, int? max, string? orden, int pagina = 1)
-        => View(Armar(ancho, perfil, diametro, marca, min, max, orden, pagina));
+        int? min, int? max, string? orden, int pagina = 1, string? tipo = null)
+        => View(Armar(ancho, perfil, diametro, marca, min, max, orden, pagina, tipo));
 }

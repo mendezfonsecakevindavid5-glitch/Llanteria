@@ -1,0 +1,23 @@
+@model Llanteria.Models.FacturaFormViewModel
+
+@{
+    ViewData["Title"] = "Editar factura";
+    ViewData["Accion"] = "Edit";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Editar factura", "Al guardar se reajustan el stock y los puntos del cliente.", "Factura", "Index"))
+
+@if (ViewBag.SinDetalle == true)
+{
+    <div class="alert alert-warning small">Esta factura se registró solo con totales (total anterior: @(((decimal)ViewBag.TotalAnterior).ToString("C0"))). Agrega las líneas para reemplazarlos.</div>
+}
+
+<div class="panel">
+    <div class="panel-body">
+        <partial name="_Form" model="Model" />
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

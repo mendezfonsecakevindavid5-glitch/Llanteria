@@ -5,15 +5,13 @@
     var r = (ResumenCompra)ViewBag.Resumen;
 }
 
-<section class="cat-hero">
-    <div class="container">
+<div class="container tc-wrap">
+    <header class="page-head">
         <nav class="cat-crumbs" aria-label="Ruta"><a asp-controller="Home" asp-action="Index">Inicio</a><span>/</span><a asp-controller="Carrito" asp-action="Index">Carrito</a><span>/</span>Finalizar compra</nav>
         <h1>Finalizar compra</h1>
         <p>Los campos con <span class="text-danger">*</span> son obligatorios.</p>
-    </div>
-</section>
+    </header>
 
-<div class="container tc-wrap">
     <form asp-action="Checkout" method="post" id="formCheckout">
         <div class="row g-4">
             <div class="col-lg-8">

@@ -4,15 +4,13 @@
     ViewData["Title"] = "Carrito";
 }
 
-<section class="cat-hero">
-    <div class="container">
+<div class="container tc-wrap">
+    <header class="page-head">
         <nav class="cat-crumbs" aria-label="Ruta"><a asp-controller="Home" asp-action="Index">Inicio</a><span>/</span>Carrito</nav>
         <h1>Tu carrito</h1>
         <p>Revisa tus productos antes de pagar.</p>
-    </div>
-</section>
+    </header>
 
-<div class="container tc-wrap">
     @if (!Model.Lineas.Any())
     {
         <div class="tc-panel text-center py-5 px-3">

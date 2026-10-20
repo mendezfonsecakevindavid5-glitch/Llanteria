@@ -1,0 +1,65 @@
+@model IEnumerable<Llanteria.Models.Empleado>
+
+@{
+    ViewData["Title"] = "Empleados";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Empleados", "Personal del taller.", BotonTexto: "Nuevo empleado", BotonAction: "Create", BotonController: "Empleado"))
+
+<div class="panel">
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Empleado</th>
+                    <th>Documento</th>
+                    <th>Contacto</th>
+                    <th>Rol</th>
+                    <th class="text-end">Salario</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td>
+                            @if (e.Foto != null && e.Foto.Length > 0)
+                            {
+                                <img class="thumb" src="@Url.Action("Foto", new { id = e.Id })" alt="" />
+                            }
+                            else
+                            {
+                                <span class="avatar-initial">@e.Nombres.Substring(0, 1).ToUpper()</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="cell-title">@e.Nombres @e.Apellidos</div>
+                            <div class="cell-sub">@(e.Horario ?? "Sin horario")</div>
+                        </td>
+                        <td>@e.IdDocumentoNavigation?.SiglasPresentacion @e.NumeroDocumento</td>
+                        <td>
+                            <div>@(e.Telefono ?? "—")</div>
+                            <div class="cell-sub">@e.Correo</div>
+                        </td>
+                        <td><span class="tag tag-neutral">@e.IdRolNavigation?.NombreRol</span></td>
+                        <td class="text-end money">@e.Salario.ToString("C0")</td>
+                        <td class="text-end">
+                            <span class="row-actions">
+                                <a asp-action="Edit" asp-route-id="@e.Id" class="icon-btn" title="Editar"><i class="fa-solid fa-pen"></i></a>
+                                <button type="button" class="icon-btn danger" title="Eliminar"
+                                        data-delete="@Url.Action("Delete", new { id = e.Id })" data-nombre="@e.Nombres @e.Apellidos"
+                                        data-aviso="No se puede eliminar si tiene un usuario asociado."><i class="fa-solid fa-trash"></i></button>
+                            </span>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" class="empty-state">Aún no hay empleados registrados.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

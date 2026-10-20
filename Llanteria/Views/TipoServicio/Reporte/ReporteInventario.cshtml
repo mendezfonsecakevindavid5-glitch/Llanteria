@@ -1,0 +1,75 @@
+@model Llanteria.Models.ReporteInventarioVM
+@{
+    Layout = null;
+    var m = Model;
+    string Money(decimal v) => v.ToString("C0");
+    var grupos = m.Items.GroupBy(i => i.IdBodegaNavigation?.NombreBodega ?? "Sin bodega").OrderBy(g => g.Key).ToList();
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>@m.Cabecera.Titulo · @m.Cabecera.Codigo</title>
+    <partial name="_PdfEstilos" />
+</head>
+<body>
+    <partial name="_PdfEncabezado" model="m.Cabecera" />
+
+    <table class="kpis">
+        <tr>
+            <td class="hl"><div class="kpi-l">Valor a costo</div><div class="kpi-v">@Money(m.TotalCosto)</div><div class="kpi-s">Inversión en existencias</div></td>
+            <td><div class="kpi-l">Valor a precio de venta</div><div class="kpi-v">@Money(m.TotalVenta)</div><div class="kpi-s">Margen potencial @Money(m.TotalVenta - m.TotalCosto)</div></td>
+            <td><div class="kpi-l">Referencias / unidades</div><div class="kpi-v">@m.Items.Count / @m.Unidades.ToString("N0")</div><div class="kpi-s">En @grupos.Count bodega(s)</div></td>
+            <td><div class="kpi-l">Alertas de stock</div><div class="kpi-v @(m.Bajos + m.Agotados > 0 ? "neg" : "")">@(m.Bajos + m.Agotados)</div><div class="kpi-s">@m.Bajos bajo mínimo · @m.Agotados agotadas</div></td>
+        </tr>
+    </table>
+
+    <h2 class="sec">Existencias por bodega</h2>
+    @if (m.Items.Any())
+    {
+        <table class="dt">
+            <thead>
+                <tr><th>Producto</th><th>Código</th><th class="num">Stock</th><th class="num">Mín.</th><th>Situación</th><th class="num">Costo unit.</th><th class="num">Valor a costo</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var g in grupos)
+                {
+                    <tr class="grp"><td colspan="7">@g.Key <span class="muted" style="font-weight:normal">· @g.Count() referencias</span></td></tr>
+                    var n = 0;
+                    foreach (var i in g)
+                    {
+                        var agotado = Llanteria.Models.ReporteInventarioVM.EsAgotado(i);
+                        var bajo = Llanteria.Models.ReporteInventarioVM.EsBajo(i);
+                        <tr class="@(n++ % 2 == 1 ? "alt" : "")">
+                            <td>@(i.IdProductoNavigation?.Nombre ?? "—")</td>
+                            <td>@i.Codigo</td>
+                            <td class="num @(agotado || bajo ? "neg b" : "")">@(i.StockActual ?? 0)</td>
+                            <td class="num">@(i.StockMinimo ?? 0)</td>
+                            <td><span class="tag @(agotado ? "bad" : bajo ? "warn" : "ok")">@(agotado ? "Agotado" : bajo ? "Stock bajo" : "Normal")</span></td>
+                            <td class="num">@Money(i.IdProductoNavigation?.PrecioCompra ?? 0)</td>
+                            <td class="num">@Money(Llanteria.Models.ReporteInventarioVM.ValorCosto(i))</td>
+                        </tr>
+                    }
+                    <tr class="sub">
+                        <td colspan="2">Subtotal @g.Key</td>
+                        <td class="num">@g.Sum(x => x.StockActual ?? 0).ToString("N0")</td>
+                        <td colspan="3"></td>
+                        <td class="num">@Money(g.Sum(x => Llanteria.Models.ReporteInventarioVM.ValorCosto(x)))</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr><td colspan="2">Total general</td><td class="num">@m.Unidades.ToString("N0")</td><td colspan="3"></td><td class="num">@Money(m.TotalCosto)</td></tr>
+            </tfoot>
+        </table>
+    }
+    else
+    {
+        <p class="muted">No hay existencias registradas.</p>
+    }
+
+    <div class="nota"><b>Nota.</b> Se considera "stock bajo" cuando las unidades están en el mínimo o por debajo. El valor a costo usa el precio de compra vigente de cada producto.</div>
+
+    <partial name="_PdfFirmas" />
+</body>
+</html>

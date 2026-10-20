@@ -1,0 +1,45 @@
+@model IEnumerable<Llanteria.Models.TipoServicio>
+
+@{
+    ViewData["Title"] = "Servicios";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Servicios", "Servicios que ofrece el taller y su valor base.", BotonTexto: "Nuevo servicio", BotonAction: "Create", BotonController: "TipoServicio"))
+
+<div class="panel">
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Servicio</th>
+                    <th class="text-end">Valor</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    var img = string.IsNullOrEmpty(s.IconoPath) || s.IconoPath.StartsWith("fa-") ? "default-servicio.png" : s.IconoPath;
+                    <tr>
+                        <td><img class="thumb" src="~/images/servicios/@img" alt="" /></td>
+                        <td class="cell-title">@s.NombreServicio</td>
+                        <td class="text-end money">@s.ValorServicio.ToString("C0")</td>
+                        <td class="text-end">
+                            <span class="row-actions">
+                                <a asp-action="Edit" asp-route-id="@s.Id" class="icon-btn" title="Editar"><i class="fa-solid fa-pen"></i></a>
+                                <button type="button" class="icon-btn danger" title="Eliminar"
+                                        data-delete="@Url.Action("Delete", new { id = s.Id })" data-nombre="@s.NombreServicio"
+                                        data-aviso="No se puede eliminar si ya fue facturado."><i class="fa-solid fa-trash"></i></button>
+                            </span>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="4" class="empty-state">Aún no hay servicios registrados.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

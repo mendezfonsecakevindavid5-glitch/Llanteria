@@ -1,0 +1,18 @@
+@model Llanteria.Models.Gasto
+
+@{
+    ViewData["Title"] = "Editar gasto";
+    ViewData["Accion"] = "Edit";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Editar gasto", "Actualiza el monto, la fecha o el estado de pago.", "Gasto", "Index"))
+
+<div class="panel panel-medium">
+    <div class="panel-body">
+        <partial name="_Form" model="Model" />
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

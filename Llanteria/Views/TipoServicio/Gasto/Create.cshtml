@@ -1,0 +1,18 @@
+@model Llanteria.Models.Gasto
+
+@{
+    ViewData["Title"] = "Nuevo gasto";
+    ViewData["Accion"] = "Create";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Nuevo gasto", "Registra un egreso del negocio.", "Gasto", "Index"))
+
+<div class="panel panel-medium">
+    <div class="panel-body">
+        <partial name="_Form" model="Model" />
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

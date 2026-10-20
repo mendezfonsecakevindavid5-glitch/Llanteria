@@ -1,0 +1,18 @@
+@model Llanteria.Models.Bodega
+
+@{
+    ViewData["Title"] = "Editar bodega";
+    ViewData["Accion"] = "Edit";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Editar bodega", "Actualiza los datos de la bodega.", "Bodega", "Index"))
+
+<div class="panel panel-narrow">
+    <div class="panel-body">
+        <partial name="_Form" model="Model" />
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

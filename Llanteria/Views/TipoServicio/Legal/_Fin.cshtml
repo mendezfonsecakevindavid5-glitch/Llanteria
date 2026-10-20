@@ -1,0 +1,9 @@
+﻿@* Cierra el marco abierto por _Inicio. *@
+@if (Context.Items["LegalPdf"] is true)
+{
+    @Html.Raw("</div>")
+}
+else
+{
+    @Html.Raw("</div></div>")
+}

@@ -4,6 +4,8 @@ using Llanteria.Models;
 using Llanteria.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Rotativa.AspNetCore;
+using Rotativa.AspNetCore.Options;
 
 namespace Llanteria.Controllers;
 
@@ -22,11 +24,28 @@ public class LegalController : Controller
         _email = email;
     }
 
-    public IActionResult Terminos() => View();
-    public IActionResult Privacidad() => View();
-    public IActionResult Garantia() => View();
-    public IActionResult Devoluciones() => View();
+    // Los cuatro documentos legales se muestran como PDF (el pie del sitio los abre en una pestaña nueva).
+    // Preguntas frecuentes y PQRS siguen siendo páginas normales, sin menú lateral.
+    public IActionResult Terminos() => DocumentoPdf("Terminos");
+    public IActionResult Privacidad() => DocumentoPdf("Privacidad");
+    public IActionResult Garantia() => DocumentoPdf("Garantia");
+    public IActionResult Devoluciones() => DocumentoPdf("Devoluciones");
     public IActionResult Faq() => View();
+
+    // Sin FileName el navegador lo abre en su visor de PDF en vez de descargarlo.
+    // "LegalPdf" le indica a _ViewStart que use el diseño de documento (_LayoutPdfLegal) y no el del sitio.
+    private IActionResult DocumentoPdf(string vista)
+    {
+        HttpContext.Items["LegalPdf"] = true;
+        return new ViewAsPdf(vista)
+        {
+            PageSize = Size.A4,
+            PageOrientation = Orientation.Portrait,
+            PageMargins = new Margins(16, 16, 18, 16),
+            CustomSwitches = "--print-media-type --footer-font-size 7 --footer-spacing 5 --footer-line " +
+                             "--footer-left \"[title]\" --footer-right \"[page] / [topage]\""
+        };
+    }
 
     // ---------- PQRS ----------
 

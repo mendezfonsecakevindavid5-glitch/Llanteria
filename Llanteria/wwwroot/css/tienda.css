@@ -29,15 +29,10 @@ a.tc-brand:hover { transform: scale(1.08); }
   text-decoration: none; color: var(--tc-ink); transition: transform .25s ease, box-shadow .25s ease;
 }
 .tc-cat:hover { transform: translateY(-4px); box-shadow: 0 14px 28px -16px rgba(0, 0, 0, .3); color: var(--tc-ink); }
-.tc-cat-art { position: relative; width: 100%; height: 132px; display: grid; place-items: center; margin-bottom: 1rem; }
-.tc-cat-art::before { content: ""; position: absolute; top: 0; left: 50%; width: 120px; height: 120px; transform: translateX(-50%); border-radius: 50%; background: var(--tc-primary); }
-.tc-cat-art img, .tc-cat-art i {
-  position: relative; z-index: 1; max-width: 88%; max-height: 112px; object-fit: contain;
-  animation: tcRespira 3.4s ease-in-out infinite;
-}
-.tc-cat-art i { font-size: 3.2rem; color: #fff; }
+/* Imagen de la categoría: todas con el mismo alto y ancho; object-fit: cover recorta el sobrante sin deformarla. */
+.tc-cat-art { position: relative; width: 100%; aspect-ratio: 4 / 3; margin-bottom: 1rem; border-radius: 12px; overflow: hidden; background: #e2e2e2; }
+.tc-cat-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
 .tc-cat-label { font-weight: 800; text-transform: uppercase; letter-spacing: .4px; font-size: 1.1rem; line-height: 1.15; text-align: center; }
-@keyframes tcRespira { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
 
 /* ---------- Opiniones ---------- */
 .rv-card { background: #fff; border: 1px solid var(--tc-line); border-radius: 14px; padding: 1.4rem; }
@@ -100,6 +95,5 @@ a.tc-brand:hover { transform: scale(1.08); }
   .tc-summary { position: static; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tc-cat-art img, .tc-cat-art i { animation: none; }
   .tc-cat, .tc-brand { transition: none; }
 }

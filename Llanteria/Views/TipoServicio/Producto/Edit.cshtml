@@ -1,0 +1,18 @@
+@model Llanteria.Models.Producto
+
+@{
+    ViewData["Title"] = "Editar producto";
+    ViewData["Accion"] = "Edit";
+}
+
+@await Html.PartialAsync("_PageHeader", new PageHeader("Editar producto", "Actualiza precios, ficha técnica o imagen.", "Producto", "Index"))
+
+<div class="panel panel-medium">
+    <div class="panel-body">
+        <partial name="_Form" model="Model" />
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
