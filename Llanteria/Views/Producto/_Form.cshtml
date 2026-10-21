@@ -93,6 +93,18 @@
             <label class="form-label" for="DetalleProducto_TipoAceite">Tipo de aceite</label>
             <input asp-for="DetalleProducto.TipoAceite" class="form-control" placeholder="Sintético" />
         </div>
+        <div class="col-md-4">
+            <label class="form-label" for="DetalleProducto_Amperaje">Amperaje (baterías)</label>
+            <input asp-for="DetalleProducto.Amperaje" class="form-control" placeholder="45Ah" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" for="DetalleProducto_Polaridad">Polaridad (baterías)</label>
+            <select asp-for="DetalleProducto.Polaridad" class="form-select">
+                <option value="">Sin especificar</option>
+                <option value="Izquierda">Izquierda</option>
+                <option value="Derecha">Derecha</option>
+            </select>
+        </div>
 
         <div class="col-12"><div class="form-section">Imagen</div></div>
         <div class="col-12 d-flex align-items-center gap-3">

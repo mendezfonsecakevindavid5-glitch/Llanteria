@@ -63,9 +63,8 @@
     padding-block: 0 4rem;
 }
 
-/* ---------- Catálogo: filtros, barra de orden y tarjetas ---------- */
+/* ---------- Catálogo: filtros, búsqueda, chips y tarjetas ---------- */
 .cat-filters,
-.cat-toolbar,
 .cat-empty {
     border-color: var(--vp-line);
     border-radius: var(--vp-radius);
@@ -84,9 +83,86 @@
     letter-spacing: .08em;
 }
 
-.cat-toolbar {
-    padding: .55rem .9rem;
+/* Barra "Buscar por la marca...": sin bordes redondeados, lupa a la izquierda. */
+.cat-search-bar {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    border: 1px solid var(--vp-line);
+    border-radius: 0;
+    padding: .65rem .9rem;
+    margin-bottom: .9rem;
+    background: #fff;
 }
+
+    .cat-search-bar i {
+        color: #6b7280;
+        font-size: .95rem;
+    }
+
+    .cat-search-bar input {
+        border: 0;
+        outline: 0;
+        flex: 1;
+        font-size: .95rem;
+        background: transparent;
+    }
+
+/* Chips de filtro rápido: Automóviles, Motocicletas, Menor precio, Mayor precio. */
+.cat-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .55rem;
+    margin-bottom: 1.4rem;
+}
+
+.cat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    border: 1px solid var(--vp-line);
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #374151;
+    font-size: .85rem;
+    font-weight: 600;
+    padding: .4rem .9rem .4rem .55rem;
+    cursor: pointer;
+    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.cat-chip-dot {
+    width: .85rem;
+    height: .85rem;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid var(--vp-line);
+    position: relative;
+    flex-shrink: 0;
+}
+
+.cat-chip.is-active {
+    background: #111317;
+    border-color: #111317;
+    color: #fff;
+}
+
+    .cat-chip.is-active .cat-chip-dot {
+        background: #111317;
+        border-color: #fff;
+    }
+
+    .cat-chip.is-active .cat-chip-dot::after {
+        content: "";
+        position: absolute;
+        left: 2px;
+        top: -1px;
+        width: 5px;
+        height: 8px;
+        border: solid #fff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
 
 .cat-grid {
     gap: 1.25rem;

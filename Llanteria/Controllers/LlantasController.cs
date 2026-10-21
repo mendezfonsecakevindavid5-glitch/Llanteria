@@ -10,9 +10,13 @@ public class LlantasController : CatalogoControllerBase
 
     protected override string Categoria => "Llantas";
     protected override bool PorMedida => true;
+    protected override string ModoExtra => "Llantas";
 
     [HttpGet]
     public IActionResult Index(string? ancho, string? perfil, string? diametro, string[]? marca,
-        int? min, int? max, string? orden, int pagina = 1, string? tipo = null)
-        => View(Armar(ancho, perfil, diametro, marca, min, max, orden, pagina, tipo));
+        int? min, int? max, string? orden, int pagina = 1, string? tipo = null, string? qmarca = null)
+    {
+        var vm = Armar(ancho, perfil, diametro, marca, min, max, orden, pagina, tipo, qmarca);
+        return EsAjax() ? PartialView("_ResultadosCatalogo", vm) : View(vm);
+    }
 }

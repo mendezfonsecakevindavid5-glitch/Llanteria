@@ -32,6 +32,12 @@ public partial class DetalleProducto
 
     public int? GarantiaMeses { get; set; }
 
+    /// <summary>Amperaje/capacidad de la batería (ej. "45Ah"). Solo aplica a baterías.</summary>
+    public string? Amperaje { get; set; }
+
+    /// <summary>Polaridad de la batería: "Izquierda" o "Derecha". Solo aplica a baterías.</summary>
+    public string? Polaridad { get; set; }
+
     public virtual Marca? IdMarcaNavigation { get; set; } = null!;
 
     public virtual Producto? IdProductoNavigation { get; set; } = null!;

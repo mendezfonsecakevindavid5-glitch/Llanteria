@@ -61,6 +61,8 @@
                 establecerValor("DetalleProducto.GarantiaMeses", d.garantiaMeses);
                 establecerValor("DetalleProducto.Viscosidad", d.viscosidad);
                 establecerValor("DetalleProducto.TipoAceite", d.tipoAceite);
+                establecerValor("DetalleProducto.Amperaje", d.amperaje);
+                establecerValor("DetalleProducto.Polaridad", d.polaridad);
 
                 var listaAvisos = resultado.json.avisos || [];
                 mostrarAviso(listaAvisos.length ? ("Formulario precargado. " + listaAvisos.join(" ")) : "Formulario precargado correctamente.", listaAvisos.length > 0);

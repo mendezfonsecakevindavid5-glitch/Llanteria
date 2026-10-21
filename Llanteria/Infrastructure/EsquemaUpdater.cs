@@ -237,6 +237,12 @@ BEGIN
     );
 END;
 
+IF COL_LENGTH('dbo.DetalleProductos', 'Amperaje') IS NULL
+    ALTER TABLE dbo.DetalleProductos ADD Amperaje nvarchar(20) NULL;
+
+IF COL_LENGTH('dbo.DetalleProductos', 'Polaridad') IS NULL
+    ALTER TABLE dbo.DetalleProductos ADD Polaridad nvarchar(20) NULL;
+
 IF COL_LENGTH('dbo.Empleados', 'FotoDocumento') IS NULL
     ALTER TABLE dbo.Empleados ADD FotoDocumento varbinary(max) NULL;
 

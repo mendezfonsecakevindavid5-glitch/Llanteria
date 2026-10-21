@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Llanteria.Controllers;
 
-/// <summary>Lógica común de los catálogos públicos con filtros (llantas y baterías).</summary>
+/// <summary>Lógica común de los catálogos públicos con filtros (llantas, lubricantes y baterías).</summary>
 public abstract class CatalogoControllerBase : Controller
 {
     protected const int PorPagina = 12;
@@ -17,8 +17,15 @@ public abstract class CatalogoControllerBase : Controller
     protected abstract string Categoria { get; }
     protected virtual bool PorMedida => false;
 
+    /// <summary>Qué bloque de filtros adicionales va en el panel izquierdo: "Llantas", "Lubricantes", "Baterias" o "".</summary>
+    protected virtual string ModoExtra => "";
+
+    /// <summary>True si la petición pide solo el bloque de resultados (búsqueda en vivo), no la página completa.</summary>
+    protected bool EsAjax() => Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+
     protected CatalogoViewModel Armar(string? ancho, string? perfil, string? diametro, string[]? marca,
-        int? min, int? max, string? orden, int pagina, string? tipo = null)
+        int? min, int? max, string? orden, int pagina, string? tipo = null, string? qmarca = null,
+        string? viscosidad = null, string? tipoAceite = null, string? amperaje = null, string? polaridad = null, int? garantia = null)
     {
         // Base: productos de la categoría. Las llantas también se reconocen por tener medida cargada.
         IQueryable<Producto> baseQ = _db.Productos.AsNoTracking()
@@ -32,11 +39,18 @@ public abstract class CatalogoControllerBase : Controller
             Ancho = Limpio(ancho),
             Perfil = Limpio(perfil),
             Diametro = Limpio(diametro),
-            Tipo = string.IsNullOrWhiteSpace(tipo) ? null : TiposVehiculo.Normalizar(tipo), // "Auto" o "Moto" (banner del inicio)
+            Tipo = string.IsNullOrWhiteSpace(tipo) ? null : TiposVehiculo.Normalizar(tipo), // "Auto" o "Moto" (banner del inicio y chips)
             Marcas = (marca ?? Array.Empty<string>()).Where(m => !string.IsNullOrWhiteSpace(m)).Select(m => m.Trim()).Distinct().ToArray(),
+            BuscarMarca = Limpio(qmarca),
             PrecioMin = min is > 0 ? min : null,
             PrecioMax = max is > 0 ? max : null,
-            Orden = orden is "precio-desc" or "nombre" ? orden : "precio-asc"
+            Orden = orden is "precio-desc" or "nombre" ? orden : "precio-asc",
+            Viscosidad = Limpio(viscosidad),
+            TipoAceite = Limpio(tipoAceite),
+            Amperaje = Limpio(amperaje),
+            Polaridad = Limpio(polaridad),
+            Garantia = garantia is > 0 ? garantia : null,
+            ModoExtra = ModoExtra
         };
 
         // Opciones del panel (calculadas sobre toda la categoría, no sobre el resultado filtrado).
@@ -46,6 +60,18 @@ public abstract class CatalogoControllerBase : Controller
             vm.AnchosDisponibles = todos.Select(p => p.DetalleProducto?.Ancho).Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
             vm.PerfilesDisponibles = todos.Select(p => p.DetalleProducto?.Perfil).Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
             vm.DiametrosDisponibles = todos.Select(p => p.DetalleProducto?.Diametro).Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
+        }
+        if (ModeExtraEs("Lubricantes"))
+        {
+            vm.ViscosidadesDisponibles = todos.Select(p => p.DetalleProducto?.Viscosidad).Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
+            vm.TiposAceiteDisponibles = todos.Select(p => p.DetalleProducto?.TipoAceite).Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
+            vm.GarantiasDisponibles = todos.Select(p => p.DetalleProducto?.GarantiaMeses).Where(v => v.HasValue).Select(v => v!.Value).Distinct().OrderBy(v => v).ToList();
+        }
+        if (ModeExtraEs("Baterias"))
+        {
+            vm.AmperajesDisponibles = todos.Select(p => p.DetalleProducto?.Amperaje).Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
+            vm.PolaridadesDisponibles = todos.Select(p => p.DetalleProducto?.Polaridad).Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
+            vm.GarantiasDisponibles = todos.Select(p => p.DetalleProducto?.GarantiaMeses).Where(v => v.HasValue).Select(v => v!.Value).Distinct().OrderBy(v => v).ToList();
         }
         vm.MarcasDisponibles = todos
             .Select(p => p.DetalleProducto?.IdMarcaNavigation?.Nombre).Where(n => !string.IsNullOrEmpty(n))
@@ -68,6 +94,17 @@ public abstract class CatalogoControllerBase : Controller
             q = q.Where(p => p.DetalleProducto != null && p.DetalleProducto.IdMarcaNavigation != null
                              && marcas.Contains(p.DetalleProducto.IdMarcaNavigation.Nombre));
         }
+        if (vm.BuscarMarca != null)
+        {
+            var texto = vm.BuscarMarca;
+            q = q.Where(p => p.DetalleProducto != null && p.DetalleProducto.IdMarcaNavigation != null
+                             && p.DetalleProducto.IdMarcaNavigation.Nombre.Contains(texto));
+        }
+        if (vm.Viscosidad != null) q = q.Where(p => p.DetalleProducto!.Viscosidad == vm.Viscosidad);
+        if (vm.TipoAceite != null) q = q.Where(p => p.DetalleProducto!.TipoAceite == vm.TipoAceite);
+        if (vm.Amperaje != null) q = q.Where(p => p.DetalleProducto!.Amperaje == vm.Amperaje);
+        if (vm.Polaridad != null) q = q.Where(p => p.DetalleProducto!.Polaridad == vm.Polaridad);
+        if (vm.Garantia.HasValue) q = q.Where(p => p.DetalleProducto!.GarantiaMeses == vm.Garantia.Value);
         if (vm.PrecioMin.HasValue) q = q.Where(p => p.PrecioVenta >= vm.PrecioMin.Value);
         if (vm.PrecioMax.HasValue) q = q.Where(p => p.PrecioVenta <= vm.PrecioMax.Value);
 
@@ -88,6 +125,8 @@ public abstract class CatalogoControllerBase : Controller
         vm.Agotados = inv.Where(kv => kv.Value <= 0).Select(kv => kv.Key).ToHashSet();
         return vm;
     }
+
+    private bool ModeExtraEs(string valor) => string.Equals(ModoExtra, valor, StringComparison.Ordinal);
 
     private static string? Limpio(string? v) => string.IsNullOrWhiteSpace(v) ? null : v.Trim();
 }

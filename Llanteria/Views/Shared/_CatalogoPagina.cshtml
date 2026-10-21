@@ -1,11 +1,10 @@
-@* Página de catálogo con panel de filtros a la izquierda y resultados a la derecha (llantas y baterías). *@
+@* Página de catálogo con panel de filtros a la izquierda y resultados a la derecha (llantas, lubricantes y baterías). *@
 @model Llanteria.Models.CatalogoViewModel
 @{
     string titulo = ViewData["TituloCatalogo"] as string ?? "Catálogo";
     string intro = ViewData["IntroCatalogo"] as string ?? "";
     string controlador = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     bool porMedida = ViewData["PorMedida"] is true;
-    var r = Model.Resultados;
 }
 
 <div class="container cat-wrap">
@@ -18,6 +17,8 @@
         <aside class="col-lg-3">
             <form id="filtros" method="get" asp-controller="@controlador" asp-action="Index" class="cat-filters">
                 @if (!string.IsNullOrEmpty(Model.Tipo)) { <input type="hidden" name="tipo" value="@Model.Tipo" /> }
+                @if (!string.IsNullOrEmpty(Model.Orden)) { <input type="hidden" name="orden" value="@Model.Orden" /> }
+                @if (!string.IsNullOrEmpty(Model.BuscarMarca)) { <input type="hidden" name="qmarca" value="@Model.BuscarMarca" /> }
                 <div class="cat-filters-head">
                     <strong>Filtrar por</strong>
                     @if (Model.HayFiltros) { <a asp-controller="@controlador" asp-action="Index">Limpiar</a> }
@@ -38,6 +39,56 @@
                         <select name="diametro" class="form-select form-select-sm" aria-label="Rin">
                             <option value="">Rin</option>
                             @foreach (var a in Model.DiametrosDisponibles) { <option value="@a" selected="@(Model.Diametro == a)">@a</option> }
+                        </select>
+                    </div>
+                }
+
+                @if (Model.ModoExtra == "Lubricantes")
+                {
+                    <div class="cat-group">
+                        <div class="cat-group-title">Tipo de aceite</div>
+                        <select name="tipoAceite" class="form-select form-select-sm" aria-label="Tipo de aceite">
+                            <option value="">Todos</option>
+                            @foreach (var t in Model.TiposAceiteDisponibles) { <option value="@t" selected="@(Model.TipoAceite == t)">@t</option> }
+                        </select>
+                    </div>
+                    <div class="cat-group">
+                        <div class="cat-group-title">Viscosidad</div>
+                        <select name="viscosidad" class="form-select form-select-sm" aria-label="Viscosidad">
+                            <option value="">Todas</option>
+                            @foreach (var v in Model.ViscosidadesDisponibles) { <option value="@v" selected="@(Model.Viscosidad == v)">@v</option> }
+                        </select>
+                    </div>
+                    <div class="cat-group">
+                        <div class="cat-group-title">Garantía</div>
+                        <select name="garantia" class="form-select form-select-sm" aria-label="Garantía">
+                            <option value="">Todas</option>
+                            @foreach (var g in Model.GarantiasDisponibles) { <option value="@g" selected="@(Model.Garantia == g)">@g meses</option> }
+                        </select>
+                    </div>
+                }
+
+                @if (Model.ModoExtra == "Baterias")
+                {
+                    <div class="cat-group">
+                        <div class="cat-group-title">Amperaje</div>
+                        <select name="amperaje" class="form-select form-select-sm" aria-label="Amperaje">
+                            <option value="">Todos</option>
+                            @foreach (var a in Model.AmperajesDisponibles) { <option value="@a" selected="@(Model.Amperaje == a)">@a</option> }
+                        </select>
+                    </div>
+                    <div class="cat-group">
+                        <div class="cat-group-title">Polaridad</div>
+                        <select name="polaridad" class="form-select form-select-sm" aria-label="Polaridad">
+                            <option value="">Todas</option>
+                            @foreach (var p in Model.PolaridadesDisponibles) { <option value="@p" selected="@(Model.Polaridad == p)">@p</option> }
+                        </select>
+                    </div>
+                    <div class="cat-group">
+                        <div class="cat-group-title">Garantía</div>
+                        <select name="garantia" class="form-select form-select-sm" aria-label="Garantía">
+                            <option value="">Todas</option>
+                            @foreach (var g in Model.GarantiasDisponibles) { <option value="@g" selected="@(Model.Garantia == g)">@g meses</option> }
                         </select>
                     </div>
                 }
@@ -68,39 +119,11 @@
         </aside>
 
         <div class="col-lg-9">
-            <div class="cat-toolbar">
-                <span>@r.Total @(r.Total == 1 ? "producto" : "productos")</span>
-                <label class="d-flex align-items-center gap-2">
-                    <span class="d-none d-sm-inline">Ordenar</span>
-                    <select name="orden" form="filtros" class="form-select form-select-sm" onchange="this.form.submit()">
-                        <option value="precio-asc" selected="@(Model.Orden == "precio-asc")">Menor a mayor precio</option>
-                        <option value="precio-desc" selected="@(Model.Orden == "precio-desc")">Mayor a menor precio</option>
-                        <option value="nombre" selected="@(Model.Orden == "nombre")">Nombre (A-Z)</option>
-                    </select>
-                </label>
+            <div id="resultadosCatalogo" data-url="@Url.Action("Index", controlador)">
+                <partial name="_ResultadosCatalogo" model="Model" />
             </div>
-
-            @if (r.Items.Any())
-            {
-                <div class="cat-grid">
-                    @foreach (var p in r.Items)
-                    {
-                        <partial name="_TarjetaProducto" model="(p, Model.Agotados.Contains(p.Id))" />
-                    }
-                </div>
-                <div class="mt-4">
-                    <partial name="_Paginacion" model="(r.Pagina, r.TotalPaginas, r.Total)" />
-                </div>
-            }
-            else
-            {
-                <div class="cat-empty">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <h2>No encontramos resultados</h2>
-                    <p>Prueba con otros filtros o escríbenos: conseguimos lo que necesitas.</p>
-                    <a asp-controller="Contacto" asp-action="Index" class="btn btn-hyper-action">Pedir cotización</a>
-                </div>
-            }
         </div>
     </div>
 </div>
+
+<script src="~/js/catalogo-busqueda.js" asp-append-version="true"></script>

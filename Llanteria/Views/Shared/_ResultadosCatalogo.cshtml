@@ -1,0 +1,49 @@
+@* Bloque de resultados del catálogo (barra de búsqueda por marca, chips, grid y paginación). Se recarga solo,
+   vía AJAX, cuando el usuario escribe en la búsqueda o cambia un chip; el resto de filtros recargan la página entera. *@
+@model Llanteria.Models.CatalogoViewModel
+@{
+    string controlador = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var r = Model.Resultados;
+}
+
+<div class="cat-search-bar">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" id="buscarMarca" value="@Model.BuscarMarca" placeholder="Buscar por la marca..." autocomplete="off" aria-label="Buscar por la marca" />
+</div>
+
+<div class="cat-chips" id="catChips">
+    <button type="button" class="cat-chip @(Model.Tipo == "Auto" ? "is-active" : "")" data-filtro="tipo" data-valor="Auto">
+        <span class="cat-chip-dot"></span>Automóviles
+    </button>
+    <button type="button" class="cat-chip @(Model.Tipo == "Moto" ? "is-active" : "")" data-filtro="tipo" data-valor="Moto">
+        <span class="cat-chip-dot"></span>Motocicletas
+    </button>
+    <button type="button" class="cat-chip @(Model.Orden == "precio-asc" ? "is-active" : "")" data-filtro="orden" data-valor="precio-asc">
+        <span class="cat-chip-dot"></span>Menor precio
+    </button>
+    <button type="button" class="cat-chip @(Model.Orden == "precio-desc" ? "is-active" : "")" data-filtro="orden" data-valor="precio-desc">
+        <span class="cat-chip-dot"></span>Mayor precio
+    </button>
+</div>
+
+@if (r.Items.Any())
+{
+    <div class="cat-grid">
+        @foreach (var p in r.Items)
+        {
+            <partial name="_TarjetaProducto" model="(p, Model.Agotados.Contains(p.Id))" />
+        }
+    </div>
+    <div class="mt-4">
+        <partial name="_Paginacion" model="(r.Pagina, r.TotalPaginas, r.Total)" />
+    </div>
+}
+else
+{
+    <div class="cat-empty">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <h2>No encontramos resultados</h2>
+        <p>Prueba con otros filtros o escríbenos: conseguimos lo que necesitas.</p>
+        <a asp-controller="Contacto" asp-action="Index" class="btn btn-hyper-action">Pedir cotización</a>
+    </div>
+}

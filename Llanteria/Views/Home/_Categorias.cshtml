@@ -1,12 +1,12 @@
-@* Imágenes: wwwroot/images/tienda/{llantas,lubricantes,baterias,accesorios,flotas}.png (todas del mismo tamaño). Si falta una, el recuadro queda gris. *@
+@* Tarjetas de categoría con ícono en círculo (estilo franja de servicios de interllantas.com). *@
 @{
-    var categorias = new (string Nombre, string Imagen, string Controlador)[]
+    var categorias = new (string Nombre, string Icono, string Controlador)[]
     {
-        ("Llantas", "llantas", "Llantas"),
-        ("Lubricantes", "lubricantes", "Lubricantes"),
-        ("Baterías", "baterias", "Baterias"),
-        ("Accesorios", "accesorios", "Accesorios"),
-        ("Mantenimiento de flotas", "flotas", "Empresas")
+        ("Llantas", "fa-solid fa-record-vinyl", "Llantas"),
+        ("Lubricantes", "fa-solid fa-oil-can", "Lubricantes"),
+        ("Baterías", "fa-solid fa-car-battery", "Baterias"),
+        ("Accesorios", "fa-solid fa-screwdriver-wrench", "Accesorios"),
+        ("Mantenimiento de flotas", "fa-solid fa-truck-front", "Empresas")
     };
 }
 <section id="categorias" class="tc-cats">
@@ -18,7 +18,7 @@
                 <div class="col">
                     <a class="tc-cat" asp-controller="@c.Controlador" asp-action="Index">
                         <span class="tc-cat-art">
-                            <img src="~/images/tienda/@(c.Imagen).png" alt="@c.Nombre" loading="lazy" onerror="this.style.visibility='hidden'" />
+                            <span class="tc-cat-icon"><i class="@c.Icono"></i></span>
                         </span>
                         <span class="tc-cat-label">@c.Nombre</span>
                     </a>

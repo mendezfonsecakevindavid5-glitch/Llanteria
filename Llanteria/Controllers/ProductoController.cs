@@ -164,6 +164,8 @@ public class ProductoController : Controller
                 garantiaMeses = AEntero(Texto("GarantiaMeses")),
                 viscosidad = Texto("Viscosidad"),
                 tipoAceite = Texto("TipoAceite"),
+                amperaje = Texto("Amperaje"),
+                polaridad = Texto("Polaridad"),
             };
 
             return Json(new { ok = true, datos, avisos });

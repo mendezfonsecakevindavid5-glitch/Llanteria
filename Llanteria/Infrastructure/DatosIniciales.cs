@@ -70,7 +70,7 @@ public static class DatosIniciales
             DetalleProducto = new DetalleProducto { IdMarca = marcas[marca]!.Id, Ancho = ancho, Perfil = perfil, Diametro = diametro, TipoVehiculo = tipoVehiculo }
         };
 
-        Producto Aceite(string nombre, string marca, string viscosidad, string tipo, decimal compra, decimal venta) => new()
+        Producto Aceite(string nombre, string marca, string viscosidad, string tipo, int garantiaMeses, decimal compra, decimal venta) => new()
         {
             Nombre = nombre,
             Categoria = "Aceites",
@@ -79,10 +79,10 @@ public static class DatosIniciales
             PrecioVenta = venta,
             IdProveedor = proveedor.Id,
             IdBodega = bodega.Id,
-            DetalleProducto = new DetalleProducto { IdMarca = marcas[marca]!.Id, Viscosidad = viscosidad, TipoAceite = tipo }
+            DetalleProducto = new DetalleProducto { IdMarca = marcas[marca]!.Id, Viscosidad = viscosidad, TipoAceite = tipo, GarantiaMeses = garantiaMeses }
         };
 
-        Producto Bateria(string nombre, string marca, decimal compra, decimal venta) => new()
+        Producto Bateria(string nombre, string marca, string amperaje, string polaridad, int garantiaMeses, decimal compra, decimal venta) => new()
         {
             Nombre = nombre,
             Categoria = "Baterías",
@@ -91,7 +91,7 @@ public static class DatosIniciales
             PrecioVenta = venta,
             IdProveedor = proveedor.Id,
             IdBodega = bodega.Id,
-            DetalleProducto = new DetalleProducto { IdMarca = marcas[marca]!.Id }
+            DetalleProducto = new DetalleProducto { IdMarca = marcas[marca]!.Id, Amperaje = amperaje, Polaridad = polaridad, GarantiaMeses = garantiaMeses }
         };
 
         db.Productos.AddRange(
@@ -100,12 +100,12 @@ public static class DatosIniciales
             Llanta("Bridgestone Turanza T005", "Bridgestone", "205", "55", "16", TiposVehiculo.Auto, 230000, 320000),
             Llanta("Goodyear Assurance", "Goodyear", "175", "70", "13", TiposVehiculo.Auto, 150000, 215000),
             Llanta("Pirelli Angel GT", "Pirelli", "110", "70", "17", TiposVehiculo.Moto, 160000, 230000),
-            Aceite("Mobil Super 20W-50", "Mobil", "20W-50", "Mineral", 28000, 42000),
-            Aceite("Mobil 1 5W-30", "Mobil", "5W-30", "Sintético", 55000, 79000),
-            Aceite("Castrol GTX 15W-40", "Castrol", "15W-40", "Semisintético", 32000, 47000),
-            Aceite("Castrol Edge 5W-40", "Castrol", "5W-40", "Sintético", 58000, 84000),
-            Bateria("Varta Blue Dynamic 34R", "Varta", 240000, 340000),
-            Bateria("Varta Silver Dynamic 47R", "Varta", 310000, 430000)
+            Aceite("Mobil Super 20W-50", "Mobil", "20W-50", "Mineral", 3, 28000, 42000),
+            Aceite("Mobil 1 5W-30", "Mobil", "5W-30", "Sintético", 6, 55000, 79000),
+            Aceite("Castrol GTX 15W-40", "Castrol", "15W-40", "Semisintético", 3, 32000, 47000),
+            Aceite("Castrol Edge 5W-40", "Castrol", "5W-40", "Sintético", 6, 58000, 84000),
+            Bateria("Varta Blue Dynamic 34R", "Varta", "34Ah", "Derecha", 12, 240000, 340000),
+            Bateria("Varta Silver Dynamic 47R", "Varta", "47Ah", "Izquierda", 18, 310000, 430000)
         );
         db.SaveChanges();
     }
