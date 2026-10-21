@@ -320,21 +320,22 @@ public class AccountController : Controller
         cliente.PuntosAcumulados = PuntosDeBienvenida;
         cliente.PasswordHash = Claves.Hash(Password!);
 
+        // Cliente y usuario se guardan en UNA sola operación: o quedan los dos o no queda ninguno.
+        // Se crea fuera del try para poder usarlo después (iniciar sesión con él).
+        var nuevoUsuario = new Usuario
+        {
+            Username = Username!,
+            Correo = cliente.Correo,
+            PasswordHash = cliente.PasswordHash,
+            IdRol = IdRolRegistrado(),
+            Estado = "Activo",
+            FechaCreacion = DateTime.Now,
+            IdClienteNavigation = cliente,
+            IdTipoDocumento = cliente.IdDocumento
+        };
+
         try
         {
-            // Cliente y usuario se guardan en UNA sola operación: o quedan los dos o no queda ninguno
-            // (antes, si fallaba el usuario, el cliente ya había quedado guardado a medias).
-            var nuevoUsuario = new Usuario
-            {
-                Username = Username!,
-                Correo = cliente.Correo,
-                PasswordHash = cliente.PasswordHash,
-                IdRol = IdRolRegistrado(),
-                Estado = "Activo",
-                FechaCreacion = DateTime.Now,
-                IdClienteNavigation = cliente,
-                IdTipoDocumento = cliente.IdDocumento
-            };
             _db.Usuarios.Add(nuevoUsuario);
             await _db.SaveChangesAsync();
         }
@@ -352,9 +353,6 @@ public class AccountController : Controller
         }
 
         LimpiarCodigo(Registro);
-
-        // Inicia sesión de una vez: no tiene sentido pedirle al usuario que vuelva a loguearse
-        // justo después de crear la cuenta. El header queda actualizado desde la siguiente petición.
         await IniciarSesion(ClaimsDe(nuevoUsuario, RolesApp.UsuarioRegistrado));
 
         if (EsAjax())
