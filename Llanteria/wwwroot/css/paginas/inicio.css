@@ -15,21 +15,75 @@
     max-width: 750px;
 }
 
-.btn-banner-explorar {
-    background-color: #000000 !important;
-    color: #FFFFFF !important;
-    border: 1px solid #000000 !important;
-    border-radius: 0.5rem;
-    padding: 0.75rem 2.5rem;
+.banner-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .8rem;
     font-weight: 700;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #fff;
+    background: rgba(201, 43, 10, .85);
+    border: 1px solid rgba(255, 255, 255, .25);
+    padding: .4rem .9rem;
+    margin-bottom: 1.1rem;
+}
+
+.banner-content-box h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(1.9rem, 3.6vw, 3rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -.01em;
+}
+
+.banner-content-box p {
+    margin: 0 0 1.75rem;
+    max-width: 560px;
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, .9);
+}
+
+.banner-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .9rem;
+}
+
+.btn-banner-explorar {
+    background-color: var(--llanteria-primary) !important;
+    color: #FFFFFF !important;
+    border: 1px solid var(--llanteria-primary) !important;
+    border-radius: 0;
+    padding: 0.75rem 2.2rem;
+    font-weight: 700;
+    transition: background-color 0.2s ease, border-color .2s ease;
     text-decoration: none;
     display: inline-block;
 }
 
     .btn-banner-explorar:hover {
-        background-color: var(--llanteria-primary) !important;
-        border-color: var(--llanteria-primary) !important;
+        background-color: #a82309 !important;
+        border-color: #a82309 !important;
+        color: #FFFFFF !important;
+    }
+
+.btn-banner-contacto {
+    background: transparent !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, .55) !important;
+    border-radius: 0;
+    padding: 0.75rem 2.2rem;
+    font-weight: 700;
+    transition: background-color 0.2s ease, border-color .2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+    .btn-banner-contacto:hover {
+        background-color: rgba(255, 255, 255, .12) !important;
+        border-color: #fff !important;
         color: #FFFFFF !important;
     }
 
@@ -41,7 +95,7 @@
 .vb {
     position: relative;
     min-height: 440px;
-    border-radius: 1.5rem;
+    border-radius: 6px;
     overflow: hidden;
     background: #0b0b0c;
     color: #fff;
@@ -153,7 +207,7 @@
 @media (max-width: 767.98px) {
     .vb {
         min-height: 480px;
-        border-radius: 1.1rem;
+        border-radius: 6px;
     }
 
     .vb-slide {
@@ -173,6 +227,62 @@
 @media (prefers-reduced-motion: reduce) {
     .vb-slide, .vb-texto {
         transition: none;
+    }
+}
+
+/* ---------- Franja de confianza (debajo del banner de vehículos) ---------- */
+.trust-strip {
+    padding: 3rem 0 0;
+}
+
+.trust-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 2rem 0;
+}
+
+.trust-item {
+    display: flex;
+    align-items: flex-start;
+    gap: .9rem;
+}
+
+    .trust-item i {
+        font-size: 1.3rem;
+        color: var(--llanteria-primary);
+        width: 1.6rem;
+        text-align: center;
+        margin-top: .15rem;
+        flex-shrink: 0;
+    }
+
+    .trust-item strong {
+        display: block;
+        font-size: .95rem;
+        font-weight: 800;
+        color: #111317;
+        margin-bottom: .2rem;
+    }
+
+    .trust-item span {
+        display: block;
+        font-size: .85rem;
+        color: #5b626b;
+        line-height: 1.35;
+    }
+
+@media (max-width: 991.98px) {
+    .trust-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 575.98px) {
+    .trust-grid {
+        grid-template-columns: 1fr;
     }
 }
 

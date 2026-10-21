@@ -13,7 +13,13 @@
 <section class="banner-hero-matrix">
     <div class="container">
         <div class="banner-content-box">
-            <a asp-controller="Llantas" asp-action="Index" class="btn btn-banner-explorar">Explorar</a>
+            <span class="banner-eyebrow"><i class="fa-solid fa-location-dot"></i> Valledupar, Cesar</span>
+            <h1>Llantas, baterías y lubricantes<br>con montaje el mismo día</h1>
+            <p>Catálogo completo para carro y moto, asesoría técnica real y precios claros. Pide tu cotización en minutos.</p>
+            <div class="banner-actions">
+                <a asp-controller="Llantas" asp-action="Index" class="btn btn-banner-explorar">Ver catálogo</a>
+                <a asp-controller="Contacto" asp-action="Index" class="btn btn-banner-contacto">Hablar con el taller</a>
+            </div>
         </div>
     </div>
 </section>
@@ -24,17 +30,55 @@
         <div class="vb" id="vbSlider" role="region" aria-roledescription="carrusel" aria-label="Autos y motocicletas">
             <div class="vb-slide is-active" data-tipo="Auto" style="@(imgAuto != null ? $"--vb-img:url({imgAuto})" : "")">
                 <div class="vb-texto">
-                    <a asp-controller="Llantas" asp-action="Index" asp-route-tipo="Auto" class="vb-btn">Explorar</a>
+                    <h2>Llantas para <strong>automóviles</strong><span>todas las marcas y medidas</span></h2>
+                    <p>Encuentra la medida exacta para tu carro, con stock verificado y garantía de fábrica.</p>
+                    <a asp-controller="Llantas" asp-action="Index" asp-route-tipo="Auto" class="vb-btn">Ver llantas de auto</a>
                 </div>
             </div>
             <div class="vb-slide" data-tipo="Moto" aria-hidden="true" style="@(imgMoto != null ? $"--vb-img:url({imgMoto})" : "")">
                 <div class="vb-texto">
-                    <a asp-controller="Llantas" asp-action="Index" asp-route-tipo="Moto" class="vb-btn" tabindex="-1">Explorar</a>
+                    <h2>Llantas para <strong>motocicleta</strong><span>rendimiento y seguridad</span></h2>
+                    <p>Variedad de cauchos para uso urbano y de alto desempeño, con instalación incluida.</p>
+                    <a asp-controller="Llantas" asp-action="Index" asp-route-tipo="Moto" class="vb-btn" tabindex="-1">Ver llantas de moto</a>
                 </div>
             </div>
             <div class="vb-dots" role="tablist" aria-label="Elegir banner">
                 <button type="button" class="vb-dot is-active" role="tab" aria-selected="true" aria-label="Autos" data-i="0"><i class="fa-solid fa-car-side"></i></button>
                 <button type="button" class="vb-dot" role="tab" aria-selected="false" aria-label="Motocicletas" data-i="1"><i class="fa-solid fa-motorcycle"></i></button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Franja de confianza: razones cortas para elegir el taller -->
+<section class="trust-strip">
+    <div class="container trust-grid">
+        <div class="trust-item">
+            <i class="fa-solid fa-truck-fast"></i>
+            <div>
+                <strong>Montaje el mismo día</strong>
+                <span>Agenda tu cita y sal rodando en el momento</span>
+            </div>
+        </div>
+        <div class="trust-item">
+            <i class="fa-solid fa-shield-halved"></i>
+            <div>
+                <strong>Garantía de fábrica</strong>
+                <span>Productos originales con respaldo del fabricante</span>
+            </div>
+        </div>
+        <div class="trust-item">
+            <i class="fa-solid fa-sack-dollar"></i>
+            <div>
+                <strong>Precios claros</strong>
+                <span>Sin letra pequeña ni costos sorpresa</span>
+            </div>
+        </div>
+        <div class="trust-item">
+            <i class="fa-solid fa-user-gear"></i>
+            <div>
+                <strong>Asesoría técnica</strong>
+                <span>Te ayudamos a elegir lo correcto para tu vehículo</span>
             </div>
         </div>
     </div>
