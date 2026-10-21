@@ -40,6 +40,9 @@ public class Articulo
     [Required(ErrorMessage = "Escribe el contenido del artículo.")]
     public string Contenido { get; set; } = null!;
 
+    /// <summary>Fuentes citadas, una por línea: "Texto a mostrar | https://enlace". Opcional.</summary>
+    public string? Referencias { get; set; }
+
     /// <summary>Los artículos sin publicar solo los ve el administrador.</summary>
     public bool Publicado { get; set; } = true;
 
@@ -48,5 +51,5 @@ public class Articulo
 
     public BlogPost ComoPost()
         => new(Slug, Titulo, Resumen, Categoria, DateOnly.FromDateTime(Fecha), Autor,
-               string.IsNullOrEmpty(Imagen) ? ImagenPorDefecto : Imagen, Contenido);
+               string.IsNullOrEmpty(Imagen) ? ImagenPorDefecto : Imagen, Contenido, Referencias);
 }

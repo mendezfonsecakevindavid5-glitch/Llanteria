@@ -1,19 +1,24 @@
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using Llanteria.Infrastructure;
 
 namespace Llanteria.Models;
 
 public record BlogPost(string Slug, string Titulo, string Resumen, string Categoria, DateOnly Fecha,
-    string Autor, string Imagen, string Contenido)
+    string Autor, string Imagen, string Contenido, string? Referencias = null)
 {
     /// <summary>Minutos de lectura estimados (200 palabras por minuto).</summary>
     public int MinutosLectura => Math.Max(1, (int)Math.Ceiling(Contenido.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length / 200.0));
 }
 
 /// <summary>
-/// Formato de los artículos del blog y artículos de ejemplo. El contenido es texto con marcas simples:
-/// "## " título de sección, "- " viñeta, "> " recuadro destacado, **negrita**; una línea en blanco separa párrafos.
+/// Formato de los artículos del blog y artículos de ejemplo. El contenido es texto con marcas simples, parecidas
+/// a las de Wikipedia pero reducidas a lo esencial: "## " título de sección (se vuelve un enlace en la tabla de
+/// contenido), "- " viñeta, "> " recuadro destacado, **negrita**, [texto](enlace) para un enlace a otra página
+/// o a otro artículo del blog, y [color=#RRGGBB]texto[/color] para resaltar en un color puntual (es lo único que
+/// se puede personalizar visualmente: el resto del diseño es siempre el mismo). Una línea en blanco separa párrafos.
+/// Las referencias van aparte, en Articulo.Referencias: una fuente por línea, "Texto a mostrar | https://enlace".
 /// Los artículos reales se administran desde el panel (tabla Articulos), no aquí.
 /// </summary>
 public static class BlogCatalogo
@@ -22,14 +27,33 @@ public static class BlogCatalogo
     public const string AutorPorDefecto = "Equipo técnico Llantería Valledupar";
     private const string Autor = AutorPorDefecto;
 
-    /// <summary>Convierte las marcas simples a HTML seguro (todo el texto se codifica antes).</summary>
+    private static readonly Regex RxColor = new(@"\[color=(#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?)\]([^\[]+)\[/color\]", RegexOptions.Compiled);
+    private static readonly Regex RxLink = new(@"\[([^\]]+)\]\(((?:https?://|/)[^\s)]+)\)", RegexOptions.Compiled);
+    private static readonly Regex RxBold = new(@"\*\*(.+?)\*\*", RegexOptions.Compiled);
+
+    private static string Inline(string t)
+    {
+        var s = WebUtility.HtmlEncode(t);
+        s = RxBold.Replace(s, "<strong>$1</strong>");
+        s = RxLink.Replace(s, m =>
+        {
+            var href = m.Groups[2].Value;
+            var externo = href.StartsWith("http", StringComparison.OrdinalIgnoreCase);
+            return externo
+                ? $"<a href=\"{href}\" target=\"_blank\" rel=\"noopener noreferrer\">{m.Groups[1].Value}</a>"
+                : $"<a href=\"{href}\">{m.Groups[1].Value}</a>";
+        });
+        s = RxColor.Replace(s, "<span style=\"color:$1\">$2</span>");
+        return s;
+    }
+
+    /// <summary>Convierte las marcas simples a HTML seguro (todo el texto se codifica antes). Cada "## " recibe un id para la tabla de contenido.</summary>
     public static string ARenderizar(string contenido)
     {
         var sb = new StringBuilder();
         var parrafo = new List<string>();
         var lista = new List<string>();
 
-        string Inline(string t) => Regex.Replace(WebUtility.HtmlEncode(t), @"\*\*(.+?)\*\*", "<strong>$1</strong>");
         void CerrarParrafo() { if (parrafo.Count > 0) { sb.Append("<p>").Append(Inline(string.Join(' ', parrafo))).Append("</p>"); parrafo.Clear(); } }
         void CerrarLista() { if (lista.Count > 0) { sb.Append("<ul>"); foreach (var i in lista) sb.Append("<li>").Append(Inline(i)).Append("</li>"); sb.Append("</ul>"); lista.Clear(); } }
 
@@ -37,13 +61,39 @@ public static class BlogCatalogo
         {
             var l = linea.Trim();
             if (l.Length == 0) { CerrarParrafo(); CerrarLista(); }
-            else if (l.StartsWith("## ")) { CerrarParrafo(); CerrarLista(); sb.Append("<h2>").Append(Inline(l[3..])).Append("</h2>"); }
+            else if (l.StartsWith("## ")) { CerrarParrafo(); CerrarLista(); var texto = l[3..]; sb.Append("<h2 id=\"").Append(Vitrina.Slug(texto)).Append("\">").Append(Inline(texto)).Append("</h2>"); }
             else if (l.StartsWith("> ")) { CerrarParrafo(); CerrarLista(); sb.Append("<aside class=\"blog-callout\">").Append(Inline(l[2..])).Append("</aside>"); }
             else if (l.StartsWith("- ")) { CerrarParrafo(); lista.Add(l[2..]); }
             else { CerrarLista(); parrafo.Add(l); }
         }
         CerrarParrafo(); CerrarLista();
         return sb.ToString();
+    }
+
+    /// <summary>Tabla de contenido: un (Texto, Id) por cada "## " del artículo, en el mismo orden en que aparecen.</summary>
+    public static List<(string Texto, string Id)> TablaDeContenido(string contenido)
+        => contenido.Replace("\r", "").Split('\n')
+            .Select(l => l.Trim())
+            .Where(l => l.StartsWith("## "))
+            .Select(l => l[3..])
+            .Select(t => (Texto: t, Id: Vitrina.Slug(t)))
+            .ToList();
+
+    /// <summary>Referencias del artículo: una fuente por línea, "Texto a mostrar | https://enlace" (el enlace es opcional).</summary>
+    public static List<(string Texto, string? Url)> Referencias(string? referencias)
+    {
+        if (string.IsNullOrWhiteSpace(referencias)) return new();
+        return referencias.Replace("\r", "").Split('\n')
+            .Select(l => l.Trim())
+            .Where(l => l.Length > 0)
+            .Select(l =>
+            {
+                var partes = l.Split('|', 2);
+                var texto = partes[0].Trim();
+                var url = partes.Length > 1 ? partes[1].Trim() : null;
+                return (Texto: texto, Url: string.IsNullOrEmpty(url) ? null : url);
+            })
+            .ToList();
     }
 
     /// <summary>Artículos de ejemplo: se cargan a la base de datos una sola vez, cuando la tabla está vacía.</summary>

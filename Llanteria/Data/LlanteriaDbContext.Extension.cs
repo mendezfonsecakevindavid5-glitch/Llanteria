@@ -88,6 +88,7 @@ public partial class LlanteriaDbContext
             e.Property(x => x.Autor).HasMaxLength(100);
             e.Property(x => x.Imagen).HasMaxLength(120);
             e.Property(x => x.Contenido).HasColumnType("nvarchar(max)");
+            e.Property(x => x.Referencias).HasColumnType("nvarchar(max)");
             e.Property(x => x.Publicado).HasDefaultValue(true);
         });
 

@@ -30,8 +30,8 @@
         </div>
         <div class="col-md-4">
             <label asp-for="Autor" class="form-label">Autor</label>
-            <input asp-for="Autor" class="form-control" maxlength="100" />
-            <span asp-validation-for="Autor" class="text-danger small"></span>
+            <input asp-for="Autor" class="form-control" readonly />
+            <div class="form-text">Se pone solo: es quien publica el artículo.</div>
         </div>
         <div class="col-12">
             <label asp-for="Slug" class="form-label">Dirección del artículo</label>
@@ -57,8 +57,19 @@
             <textarea asp-for="Contenido" class="form-control" rows="16" aria-label="Contenido del artículo"></textarea>
             <span asp-validation-for="Contenido" class="text-danger small"></span>
             <div class="form-text">
-                Una línea en blanco separa los párrafos. Marcas: <code>## Título de sección</code> · <code>- Viñeta</code> · <code>&gt; Recuadro destacado</code> · <code>**negrita**</code>.
+                Una línea en blanco separa los párrafos. Cada <code>## Título de sección</code> aparece además en la
+                tabla de contenido de la izquierda del artículo. Marcas disponibles:
+                <code>## Título de sección</code> · <code>- Viñeta</code> · <code>&gt; Recuadro destacado</code> ·
+                <code>**negrita**</code> · <code>[texto](https://enlace)</code> para un enlace (a otra página o a
+                otro artículo del blog, ej. <code>[cómo leer la medida](/Blog/como-leer-la-medida-de-tu-llanta)</code>) ·
+                <code>[color=#C92B0A]texto[/color]</code> para resaltar en un color puntual — es la única personalización
+                visual permitida, el resto del diseño siempre es el mismo en todos los artículos.
             </div>
+        </div>
+        <div class="col-12">
+            <label asp-for="Referencias" class="form-label">Referencias</label>
+            <textarea asp-for="Referencias" class="form-control" rows="4" aria-label="Referencias del artículo"></textarea>
+            <div class="form-text">Opcional. Una fuente por línea: <code>Texto a mostrar | https://enlace</code> (el enlace es opcional). Se muestran al final del artículo, como en Wikipedia.</div>
         </div>
         <div class="col-12">
             <div class="form-check form-switch">

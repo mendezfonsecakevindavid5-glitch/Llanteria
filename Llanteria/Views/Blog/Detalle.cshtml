@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = Model.Titulo;
     var relacionados = (List<BlogPost>)ViewBag.Relacionados;
+    var tabla = BlogCatalogo.TablaDeContenido(Model.Contenido);
+    var referencias = BlogCatalogo.Referencias(Model.Referencias);
 }
 
 <div class="container blog-wrap">
@@ -10,13 +12,51 @@
         <nav class="cat-crumbs" aria-label="Ruta"><a asp-controller="Home" asp-action="Index">Inicio</a><span>/</span><a asp-action="Index">Blog</a><span>/</span>@Model.Categoria</nav>
         <h1>@Model.Titulo</h1>
         <p>@Model.Resumen</p>
-        <div class="blog-meta">@Model.Autor · @Model.Fecha.ToString("dd 'de' MMMM 'de' yyyy") · @Model.MinutosLectura min de lectura</div>
+        <div class="blog-meta">Por <strong>@Model.Autor</strong> · @Model.Fecha.ToString("dd 'de' MMMM 'de' yyyy") · @Model.MinutosLectura min de lectura</div>
     </header>
 
+    <img class="blog-banner" src="~/images/blog/@Model.Imagen" alt="" />
+
     <div class="row g-4">
-        <article class="col-lg-8">
-            <img class="blog-cover" src="~/images/blog/@Model.Imagen" alt="" />
+        @if (tabla.Count > 0)
+        {
+            <aside class="col-lg-3">
+                <nav class="cat-filters blog-toc" aria-label="Tabla de contenido">
+                    <div class="cat-filters-head"><strong>Contenido</strong></div>
+                    <ol>
+                        @foreach (var (texto, id) in tabla)
+                        {
+                            <li><a href="#@id">@texto</a></li>
+                        }
+                    </ol>
+                </nav>
+            </aside>
+        }
+
+        <article class="@(tabla.Count > 0 ? "col-lg-6" : "col-lg-8")">
             <div class="blog-body">@Html.Raw(BlogCatalogo.ARenderizar(Model.Contenido))</div>
+
+            @if (referencias.Count > 0)
+            {
+                <div class="blog-referencias">
+                    <h2>Referencias</h2>
+                    <ol>
+                        @foreach (var (texto, url) in referencias)
+                        {
+                            <li>
+                                @if (url != null)
+                                {
+                                    <a href="@url" target="_blank" rel="noopener noreferrer">@texto</a>
+                                }
+                                else
+                                {
+                                    @texto
+                                }
+                            </li>
+                        }
+                    </ol>
+                </div>
+            }
 
             <div class="blog-cta">
                 <div>
@@ -27,7 +67,7 @@
             </div>
         </article>
 
-        <aside class="col-lg-4">
+        <aside class="col-lg-3">
             <div class="blog-side">
                 <h2>Sigue leyendo</h2>
                 @foreach (var r in relacionados)

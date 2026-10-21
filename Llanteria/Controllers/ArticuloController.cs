@@ -44,12 +44,13 @@ public class ArticuloController : Controller
     public IActionResult Create()
     {
         CargarCategorias();
-        return View(new Articulo());
+        return View(new Articulo { Autor = AutorActual() });
     }
 
     [HttpPost, ValidateAntiForgeryToken]
     public IActionResult Create(Articulo a)
     {
+        a.Autor = AutorActual(); // el autor siempre es quien publica, no un texto libre.
         Validar(a, null);
         if (!ModelState.IsValid)
         {
@@ -83,6 +84,7 @@ public class ArticuloController : Controller
         {
             cambios.Id = id;
             cambios.Imagen = a.Imagen;
+            cambios.Autor = a.Autor;
             CargarCategorias();
             return View(cambios);
         }
@@ -92,8 +94,9 @@ public class ArticuloController : Controller
         a.Resumen = cambios.Resumen;
         a.Categoria = cambios.Categoria;
         a.Fecha = cambios.Fecha;
-        a.Autor = cambios.Autor;
+        // El autor no se reedita: queda fijo a quien lo creó (AutorActual lo puso al publicar).
         a.Contenido = cambios.Contenido;
+        a.Referencias = cambios.Referencias;
         a.Publicado = cambios.Publicado;
 
         if (cambios.ImagenArchivo != null)
@@ -159,4 +162,14 @@ public class ArticuloController : Controller
     }
 
     private void CargarCategorias() => ViewBag.Categorias = new SelectList(BlogCatalogo.Categorias);
+
+    /// <summary>Nombre de quien publica, para que el autor del artículo nunca se escriba a mano.</summary>
+    private string AutorActual()
+    {
+        var nombres = User.FindFirst("Nombres")?.Value;
+        var apellidos = User.FindFirst("Apellidos")?.Value;
+        var nombreCompleto = $"{nombres} {apellidos}".Trim();
+        if (!string.IsNullOrWhiteSpace(nombreCompleto)) return nombreCompleto;
+        return User.Identity?.Name ?? BlogCatalogo.AutorPorDefecto;
+    }
 }

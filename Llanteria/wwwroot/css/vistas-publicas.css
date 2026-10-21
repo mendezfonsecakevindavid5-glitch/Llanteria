@@ -256,6 +256,20 @@
     border-radius: var(--vp-radius);
 }
 
+.blog-body h2 {
+    scroll-margin-top: 90px; /* no queda tapado por el header pegajoso al saltar desde la tabla de contenido */
+}
+
+/* Banner superior del artículo: ancho completo, sin bordes redondeados. */
+.blog-banner {
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    display: block;
+    margin-bottom: 2rem;
+    background: #16181c;
+}
+
 .blog-callout {
     border-radius: 0 4px 4px 0;
 }
@@ -268,6 +282,81 @@
     border-color: var(--vp-line);
     border-radius: var(--vp-radius);
 }
+
+/* Tabla de contenido: mismo panel "Filtrar por" de Llantas/Lubricantes/Baterías, pero con una lista de enlaces. */
+.blog-toc {
+    position: sticky;
+    top: 84px;
+    border-radius: var(--vp-radius);
+}
+
+    .blog-toc ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        counter-reset: toc;
+    }
+
+    .blog-toc li {
+        counter-increment: toc;
+        margin-bottom: .1rem;
+    }
+
+    .blog-toc a {
+        display: block;
+        padding: .5rem .3rem;
+        color: #374151;
+        text-decoration: none;
+        font-size: .88rem;
+        line-height: 1.3;
+        border-left: 2px solid transparent;
+    }
+
+        .blog-toc a::before {
+            content: counter(toc) ". ";
+            color: var(--llanteria-primary, #C92B0A);
+            font-weight: 700;
+        }
+
+        .blog-toc a:hover {
+            color: #000;
+            border-left-color: var(--llanteria-primary, #C92B0A);
+            background: #f8f9fa;
+        }
+
+@media (max-width: 991.98px) {
+    .blog-toc {
+        position: static;
+    }
+}
+
+/* Referencias al final del artículo, estilo Wikipedia: lista numerada, discreta. */
+.blog-referencias {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--vp-line);
+}
+
+    .blog-referencias h2 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        margin-bottom: .75rem;
+    }
+
+    .blog-referencias ol {
+        padding-left: 1.2rem;
+        font-size: .9rem;
+        color: #4a5058;
+    }
+
+    .blog-referencias li {
+        margin-bottom: .4rem;
+    }
+
+    .blog-referencias a {
+        color: var(--llanteria-primary, #C92B0A);
+        word-break: break-word;
+    }
 
 /* ---------- Empresas y flotas ---------- */
 .emp-hero {
