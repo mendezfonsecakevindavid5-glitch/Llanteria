@@ -24,7 +24,7 @@ public class MarcaController : Controller
     // Vista para agregar una marca nueva al catálogo
     public IActionResult Create()
     {
-        return View();
+        return View(new Marca());
     }
 
     // Procesa el registro de la nueva marca

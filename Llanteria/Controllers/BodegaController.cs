@@ -20,7 +20,7 @@ public class BodegaController : Controller
 
     public IActionResult Create()
     {
-        return View();
+        return View(new Bodega());
     }
 
     [HttpPost]

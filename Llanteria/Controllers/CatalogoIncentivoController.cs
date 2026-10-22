@@ -24,7 +24,7 @@ public class CatalogoIncentivoController : Controller
     // Vista para crear un nuevo incentivo o beneficio
     public IActionResult Create()
     {
-        return View();
+        return View(new CatalogoIncentivo());
     }
 
     // Guarda el incentivo, definiendo cuántos puntos requiere el cliente
