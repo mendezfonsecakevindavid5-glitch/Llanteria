@@ -1,0 +1,23 @@
+@* Valores de la empresa: una tarjeta por valor, con ícono rojo centrado arriba y el valor en negro debajo. Va debajo de "Nosotros". *@
+@{
+    var valores = new (string Icono, string Nombre)[]
+    {
+        ("fa-solid fa-truck-fast", "Montaje el mismo día"),
+        ("fa-solid fa-shield-halved", "Garantía de fábrica"),
+        ("fa-solid fa-sack-dollar", "Precios claros"),
+        ("fa-solid fa-user-gear", "Asesoría técnica")
+    };
+}
+<section id="valores" class="section pt-0">
+    <div class="container">
+        <div class="valores-grid">
+            @foreach (var v in valores)
+            {
+                <div class="valor-card">
+                    <i class="@v.Icono" aria-hidden="true"></i>
+                    <h3>@v.Nombre</h3>
+                </div>
+            }
+        </div>
+    </div>
+</section>

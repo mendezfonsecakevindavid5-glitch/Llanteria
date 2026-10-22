@@ -3,11 +3,13 @@
     ViewData["Title"] = "Inicio";
     // Imágenes del banner de vehículos: wwwroot/images/banner-auto.* y banner-moto.* (si no existen, queda un fondo oscuro).
     var imgAuto = Llanteria.Infrastructure.ImagenSitio.Url(Env, "banner-auto", "Auto-target");
-    var imgMoto = Llanteria.Infrastructure.ImagenSitio.Url(Env, "banner-moto", "moto");
+    var imgMoto = Llanteria.Infrastructure.ImagenSitio.Url(Env, "banner-moto", "moto") ?? "/images/banner-moto.svg";
     var logos = (List<Llanteria.Models.MarcaVitrina>)ViewBag.Logos;
 }
 
 <link rel="stylesheet" href="~/css/paginas/inicio.css" asp-append-version="true" />
+
+<div class="home-idx">
 
 <!-- Banner principal -->
 <section class="banner-hero-matrix">
@@ -24,7 +26,7 @@
     </div>
 </section>
 
-<!-- Banner de vehículos: autos y motocicletas se alternan (imagen y texto) -->
+<!-- Búsqueda de llantas: autos y motocicletas se alternan (imagen y texto). Bordes redondeados y corte curvo como el de las tarjetas de servicios. -->
 <section class="vb-sec" aria-label="Llantas para autos y motocicletas">
     <div class="container">
         <div class="vb" id="vbSlider" role="region" aria-roledescription="carrusel" aria-label="Autos y motocicletas">
@@ -35,7 +37,7 @@
                     <a asp-controller="Llantas" asp-action="Index" asp-route-tipo="Auto" class="vb-btn">Ver llantas de auto</a>
                 </div>
             </div>
-            <div class="vb-slide" data-tipo="Moto" aria-hidden="true" style="@(imgMoto != null ? $"--vb-img:url({imgMoto})" : "")">
+            <div class="vb-slide" data-tipo="Moto" aria-hidden="true" style="--vb-img:url(@imgMoto)">
                 <div class="vb-texto">
                     <h2>Llantas para <strong>motocicleta</strong><span>rendimiento y seguridad</span></h2>
                     <p>Variedad de cauchos para uso urbano y de alto desempeño, con instalación incluida.</p>
@@ -43,82 +45,26 @@
                 </div>
             </div>
             <div class="vb-dots" role="tablist" aria-label="Elegir banner">
-                <button type="button" class="vb-dot is-active" role="tab" aria-selected="true" aria-label="Autos" data-i="0"><i class="fa-solid fa-car-side"></i></button>
-                <button type="button" class="vb-dot" role="tab" aria-selected="false" aria-label="Motocicletas" data-i="1"><i class="fa-solid fa-motorcycle"></i></button>
+                <button type="button" class="vb-dot is-active" role="tab" aria-selected="true" aria-label="Autos" data-i="0"></button>
+                <button type="button" class="vb-dot" role="tab" aria-selected="false" aria-label="Motocicletas" data-i="1"></button>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Franja de confianza: razones cortas para elegir el taller -->
-<section class="trust-strip">
-    <div class="container trust-grid">
-        <div class="trust-item">
-            <i class="fa-solid fa-truck-fast"></i>
-            <div>
-                <strong>Montaje el mismo día</strong>
-                <span>Agenda tu cita y sal rodando en el momento</span>
-            </div>
-        </div>
-        <div class="trust-item">
-            <i class="fa-solid fa-shield-halved"></i>
-            <div>
-                <strong>Garantía de fábrica</strong>
-                <span>Productos originales con respaldo del fabricante</span>
-            </div>
-        </div>
-        <div class="trust-item">
-            <i class="fa-solid fa-sack-dollar"></i>
-            <div>
-                <strong>Precios claros</strong>
-                <span>Sin letra pequeña ni costos sorpresa</span>
-            </div>
-        </div>
-        <div class="trust-item">
-            <i class="fa-solid fa-user-gear"></i>
-            <div>
-                <strong>Asesoría técnica</strong>
-                <span>Te ayudamos a elegir lo correcto para tu vehículo</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Llantas destacadas -->
-@{
-    var destacadas = ViewBag.Destacadas as List<Llanteria.Models.Producto> ?? new List<Llanteria.Models.Producto>();
-    var agotados = ViewBag.Agotados as HashSet<int> ?? new HashSet<int>();
-}
-@if (destacadas.Count > 0)
-{
-    <section class="section pb-0">
-        <div class="container">
-            <div class="home-section-head">
-                <div>
-                    <span class="eyebrow">Catálogo</span>
-                    <h2 class="section-title mt-1 mb-0">Llantas para tu vehículo</h2>
-                </div>
-                <a asp-controller="Llantas" asp-action="Index">Ver todas las llantas</a>
-            </div>
-            <div class="cat-grid">
-                @foreach (var p in destacadas)
-                {
-                    <partial name="_TarjetaProducto" model="(p, agotados.Contains(p.Id))" />
-                }
-            </div>
-        </div>
-    </section>
-}
-
-<!-- Partials adicionales -->
+<!-- Partials del inicio (el catálogo de productos ya no va aquí) -->
 <partial name="_Marcas" model="logos" />
 <partial name="_Categorias" />
 <partial name="_Servicios" />
 <partial name="_Nosotros" />
+<partial name="_Valores" />
 <partial name="_Resenias" />
+
+</div>
 
 @section Scripts {
     <script src="~/js/tienda.js" asp-append-version="true"></script>
+    <script src="~/js/resenias-carrusel.js" asp-append-version="true"></script>
     <script>
         // Banner de vehículos: se alterna solo cada 7 s (imagen y texto); se detiene al pasar el cursor o enfocarlo.
         (function () {

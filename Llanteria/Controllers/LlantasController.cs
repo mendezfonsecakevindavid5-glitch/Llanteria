@@ -14,9 +14,9 @@ public class LlantasController : CatalogoControllerBase
 
     [HttpGet]
     public IActionResult Index(string? ancho, string? perfil, string? diametro, string[]? marca,
-        int? min, int? max, string? orden, int pagina = 1, string? tipo = null, string? qmarca = null)
+        int? min, int? max, string? orden, int pagina = 1, string? tipo = null, string? qmarca = null, int? evento = null, int? promocion = null)
     {
-        var vm = Armar(ancho, perfil, diametro, marca, min, max, orden, pagina, tipo, qmarca);
+        var vm = Armar(ancho, perfil, diametro, marca, min, max, orden, pagina, tipo, qmarca, evento: evento, promocion: promocion);
         return EsAjax() ? PartialView("_ResultadosCatalogo", vm) : View(vm);
     }
 }

@@ -94,7 +94,7 @@ public class EditoresController : Controller
     {
         var accion = recurso == EditorContenido.Blog ? "Articulo" : "ServicioWeb";
         var enlace = Url.Action("Index", accion, null, Request.Scheme) ?? "";
-        var cuerpo = EmailService.PlantillaAviso("Te invitaron al equipo de Llantería Valledupar", new (string, string?)[]
+        var cuerpo = EmailService.PlantillaAviso("Te invitaron al equipo de Llandupar", new (string, string?)[]
         {
             ("Invitado por", User.Identity?.Name),
             ("Contenido", recurso == EditorContenido.Blog ? "Blog" : "Servicios del sitio"),
@@ -102,6 +102,6 @@ public class EditoresController : Controller
         }, $"Ya puedes entrar con tu cuenta y administrar este contenido desde el panel:\n{enlace}");
 
         return _email.EnviarCorreoAsync(destino.Correo, destino.Username,
-            "Invitación para colaborar en Llantería Valledupar", cuerpo, responderA: null);
+            "Invitación para colaborar en Llandupar", cuerpo, responderA: null);
     }
 }

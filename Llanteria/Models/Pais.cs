@@ -1,6 +1,6 @@
 ﻿namespace Llanteria.Models
 {
-    public class Pais
+    public partial class Pais
     {
         public int Id { get; set; }
         public string Nombre { get; set; } = null!;

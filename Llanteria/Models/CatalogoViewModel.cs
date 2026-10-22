@@ -17,7 +17,12 @@ public class CatalogoViewModel
     public string? BuscarMarca { get; set; }
     public int? PrecioMin { get; set; }
     public int? PrecioMax { get; set; }
-    public string Orden { get; set; } = "precio-asc";
+
+    // Filtros de evento y de promoción (reemplazan al filtro de marca del panel; la barra de búsqueda sigue filtrando por marca).
+    public int? Evento { get; set; }
+    public int? Promocion { get; set; }
+    /// <summary>"nombre" (orden alfabético, por defecto), "precio-asc" o "precio-desc". Los chips de precio arrancan sin marcar.</summary>
+    public string Orden { get; set; } = "nombre";
 
     // Filtros extra de Lubricantes
     public string? Viscosidad { get; set; }
@@ -38,6 +43,8 @@ public class CatalogoViewModel
     public List<string> PerfilesDisponibles { get; set; } = new();
     public List<string> DiametrosDisponibles { get; set; } = new();
     public List<(string Nombre, int Cantidad)> MarcasDisponibles { get; set; } = new();
+    public List<(int Id, string Nombre, int Cantidad)> EventosDisponibles { get; set; } = new();
+    public List<(int Id, string Nombre, int Cantidad)> PromocionesDisponibles { get; set; } = new();
     public List<string> ViscosidadesDisponibles { get; set; } = new();
     public List<string> TiposAceiteDisponibles { get; set; } = new();
     public List<string> AmperajesDisponibles { get; set; } = new();
@@ -47,7 +54,7 @@ public class CatalogoViewModel
     public int PrecioMasAlto { get; set; }
 
     public bool HayFiltros => !string.IsNullOrEmpty(Ancho) || !string.IsNullOrEmpty(Perfil) || !string.IsNullOrEmpty(Diametro) || !string.IsNullOrEmpty(Tipo)
-                              || Marcas.Length > 0 || !string.IsNullOrEmpty(BuscarMarca) || PrecioMin.HasValue || PrecioMax.HasValue
+                              || Marcas.Length > 0 || Evento.HasValue || Promocion.HasValue || !string.IsNullOrEmpty(BuscarMarca) || PrecioMin.HasValue || PrecioMax.HasValue
                               || !string.IsNullOrEmpty(Viscosidad) || !string.IsNullOrEmpty(TipoAceite)
                               || !string.IsNullOrEmpty(Amperaje) || !string.IsNullOrEmpty(Polaridad) || Garantia.HasValue;
 }

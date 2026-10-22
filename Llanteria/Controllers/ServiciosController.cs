@@ -48,7 +48,7 @@ public class ServiciosController : Controller
             ("Servicio", servicio.Titulo), ("Nombre", nombre), ("Correo", correo), ("Teléfono", telefono)
         }, mensaje);
 
-        var enviado = await _email.EnviarCorreoAsync(_email.CorreoDestino, "Llantería Valledupar",
+        var enviado = await _email.EnviarCorreoAsync(_email.CorreoDestino, "Llandupar",
             $"[Servicio] {servicio.Titulo} – {nombre}", cuerpo, responderA: correo);
 
         if (enviado) TempData["Exito"] = "Recibimos tu solicitud. Te contactaremos pronto.";

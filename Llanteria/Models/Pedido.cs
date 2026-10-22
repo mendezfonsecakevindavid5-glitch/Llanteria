@@ -1,7 +1,7 @@
 namespace Llanteria.Models;
 
 /// <summary>Pedido hecho desde la tienda en línea (carrito + checkout).</summary>
-public class Pedido
+public partial class Pedido
 {
     public const string Pendiente = "Pendiente";
     public const string Pagado = "Pagado";
@@ -53,7 +53,7 @@ public class Pedido
     public string NombreCompleto => $"{Nombres} {Apellidos}".Trim();
 }
 
-public class PedidoItem
+public partial class PedidoItem
 {
     public int Id { get; set; }
     public int IdPedido { get; set; }

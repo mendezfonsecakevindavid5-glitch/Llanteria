@@ -22,14 +22,6 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        // Tarjetas del inicio: llantas más recientes con su disponibilidad.
-        var destacadas = _context.Productos.AsNoTracking()
-            .Include(p => p.DetalleProducto).ThenInclude(d => d!.IdMarcaNavigation)
-            .Where(p => p.Categoria == "Llantas" || (p.DetalleProducto != null && p.DetalleProducto.Ancho != null))
-            .OrderByDescending(p => p.Id).Take(8).ToList();
-        ViewBag.Destacadas = destacadas;
-        ViewBag.Agotados = Agotados(destacadas.Select(p => p.Id).ToList());
-
         ViewBag.Servicios = _context.ServiciosPublicados();
         ViewBag.Logos = Logos();
 
@@ -38,7 +30,7 @@ public class HomeController : Controller
         var total = visibles.Count();
         ViewBag.TotalResenias = total;
         ViewBag.PromedioResenias = total > 0 ? visibles.Average(r => (double)r.Calificacion) : 0d;
-        ViewBag.Resenias = visibles.OrderByDescending(r => r.Fecha).Take(6).ToList();
+        ViewBag.Resenias = visibles.OrderByDescending(r => r.Fecha).Take(10).ToList(); // las 10 más recientes
 
         var distribucion = new int[5]; // posición 0 = 1 estrella ... posición 4 = 5 estrellas
         foreach (var g in visibles.GroupBy(r => r.Calificacion).Select(g => new { Estrellas = g.Key, N = g.Count() }).ToList())

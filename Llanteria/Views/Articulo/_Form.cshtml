@@ -20,7 +20,8 @@
         </div>
         <div class="col-md-4">
             <label asp-for="Categoria" class="form-label">Categoría</label>
-            <select asp-for="Categoria" class="form-select" asp-items="ViewBag.Categorias"><option value="">Elige…</option></select>
+            <select asp-for="Categoria" class="form-select" asp-items="ViewBag.Categorias"><option value="">Sin categoría</option></select>
+            <div class="form-text">Opcional: sirve para filtrar el blog.</div>
             <span asp-validation-for="Categoria" class="text-danger small"></span>
         </div>
         <div class="col-md-4">
@@ -50,6 +51,13 @@
                 <span asp-validation-for="ImagenArchivo" class="text-danger small"></span>
                 <div class="form-text">Mejor horizontal (por ejemplo 1200 × 630). Déjalo vacío para conservar la portada actual.</div>
             </div>
+        </div>
+
+        <div class="col-12"><div class="form-section">Imagen de presentación</div></div>
+        <div class="col-12">
+            <input asp-for="ImagenPresentacionArchivo" type="file" class="form-control" accept="image/*" />
+            <span asp-validation-for="ImagenPresentacionArchivo" class="text-danger small"></span>
+            <div class="form-text">La que se ve en la tarjeta del blog. Puede ser distinta del banner; si no subes ninguna, se usa la del banner.@(string.IsNullOrEmpty(Model.ImagenPresentacion) ? "" : " Ya tiene una; deja vacío para conservarla.")</div>
         </div>
 
         <div class="col-12"><div class="form-section">Contenido</div></div>

@@ -338,3 +338,80 @@
         width: 100%;
     }
 }
+
+
+/* ======================================================================
+   Inicio: tipografía de interllantas.com (Bebas Neue en títulos, Montserrat en texto)
+   ====================================================================== */
+.home-idx { font-family: 'Montserrat', 'Plus Jakarta Sans', sans-serif; }
+.home-idx .section-title { font-family: 'Bebas Neue', 'Impact', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: .01em; line-height: 1; font-size: clamp(2.3rem, 4.4vw, 3.4rem); }
+.home-idx .rojo { color: var(--llanteria-primary, #C92B0A); }
+
+/* ---------- Banner de búsqueda de llantas: bordes redondeados y corte curvo ---------- */
+.vb { border-radius: 22px; }
+.vb-slide { background: var(--vb-img, linear-gradient(135deg, #111, #2b2b2b)) center / cover no-repeat; }
+/* Corte de las tarjetas de servicios: panel rojo cuyo borde derecho entra en curva; la imagen se asoma levemente a través del rojo. */
+.vb-slide::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 58%; z-index: 1;
+    background: linear-gradient(115deg, rgba(185, 8, 14, .92) 0%, rgba(214, 18, 24, .86) 100%);
+    -webkit-mask: radial-gradient(ellipse 7% 64% at 100% 50%, transparent 97%, #000 100%);
+            mask: radial-gradient(ellipse 7% 64% at 100% 50%, transparent 97%, #000 100%);
+}
+.vb-texto { position: relative; z-index: 2; max-width: 58%; }
+.vb-dots { z-index: 3; }
+.vb-dot { width: 36px; height: 4px; padding: 0; border: 0; border-radius: 2px; background: rgba(255, 255, 255, .45); }
+.vb-dot:hover { background: rgba(255, 255, 255, .8); }
+.vb-dot.is-active { background: #fff; border: 0; }
+@media (max-width: 767.98px) {
+    .vb-slide { background: var(--vb-img, linear-gradient(135deg, #111, #2b2b2b)) center / cover no-repeat; }
+    .vb-slide::before { width: 100%; top: auto; height: 74%; -webkit-mask: radial-gradient(ellipse 64% 7% at 50% 0, transparent 97%, #000 100%); mask: radial-gradient(ellipse 64% 7% at 50% 0, transparent 97%, #000 100%); }
+    .vb-texto { max-width: 100%; }
+}
+
+/* ---------- Valores de la empresa ---------- */
+.valores-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; }
+.valor-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 18px; padding: 2rem 1rem 1.75rem; text-align: center; transition: transform .25s ease; }
+.valor-card:hover { transform: scale(1.04); }
+.valor-card i { display: block; font-size: 2.2rem; color: var(--llanteria-primary, #C92B0A); margin-bottom: 1rem; }
+.valor-card h3 { margin: 0; font-size: 1.45rem; font-weight: 800; color: #000; line-height: 1.15; }
+@media (max-width: 991.98px) { .valores-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 575.98px) { .valores-grid { grid-template-columns: 1fr; } }
+
+/* ---------- Categorías con imagen realista ---------- */
+.tc-cat-art { position: relative; }
+.tc-cat-circulo { width: 150px; height: 150px; border-radius: 50%; background: #d7141a; display: block; }
+.tc-cat-foto { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 78%; height: 88%; object-fit: contain; }
+.tc-cat-respaldo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 2.6rem; color: #fff; }
+.tc-cat-label { font-family: 'Bebas Neue', 'Impact', sans-serif; font-weight: 400; font-size: 1.7rem; letter-spacing: .01em; color: #000; }
+
+/* ---------- Reseñas ---------- */
+.tire { display: inline-block; width: 1.25rem; height: 1.25rem; background-color: #d1d5db; vertical-align: middle;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 1a11 11 0 1 0 0 22 11 11 0 0 0 0-22zM12 5a7 7 0 1 1 0 14 7 7 0 0 1 0-14zM12 9.4a2.6 2.6 0 1 0 0 5.2 2.6 2.6 0 0 0 0-5.2zM11.2 5.6h1.6v3.8h-1.6zM11.2 14.6h1.6v3.8h-1.6zM5.6 11.2h3.8v1.6H5.6zM14.6 11.2h3.8v1.6h-3.8z'/%3E%3C/svg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 1a11 11 0 1 0 0 22 11 11 0 0 0 0-22zM12 5a7 7 0 1 1 0 14 7 7 0 0 1 0-14zM12 9.4a2.6 2.6 0 1 0 0 5.2 2.6 2.6 0 0 0 0-5.2zM11.2 5.6h1.6v3.8h-1.6zM11.2 14.6h1.6v3.8h-1.6zM5.6 11.2h3.8v1.6H5.6zM14.6 11.2h3.8v1.6h-3.8z'/%3E%3C/svg%3E") center / contain no-repeat; }
+.tire.on { background-color: var(--llanteria-primary, #C92B0A); }
+.rv-tires { display: inline-flex; gap: .2rem; }
+.rv-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 2rem; align-items: center; margin-top: 2.5rem; }
+.rv-negocio { font-weight: 800; font-size: 1.25rem; margin-bottom: .4rem; }
+.rv-prom { display: flex; align-items: center; gap: .6rem; }
+.rv-prom strong { color: var(--llanteria-primary, #C92B0A); font-size: 1.4rem; }
+.rv-base { color: #6b7280; margin-top: .4rem; }
+.rv-carrusel { position: relative; min-width: 0; }
+.rv-track { display: flex; gap: 1rem; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; cursor: grab; padding: 2px; }
+.rv-track::-webkit-scrollbar { display: none; }
+.rv-track.arrastrando { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+.rv-tarjeta { flex: 0 0 calc((100% - 2rem) / 3); scroll-snap-align: start; background: #f0f0f0; border-radius: 0; padding: 1.25rem; min-height: 230px; }
+.rv-tarjeta header { display: flex; align-items: center; gap: .8rem; margin-bottom: .7rem; }
+.rv-tarjeta header strong { display: block; }
+.rv-tarjeta header small { color: #6b7280; }
+.rv-tarjeta p { margin: .8rem 0 0; color: #374151; }
+.rv-nav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 2; width: 38px; height: 38px; border-radius: 50%; border: 1px solid #e5e7eb; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+.rv-prev { left: -12px; } .rv-next { right: -12px; }
+.rv-form-wrap { max-width: 520px; margin: 2.5rem auto 0; }
+.rv-form h3 { font-size: 1.1rem; font-weight: 700; }
+.rv-input { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: .25rem; }
+.rv-input input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.rv-input label { cursor: pointer; line-height: 1; }
+.rv-input label .tire { width: 1.8rem; height: 1.8rem; transition: background-color .15s; }
+.rv-input label:hover .tire, .rv-input label:hover ~ label .tire, .rv-input input:checked ~ label .tire { background-color: var(--llanteria-primary, #C92B0A); }
+@media (max-width: 991.98px) { .rv-layout { grid-template-columns: 1fr; } .rv-tarjeta { flex-basis: calc((100% - 1rem) / 2); } }
+@media (max-width: 575.98px) { .rv-tarjeta { flex-basis: 85%; } }

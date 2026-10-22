@@ -86,7 +86,7 @@
                 var activo = chip.classList.contains("is-active");
                 var extra = { pagina: "" };
                 if (filtro === "tipo") extra.tipo = activo ? "" : valor;
-                if (filtro === "orden") extra.orden = activo ? "precio-asc" : valor;
+                if (filtro === "orden") extra.orden = activo ? "" : valor; // sin chip marcado = orden alfabético
                 cargar(extra, false);
             });
         });

@@ -1,7 +1,7 @@
 namespace Llanteria.Models;
 
 /// <summary>Cita solicitada desde la página de un servicio. Antes solo se enviaba por correo y no quedaba registro.</summary>
-public class Cita
+public partial class Cita
 {
     public const string Pendiente = "Pendiente";
     public const string Confirmada = "Confirmada";

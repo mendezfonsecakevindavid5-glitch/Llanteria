@@ -8,7 +8,7 @@ namespace Llanteria.Infrastructure;
 /// Este paso agrega, de forma idempotente, lo que se añadió después de la primera versión
 /// (si la base es nueva, EnsureCreated ya lo creó y esto no hace nada).
 /// </summary>
-public static class EsquemaUpdater
+public static partial class EsquemaUpdater
 {
     public static void Aplicar(LlanteriaDbContext db)
     {
@@ -275,5 +275,8 @@ IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'dbo.Usuarios'
     ALTER TABLE dbo.Usuarios ALTER COLUMN MotivoSancion nvarchar(max) NULL;
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'dbo.Clientes') AND name = 'Foto' AND max_length <> -1)
     ALTER TABLE dbo.Clientes ALTER COLUMN Foto nvarchar(max) NULL;");
+
+        // Estados de registro, nuevas tablas (Llanterias, Eventos) y columnas nuevas: ver EsquemaEstados.cs
+        AplicarEstadosYNuevasTablas(db);
     }
 }

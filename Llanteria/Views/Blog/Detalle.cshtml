@@ -1,80 +1,133 @@
 @using Llanteria.Models
-@model BlogPost
+@using Llanteria.ViewComponents
+@model BlogDetalleVM
 @{
-    ViewData["Title"] = Model.Titulo;
-    var relacionados = (List<BlogPost>)ViewBag.Relacionados;
-    var tabla = BlogCatalogo.TablaDeContenido(Model.Contenido);
-    var referencias = BlogCatalogo.Referencias(Model.Referencias);
+    var a = Model.Articulo;
+    ViewData["Title"] = a.Titulo;
+    var referencias = BlogCatalogo.Referencias(a.Referencias);
+    var (fondo, texto) = AvatarMenuViewComponent.Colores(Model.AutorUsuario);
 }
 
-<div class="container blog-wrap">
-    <header class="page-head blog-article-head">
-        <nav class="cat-crumbs" aria-label="Ruta"><a asp-controller="Home" asp-action="Index">Inicio</a><span>/</span><a asp-action="Index">Blog</a><span>/</span>@Model.Categoria</nav>
-        <h1>@Model.Titulo</h1>
-        <p>@Model.Resumen</p>
-        <div class="blog-meta">Por <strong>@Model.Autor</strong> · @Model.Fecha.ToString("dd 'de' MMMM 'de' yyyy") · @Model.MinutosLectura min de lectura</div>
-    </header>
+<section class="bl-hero" style="--bl-img:url(/images/blog/@(string.IsNullOrEmpty(a.Imagen) ? Articulo.ImagenPorDefecto : a.Imagen))">
+    <div class="container">
+        <h1>@a.Titulo</h1>
+        <time datetime="@a.Fecha.ToString("yyyy-MM-dd")">@a.Fecha.ToString("dd 'de' MMMM 'de' yyyy")</time>
+    </div>
+</section>
 
-    <img class="blog-banner" src="~/images/blog/@Model.Imagen" alt="" />
+<div class="container blog-wrap bl-articulo">
+    @if (!a.Publicado)
+    {
+        <div class="alert alert-warning">Este artículo está sin publicar: solo lo ven su autor, los colaboradores y el administrador.</div>
+    }
+    <p class="bl-descripcion">@a.Resumen</p>
 
     <div class="row g-4">
-        @if (tabla.Count > 0)
+        @if (Model.Tabla.Count > 0 || Model.PuedeEditar)
         {
             <aside class="col-lg-3">
                 <nav class="cat-filters blog-toc" aria-label="Tabla de contenido">
-                    <div class="cat-filters-head"><strong>Contenido</strong></div>
-                    <ol>
-                        @foreach (var (texto, id) in tabla)
+                    <div class="cat-filters-head">
+                        <strong>Contenido</strong>
+                        @if (Model.PuedeEditar)
                         {
-                            <li><a href="#@id">@texto</a></li>
+                            <button type="button" class="bl-lapiz" title="Editar tabla de contenido" data-bs-toggle="collapse" data-bs-target="#tablaEditar"><i class="fa-solid fa-pencil"></i></button>
+                        }
+                    </div>
+                    @if (Model.PuedeEditar)
+                    {
+                        <form id="tablaEditar" class="collapse mb-2" method="post" action="/Blog/@a.Slug/tabla">
+                            @Html.AntiForgeryToken()
+                            <input type="text" name="numeros" class="form-control form-control-sm" inputmode="numeric" pattern="[0-9,; ]*"
+                                   value="@string.Join(", ", Model.Tabla.Select(s => s.Numero))" aria-label="Números de sección" placeholder="Ej. 1, 2, 3" />
+                            <div class="form-text">Solo números, sin repetir. El sistema pone el título de cada sección.</div>
+                            <button class="btn btn-brand btn-sm mt-1" type="submit">Guardar</button>
+                        </form>
+                    }
+                    <ol class="bl-toc">
+                        @foreach (var s in Model.Tabla)
+                        {
+                            <li><a href="#seccion-@s.Numero"><span>@s.Numero.</span> @s.Titulo</a></li>
                         }
                     </ol>
                 </nav>
             </aside>
         }
 
-        <article class="@(tabla.Count > 0 ? "col-lg-6" : "col-lg-8")">
-            <div class="blog-body">@Html.Raw(BlogCatalogo.ARenderizar(Model.Contenido))</div>
+        <article class="@(Model.Tabla.Count > 0 || Model.PuedeEditar ? "col-lg-6" : "col-lg-8")">
+            <div class="blog-body">
+                @if (!string.IsNullOrWhiteSpace(Model.Intro))
+                {
+                    <div id="seccion-0">
+                        @if (Model.PuedeEditar)
+                        {
+                            <a class="bl-lapiz bl-lapiz-intro" href="/Blog/@a.Slug/seccion/0" title="Editar la introducción"><i class="fa-solid fa-pencil"></i></a>
+                        }
+                        @Html.Raw(BlogCatalogo.ARenderizar(Model.Intro))
+                    </div>
+                }
+                @foreach (var s in Model.Secciones)
+                {
+                    <section id="seccion-@s.Numero">
+                        <h2 class="bl-titulo"><span class="bl-num">@s.Numero.</span> @s.Titulo
+                            @if (Model.PuedeEditar)
+                            {
+                                <a class="bl-lapiz" href="/Blog/@a.Slug/seccion/@s.Numero" title="Editar esta sección"><i class="fa-solid fa-pencil"></i></a>
+                            }
+                        </h2>
+                        @Html.Raw(BlogCatalogo.ARenderizar(s.Cuerpo))
+                    </section>
+                }
+            </div>
+
+            @if (Model.EsAutor)
+            {
+                <div class="mt-3">
+                    @if (a.Publicado)
+                    {
+                        <p class="small text-muted mb-0">Para añadir secciones nuevas, primero deshabilita este artículo como público desde el panel (Blog).</p>
+                    }
+                    else
+                    {
+                        <a class="btn btn-line btn-sm" href="/Blog/@a.Slug/nueva-seccion"><i class="fa-solid fa-plus me-1"></i>Añadir sección</a>
+                    }
+                </div>
+            }
 
             @if (referencias.Count > 0)
             {
                 <div class="blog-referencias">
                     <h2>Referencias</h2>
                     <ol>
-                        @foreach (var (texto, url) in referencias)
+                        @foreach (var (t, url) in referencias)
                         {
-                            <li>
-                                @if (url != null)
-                                {
-                                    <a href="@url" target="_blank" rel="noopener noreferrer">@texto</a>
-                                }
-                                else
-                                {
-                                    @texto
-                                }
-                            </li>
+                            <li>@if (url != null) { <a href="@url" target="_blank" rel="noopener noreferrer">@t</a> } else { @t }</li>
                         }
                     </ol>
                 </div>
             }
 
-            <div class="blog-cta">
-                <div>
-                    <strong>¿Tienes dudas sobre tu carro?</strong>
-                    <span>Escríbenos o agenda una revisión; te respondemos sin compromiso.</span>
-                </div>
-                <a asp-controller="Contacto" asp-action="Index" class="btn btn-hyper-action">Contactar al taller</a>
+            <div class="bl-autor">
+                <strong>Autor: </strong>
+                <span class="avatar-circle" style="--avatar-size:40px;background:@fondo;color:@texto">
+                    <span class="avatar-initials" aria-hidden="true">@AvatarMenuViewComponent.Iniciales(null, null, Model.AutorUsuario)</span>
+                    @if (a.IdAutor.HasValue)
+                    {
+                        <img src="/Blog/@a.Slug/autor-foto" alt="" onerror="this.remove()" />
+                    }
+                </span>
+                <span>@Model.AutorUsuario</span>
             </div>
         </article>
 
         <aside class="col-lg-3">
             <div class="blog-side">
                 <h2>Sigue leyendo</h2>
-                @foreach (var r in relacionados)
+                @foreach (var r in Model.Relacionados)
                 {
                     <a asp-action="Detalle" asp-route-slug="@r.Slug" class="blog-side-item">
                         <img src="~/images/blog/@r.Imagen" alt="" loading="lazy" />
-                        <span><small>@r.Categoria</small>@r.Titulo</span>
+                        <span>@r.Titulo</span>
                     </a>
                 }
                 <a asp-action="Index" class="btn btn-line w-100 mt-2">Ver todos los artículos</a>

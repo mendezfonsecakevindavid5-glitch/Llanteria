@@ -3,13 +3,13 @@
 @inject Llanteria.Infrastructure.NegocioInfo Negocio
 @{
     var palabras = Negocio.Nombre.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-    var inicio = palabras.Length > 1 ? string.Join(' ', palabras.Take(palabras.Length - 1)) : Negocio.Nombre;
-    var final = palabras.Length > 1 ? palabras.Last() : "";
+    var inicio = palabras.Length > 1 ? string.Join(' ', palabras.Take(palabras.Length - 1)) : (Negocio.Nombre.Length > 4 ? Negocio.Nombre[..4] : Negocio.Nombre);
+    var final = palabras.Length > 1 ? palabras.Last() : (Negocio.Nombre.Length > 4 ? Negocio.Nombre[4..] : "");
 }
 <table class="doc-head">
     <tr>
         <td style="width:50%">
-            <div class="brand">@inicio <span>@final</span></div>
+            <div class="brand">@inicio@(palabras.Length > 1 ? " " : "")<span>@final</span></div>
             <div class="muted small" style="margin-top:6px">
                 @if (!string.IsNullOrWhiteSpace(Negocio.Nit)) { <span>NIT @Negocio.Nit</span><br /> }
                 @Negocio.Direccion<br />

@@ -236,13 +236,14 @@
                     const response = await fetch('@Url.Action("VerificarCodigoLogin", "Account")', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: new URLSearchParams({ username: currentUsername, code: codeInput.value.trim() })
+                        body: new URLSearchParams({ username: currentUsername, code: codeInput.value.trim(), returnUrl: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewData["ReturnUrl"]?.ToString() ?? "")) })
                     });
                     const res = await response.json();
 
                     if (res.success) {
                         btnVerify.innerHTML = '<i class="fa-solid fa-check me-2"></i>CORRECTO';
-                        setTimeout(() => { window.location.href = '@Url.Action("Index", "Home")'; }, 800);
+                        const destino = res.redirectUrl || '@Url.Action("Index", "Home")';
+                        setTimeout(() => { window.location.href = destino; }, 800);
                     } else {
                         btnVerify.classList.add('btn-incorrect');
                         btnVerify.innerHTML = '<i class="fa-solid fa-xmark me-2"></i>INCORRECTO';

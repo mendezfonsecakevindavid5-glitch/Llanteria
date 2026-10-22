@@ -1,0 +1,40 @@
+@* Paginador de los catálogos (Llantas, Lubricantes, Baterías): 20 productos por página.
+   Flecha izquierda · "1 de N" · flecha derecha. Todo en rojo; la flecha que ya no puede avanzar o retroceder se pone gris. *@
+@model (int Pagina, int TotalPaginas)
+
+@if (Model.TotalPaginas > 1)
+{
+    string Enlace(int p)
+    {
+        var q = Context.Request.Query
+            .Where(k => !string.Equals(k.Key, "pagina", StringComparison.OrdinalIgnoreCase))
+            .SelectMany(k => k.Value.Select(v => $"{Uri.EscapeDataString(k.Key)}={Uri.EscapeDataString(v ?? "")}"))
+            .Append($"pagina={p}");
+        return Context.Request.Path + "?" + string.Join("&", q);
+    }
+
+    var enPrimera = Model.Pagina <= 1;
+    var enUltima = Model.Pagina >= Model.TotalPaginas;
+
+    <nav class="cat-pager" aria-label="Paginación del catálogo">
+        @if (enPrimera)
+        {
+            <span class="cat-pager-btn is-disabled" aria-disabled="true" aria-label="Página anterior"><i class="fa-solid fa-chevron-left"></i></span>
+        }
+        else
+        {
+            <a class="cat-pager-btn" href="@Enlace(Model.Pagina - 1)" aria-label="Página anterior"><i class="fa-solid fa-chevron-left"></i></a>
+        }
+
+        <span class="cat-pager-num">@Model.Pagina de @Model.TotalPaginas</span>
+
+        @if (enUltima)
+        {
+            <span class="cat-pager-btn is-disabled" aria-disabled="true" aria-label="Página siguiente"><i class="fa-solid fa-chevron-right"></i></span>
+        }
+        else
+        {
+            <a class="cat-pager-btn" href="@Enlace(Model.Pagina + 1)" aria-label="Página siguiente"><i class="fa-solid fa-chevron-right"></i></a>
+        }
+    </nav>
+}

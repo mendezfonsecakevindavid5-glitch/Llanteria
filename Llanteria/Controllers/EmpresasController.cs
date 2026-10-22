@@ -77,7 +77,7 @@ public class EmpresasController : Controller
                 ("Empresa", s.Empresa), ("NIT", s.Nit), ("Contacto", s.Contacto), ("Teléfono", s.Telefono), ("Correo", s.Correo),
                 ("Ciudad", s.Ciudad), ("Tipo de flota", s.TipoFlota), ("Vehículos", s.NumeroVehiculos.ToString())
             }, s.Mensaje);
-            await _email.EnviarCorreoAsync(_email.CorreoDestino, "Llantería Valledupar",
+            await _email.EnviarCorreoAsync(_email.CorreoDestino, "Llandupar",
                 $"[Empresas] {s.Empresa} – {s.NumeroVehiculos} vehículos", cuerpo, responderA: s.Correo);
         }
         catch { /* se ignora a propósito */ }

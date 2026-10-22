@@ -1,24 +1,47 @@
-@* Tarjetas de categoría con ícono en círculo (estilo franja de servicios de interllantas.com). *@
+@* Tarjetas de categoría con una imagen realista de lo que representa cada una (como en interllantas.com).
+   Las imágenes van en wwwroot/images/categorias con el nombre llantas, lubricantes, baterias, accesorios y flotas
+   (jpg, png, webp o avif; lo ideal es un PNG con fondo transparente). Si falta alguna, se muestra un ícono de respaldo. *@
+@inject IWebHostEnvironment Env
 @{
-    var categorias = new (string Nombre, string Icono, string Controlador)[]
+    var categorias = new (string Nombre, string Archivo, string Icono, string Controlador)[]
     {
-        ("Llantas", "fa-solid fa-record-vinyl", "Llantas"),
-        ("Lubricantes", "fa-solid fa-oil-can", "Lubricantes"),
-        ("Baterías", "fa-solid fa-car-battery", "Baterias"),
-        ("Accesorios", "fa-solid fa-screwdriver-wrench", "Accesorios"),
-        ("Mantenimiento de flotas", "fa-solid fa-truck-front", "Empresas")
+        ("Llantas", "llantas", "fa-solid fa-record-vinyl", "Llantas"),
+        ("Lubricantes", "lubricantes", "fa-solid fa-oil-can", "Lubricantes"),
+        ("Baterías", "baterias", "fa-solid fa-car-battery", "Baterias"),
+        ("Accesorios", "accesorios", "fa-solid fa-screwdriver-wrench", "Accesorios"),
+        ("Mantenimiento de flotas", "flotas", "fa-solid fa-truck-front", "Empresas")
     };
+
+    string? Imagen(string archivo)
+    {
+        var carpeta = System.IO.Path.Combine(Env.WebRootPath, "images", "categorias");
+        foreach (var ext in new[] { ".png", ".webp", ".avif", ".jpg", ".jpeg" })
+        {
+            var ruta = System.IO.Path.Combine(carpeta, archivo + ext);
+            if (System.IO.File.Exists(ruta))
+                return $"/images/categorias/{archivo}{ext}?v={System.IO.File.GetLastWriteTimeUtc(ruta).Ticks}";
+        }
+        return null;
+    }
 }
 <section id="categorias" class="tc-cats">
     <div class="container">
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 justify-content-center">
-            @for (var i = 0; i < categorias.Length; i++)
+            @foreach (var c in categorias)
             {
-                var c = categorias[i];
+                var img = Imagen(c.Archivo);
                 <div class="col">
                     <a class="tc-cat" asp-controller="@c.Controlador" asp-action="Index">
                         <span class="tc-cat-art">
-                            <span class="tc-cat-icon"><i class="@c.Icono"></i></span>
+                            <span class="tc-cat-circulo"></span>
+                            @if (img != null)
+                            {
+                                <img class="tc-cat-foto" src="@img" alt="@c.Nombre" loading="lazy" />
+                            }
+                            else
+                            {
+                                <i class="@c.Icono tc-cat-respaldo" aria-hidden="true"></i>
+                            }
                         </span>
                         <span class="tc-cat-label">@c.Nombre</span>
                     </a>

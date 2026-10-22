@@ -160,7 +160,7 @@ public class PedidosController : Controller
                 ("Entrega", $"{p.Direccion}, {p.Ciudad}, {p.Departamento}, {p.Pais} ({p.CodigoPostal})"),
                 ("Pago", p.MetodoPago), ("Total", p.Total.ToString("C0"))
             }, detalle + (string.IsNullOrEmpty(p.Notas) ? "" : $"\n\nNotas: {p.Notas}"));
-            await _email.EnviarCorreoAsync(_email.CorreoDestino, "Llantería Valledupar", $"[Pedido] {p.Numero} – {p.NombreCompleto}", interno, responderA: p.Correo);
+            await _email.EnviarCorreoAsync(_email.CorreoDestino, "Llandupar", $"[Pedido] {p.Numero} – {p.NombreCompleto}", interno, responderA: p.Correo);
 
             var cliente = EmailService.PlantillaAviso("Recibimos tu pedido", new (string, string?)[]
             {

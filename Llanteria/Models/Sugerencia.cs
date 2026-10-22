@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Llanteria.Models;
 
 /// <summary>Sugerencia para mejorar el sitio web, enviada desde la sección de opiniones del sitio.</summary>
-public class Sugerencia
+public partial class Sugerencia
 {
     public const string Nueva = "Nueva";
     public const string Revisada = "Revisada";

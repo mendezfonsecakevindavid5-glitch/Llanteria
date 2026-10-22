@@ -80,6 +80,8 @@ if (string.IsNullOrWhiteSpace(cadenaConexion))
 
 builder.Services.AddDbContext<LlanteriaDbContext>(options => options.UseSqlServer(cadenaConexion));
 
+builder.Services.AddSingleton<Microsoft.AspNetCore.Authorization.IAuthorizationHandler, AdministradorAccesoTotal>(); // el administrador entra a todo el panel
+
 builder.Services.AddScoped<TipoDocumentoService>();
 builder.Services.AddScoped<SexoService>();
 builder.Services.AddScoped<UsuarioService>();
@@ -107,7 +109,11 @@ builder.Services.AddSingleton(builder.Configuration.GetSection("Negocio").Get<Ne
 builder.Services.AddSingleton(builder.Configuration.GetSection("Pagos").Get<PagoInfo>() ?? new PagoInfo());
 builder.Services.AddHostedService<RecordatorioCitasService>();
 
-Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath);
+// Rotativa busca wkhtmltopdf.exe dentro de wwwroot/<relativePath>. Los binarios están en wwwroot/Rotativa/Rotativa,
+// así que se detecta la carpeta que realmente contiene el .exe (si estuviera en wwwroot/Rotativa también funciona).
+var rutaRotativa = new[] { "Rotativa", Path.Combine("Rotativa", "Rotativa") }
+    .FirstOrDefault(r => File.Exists(Path.Combine(builder.Environment.WebRootPath, r, "wkhtmltopdf.exe"))) ?? "Rotativa";
+Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath, rutaRotativa);
 
 builder.Services.AddSession(options =>
 {
@@ -135,6 +141,7 @@ using (var scope = app.Services.CreateScope())
     Paso("crear la base de datos", () => db.Database.EnsureCreated());
     Paso("actualizar el esquema", () => EsquemaUpdater.Aplicar(db));
     Paso("datos iniciales (roles y catálogos)", () => DatosIniciales.Asegurar(db));
+    Paso("llantería inicial", () => LlanteriaInicial.Asegurar(db, scope.ServiceProvider.GetRequiredService<NegocioInfo>()));
     Paso("usuarios iniciales (administrador, empleado y usuario)", () => UsuariosIniciales.Asegurar(db, log));
     Paso("cifrado de datos existentes", () => CifradoMigrador.Aplicar(db, log));
 }

@@ -13,9 +13,9 @@ public class BateriasController : CatalogoControllerBase
 
     [HttpGet]
     public IActionResult Index(string[]? marca, int? min, int? max, string? orden, int pagina = 1, string? tipo = null,
-        string? qmarca = null, string? amperaje = null, string? polaridad = null, int? garantia = null)
+        string? qmarca = null, string? amperaje = null, string? polaridad = null, int? garantia = null, int? evento = null, int? promocion = null)
     {
-        var vm = Armar(null, null, null, marca, min, max, orden, pagina, tipo, qmarca, amperaje: amperaje, polaridad: polaridad, garantia: garantia);
+        var vm = Armar(null, null, null, marca, min, max, orden, pagina, tipo, qmarca, amperaje: amperaje, polaridad: polaridad, garantia: garantia, evento: evento, promocion: promocion);
         return EsAjax() ? PartialView("_ResultadosCatalogo", vm) : View(vm);
     }
 }

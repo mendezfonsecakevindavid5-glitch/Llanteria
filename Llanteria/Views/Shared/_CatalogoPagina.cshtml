@@ -17,7 +17,7 @@
         <aside class="col-lg-3">
             <form id="filtros" method="get" asp-controller="@controlador" asp-action="Index" class="cat-filters">
                 @if (!string.IsNullOrEmpty(Model.Tipo)) { <input type="hidden" name="tipo" value="@Model.Tipo" /> }
-                @if (!string.IsNullOrEmpty(Model.Orden)) { <input type="hidden" name="orden" value="@Model.Orden" /> }
+                @if (Model.Orden is "precio-asc" or "precio-desc") { <input type="hidden" name="orden" value="@Model.Orden" /> }
                 @if (!string.IsNullOrEmpty(Model.BuscarMarca)) { <input type="hidden" name="qmarca" value="@Model.BuscarMarca" /> }
                 <div class="cat-filters-head">
                     <strong>Filtrar por</strong>
@@ -93,16 +93,23 @@
                     </div>
                 }
 
+                @* La marca se filtra con la barra de búsqueda de arriba; este panel filtra por evento y por promoción. *@
                 <div class="cat-group">
-                    <div class="cat-group-title">Marca</div>
-                    @foreach (var m in Model.MarcasDisponibles)
-                    {
-                        <label class="cat-check">
-                            <input type="checkbox" name="marca" value="@m.Nombre" checked="@Model.Marcas.Contains(m.Nombre)" />
-                            <span>@m.Nombre</span><em>@m.Cantidad</em>
-                        </label>
-                    }
-                    @if (!Model.MarcasDisponibles.Any()) { <div class="small text-muted">Sin marcas registradas.</div> }
+                    <div class="cat-group-title">Evento</div>
+                    <select name="evento" class="form-select form-select-sm" aria-label="Evento">
+                        <option value="">Todos</option>
+                        @foreach (var ev in Model.EventosDisponibles) { <option value="@ev.Id" selected="@(Model.Evento == ev.Id)">@ev.Nombre (@ev.Cantidad)</option> }
+                    </select>
+                    @if (!Model.EventosDisponibles.Any()) { <div class="small text-muted mt-1">No hay eventos con promociones vigentes.</div> }
+                </div>
+
+                <div class="cat-group">
+                    <div class="cat-group-title">Promoción</div>
+                    <select name="promocion" class="form-select form-select-sm" aria-label="Promoción">
+                        <option value="">Todas</option>
+                        @foreach (var pr in Model.PromocionesDisponibles) { <option value="@pr.Id" selected="@(Model.Promocion == pr.Id)">@pr.Nombre (@pr.Cantidad)</option> }
+                    </select>
+                    @if (!Model.PromocionesDisponibles.Any()) { <div class="small text-muted mt-1">No hay promociones vigentes.</div> }
                 </div>
 
                 <div class="cat-group">

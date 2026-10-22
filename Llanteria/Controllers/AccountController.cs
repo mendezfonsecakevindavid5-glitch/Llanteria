@@ -93,9 +93,9 @@ public class AccountController : Controller
             user.UltimaConexion = DateTime.Now;
             _db.SaveChanges();
 
-            var rol = user.IdRolNavigation?.NombreRol ?? RolesApp.UsuarioRegistrado;
+            var rol = NormalizarRol(user.IdRolNavigation?.NombreRol);
             await IniciarSesion(ClaimsDe(user, rol));
-            return RedirigirSegunRol(rol is RolesApp.Administrador or RolesApp.Empleado, returnUrl, user.IdCliente, rol);
+            return RedirigirSegunRol(EsRolDePanel(rol), returnUrl, user.IdCliente, rol);
         }
 
         return ErrorLogin();
@@ -148,6 +148,29 @@ public class AccountController : Controller
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Index", "Home");
+    }
+
+    /// <summary>Roles que trabajan en el panel (AdminLayout + menú lateral) en lugar del sitio público.</summary>
+    private static bool EsRolDePanel(string? rol)
+        => rol is RolesApp.Administrador or RolesApp.Secretario or RolesApp.Empleado;
+
+    /// <summary>Aunque el rol se haya guardado con otras mayúsculas ("administrador"), se normaliza para que IsInRole lo reconozca.</summary>
+    private static string NormalizarRol(string? nombreRol)
+    {
+        var rol = (nombreRol ?? RolesApp.UsuarioRegistrado).Trim();
+        foreach (var conocido in new[] { RolesApp.Administrador, RolesApp.Secretario, RolesApp.Empleado, RolesApp.Cliente, RolesApp.UsuarioRegistrado })
+            if (string.Equals(rol, conocido, StringComparison.OrdinalIgnoreCase)) return conocido;
+        return rol;
+    }
+
+    /// <summary>Misma lógica que RedirigirSegunRol pero devolviendo la URL (para el login por código, que responde JSON).</summary>
+    private string DestinoSegunRol(string rol, string? returnUrl, int? clienteId)
+    {
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)) return returnUrl;
+        if (EsRolDePanel(rol)) return Url.Action("Index", "Dashboard")!;
+        if (rol == RolesApp.UsuarioRegistrado) return Url.Action("Perfil", "User")!;
+        return clienteId.HasValue || rol == RolesApp.Cliente
+            ? Url.Action("Index", "MiCuenta")! : Url.Action("Index", "Home")!;
     }
 
     private IActionResult RedirigirSegunRol(bool esPersonal, string? returnUrl, int? clienteId = null, string? rol = null)
@@ -213,7 +236,7 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> VerificarCodigoLogin(string username, string code)
+    public async Task<IActionResult> VerificarCodigoLogin(string username, string code, string? returnUrl = null)
     {
         var s = HttpContext.Session;
         var guardado = s.GetString("login:code");
@@ -235,14 +258,15 @@ public class AccountController : Controller
         user.UltimaConexion = DateTime.Now;
         _db.SaveChanges();
 
-        var rol = user.IdRolNavigation?.NombreRol ?? RolesApp.UsuarioRegistrado;
+        var rol = NormalizarRol(user.IdRolNavigation?.NombreRol);
         await IniciarSesion(ClaimsDe(user, rol));
 
         s.Remove("login:code");
         s.Remove("login:username");
         s.Remove("login:exp");
 
-        return Json(new { success = true });
+        // El administrador (y el personal) entra al Dashboard con AdminLayout; el resto, a su espacio.
+        return Json(new { success = true, redirectUrl = DestinoSegunRol(rol, returnUrl, user.IdCliente) });
     }
 
     [HttpPost]

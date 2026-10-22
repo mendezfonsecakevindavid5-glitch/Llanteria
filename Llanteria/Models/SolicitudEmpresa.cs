@@ -1,7 +1,7 @@
 namespace Llanteria.Models;
 
 /// <summary>Solicitud de una empresa que quiere atender su flota de vehículos en el taller.</summary>
-public class SolicitudEmpresa
+public partial class SolicitudEmpresa
 {
     public const string Pendiente = "Pendiente";
     public const string Contactada = "Contactada";

@@ -37,6 +37,13 @@ public class LegalController : Controller
     private IActionResult DocumentoPdf(string vista)
     {
         HttpContext.Items["LegalPdf"] = true;
+
+        // Si por algún motivo falta wkhtmltopdf.exe, el documento se muestra como página HTML en vez de romper con un error 500.
+        var web = HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>().WebRootPath;
+        var hayWkhtml = new[] { "Rotativa", Path.Combine("Rotativa", "Rotativa") }
+            .Any(r => System.IO.File.Exists(Path.Combine(web, r, "wkhtmltopdf.exe")));
+        if (!hayWkhtml) return View(vista);
+
         return new ViewAsPdf(vista)
         {
             PageSize = Size.A4,
@@ -122,7 +129,7 @@ public class LegalController : Controller
                 ("Radicado", registro.Radicado), ("Nombre", registro.Nombre), ("Correo", registro.Correo),
                 ("Teléfono", registro.Telefono), ("Límite de respuesta", limite)
             }, registro.Mensaje);
-            await _email.EnviarCorreoAsync(_email.CorreoDestino, "Llantería Valledupar",
+            await _email.EnviarCorreoAsync(_email.CorreoDestino, "Llandupar",
                 $"[PQRS] {registro.Radicado} · {registro.Tipo}", cuerpoTaller, responderA: registro.Correo);
         }
         catch { /* se ignora a propósito */ }

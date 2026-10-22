@@ -29,7 +29,7 @@ public class ArticuloController : Controller
         if (!string.IsNullOrWhiteSpace(buscar))
         {
             var t = buscar.Trim();
-            consulta = consulta.Where(a => a.Titulo.Contains(t) || a.Categoria.Contains(t) || a.Autor.Contains(t));
+            consulta = consulta.Where(a => a.Titulo.Contains(t) || (a.Categoria != null && a.Categoria.Contains(t)) || a.Autor.Contains(t));
         }
         if (estado == "publicados") consulta = consulta.Where(a => a.Publicado);
         else if (estado == "borradores") consulta = consulta.Where(a => !a.Publicado);
@@ -51,6 +51,7 @@ public class ArticuloController : Controller
     public IActionResult Create(Articulo a)
     {
         a.Autor = AutorActual(); // el autor siempre es quien publica, no un texto libre.
+        a.IdAutor = int.TryParse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value, out var idAutor) ? idAutor : null;
         Validar(a, null);
         if (!ModelState.IsValid)
         {
@@ -59,6 +60,7 @@ public class ArticuloController : Controller
         }
 
         a.Imagen = a.ImagenArchivo != null ? _imagenes.Guardar(a.ImagenArchivo, CarpetaImagenes, 1600) : null;
+        a.ImagenPresentacion = a.ImagenPresentacionArchivo != null ? _imagenes.Guardar(a.ImagenPresentacionArchivo, CarpetaImagenes, 1600) : null; // si queda vacía, la tarjeta usa el banner
         _db.Articulos.Add(a);
         _db.SaveChanges();
         TempData["Exito"] = a.Publicado ? "Artículo publicado en el blog." : "Artículo guardado como borrador.";
@@ -98,6 +100,13 @@ public class ArticuloController : Controller
         a.Contenido = cambios.Contenido;
         a.Referencias = cambios.Referencias;
         a.Publicado = cambios.Publicado;
+
+        if (cambios.ImagenPresentacionArchivo != null)
+        {
+            var anteriorPres = a.ImagenPresentacion;
+            a.ImagenPresentacion = _imagenes.Guardar(cambios.ImagenPresentacionArchivo, CarpetaImagenes, 1600);
+            EliminarPortada(anteriorPres);
+        }
 
         if (cambios.ImagenArchivo != null)
         {
@@ -152,6 +161,8 @@ public class ArticuloController : Controller
 
         var errorImagen = AlmacenImagenes.Validar(a.ImagenArchivo);
         if (errorImagen != null) ModelState.AddModelError(nameof(Articulo.ImagenArchivo), errorImagen);
+        var errorPres = AlmacenImagenes.Validar(a.ImagenPresentacionArchivo);
+        if (errorPres != null) ModelState.AddModelError(nameof(Articulo.ImagenPresentacionArchivo), errorPres);
     }
 
     // Las portadas que vienen con el proyecto (SVG) se conservan: solo se borran las que se subieron desde el panel.

@@ -1,7 +1,7 @@
-@model List<Llanteria.Models.BlogPost>
+@model List<Llanteria.Models.Articulo>
 @{
     ViewData["Title"] = "Blog";
-    string categoria = ViewBag.Categoria;
+    string? categoria = ViewBag.Categoria;
     string orden = ViewBag.Orden;
 }
 
@@ -31,18 +31,17 @@
 
     @if (Model.Any())
     {
-        <div class="blog-grid">
-            @foreach (var p in Model)
+        <div class="bl-grid">
+            @foreach (var a in Model)
             {
-                <article class="blog-card">
-                    <a asp-action="Detalle" asp-route-slug="@p.Slug" class="blog-card-img" tabindex="-1" aria-hidden="true">
-                        <img src="~/images/blog/@p.Imagen" alt="" loading="lazy" />
+                <article class="bl-card">
+                    <a asp-action="Detalle" asp-route-slug="@a.Slug" class="bl-img" tabindex="-1" aria-hidden="true">
+                        <img src="~/images/blog/@a.ImagenTarjeta" alt="" loading="lazy" />
                     </a>
-                    <div class="blog-card-body">
-                        <div class="blog-meta"><span class="blog-tag">@p.Categoria</span>@p.Fecha.ToString("dd MMM yyyy") · @p.MinutosLectura min de lectura</div>
-                        <h2><a asp-action="Detalle" asp-route-slug="@p.Slug">@p.Titulo</a></h2>
-                        <p>@p.Resumen</p>
-                        <a asp-action="Detalle" asp-route-slug="@p.Slug" class="blog-more">Leer artículo <i class="fa-solid fa-arrow-right"></i></a>
+                    <div class="bl-body">
+                        <h2>@a.Titulo</h2>
+                        <p>@a.Resumen <a asp-action="Detalle" asp-route-slug="@a.Slug" class="bl-mas">Leer más</a></p>
+                        <time datetime="@a.Fecha.ToString("yyyy-MM-dd")">@a.Fecha.ToString("dd 'de' MMMM 'de' yyyy")</time>
                     </div>
                 </article>
             }

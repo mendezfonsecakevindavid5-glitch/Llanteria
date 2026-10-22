@@ -6,7 +6,7 @@ namespace Llanteria.Models;
 /// Orden de trabajo: el seguimiento de un vehículo dentro del taller (desde que entra hasta que se entrega).
 /// Cuando se entrega, deja el historial del vehículo y programa el próximo mantenimiento.
 /// </summary>
-public class OrdenTrabajo
+public partial class OrdenTrabajo
 {
     public const string Recibido = "Recibido";
     public const string EnProceso = "En proceso";

@@ -39,7 +39,7 @@ public class ContactoController : Controller
             ("Nombre", nombre), ("Correo", correo), ("Asunto", asunto)
         }, mensaje);
 
-        var enviado = await _email.EnviarCorreoAsync(_email.CorreoDestino, "Llantería Valledupar",
+        var enviado = await _email.EnviarCorreoAsync(_email.CorreoDestino, "Llandupar",
             $"[Contacto web] {asunto} – {nombre}", cuerpo, responderA: correo);
 
         if (enviado) TempData["Exito"] = "Mensaje enviado. Te responderemos al correo que indicaste.";

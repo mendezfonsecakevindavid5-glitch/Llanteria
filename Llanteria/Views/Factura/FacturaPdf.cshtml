@@ -10,8 +10,8 @@
     var tarifa = f.TotalBruto > 0 ? Math.Round(f.Iva / f.TotalBruto * 100, 1) : 0;
     var retencion = f.RteFte ?? 0;
     var palabras = Negocio.Nombre.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-    var inicio = palabras.Length > 1 ? string.Join(' ', palabras.Take(palabras.Length - 1)) : Negocio.Nombre;
-    var final = palabras.Length > 1 ? palabras.Last() : "";
+    var inicio = palabras.Length > 1 ? string.Join(' ', palabras.Take(palabras.Length - 1)) : (Negocio.Nombre.Length > 4 ? Negocio.Nombre[..4] : Negocio.Nombre);
+    var final = palabras.Length > 1 ? palabras.Last() : (Negocio.Nombre.Length > 4 ? Negocio.Nombre[4..] : "");
     var detalles = f.DetalleFacturas.OrderBy(d => d.Id).ToList();
 }
 <!DOCTYPE html>
@@ -37,7 +37,7 @@
     <table class="doc-head">
         <tr>
             <td style="width:58%">
-                <div class="brand">@inicio <span>@final</span></div>
+                <div class="brand">@inicio@(palabras.Length > 1 ? " " : "")<span>@final</span></div>
                 <div class="muted small" style="margin-top:6px">
                     @if (!string.IsNullOrWhiteSpace(Negocio.Nit)) { <span>NIT @Negocio.Nit</span><br /> }
                     @Negocio.Direccion<br />

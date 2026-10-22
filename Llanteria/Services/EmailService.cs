@@ -23,7 +23,7 @@ namespace Llanteria.Services
             {
                 var apiKey = _configuration["Brevo:ApiKey"];
                 var fromEmail = _configuration["Brevo:FromEmail"];
-                var fromName = _configuration["Brevo:FromName"] ?? "Llantería Valledupar";
+                var fromName = _configuration["Brevo:FromName"] ?? "Llandupar";
 
                 if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(fromEmail) || string.IsNullOrWhiteSpace(destinatarioEmail))
                 {
@@ -82,7 +82,7 @@ namespace Llanteria.Services
         public async Task<bool> EnviarTokenRecuperacionAsync(string destinatarioEmail, string otp)
         {
             var cuerpo = $"<p style='font-family:Arial,sans-serif;font-size:15px;color:#000;margin:0'>Código de verificación: <strong>{WebUtility.HtmlEncode(otp)}</strong>. No compartir.</p>";
-            return await EnviarCorreoAsync(destinatarioEmail, "Usuario", "Código de verificación - Llantería Valledupar", cuerpo);
+            return await EnviarCorreoAsync(destinatarioEmail, "Usuario", "Código de verificación - Llandupar", cuerpo);
         }
     }
 }

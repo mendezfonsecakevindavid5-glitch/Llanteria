@@ -98,7 +98,7 @@ public class CitasController : Controller
                 ("Fecha", dia.ToString("dd/MM/yyyy")), ("Hora", hora), ("Vehículo", vehiculo),
                 ("Dirección", cita.Direccion), ("Forma de pago", formaPago)
             }, notas);
-            await _email.EnviarCorreoAsync(_email.CorreoDestino, "Llantería Valledupar",
+            await _email.EnviarCorreoAsync(_email.CorreoDestino, "Llandupar",
                 $"[Cita] {servicio.Titulo} – {dia:dd/MM/yyyy} {hora}", cuerpo);
         }
         catch { /* se ignora a propósito */ }

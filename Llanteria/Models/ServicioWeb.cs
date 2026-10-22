@@ -8,7 +8,7 @@ namespace Llanteria.Models;
 /// el panel. No es el mismo concepto que <see cref="TipoServicio"/>, que es la tarifa que se factura.
 /// Las ventajas y los datos de la cita se guardan como texto, una por línea, con las partes separadas por «|».
 /// </summary>
-public class ServicioWeb
+public partial class ServicioWeb
 {
     public const string ImagenPorDefecto = "default-servicio.png";
     private const char Separador = '|';

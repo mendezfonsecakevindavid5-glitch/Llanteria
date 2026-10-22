@@ -6,7 +6,7 @@ namespace Llanteria.Models;
 /// Permiso que un administrador le da a otro usuario para crear y editar un tipo de contenido del sitio
 /// (el blog o los servicios). El administrador siempre tiene acceso y no necesita una fila aquí.
 /// </summary>
-public class EditorContenido
+public partial class EditorContenido
 {
     public const string Blog = "Blog";
     public const string Servicios = "Servicios";

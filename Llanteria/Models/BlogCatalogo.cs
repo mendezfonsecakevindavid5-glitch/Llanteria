@@ -24,7 +24,7 @@ public record BlogPost(string Slug, string Titulo, string Resumen, string Catego
 public static class BlogCatalogo
 {
     public static readonly string[] Categorias = { "Actualidad", "Rueda seguro", "Tips de compra" };
-    public const string AutorPorDefecto = "Equipo técnico Llantería Valledupar";
+    public const string AutorPorDefecto = "Equipo técnico Llandupar";
     private const string Autor = AutorPorDefecto;
 
     private static readonly Regex RxColor = new(@"\[color=(#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?)\]([^\[]+)\[/color\]", RegexOptions.Compiled);
@@ -78,6 +78,68 @@ public static class BlogCatalogo
             .Select(l => l[3..])
             .Select(t => (Texto: t, Id: Vitrina.Slug(t)))
             .ToList();
+
+    // ---- Secciones numeradas ----
+    public record Seccion(int Numero, string Titulo, string Cuerpo);
+
+    /// <summary>Quita una numeración escrita a mano ("1. ", "2) ") del título: la numeración la pone el sistema.</summary>
+    public static string LimpiarTitulo(string titulo) => Regex.Replace((titulo ?? "").Trim().Replace("\r", "").Replace("\n", " "), @"^\d+\s*[\.\)\-]\s*", "").Trim();
+
+    /// <summary>Separa el contenido en la introducción (antes del primer "## ") y las secciones, numeradas desde 1.</summary>
+    public static (string Intro, List<Seccion> Secciones) Dividir(string contenido)
+    {
+        var intro = new StringBuilder();
+        var secciones = new List<Seccion>();
+        string? titulo = null;
+        var cuerpo = new StringBuilder();
+
+        void Cerrar()
+        {
+            if (titulo != null) secciones.Add(new Seccion(secciones.Count + 1, titulo, cuerpo.ToString().Trim()));
+            cuerpo.Clear();
+        }
+
+        foreach (var linea in (contenido ?? "").Replace("\r", "").Split('\n'))
+        {
+            if (linea.TrimStart().StartsWith("## "))
+            {
+                Cerrar();
+                titulo = LimpiarTitulo(linea.TrimStart()[3..]);
+            }
+            else if (titulo == null) intro.AppendLine(linea);
+            else cuerpo.AppendLine(linea);
+        }
+        Cerrar();
+        return (intro.ToString().Trim(), secciones);
+    }
+
+    /// <summary>Arma de nuevo el contenido con las marcas "## " a partir de la introducción y las secciones.</summary>
+    public static string Unir(string intro, IEnumerable<Seccion> secciones)
+    {
+        var partes = new List<string>();
+        if (!string.IsNullOrWhiteSpace(intro)) partes.Add(intro.Trim());
+        foreach (var s in secciones) partes.Add($"## {LimpiarTitulo(s.Titulo)}\n\n{(s.Cuerpo ?? "").Trim()}".TrimEnd());
+        return string.Join("\n\n", partes);
+    }
+
+    /// <summary>Números de la tabla de contenido: válidos (1..total), sin repetir y en el orden escrito. Sin nada guardado, todas las secciones.</summary>
+    public static List<int> NumerosDeTabla(string? tabla, int total)
+    {
+        if (string.IsNullOrWhiteSpace(tabla)) return Enumerable.Range(1, total).ToList();
+        return Regex.Matches(tabla, @"\d+").Select(m => int.TryParse(m.Value, out var n) ? n : 0)
+            .Where(n => n >= 1 && n <= total).Distinct().ToList();
+    }
+
+    /// <summary>La tabla de contenido solo admite números (separados por coma o espacio), sin repetir y que existan como sección.</summary>
+    public static string? ValidarTabla(string? texto, int total)
+    {
+        if (string.IsNullOrWhiteSpace(texto)) return null;
+        if (!Regex.IsMatch(texto, @"^\s*\d+(\s*[,;\s]\s*\d+)*\s*$")) return "En la tabla de contenido solo se pueden escribir números, separados por comas.";
+        var nums = Regex.Matches(texto, @"\d+").Select(m => int.Parse(m.Value)).ToList();
+        if (nums.Distinct().Count() != nums.Count) return "No repitas números: cada sección aparece una sola vez.";
+        if (nums.Any(n => n < 1 || n > total)) return $"Los números deben estar entre 1 y {total}.";
+        return null;
+    }
 
     /// <summary>Referencias del artículo: una fuente por línea, "Texto a mostrar | https://enlace" (el enlace es opcional).</summary>
     public static List<(string Texto, string? Url)> Referencias(string? referencias)

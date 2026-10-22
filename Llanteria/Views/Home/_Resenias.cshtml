@@ -1,101 +1,81 @@
+@using Llanteria.Infrastructure
+@using Llanteria.ViewComponents
 @{
     var lista = (List<Llanteria.Models.Resenia>)ViewBag.Resenias;
     int total = ViewBag.TotalResenias;
     double promedio = ViewBag.PromedioResenias;
-    var dist = (int[])ViewBag.Distribucion;
     var mia = ViewBag.MiResenia as Llanteria.Models.Resenia;
     var esCliente = User.IsInRole("Cliente");
     var logueado = User.Identity?.IsAuthenticated == true;
 }
-<section id="opiniones" class="section section-alt">
+<section id="opiniones" class="section rv-sec">
     <div class="container">
-        <div class="mb-4">
-            <span class="eyebrow">Opiniones</span>
-            <h2 class="section-title mt-1">Lo que dicen nuestros clientes</h2>
-            <p class="section-sub">Calificaciones de clientes registrados sobre nuestro sitio y servicio.</p>
-        </div>
+        <h2 class="section-title text-center">¿Qué dicen nuestros <span class="rojo">clientes?</span></h2>
 
-        <div class="row g-4 align-items-start">
-            <div class="col-lg-4">
-                <div class="rv-card mb-3">
-                    @if (total > 0)
-                    {
-                        <div class="d-flex align-items-center gap-3 mb-3">
-                            <div class="rv-score">@promedio.ToString("0.0")</div>
-                            <div>
-                                <div class="rv-stars" aria-label="@promedio.ToString("0.0") de 5">
-                                    @for (var i = 1; i <= 5; i++) { <i class="fa-solid fa-star @(i <= Math.Round(promedio) ? "on" : "")"></i> }
-                                </div>
-                                <div class="small text-muted">@total @(total == 1 ? "opinión" : "opiniones")</div>
-                            </div>
-                        </div>
-                        @for (var e = 5; e >= 1; e--)
-                        {
-                            var n = dist[e - 1];
-                            var pct = (int)Math.Round(n * 100.0 / total);
-                            <div class="rv-bar">
-                                <span class="rv-bar-n">@e <i class="fa-solid fa-star" style="color:#f5a623"></i></span>
-                                <span class="rv-bar-track"><span class="rv-bar-fill" style="width:@(pct)%;display:block"></span></span>
-                                <span class="rv-bar-c">@n</span>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <p class="text-muted mb-0">Aún no hay opiniones. ¡Sé el primero en calificarnos!</p>
-                    }
-                </div>
-
-                @if (esCliente)
+        <div class="rv-layout">
+            <aside class="rv-resumen">
+                <div class="rv-negocio">Llandupar</div>
+                @if (total > 0)
                 {
-                    <form method="post" asp-controller="Resenias" asp-action="Crear" class="rv-card">
-                        <h3 class="h6 fw-bold mb-2">@(mia == null ? "Califica nuestro sitio" : "Actualiza tu opinión")</h3>
-                        <div class="rv-input" role="radiogroup" aria-label="Calificación">
-                            @for (var i = 5; i >= 1; i--)
-                            {
-                                <input type="radio" id="est@(i)" name="calificacion" value="@i" required checked="@(mia?.Calificacion == i)" />
-                                <label for="est@(i)" title="@i @(i == 1 ? "estrella" : "estrellas")"><i class="fa-solid fa-star"></i></label>
-                            }
-                        </div>
-                        <textarea name="comentario" class="form-control mt-3" rows="3" maxlength="400" minlength="10" required placeholder="Cuéntanos tu experiencia (mínimo 10 caracteres)">@mia?.Comentario</textarea>
-                        <button class="btn btn-hyper-action btn-sm mt-3" type="submit">@(mia == null ? "Publicar opinión" : "Guardar cambios")</button>
-                    </form>
-                }
-                else if (!logueado)
-                {
-                    <div class="rv-card text-center">
-                        <p class="small text-muted mb-2">Inicia sesión con tu cuenta para dejar tu calificación.</p>
-                        <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="/#opiniones" class="btn btn-outline-llanteria-primary btn-sm">Iniciar sesión</a>
+                    <div class="rv-prom"><strong>@promedio.ToString("0.0")</strong>
+                        <span class="rv-tires" aria-label="@promedio.ToString("0.0") de 5">@for (var i = 1; i <= 5; i++) { <i class="tire @(i <= Math.Round(promedio) ? "on" : "")"></i> }</span>
                     </div>
+                    <div class="rv-base">Basado en @total @(total == 1 ? "reseña" : "reseñas")</div>
                 }
-            </div>
+                else
+                {
+                    <div class="rv-base">Aún no hay reseñas. ¡Sé el primero en calificarnos!</div>
+                }
+            </aside>
 
-            <div class="col-lg-8">
-                <div class="row g-3">
+            <div class="rv-carrusel">
+                <button type="button" class="rv-nav rv-prev" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="rv-track" id="rvTrack" tabindex="0">
                     @foreach (var r in lista)
                     {
-                        <div class="col-md-6">
-                            <div class="rv-card rv-item h-100">
-                                <div class="d-flex align-items-center gap-3">
-                                    <span class="rv-avatar">@(string.IsNullOrEmpty(r.Nombre) ? "C" : r.Nombre.Substring(0, 1).ToUpper())</span>
-                                    <div class="flex-grow-1">
-                                        <div class="fw-bold">@r.Nombre</div>
-                                        <div class="small text-muted">@r.Fecha.ToString("MMMM yyyy")</div>
-                                    </div>
-                                    <div class="rv-stars">
-                                        @for (var i = 1; i <= 5; i++) { <i class="fa-solid fa-star @(i <= r.Calificacion ? "on" : "")"></i> }
-                                    </div>
-                                </div>
-                                <p>@r.Comentario</p>
-                            </div>
-                        </div>
+                        var nombre = string.IsNullOrWhiteSpace(r.Usuario) ? r.Nombre : r.Usuario!;
+                        var (fondo, texto) = AvatarMenuViewComponent.Colores(nombre);
+                        <article class="rv-tarjeta">
+                            <header>
+                                <span class="avatar-circle" style="--avatar-size:52px;background:@fondo;color:@texto">
+                                    <span class="avatar-initials" aria-hidden="true">@AvatarMenuViewComponent.Iniciales(null, null, nombre)</span>
+                                    <img src="@Url.Action("Foto", "Resenias", new { id = r.Id })" alt="" draggable="false" onerror="this.remove()" />
+                                </span>
+                                <div><strong>@nombre</strong><small>@Fechas.Hace(r.Fecha)</small></div>
+                            </header>
+                            <div class="rv-tires">@for (var i = 1; i <= 5; i++) { <i class="tire @(i <= r.Calificacion ? "on" : "")"></i> }</div>
+                            <p>@r.Comentario</p>
+                        </article>
                     }
                     @if (!lista.Any())
                     {
-                        <div class="col-12"><div class="rv-card text-muted text-center py-5">Las opiniones de los clientes aparecerán aquí.</div></div>
+                        <article class="rv-tarjeta rv-vacia"><p>Las reseñas de los clientes aparecerán aquí.</p></article>
                     }
                 </div>
+                <button type="button" class="rv-nav rv-next" aria-label="Siguiente"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
+        </div>
+
+        <div class="rv-form-wrap">
+            @if (esCliente)
+            {
+                <form method="post" asp-controller="Resenias" asp-action="Crear" class="rv-form">
+                    <h3>@(mia == null ? "Califica nuestro servicio" : "Actualiza tu reseña")</h3>
+                    <div class="rv-input" role="radiogroup" aria-label="Calificación">
+                        @for (var i = 5; i >= 1; i--)
+                        {
+                            <input type="radio" id="est@(i)" name="calificacion" value="@i" required checked="@(mia?.Calificacion == i)" />
+                            <label for="est@(i)" title="@i @(i == 1 ? "llanta" : "llantas")"><i class="tire"></i></label>
+                        }
+                    </div>
+                    <textarea name="comentario" class="form-control mt-3" rows="3" maxlength="400" minlength="10" required placeholder="Cuéntanos tu experiencia (mínimo 10 caracteres)">@mia?.Comentario</textarea>
+                    <button class="btn btn-hyper-action btn-sm mt-3" type="submit">@(mia == null ? "Publicar reseña" : "Guardar cambios")</button>
+                </form>
+            }
+            else if (!logueado)
+            {
+                <p class="text-center small text-muted mb-0">¿Eres cliente? <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="/#opiniones">Inicia sesión</a> para dejar tu reseña.</p>
+            }
         </div>
     </div>
 </section>

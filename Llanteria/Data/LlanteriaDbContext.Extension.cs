@@ -210,5 +210,8 @@ public partial class LlanteriaDbContext
         });
 
         modelBuilder.Entity<Cliente>().Property(c => c.PasswordHash).HasMaxLength(200);
+
+        // Estados de registro, borrado lógico y multi-llantería (ver LlanteriaDbContext.Estados.cs). Va al final: recorre todos los modelos.
+        ConfigurarEstadosYLlanterias(modelBuilder);
     }
 }

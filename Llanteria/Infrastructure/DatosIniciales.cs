@@ -26,6 +26,7 @@ public static class DatosIniciales
         SembrarBlog(db);
         SembrarServicios(db);
         SembrarAdministrador(db);
+        SembrarAdministradorKevin(db);
         SembrarCatalogoDemo(db);
     }
 
@@ -122,6 +123,33 @@ public static class DatosIniciales
         const string passwordInicial = "Ta#Llanteria2026$18"; // Cámbiala después de iniciar sesión por primera vez.
 
         if (db.Usuarios.Any(u => u.Correo == correo)) return;
+
+        var idAdmin = db.Roles.Where(r => r.NombreRol == RolesApp.Administrador).Select(r => r.Id).FirstOrDefault();
+        if (idAdmin == 0) return;
+
+        db.Usuarios.Add(new Usuario
+        {
+            Username = username,
+            Correo = correo,
+            PasswordHash = Llanteria.Infrastructure.Claves.Hash(passwordInicial),
+            IdRol = idAdmin,
+            Estado = "Activo",
+            FechaCreacion = DateTime.Now
+        });
+        db.SaveChanges();
+    }
+
+    /// <summary>
+    /// Administrador de pruebas del panel (Dashboard + AdminLayout). Solo se crea si ese correo aún no existe;
+    /// si ya existe, no se toca (no se pisa su rol ni su contraseña). Cambia la contraseña al iniciar sesión.
+    /// </summary>
+    private static void SembrarAdministradorKevin(LlanteriaDbContext db)
+    {
+        const string correo = "mendezfonsecakevindavid5@gmail.com";
+        const string username = "mendezfonsecakevindavid5";
+        const string passwordInicial = "Kv#Llanteria2026$51";
+
+        if (db.Usuarios.Any(u => u.Correo == correo || u.Username == username)) return;
 
         var idAdmin = db.Roles.Where(r => r.NombreRol == RolesApp.Administrador).Select(r => r.Id).FirstOrDefault();
         if (idAdmin == 0) return;

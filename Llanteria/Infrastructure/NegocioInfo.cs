@@ -9,13 +9,13 @@ namespace Llanteria.Infrastructure;
 /// </summary>
 public class NegocioInfo
 {
-    public string Nombre { get; set; } = "Llantería Valledupar";
+    public string Nombre { get; set; } = "Llandupar";
 
     /// <summary>NIT del negocio. Si se llena (appsettings.json, sección "Negocio"), aparece en facturas, reportes y Excel.</summary>
     public string Nit { get; set; } = "";
 
     /// <summary>Texto legal al pie de las facturas en PDF (por ejemplo, resolución de numeración o régimen).</summary>
-    public string LeyendaFactura { get; set; } = "Documento generado por el sistema de gestión de Llantería Valledupar.";
+    public string LeyendaFactura { get; set; } = "Documento generado por el sistema de gestión de Llandupar.";
 
     public string Telefono { get; set; } = "+57 311 772 3978";
 

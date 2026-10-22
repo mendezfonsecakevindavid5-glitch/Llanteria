@@ -1,12 +1,14 @@
-﻿/* ==========================================================================
-   Nombre del proyecto ("Llantería Valledupar")
+/* ==========================================================================
+   Nombre del proyecto ("Llandupar")
    Un solo estilo para todos los sitios donde aparece: header, footer y panel.
-   Uso:  <span class="brand-matrix">Llantería<small class="ms-1">Valledupar</small></span>
+   Solo la primera L va en mayúscula: "Llan" toma el color del contexto
+   (negro en el header claro, blanco en fondos oscuros) y "dupar" va en rojo.
+   Uso:  <span class="brand-matrix"><span class="brand-llan">Llan</span><span class="brand-dupar">dupar</span></span>
    ========================================================================== */
 .brand-matrix {
     font-family: 'Orbitron', sans-serif;
     font-weight: 900;
-    text-transform: uppercase;
+    text-transform: none;
     text-decoration: none;
     color: #FFFFFF;
     font-size: 1.4rem;
@@ -16,6 +18,10 @@
     user-select: none;
 }
 
-    .brand-matrix small {
-        color: var(--llanteria-primary, #C92B0A) !important;
+    .brand-matrix .brand-llan {
+        color: inherit;
+    }
+
+    .brand-matrix .brand-dupar {
+        color: var(--llanteria-primary, #C92B0A);
     }

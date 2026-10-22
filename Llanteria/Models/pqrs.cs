@@ -1,7 +1,7 @@
 ﻿namespace Llanteria.Models;
 
 /// <summary>Petición, queja, reclamo o sugerencia radicada por un cliente o visitante.</summary>
-public class Pqrs
+public partial class Pqrs
 {
     public const string Recibida = "Recibida";
     public const string EnTramite = "En trámite";

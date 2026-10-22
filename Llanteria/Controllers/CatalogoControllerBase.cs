@@ -9,7 +9,7 @@ namespace Llanteria.Controllers;
 /// <summary>Lógica común de los catálogos públicos con filtros (llantas, lubricantes y baterías).</summary>
 public abstract class CatalogoControllerBase : Controller
 {
-    protected const int PorPagina = 12;
+    protected const int PorPagina = 20;
     protected readonly LlanteriaDbContext _db;
 
     protected CatalogoControllerBase(LlanteriaDbContext db) => _db = db;
@@ -25,11 +25,13 @@ public abstract class CatalogoControllerBase : Controller
 
     protected CatalogoViewModel Armar(string? ancho, string? perfil, string? diametro, string[]? marca,
         int? min, int? max, string? orden, int pagina, string? tipo = null, string? qmarca = null,
-        string? viscosidad = null, string? tipoAceite = null, string? amperaje = null, string? polaridad = null, int? garantia = null)
+        string? viscosidad = null, string? tipoAceite = null, string? amperaje = null, string? polaridad = null, int? garantia = null,
+        int? evento = null, int? promocion = null)
     {
         // Base: productos de la categoría. Las llantas también se reconocen por tener medida cargada.
         IQueryable<Producto> baseQ = _db.Productos.AsNoTracking()
-            .Include(p => p.DetalleProducto).ThenInclude(d => d!.IdMarcaNavigation);
+            .Include(p => p.DetalleProducto).ThenInclude(d => d!.IdMarcaNavigation)
+            .Include(p => p.OfertaNavigation).ThenInclude(o => o!.EventoNavigation);
         baseQ = PorMedida
             ? baseQ.Where(p => p.Categoria == Categoria || (p.DetalleProducto != null && p.DetalleProducto.Ancho != null))
             : baseQ.Where(p => p.Categoria == Categoria);
@@ -44,7 +46,9 @@ public abstract class CatalogoControllerBase : Controller
             BuscarMarca = Limpio(qmarca),
             PrecioMin = min is > 0 ? min : null,
             PrecioMax = max is > 0 ? max : null,
-            Orden = orden is "precio-desc" or "nombre" ? orden : "precio-asc",
+            Orden = orden is "precio-asc" or "precio-desc" ? orden : "nombre", // alfabético por defecto
+            Evento = evento is > 0 ? evento : null,
+            Promocion = promocion is > 0 ? promocion : null,
             Viscosidad = Limpio(viscosidad),
             TipoAceite = Limpio(tipoAceite),
             Amperaje = Limpio(amperaje),
@@ -76,6 +80,16 @@ public abstract class CatalogoControllerBase : Controller
         vm.MarcasDisponibles = todos
             .Select(p => p.DetalleProducto?.IdMarcaNavigation?.Nombre).Where(n => !string.IsNullOrEmpty(n))
             .GroupBy(n => n!).OrderBy(g => g.Key).Select(g => (g.Key, g.Count())).ToList();
+        // Promociones vigentes que cubren productos de esta categoría, y los eventos a los que se deben.
+        var hoy = DateTime.Now;
+        var conOferta = todos.Where(p => p.OfertaNavigation != null && p.OfertaNavigation.Estado != false
+                                         && p.OfertaNavigation.FechaInicio <= hoy && p.OfertaNavigation.FechaFin >= hoy).ToList();
+        vm.PromocionesDisponibles = conOferta
+            .GroupBy(p => p.OfertaNavigation!.Id).OrderBy(g => g.First().OfertaNavigation!.Titulo)
+            .Select(g => (g.Key, g.First().OfertaNavigation!.Titulo, g.Count())).ToList();
+        vm.EventosDisponibles = conOferta.Where(p => p.OfertaNavigation!.EventoNavigation != null)
+            .GroupBy(p => p.OfertaNavigation!.EventoNavigation!.Id).OrderBy(g => g.First().OfertaNavigation!.EventoNavigation!.Nombre)
+            .Select(g => (g.Key, g.First().OfertaNavigation!.EventoNavigation!.Nombre, g.Count())).ToList();
         if (todos.Count > 0)
         {
             vm.PrecioMasBajo = (int)Math.Floor(todos.Min(p => p.PrecioVenta));
@@ -94,6 +108,16 @@ public abstract class CatalogoControllerBase : Controller
             q = q.Where(p => p.DetalleProducto != null && p.DetalleProducto.IdMarcaNavigation != null
                              && marcas.Contains(p.DetalleProducto.IdMarcaNavigation.Nombre));
         }
+        if (vm.Evento.HasValue)
+        {
+            var idEvento = vm.Evento.Value;
+            q = q.Where(p => p.OfertaNavigation != null && p.OfertaNavigation.IdEvento == idEvento);
+        }
+        if (vm.Promocion.HasValue)
+        {
+            var idPromocion = vm.Promocion.Value;
+            q = q.Where(p => p.IdOferta == idPromocion);
+        }
         if (vm.BuscarMarca != null)
         {
             var texto = vm.BuscarMarca;
@@ -111,8 +135,8 @@ public abstract class CatalogoControllerBase : Controller
         q = vm.Orden switch
         {
             "precio-desc" => q.OrderByDescending(p => p.PrecioVenta).ThenBy(p => p.Nombre),
-            "nombre" => q.OrderBy(p => p.Nombre),
-            _ => q.OrderBy(p => p.PrecioVenta).ThenBy(p => p.Nombre)
+            "precio-asc" => q.OrderBy(p => p.PrecioVenta).ThenBy(p => p.Nombre),
+            _ => q.OrderBy(p => p.Nombre) // orden alfabético por defecto
         };
         vm.Resultados = Paginado<Producto>.De(q, pagina, PorPagina);
 
