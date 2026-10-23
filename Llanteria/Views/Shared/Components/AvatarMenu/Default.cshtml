@@ -48,6 +48,13 @@
     </button>
 
     <div class="avatar-panel" id="avatarPanel" role="menu" hidden>
+        @if (Model.EsPersonal)
+        {
+            @* Administrador, secretario y empleado trabajan en el panel: desde el sitio público necesitan un camino de vuelta. *@
+            <a class="avatar-item" role="menuitem" asp-controller="Dashboard" asp-action="Index">
+                <i class="fa-solid fa-gauge" aria-hidden="true"></i><span>Volver al panel</span>
+            </a>
+        }
         <a class="avatar-item" role="menuitem" asp-controller="User" asp-action="Perfil">
             <i class="fa-regular fa-user" aria-hidden="true"></i><span>Cuenta</span>
         </a>

@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using Llanteria.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Llanteria.ViewComponents;
@@ -21,7 +22,10 @@ public class AvatarMenuViewComponent : ViewComponent
 
         var (fondo, texto) = Colores(username);
         var rol = u.IsInRole("Administrador") ? "Administrador" : u.IsInRole("Empleado") ? "Empleado" : "Usuario registrado";
-        return View(new AvatarMenuModel(Iniciales(nombres, apellidos, username), fondo, texto, tamano, username, modal, rol));
+        // El administrador, el secretario y el empleado trabajan en el panel: desde "Cuenta" (que usa el sitio
+        // público) necesitan un camino de vuelta al Dashboard, porque ese menú no está dentro del panel.
+        var esPersonal = RolesApp.EsPersonal(u);
+        return View(new AvatarMenuModel(Iniciales(nombres, apellidos, username), fondo, texto, tamano, username, modal, rol, esPersonal));
     }
 
     /// <summary>Primera letra del primer nombre + primera letra del primer apellido. Sin datos: las 2 primeras letras del usuario.</summary>
@@ -81,4 +85,4 @@ public class AvatarMenuViewComponent : ViewComponent
     }
 }
 
-public record AvatarMenuModel(string Iniciales, string Fondo, string Texto, int Tamano, string Usuario, bool Modal = false, string Rol = "");
+public record AvatarMenuModel(string Iniciales, string Fondo, string Texto, int Tamano, string Usuario, bool Modal = false, string Rol = "", bool EsPersonal = false);
