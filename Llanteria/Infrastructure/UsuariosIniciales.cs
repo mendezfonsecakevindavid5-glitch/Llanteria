@@ -70,12 +70,9 @@ public static class UsuariosIniciales
             var username = c.Username.Trim();
             if (db.Usuarios.Any(u => u.Username == username)) continue;
 
+            // El correo puede repetirse entre cuentas (Usuarios.Correo no tiene restricción única en la base):
+            // usuarios.json puede traer, a propósito, el mismo correo en varias cuentas de prueba.
             var correo = c.Correo.Trim();
-            if (db.Usuarios.Any(u => u.Correo == correo))
-            {
-                logger.LogWarning("Usuario inicial {Username} omitido: el correo {Correo} ya lo usa otra cuenta.", username, correo);
-                continue;
-            }
 
             var idRol = db.Roles.Where(r => r.NombreRol == c.Rol).Select(r => r.Id).FirstOrDefault();
             if (idRol == 0)
@@ -147,18 +144,21 @@ public static class UsuariosIniciales
     {
         Usuarios =
         {
-            Nueva(RolesApp.Administrador, "administrador_llanteria", "Administrador", "Llantería", "900000001"),
-            Nueva(RolesApp.Empleado, "empleado_llanteria", "Empleado", "Llantería", "900000002"),
-            Nueva(RolesApp.UsuarioRegistrado, "usuario_llanteria", "Usuario", "Llantería", "900000003")
+            Nueva(RolesApp.Administrador, "kevin_90_1", "Kevin", "Méndez", "900000001"),
+            Nueva(RolesApp.Empleado, "santiago_10_2", "Santiago", "Empleado", "900000002"),
+            Nueva(RolesApp.UsuarioRegistrado, "ana_12_3", "Ana", "Usuaria", "900000003")
         }
     };
+
+    private const string CorreoPruebas = "mendezfonsecakevindavid5@gmail.com";
 
     private static Cuenta Nueva(string rol, string username, string nombres, string apellidos, string documento) => new()
     {
         Rol = rol,
         Username = username,
         Password = ClaveAleatoria(),
-        Correo = username + "@llanteria.local",
+        // Las 3 cuentas de prueba comparten el mismo correo a propósito (Usuarios.Correo no es único en la base).
+        Correo = CorreoPruebas,
         Nombres = nombres,
         Apellidos = apellidos,
         Documento = documento,

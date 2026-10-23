@@ -50,6 +50,10 @@ builder.Services.AddAntiforgery(o =>
     o.Cookie.HttpOnly = true;
     o.Cookie.SecurePolicy = politicaCookieSegura;
     o.Cookie.SameSite = SameSiteMode.Strict;
+    // Sin esto, [ValidateAntiForgeryToken] solo lee el token de un formulario (application/x-www-form-urlencoded):
+    // cualquier fetch que mande JSON (Registro, Reestablecer contraseña) fallaba siempre con 400, aunque mandara
+    // el token en un encabezado, porque el servidor nunca miraba ese encabezado.
+    o.HeaderName = "RequestVerificationToken";
 });
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
