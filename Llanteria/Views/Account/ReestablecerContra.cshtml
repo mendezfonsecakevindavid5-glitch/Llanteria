@@ -126,6 +126,13 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // El formulario envía el correo y el código por fetch como JSON: el token antifalsificación
+            // no viaja en un campo del formulario (eso solo lo lee el servidor en envíos form-urlencoded),
+            // así que se manda como encabezado (ver Program.cs: AntiforgeryOptions.HeaderName).
+            function getAntiForgeToken() {
+                return document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+            }
+
             const etapa1 = document.getElementById('etapa1');
             const etapa2 = document.getElementById('etapa2');
             const etapa3 = document.getElementById('etapa3');
@@ -263,7 +270,7 @@
                     try {
                         const response = await fetch('@Url.Action("EnviarCodigoRecuperacion", "Account")', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': getAntiForgeToken() },
                             body: JSON.stringify({ correo: emailInput.value.trim() })
                         });
                         const resData = await response.json();
@@ -327,7 +334,7 @@
                 try {
                     const response = await fetch('@Url.Action("VerificarTokenRecuperacion", "Account")', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': getAntiForgeToken() },
                         body: JSON.stringify(token)
                     });
                     const resData = await response.json();
