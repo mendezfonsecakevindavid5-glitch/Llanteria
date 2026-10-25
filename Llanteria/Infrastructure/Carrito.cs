@@ -63,7 +63,7 @@ public static class Carrito
     public static Dictionary<int, int?> Disponibilidad(LlanteriaDbContext db, IEnumerable<int> ids)
     {
         var lista = ids.Distinct().ToList();
-        var danado = StockHelper.IdEstado(db, DatosIniciales.Estados.Danado);
+        var danado = StockHelper.IdEstado(db, UsuariosIniciales.Estados.Danado);
         var inv = db.Inventarios.AsNoTracking().Where(i => lista.Contains(i.IdProducto)).ToList()
             .GroupBy(i => i.IdProducto)
             .ToDictionary(g => g.Key, g => (int?)g.Where(i => i.IdEstado != danado).Sum(i => i.StockActual ?? 0));
@@ -137,8 +137,10 @@ public class ResumenCompra
         {
             var codigo = cupon.Trim().ToUpper();
             var ahora = DateTime.Now;
-            var o = db.Ofertas.AsNoTracking().FirstOrDefault(x =>
+            var o = db.Ofertas.AsNoTracking().Include(x => x.EventoNavigation).FirstOrDefault(x =>
                 x.CodigoPromocional == codigo && x.Estado != false && x.FechaInicio <= ahora && x.FechaFin >= ahora.Date);
+            // Un cupón ligado a un evento solo sirve el día del evento (de 12:00 a. m. a 11:59 p. m.).
+            if (o is { IdEvento: not null } && (o.EventoNavigation == null || !o.EventoNavigation.EsHoy(ahora))) o = null;
             decimal desc = 0;
             if (o != null)
             {

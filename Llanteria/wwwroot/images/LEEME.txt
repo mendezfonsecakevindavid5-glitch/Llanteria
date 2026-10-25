@@ -14,3 +14,6 @@ marcas/     Logos de la franja del inicio. Nombre del archivo = nombre de la mar
             Usa solo logos de marcas con las que realmente tengas convenio o permiso de uso.
 servicios/  Foto de cada servicio en el inicio: montaje-balanceo.jpg, alineacion-3d.jpg, mantenimiento-express.jpg,
             baterias.jpg, suspension-amortiguadores.jpg, serviteca-movil.jpg (si falta, se usa default-servicio.png).
+
+banners/    Fotos del banner "Llantas para autos y motocicletas" del inicio: banner-auto.jpg y banner-moto.jpg.
+            Ahí mismo, en LEEME.txt, están los prompts para generarlas. Solo fotos; los .svg se ignoran.

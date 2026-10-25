@@ -10,6 +10,9 @@ namespace Llanteria.Infrastructure;
 /// "Secreto de usuarios": garantiza que SIEMPRE existan un administrador, un empleado y un usuario registrado,
 /// aunque se borre la base de datos y se vuelva a crear.
 ///
+/// También reúne los catálogos mínimos que la aplicación necesita para funcionar (roles, estados de inventario y
+/// categorías de gasto): antes vivían en la clase DatosIniciales, que se eliminó. Ver <see cref="AsegurarCatalogos"/>.
+///
 /// Las cuentas se definen en Privado/usuarios.json (carpeta privada: fuera de Git y de wwwroot).
 /// Si el archivo no existe, se crea solo la primera vez con contraseñas aleatorias que puedes leer y cambiar en ese archivo.
 /// Al iniciar, cada cuenta que falte en la base se crea; las que ya existen no se tocan (no se pisa una contraseña cambiada).
@@ -24,6 +27,55 @@ public static class UsuariosIniciales
         WriteIndented = true,
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
+
+    /// <summary>Nombres de los estados del stock (tabla EstadoInventario). Antes: DatosIniciales.Estados.</summary>
+    public static class Estados
+    {
+        public const string Disponible = "Disponible";
+        public const string Agotado = "Agotado";
+        public const string Danado = "Dañado";
+    }
+
+    /// <summary>
+    /// Catálogos que la aplicación necesita para funcionar y que el modelo no sembraba:
+    /// sin categorías de gasto no se podía registrar ningún gasto, y sin estados de inventario no se podía crear stock.
+    /// Solo agrega lo que falta; nunca modifica ni borra. Debe ejecutarse ANTES de <see cref="Asegurar"/> (que necesita los roles).
+    /// </summary>
+    public static void AsegurarCatalogos(LlanteriaDbContext db)
+    {
+        foreach (var n in new[] { RolesApp.Administrador, RolesApp.Secretario, RolesApp.Empleado, RolesApp.Cliente, RolesApp.UsuarioRegistrado })
+            if (!db.Roles.Any(r => r.NombreRol == n)) db.Roles.Add(new Role { NombreRol = n });
+
+        foreach (var n in new[] { Estados.Disponible, Estados.Agotado, Estados.Danado })
+            if (!db.EstadoInventarios.Any(e => e.Nombre == n)) db.EstadoInventarios.Add(new EstadoInventario { Nombre = n });
+
+        foreach (var n in new[] { "Arriendo", "Servicios públicos", "Nómina", "Proveedores", "Impuestos", "Mantenimiento", "Otros" })
+            if (!db.CategoriaGastos.Any(c => c.Nombre == n)) db.CategoriaGastos.Add(new CategoriaGasto { Nombre = n });
+
+        db.SaveChanges();
+        CorregirRolDeClientesAntiguos(db);
+    }
+
+    // Antes aquí (en DatosIniciales) se sembraban datos de ejemplo quemados en el código. Se quitaron: ahora esos datos
+    // los pone el script de datos de prueba (INSERT INTO) o el administrador desde el panel.
+
+    /// <summary>
+    /// Antes el registro fijaba el rol con Id 2, que en la base es "Empleado": quien se registraba como cliente entraba al panel.
+    /// Los usuarios ligados a un cliente (y no a un empleado) que quedaron con ese rol pasan a "Cliente", que conserva
+    /// MiCuenta, puntos y reseñas pero no da acceso al panel. Es idempotente: si no hay casos, no cambia nada.
+    /// </summary>
+    private static void CorregirRolDeClientesAntiguos(LlanteriaDbContext db)
+    {
+        var idEmpleado = db.Roles.Where(r => r.NombreRol == RolesApp.Empleado).Select(r => r.Id).FirstOrDefault();
+        var idCliente = db.Roles.Where(r => r.NombreRol == RolesApp.Cliente).Select(r => r.Id).FirstOrDefault();
+        if (idEmpleado == 0 || idCliente == 0) return;
+
+        var afectados = db.Usuarios.Where(u => u.IdRol == idEmpleado && u.IdCliente != null && u.IdEmpleado == null).ToList();
+        if (afectados.Count == 0) return;
+
+        foreach (var u in afectados) u.IdRol = idCliente;
+        db.SaveChanges();
+    }
 
     private sealed class Archivo { public List<Cuenta> Usuarios { get; set; } = new(); }
 
@@ -50,7 +102,7 @@ public static class UsuariosIniciales
 
         var cuentas = JsonSerializer.Deserialize<Archivo>(File.ReadAllText(ruta), Json)?.Usuarios ?? new();
 
-        // Catálogos que las cuentas necesitan (los crea DatosIniciales / el modelo; aquí solo se leen).
+        // Catálogos que las cuentas necesitan (los crea el modelo; aquí solo se leen).
         var idDocumento = db.TipoDocumentos.OrderBy(t => t.Id).Select(t => t.Id).FirstOrDefault();
         var idSexo = db.Sexos.OrderBy(x => x.Id).Select(x => x.Id).FirstOrDefault();
         if (idDocumento == 0 || idSexo == 0)

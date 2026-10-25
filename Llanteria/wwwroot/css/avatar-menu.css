@@ -57,13 +57,17 @@
     object-fit: cover;
 }
 
-/* Mensaje desplegable: debajo del avatar y centrado respecto a él */
+/* Mensaje desplegable: debajo del avatar, alineado a su borde DERECHO y abierto hacia la izquierda.
+   El avatar vive en la esquina derecha del header; centrado, la mitad del menú quedaba fuera de la pantalla. */
 .avatar-panel {
     position: absolute;
     top: calc(100% + 14px);
-    left: 50%;
-    transform: translateX(-50%);
-    min-width: 190px;
+    right: 0;
+    left: auto;
+    transform: none;
+    width: max-content;
+    min-width: 200px;
+    max-width: calc(100vw - 1.5rem);
     padding: .4rem;
     background: #FFFFFF;
     border: 1px solid var(--line, #e3ddd4);
@@ -76,18 +80,18 @@
         display: none;
     }
 
-    /* Flechita centrada que apunta al avatar */
+    /* Flechita que apunta al centro del avatar (el menú está pegado a su borde derecho) */
     .avatar-panel::before {
         content: "";
         position: absolute;
         top: -7px;
-        left: 50%;
+        right: calc(var(--avatar-size) / 2 - 7px);
         width: 14px;
         height: 14px;
         background: #FFFFFF;
         border-top: 1px solid var(--line, #e3ddd4);
         border-left: 1px solid var(--line, #e3ddd4);
-        transform: translateX(-50%) rotate(45deg);
+        transform: rotate(45deg);
     }
 
     .avatar-panel form {
@@ -135,14 +139,15 @@
     opacity: .45;
 }
 
-/* Menú móvil (header colapsado): se alinea a la izquierda para no salirse de la pantalla */
+/* Menú móvil (header colapsado): el avatar queda a la izquierda, así que el menú se abre hacia la derecha. */
 @media (max-width: 1199.98px) {
     .avatar-panel {
         left: 0;
-        transform: none;
+        right: auto;
     }
 
         .avatar-panel::before {
-            left: calc(var(--avatar-size) / 2);
+            left: calc(var(--avatar-size) / 2 - 7px);
+            right: auto;
         }
 }

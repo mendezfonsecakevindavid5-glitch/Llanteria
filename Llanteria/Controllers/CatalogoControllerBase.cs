@@ -81,9 +81,9 @@ public abstract class CatalogoControllerBase : Controller
             .Select(p => p.DetalleProducto?.IdMarcaNavigation?.Nombre).Where(n => !string.IsNullOrEmpty(n))
             .GroupBy(n => n!).OrderBy(g => g.Key).Select(g => (g.Key, g.Count())).ToList();
         // Promociones vigentes que cubren productos de esta categoría, y los eventos a los que se deben.
+        // Una promoción ligada a un evento solo se muestra el día del evento (de 12:00 a. m. a 11:59 p. m.).
         var hoy = DateTime.Now;
-        var conOferta = todos.Where(p => p.OfertaNavigation != null && p.OfertaNavigation.Estado != false
-                                         && p.OfertaNavigation.FechaInicio <= hoy && p.OfertaNavigation.FechaFin >= hoy).ToList();
+        var conOferta = todos.Where(p => p.OfertaNavigation != null && p.OfertaNavigation.VigenteAhora(hoy)).ToList();
         vm.PromocionesDisponibles = conOferta
             .GroupBy(p => p.OfertaNavigation!.Id).OrderBy(g => g.First().OfertaNavigation!.Titulo)
             .Select(g => (g.Key, g.First().OfertaNavigation!.Titulo, g.Count())).ToList();
@@ -92,8 +92,9 @@ public abstract class CatalogoControllerBase : Controller
             .Select(g => (g.Key, g.First().OfertaNavigation!.EventoNavigation!.Nombre, g.Count())).ToList();
         if (todos.Count > 0)
         {
-            vm.PrecioMasBajo = (int)Math.Floor(todos.Min(p => p.PrecioVenta));
-            vm.PrecioMasAlto = (int)Math.Ceiling(todos.Max(p => p.PrecioVenta));
+            // Se miden con el precio que realmente paga el cliente (con el descuento vigente).
+            vm.PrecioMasBajo = (int)Math.Floor(todos.Min(p => p.PrecioActual));
+            vm.PrecioMasAlto = (int)Math.Ceiling(todos.Max(p => p.PrecioActual));
         }
 
         // Filtros elegidos
@@ -108,16 +109,6 @@ public abstract class CatalogoControllerBase : Controller
             q = q.Where(p => p.DetalleProducto != null && p.DetalleProducto.IdMarcaNavigation != null
                              && marcas.Contains(p.DetalleProducto.IdMarcaNavigation.Nombre));
         }
-        if (vm.Evento.HasValue)
-        {
-            var idEvento = vm.Evento.Value;
-            q = q.Where(p => p.OfertaNavigation != null && p.OfertaNavigation.IdEvento == idEvento);
-        }
-        if (vm.Promocion.HasValue)
-        {
-            var idPromocion = vm.Promocion.Value;
-            q = q.Where(p => p.IdOferta == idPromocion);
-        }
         if (vm.BuscarMarca != null)
         {
             var texto = vm.BuscarMarca;
@@ -129,20 +120,37 @@ public abstract class CatalogoControllerBase : Controller
         if (vm.Amperaje != null) q = q.Where(p => p.DetalleProducto!.Amperaje == vm.Amperaje);
         if (vm.Polaridad != null) q = q.Where(p => p.DetalleProducto!.Polaridad == vm.Polaridad);
         if (vm.Garantia.HasValue) q = q.Where(p => p.DetalleProducto!.GarantiaMeses == vm.Garantia.Value);
-        if (vm.PrecioMin.HasValue) q = q.Where(p => p.PrecioVenta >= vm.PrecioMin.Value);
-        if (vm.PrecioMax.HasValue) q = q.Where(p => p.PrecioVenta <= vm.PrecioMax.Value);
 
-        q = vm.Orden switch
+        // Lo que sigue se resuelve en memoria porque depende del precio con descuento (PrecioActual), que cambia con la fecha
+        // y la base de datos no puede calcular. Antes se ordenaba por PrecioVenta: un producto en promoción quedaba
+        // "fuera de lugar" frente al precio que se ve en la tarjeta. Ahora el filtro y el orden usan el precio real.
+        var filtrados = q.ToList();
+
+        if (vm.Evento.HasValue)
         {
-            "precio-desc" => q.OrderByDescending(p => p.PrecioVenta).ThenBy(p => p.Nombre),
-            "precio-asc" => q.OrderBy(p => p.PrecioVenta).ThenBy(p => p.Nombre),
-            _ => q.OrderBy(p => p.Nombre) // orden alfabético por defecto
+            var idEvento = vm.Evento.Value;
+            filtrados = filtrados.Where(p => p.OfertaNavigation != null && p.OfertaNavigation.IdEvento == idEvento && p.OfertaNavigation.VigenteAhora(hoy)).ToList();
+        }
+        if (vm.Promocion.HasValue)
+        {
+            var idPromocion = vm.Promocion.Value;
+            filtrados = filtrados.Where(p => p.IdOferta == idPromocion && p.OfertaNavigation != null && p.OfertaNavigation.VigenteAhora(hoy)).ToList();
+        }
+        if (vm.PrecioMin.HasValue) filtrados = filtrados.Where(p => p.PrecioActual >= vm.PrecioMin.Value).ToList();
+        if (vm.PrecioMax.HasValue) filtrados = filtrados.Where(p => p.PrecioActual <= vm.PrecioMax.Value).ToList();
+
+        // El orden se aplica a TODOS los productos filtrados y recién después se corta la página de 20.
+        var ordenados = vm.Orden switch
+        {
+            "precio-desc" => filtrados.OrderByDescending(p => p.PrecioActual).ThenBy(p => p.Nombre, StringComparer.CurrentCultureIgnoreCase).ToList(),
+            "precio-asc" => filtrados.OrderBy(p => p.PrecioActual).ThenBy(p => p.Nombre, StringComparer.CurrentCultureIgnoreCase).ToList(),
+            _ => filtrados.OrderBy(p => p.Nombre, StringComparer.CurrentCultureIgnoreCase).ToList() // alfabético por defecto
         };
-        vm.Resultados = Paginado<Producto>.De(q, pagina, PorPagina);
+        vm.Resultados = Paginado<Producto>.De(ordenados, pagina, PorPagina);
 
         // Un producto con inventario cargado y sin unidades disponibles se muestra como agotado.
         var ids = vm.Resultados.Items.Select(p => p.Id).ToList();
-        var danado = StockHelper.IdEstado(_db, DatosIniciales.Estados.Danado);
+        var danado = StockHelper.IdEstado(_db, UsuariosIniciales.Estados.Danado);
         var inv = _db.Inventarios.AsNoTracking().Where(i => ids.Contains(i.IdProducto)).ToList()
             .GroupBy(i => i.IdProducto)
             .ToDictionary(g => g.Key, g => g.Where(i => i.IdEstado != danado).Sum(i => i.StockActual ?? 0));

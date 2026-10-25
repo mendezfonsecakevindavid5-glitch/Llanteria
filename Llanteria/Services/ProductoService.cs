@@ -35,8 +35,27 @@ public class ProductoService
     // Agregar un nuevo producto
     public void AddProducto(Producto obj)
     {
+        NormalizarDescuento(obj, null);
         _context.Productos.Add(obj);
         _context.SaveChanges();
+    }
+
+    /// <summary>
+    /// Deja coherentes los tres datos del descuento: sin porcentaje no hay duración ni inicio; y el conteo de días
+    /// arranca hoy cuando se crea el descuento o se cambia su porcentaje o su duración.
+    /// </summary>
+    private static void NormalizarDescuento(Producto p, (decimal? Porcentaje, int? Duracion)? anterior)
+    {
+        if (p.PorcentajeDescuento is not > 0)
+        {
+            p.PorcentajeDescuento = null;
+            p.DuracionDescuentoDias = null;
+            p.FechaInicioDescuento = null;
+            return;
+        }
+
+        var cambio = anterior is null || anterior.Value.Porcentaje != p.PorcentajeDescuento || anterior.Value.Duracion != p.DuracionDescuentoDias;
+        if (cambio || p.FechaInicioDescuento is null) p.FechaInicioDescuento = DateTime.Now;
     }
 
     // Actualizar un producto existente
@@ -48,6 +67,9 @@ public class ProductoService
 
         if (existente == null) return;
 
+        var anteriorPorcentaje = existente.PorcentajeDescuento;
+        var anteriorDuracion = existente.DuracionDescuentoDias;
+
         // Actualizar datos del producto
         existente.Nombre = obj.Nombre;
         existente.Descripcion = obj.Descripcion;
@@ -57,6 +79,11 @@ public class ProductoService
         existente.IdBodega = obj.IdBodega;
         existente.Categoria = obj.Categoria;
         existente.RutaImagen = obj.RutaImagen;
+
+        // Descuento (porcentaje y duración). El día de inicio lo fija el sistema.
+        existente.PorcentajeDescuento = obj.PorcentajeDescuento;
+        existente.DuracionDescuentoDias = obj.DuracionDescuentoDias;
+        NormalizarDescuento(existente, (anteriorPorcentaje, anteriorDuracion));
 
         // Actualizar o crear DetalleProducto
         if (obj.DetalleProducto != null && obj.DetalleProducto.IdMarca > 0)
@@ -77,6 +104,9 @@ public class ProductoService
                 existente.DetalleProducto.IndiceCarga = obj.DetalleProducto.IndiceCarga;
                 existente.DetalleProducto.IndiceVelocidad = obj.DetalleProducto.IndiceVelocidad;
                 existente.DetalleProducto.GarantiaMeses = obj.DetalleProducto.GarantiaMeses;
+                existente.DetalleProducto.TipoVehiculo = obj.DetalleProducto.TipoVehiculo;
+                existente.DetalleProducto.Amperaje = obj.DetalleProducto.Amperaje;
+                existente.DetalleProducto.Polaridad = obj.DetalleProducto.Polaridad;
             }
         }
 

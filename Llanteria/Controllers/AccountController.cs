@@ -168,7 +168,8 @@ public class AccountController : Controller
     {
         if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)) return returnUrl;
         if (EsRolDePanel(rol)) return Url.Action("Index", "Dashboard")!;
-        if (rol == RolesApp.UsuarioRegistrado) return Url.Action("Perfil", "User")!;
+        // El usuario registrado solo ve las vistas del sitio (HomeController); su foto en el header abre su menú.
+        if (rol == RolesApp.UsuarioRegistrado) return Url.Action("Index", "Home")!;
         return clienteId.HasValue || rol == RolesApp.Cliente
             ? Url.Action("Index", "MiCuenta")! : Url.Action("Index", "Home")!;
     }
@@ -177,8 +178,8 @@ public class AccountController : Controller
     {
         if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)) return LocalRedirect(returnUrl);
         if (esPersonal) return RedirectToAction("Index", "Dashboard");
-        // El usuario registrado solo tiene su perfil.
-        if (rol == RolesApp.UsuarioRegistrado) return RedirectToAction("Perfil", "User");
+        // El usuario registrado solo ve las vistas del sitio (HomeController): vuelve al inicio con su foto en el header.
+        if (rol == RolesApp.UsuarioRegistrado) return RedirectToAction("Index", "Home");
         return clienteId.HasValue || rol == RolesApp.Cliente || User.IsInRole(RolesApp.Cliente)
             ? RedirectToAction("Index", "MiCuenta") : RedirectToAction("Index", "Home");
     }

@@ -57,6 +57,22 @@
             <span asp-validation-for="PrecioVenta" class="text-danger small"></span>
         </div>
 
+        <div class="col-12"><div class="form-section">Descuento (opcional)</div></div>
+        <div class="col-md-6">
+            <label asp-for="PorcentajeDescuento" class="form-label">Porcentaje de descuento (%)</label>
+            <input asp-for="PorcentajeDescuento" type="number" step="0.01" min="0" max="100" class="form-control" placeholder="Ej. 15" />
+            <span asp-validation-for="PorcentajeDescuento" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="DuracionDescuentoDias" class="form-label">Duración del descuento (días)</label>
+            <input asp-for="DuracionDescuentoDias" type="number" step="1" min="1" max="3650" class="form-control" placeholder="Vacío = sin vencimiento" />
+            <span asp-validation-for="DuracionDescuentoDias" class="text-danger small"></span>
+            <div class="form-text">
+                Los días se cuentan desde que guardas el descuento@(Model.FechaFinDescuento.HasValue ? $"; el actual termina el {Model.FechaFinDescuento.Value:dd/MM/yyyy}" : "").
+                Mientras está vigente, la tarjeta muestra el porcentaje en un círculo rojo.
+            </div>
+        </div>
+
         <div class="col-12"><div class="form-section">Ficha técnica (opcional)</div></div>
         <div class="col-md-4">
             <label class="form-label" for="DetalleProducto_IdMarca">Marca</label>

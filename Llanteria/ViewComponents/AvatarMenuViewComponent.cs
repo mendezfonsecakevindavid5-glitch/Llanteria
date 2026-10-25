@@ -21,7 +21,7 @@ public class AvatarMenuViewComponent : ViewComponent
         var apellidos = u.FindFirst("Apellidos")?.Value;
 
         var (fondo, texto) = Colores(username);
-        var rol = u.IsInRole("Administrador") ? "Administrador" : u.IsInRole("Empleado") ? "Empleado" : "Usuario registrado";
+        var rol = RolesApp.De(u); // Administrador, Secretario, Empleado, Cliente o Usuario registrado
         // El administrador, el secretario y el empleado trabajan en el panel: desde "Cuenta" (que usa el sitio
         // público) necesitan un camino de vuelta al Dashboard, porque ese menú no está dentro del panel.
         var esPersonal = RolesApp.EsPersonal(u);

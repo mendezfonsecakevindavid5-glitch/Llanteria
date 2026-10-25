@@ -41,6 +41,7 @@ public partial class LlanteriaDbContext
         modelBuilder.Entity<Evento>(e =>
         {
             e.ToTable("Eventos");
+            e.Property(x => x.Fecha).HasColumnType("date");
             e.Property(x => x.FechaInicio).HasColumnType("date");
             e.Property(x => x.FechaFin).HasColumnType("date");
             e.HasMany(x => x.Ofertas).WithOne(o => o.EventoNavigation).HasForeignKey(o => o.IdEvento).OnDelete(DeleteBehavior.NoAction);

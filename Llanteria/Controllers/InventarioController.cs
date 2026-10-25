@@ -138,7 +138,7 @@ public class InventarioController : Controller
         i.StockActual = (i.StockActual ?? 0) + cantidad;
         i.CantidadIngresada += cantidad;
         i.FechaIngreso = DateOnly.FromDateTime(DateTime.Today);
-        if (i.IdEstado == StockHelper.IdEstado(_db, DatosIniciales.Estados.Agotado))
+        if (i.IdEstado == StockHelper.IdEstado(_db, UsuariosIniciales.Estados.Agotado))
             i.IdEstado = EstadoSegunStock(i.StockActual.Value);
         _db.SaveChanges();
         TempData["Exito"] = $"Se sumaron {cantidad} unidades. Stock actual: {i.StockActual}.";
@@ -162,7 +162,7 @@ public class InventarioController : Controller
     private static bool EsBajo(Inventario i) => i.StockActual.HasValue && i.StockMinimo.HasValue && i.StockActual <= i.StockMinimo;
 
     private int EstadoSegunStock(int stock)
-        => StockHelper.IdEstado(_db, stock > 0 ? DatosIniciales.Estados.Disponible : DatosIniciales.Estados.Agotado);
+        => StockHelper.IdEstado(_db, stock > 0 ? UsuariosIniciales.Estados.Disponible : UsuariosIniciales.Estados.Agotado);
 
     private void Validar(Inventario i)
     {

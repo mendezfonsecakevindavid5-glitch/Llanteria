@@ -20,4 +20,18 @@ public class Paginado<T>
         var items = consulta.Skip((pagina - 1) * tamano).Take(tamano).ToList();
         return new Paginado<T> { Items = items, Pagina = pagina, TotalPaginas = paginas, Total = total };
     }
+
+    /// <summary>
+    /// Igual que la anterior pero sobre una lista ya ordenada en memoria. Se usa cuando el orden depende de un valor calculado
+    /// (p. ej. el precio con descuento vigente) que la base de datos no puede ordenar: así el orden se aplica a TODOS los
+    /// resultados antes de cortar la página, no solo a los 20 de la página.
+    /// </summary>
+    public static Paginado<T> De(IReadOnlyList<T> lista, int pagina, int tamano = TamanoPorDefecto)
+    {
+        var total = lista.Count;
+        var paginas = Math.Max(1, (int)Math.Ceiling(total / (double)tamano));
+        pagina = Math.Clamp(pagina, 1, paginas);
+        var items = lista.Skip((pagina - 1) * tamano).Take(tamano).ToList();
+        return new Paginado<T> { Items = items, Pagina = pagina, TotalPaginas = paginas, Total = total };
+    }
 }

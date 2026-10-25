@@ -8,12 +8,30 @@
         return "Promoción";
     }
 }
-<div class="container">
-    <header class="page-head">
-        <h1>Promociones</h1>
-        <p>Productos con precio especial y cupones vigentes en nuestra sucursal de Valledupar.</p>
-    </header>
-</div>
+@await Html.PartialAsync("_BannerNegro", ("Promociones", "Productos con precio especial y cupones vigentes en nuestra sucursal de Valledupar."))
+
+@if (Model.EventosHoy.Any())
+{
+    @* Eventos de hoy: aparecen a las 12:00 a. m. del día del evento y se ocultan solos a las 11:59 p. m. *@
+    <section class="section pb-0">
+        <div class="container">
+            <span class="eyebrow">Hoy</span>
+            <h2 class="section-title mt-1 mb-3">Eventos de hoy</h2>
+            <div class="row g-3">
+                @foreach (var ev in Model.EventosHoy)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="promo-card">
+                            <span class="tag-promo">@ev.Fecha.ToString("d 'de' MMMM")</span>
+                            <h3>@ev.Nombre</h3>
+                            @if (!string.IsNullOrWhiteSpace(ev.Descripcion)) { <p>@ev.Descripcion</p> }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
 
 @if (Model.Productos.Any())
 {

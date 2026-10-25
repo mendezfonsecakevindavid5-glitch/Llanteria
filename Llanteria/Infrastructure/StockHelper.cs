@@ -15,12 +15,12 @@ public static class StockHelper
         var filas = db.Inventarios.Where(i => i.IdProducto == idProducto).ToList();
         if (filas.Count == 0) return null;
 
-        var danado = IdEstado(db, DatosIniciales.Estados.Danado);
+        var danado = IdEstado(db, UsuariosIniciales.Estados.Danado);
         var disponible = filas.Where(f => f.IdEstado != danado).Sum(f => f.StockActual ?? 0);
         if (disponible < cantidad)
             return $"Stock insuficiente de «{nombre}»: hay {disponible} y pediste {cantidad}.";
 
-        var agotado = IdEstado(db, DatosIniciales.Estados.Agotado);
+        var agotado = IdEstado(db, UsuariosIniciales.Estados.Agotado);
         var restante = cantidad;
         foreach (var f in filas.Where(x => x.IdEstado != danado).OrderByDescending(x => x.StockActual))
         {
@@ -39,8 +39,8 @@ public static class StockHelper
         var fila = db.Inventarios.Where(i => i.IdProducto == idProducto).OrderByDescending(i => i.StockActual).FirstOrDefault();
         if (fila == null) return;
         fila.StockActual = (fila.StockActual ?? 0) + cantidad;
-        var disponible = IdEstado(db, DatosIniciales.Estados.Disponible);
-        if (fila.IdEstado == IdEstado(db, DatosIniciales.Estados.Agotado) && disponible > 0) fila.IdEstado = disponible;
+        var disponible = IdEstado(db, UsuariosIniciales.Estados.Disponible);
+        if (fila.IdEstado == IdEstado(db, UsuariosIniciales.Estados.Agotado) && disponible > 0) fila.IdEstado = disponible;
     }
 
     public static int IdEstado(LlanteriaDbContext db, string nombre)

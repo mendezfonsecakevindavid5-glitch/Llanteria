@@ -188,9 +188,38 @@
     border-bottom-color: var(--vp-line);
 }
 
-.cat-badge,
-.cat-badge-promo {
+.cat-badge {
     border-radius: 3px;
+}
+
+/* Descuento: círculo rojo perfecto, cerca de la esquina superior izquierda, que cubre solo el porcentaje (en blanco). */
+.cat-badge-promo {
+    position: absolute;
+    top: .6rem;
+    left: .6rem;
+    z-index: 2;
+    box-sizing: border-box;
+    width: 3.1rem;
+    height: 3.1rem;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #D10F0F;
+    color: #fff;
+    font-size: .95rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -.02em;
+    white-space: nowrap;
+}
+
+/* El aviso "Agotado" pasa a la esquina de enfrente para no taparse con el círculo del descuento. */
+.cat-card-img .cat-badge {
+    left: auto;
+    right: .75rem;
 }
 
 .cat-card-body {
@@ -312,11 +341,8 @@
         border-left: 2px solid transparent;
     }
 
-        .blog-toc a::before {
-            content: counter(toc) ". ";
-            color: var(--llanteria-primary, #C92B0A);
-            font-weight: 700;
-        }
+        /* El número ya viene escrito en el enlace (<span>1.</span>, que además respeta una tabla personalizada).
+           Antes un contador CSS lo repetía y se veía "1. 1. Revisa el dibujo...". */
 
         .blog-toc a:hover {
             color: #000;
@@ -510,3 +536,48 @@ a.cat-pager-btn:hover {
 .bl-toc a { color: #111; text-decoration: none; }
 .bl-toc a span { color: var(--llanteria-primary, #C92B0A); font-weight: 700; }
 .bl-autor { display: flex; align-items: center; gap: .6rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; }
+
+
+/* ---------- Banner negro de encabezado (catálogos, Promociones y Blog) ---------- */
+.banner-negro {
+    background: #000;
+    color: #fff;
+    padding: 3rem 0 2.75rem;
+    margin-bottom: 2rem;
+}
+
+    .banner-negro h1 {
+        margin: 0 0 .6rem;
+        color: #fff;
+        font-size: 2.6rem;
+        font-weight: 800;
+        letter-spacing: -.01em;
+        line-height: 1.1;
+    }
+
+    .banner-negro p {
+        margin: 0;
+        max-width: 720px;
+        color: #fff;
+        font-size: 1.2rem;
+        line-height: 1.5;
+    }
+
+/* En Promociones el contenido arranca con su propia sección (ya trae espacio): se evita sumar dos márgenes. */
+.banner-negro + .section {
+    padding-top: 2.5rem;
+}
+
+@media (max-width: 575.98px) {
+    .banner-negro {
+        padding: 2.25rem 0 2rem;
+    }
+
+        .banner-negro h1 {
+            font-size: 2rem;
+        }
+
+        .banner-negro p {
+            font-size: 1.05rem;
+        }
+}

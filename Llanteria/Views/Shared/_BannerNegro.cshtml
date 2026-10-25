@@ -1,0 +1,13 @@
+@* Banner negro de ancho completo que encabeza Llantas, Baterías, Lubricantes, Promociones y Blog.
+   Modelo: (Titulo, Texto). Estilos: .banner-negro en vistas-publicas.css. *@
+@model (string Titulo, string Texto)
+
+<section class="banner-negro">
+    <div class="container">
+        <h1>@Model.Titulo</h1>
+        @if (!string.IsNullOrWhiteSpace(Model.Texto))
+        {
+            <p>@Model.Texto</p>
+        }
+    </div>
+</section>

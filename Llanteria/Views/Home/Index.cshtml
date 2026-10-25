@@ -1,9 +1,11 @@
 @inject IWebHostEnvironment Env
 @{
     ViewData["Title"] = "Inicio";
-    // Imágenes del banner de vehículos: wwwroot/images/banner-auto.* y banner-moto.* (si no existen, queda un fondo oscuro).
-    var imgAuto = Llanteria.Infrastructure.ImagenSitio.Url(Env, "banner-auto", "Auto-target");
-    var imgMoto = Llanteria.Infrastructure.ImagenSitio.Url(Env, "banner-moto", "moto") ?? "/images/banner-moto.svg";
+    // Fotos del banner de vehículos (ver wwwroot/images/banners/LEEME.txt con los prompts para generarlas).
+    // Se buscan, en este orden, en wwwroot/images/banners/ y en wwwroot/images/ (banner-auto.*, banner-moto.*).
+    // Si no hay foto, el fondo es un degradado oscuro liso: nunca un dibujo ni un ícono.
+    var imgAuto = Llanteria.Infrastructure.ImagenSitio.Url(Env, "banners/banner-auto", "banner-auto", "Auto-target");
+    var imgMoto = Llanteria.Infrastructure.ImagenSitio.Url(Env, "banners/banner-moto", "banner-moto", "moto");
     var logos = (List<Llanteria.Models.MarcaVitrina>)ViewBag.Logos;
 }
 
@@ -37,7 +39,7 @@
                     <a asp-controller="Llantas" asp-action="Index" asp-route-tipo="Auto" class="vb-btn">Ver llantas de auto</a>
                 </div>
             </div>
-            <div class="vb-slide" data-tipo="Moto" aria-hidden="true" style="--vb-img:url(@imgMoto)">
+            <div class="vb-slide" data-tipo="Moto" aria-hidden="true" style="@(imgMoto != null ? $"--vb-img:url({imgMoto})" : "")">
                 <div class="vb-texto">
                     <h2>Llantas para <strong>motocicleta</strong><span>rendimiento y seguridad</span></h2>
                     <p>Variedad de cauchos para uso urbano y de alto desempeño, con instalación incluida.</p>

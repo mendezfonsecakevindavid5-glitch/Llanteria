@@ -12,7 +12,11 @@
     bool isEmpresas = currentController.Equals("Empresas", StringComparison.OrdinalIgnoreCase);
     bool isBlog = currentController.Equals("Blog", StringComparison.OrdinalIgnoreCase);
     bool isContacto = currentController.Equals("Contacto", StringComparison.OrdinalIgnoreCase);
-    bool conOffset = !isHomeIndex && !currentController.Equals("Account", StringComparison.OrdinalIgnoreCase);
+    // Las páginas que abren con un banner negro de ancho completo (catálogos, Promociones, Blog y sus artículos) van pegadas al
+    // header: el margen superior de 1.75rem dejaba una franja clara entre el header y el banner.
+    bool abreConBanner = isLlantas || isBaterias || isLubricantes || isPromociones
+        || (isBlog && (currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase) || currentAction.Equals("Detalle", StringComparison.OrdinalIgnoreCase)));
+    bool conOffset = !isHomeIndex && !abreConBanner && !currentController.Equals("Account", StringComparison.OrdinalIgnoreCase);
 
     // Unidades en el carrito: el carrito vive en una cookie (ver Infrastructure/Carrito.cs).
     int cartCount = Llanteria.Infrastructure.Carrito.Unidades(Context.Request);

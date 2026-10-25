@@ -1,23 +1,29 @@
-<section id="nosotros" class="section section-alt">
+@* Quiénes somos. Va solo, con su propio fondo y bordes; las tarjetas de valores son otra sección (_Valores). *@
+<section id="nosotros" class="nos-sec">
     <div class="container">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-6">
+        <div class="nos-grid">
+            <div class="nos-texto">
                 <span class="eyebrow">Quiénes somos</span>
                 <h2 class="section-title mt-1 mb-3">Llantas y mantenimiento con respaldo en <span class="rojo">Valledupar</span></h2>
-                <p class="text-muted">En Llandupar ofrecemos soluciones integrales en neumáticos y mantenimiento automotriz. No solo vendemos productos: respondemos por el trabajo que hacemos con garantía y un equipo calificado.</p>
-                <div class="row g-3 mt-2">
-                    <div class="col-sm-6 d-flex gap-3">
-                        <span class="icon-tile"><i class="fa-solid fa-shield-halved"></i></span>
-                        <div><strong>Garantía</strong><div class="small text-muted">Respaldo escrito en productos y mano de obra.</div></div>
+                <p class="nos-lead">En Llandupar ofrecemos soluciones integrales en neumáticos y mantenimiento automotriz. No solo vendemos productos: respondemos por el trabajo que hacemos con garantía y un equipo calificado.</p>
+
+                <div class="nos-features">
+                    <div class="nos-feature">
+                        <span class="icon-tile"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span>
+                        <div><strong>Garantía</strong><p>Respaldo escrito en productos y mano de obra.</p></div>
                     </div>
-                    <div class="col-sm-6 d-flex gap-3">
-                        <span class="icon-tile"><i class="fa-solid fa-bolt"></i></span>
-                        <div><strong>Servicio ágil</strong><div class="small text-muted">Atención organizada para que no pierdas tu tiempo.</div></div>
+                    <div class="nos-feature">
+                        <span class="icon-tile"><i class="fa-solid fa-bolt" aria-hidden="true"></i></span>
+                        <div><strong>Servicio ágil</strong><p>Atención organizada para que no pierdas tu tiempo.</p></div>
                     </div>
                 </div>
+
+                <a asp-controller="Contacto" asp-action="Index" class="btn btn-hyper-action nos-btn">Hablar con el taller</a>
             </div>
-            <div class="col-lg-6">
-                <img src="~/images/sitio/Section-Image.avif" alt="Instalaciones de Llandupar" class="img-fluid rounded w-100" style="height:340px;object-fit:cover" />
+
+            <div class="nos-media">
+                <img src="~/images/sitio/Section-Image.avif" alt="Instalaciones de Llandupar" loading="lazy" />
+                <span class="nos-chip"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Valledupar, Cesar</span>
             </div>
         </div>
     </div>

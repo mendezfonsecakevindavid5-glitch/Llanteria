@@ -55,6 +55,7 @@ CREATE TABLE dbo.Eventos (
     Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_Eventos PRIMARY KEY,
     Nombre nvarchar(100) NOT NULL,
     Descripcion nvarchar(300) NULL,
+    Fecha date NOT NULL CONSTRAINT DF_Eventos_Fecha DEFAULT (CONVERT(date, GETDATE())),
     FechaInicio date NOT NULL,
     FechaFin date NOT NULL,
     Recurrente bit NOT NULL CONSTRAINT DF_Eventos_Recurrente DEFAULT (0)
@@ -95,6 +96,21 @@ CREATE TABLE dbo.Eventos (
         Ejecutar(SqlLlaveForanea("dbo.Ofertas", "[dbo].[Ofertas]", "IdEvento", "[dbo].[Eventos]", "FK_Ofertas_IdEvento"));
         Ejecutar("IF COL_LENGTH(N'dbo.Productos', N'IdOferta') IS NULL ALTER TABLE dbo.Productos ADD IdOferta int NULL;");
         Ejecutar(SqlLlaveForanea("dbo.Productos", "[dbo].[Productos]", "IdOferta", "[dbo].[Ofertas]", "FK_Productos_IdOferta"));
+
+        // 4b) Eventos: día en que ocurre (se muestra solo ese día). En bases anteriores se copia de FechaInicio.
+        Ejecutar(@"
+IF OBJECT_ID(N'dbo.Eventos', N'U') IS NOT NULL AND COL_LENGTH(N'dbo.Eventos', N'Fecha') IS NULL
+BEGIN
+    ALTER TABLE dbo.Eventos ADD Fecha date NULL;
+    EXEC(N'UPDATE dbo.Eventos SET Fecha = FechaInicio');
+    EXEC(N'ALTER TABLE dbo.Eventos ALTER COLUMN Fecha date NOT NULL');
+    EXEC(N'ALTER TABLE dbo.Eventos ADD CONSTRAINT DF_Eventos_Fecha DEFAULT (CONVERT(date, GETDATE())) FOR Fecha');
+END;");
+
+        // 4c) Descuentos de productos (llantas, baterías y lubricantes): porcentaje, duración en días y día de inicio.
+        Ejecutar("IF COL_LENGTH(N'dbo.Productos', N'PorcentajeDescuento') IS NULL ALTER TABLE dbo.Productos ADD PorcentajeDescuento decimal(5,2) NULL;");
+        Ejecutar("IF COL_LENGTH(N'dbo.Productos', N'DuracionDescuentoDias') IS NULL ALTER TABLE dbo.Productos ADD DuracionDescuentoDias int NULL;");
+        Ejecutar("IF COL_LENGTH(N'dbo.Productos', N'FechaInicioDescuento') IS NULL ALTER TABLE dbo.Productos ADD FechaInicioDescuento datetime NULL;");
 
         // 5) Reseñas: usuario y foto del cliente que opina.
         Ejecutar("IF COL_LENGTH(N'dbo.Resenias', N'IdUsuario') IS NULL ALTER TABLE dbo.Resenias ADD IdUsuario int NULL;");

@@ -144,7 +144,7 @@ using (var scope = app.Services.CreateScope())
 
     Paso("crear la base de datos", () => db.Database.EnsureCreated());
     Paso("actualizar el esquema", () => EsquemaUpdater.Aplicar(db));
-    Paso("datos iniciales (roles y catálogos)", () => DatosIniciales.Asegurar(db));
+    Paso("datos iniciales (roles y catálogos)", () => UsuariosIniciales.AsegurarCatalogos(db));
     Paso("llantería inicial", () => LlanteriaInicial.Asegurar(db, scope.ServiceProvider.GetRequiredService<NegocioInfo>()));
     Paso("usuarios iniciales (administrador, empleado y usuario)", () => UsuariosIniciales.Asegurar(db, log));
     Paso("cifrado de datos existentes", () => CifradoMigrador.Aplicar(db, log));

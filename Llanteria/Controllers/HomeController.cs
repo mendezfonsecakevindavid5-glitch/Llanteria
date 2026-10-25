@@ -47,7 +47,7 @@ public class HomeController : Controller
 
     private HashSet<int> Agotados(List<int> ids)
     {
-        var danado = StockHelper.IdEstado(_context, DatosIniciales.Estados.Danado);
+        var danado = StockHelper.IdEstado(_context, UsuariosIniciales.Estados.Danado);
         var inv = _context.Inventarios.AsNoTracking().Where(i => ids.Contains(i.IdProducto)).ToList()
             .GroupBy(i => i.IdProducto)
             .ToDictionary(g => g.Key, g => g.Where(i => i.IdEstado != danado).Sum(i => i.StockActual ?? 0));

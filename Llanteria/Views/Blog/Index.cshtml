@@ -5,11 +5,9 @@
     string orden = ViewBag.Orden;
 }
 
+@await Html.PartialAsync("_BannerNegro", ("Blog", "Guías prácticas sobre llantas, aceites, baterías y seguridad vial, escritas por el equipo del taller."))
+
 <div class="container blog-wrap">
-    <header class="page-head">
-        <h1>Blog</h1>
-        <p>Guías prácticas sobre llantas, aceites, baterías y seguridad vial, escritas por el equipo del taller.</p>
-    </header>
 
     <form method="get" class="blog-toolbar">
         <div class="blog-chips">
