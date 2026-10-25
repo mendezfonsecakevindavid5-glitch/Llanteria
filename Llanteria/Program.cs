@@ -119,6 +119,7 @@ var rutaRotativa = new[] { "Rotativa", Path.Combine("Rotativa", "Rotativa") }
     .FirstOrDefault(r => File.Exists(Path.Combine(builder.Environment.WebRootPath, r, "wkhtmltopdf.exe"))) ?? "Rotativa";
 Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath, rutaRotativa);
 
+builder.Services.AddDistributedMemoryCache(); // almacenamiento de la sesión (guarda los códigos de verificación mientras se escriben)
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(10);

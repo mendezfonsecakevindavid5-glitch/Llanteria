@@ -4,31 +4,45 @@ using System.Text.Json;
 
 namespace Llanteria.Services
 {
+    /// <summary>Resultado de un envío: Motivo es el detalle técnico (para el log), Mensaje es el texto que se le puede mostrar al usuario.</summary>
+    public record ResultadoCorreo(bool Ok, string? Motivo = null, string? Mensaje = null);
+
     public class EmailService
     {
-        private static readonly HttpClient Http = new();
+        private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(20) };
         private readonly IConfiguration _configuration;
+        private readonly ILogger<EmailService> _log;
 
-        public EmailService(IConfiguration configuration)
+        public EmailService(IConfiguration configuration, ILogger<EmailService> log)
         {
             _configuration = configuration;
+            _log = log;
         }
 
         public string CorreoDestino => _configuration["Contacto:CorreoDestino"] ?? "";
 
         public async Task<bool> EnviarCorreoAsync(string destinatarioEmail, string destinatarioNombre,
             string asunto, string cuerpoHtml, string? responderA = null)
+            => (await EnviarCorreoConResultadoAsync(destinatarioEmail, destinatarioNombre, asunto, cuerpoHtml, responderA)).Ok;
+
+        /// <summary>
+        /// Igual que <see cref="EnviarCorreoAsync"/> pero dice POR QUÉ falló (llave rechazada, remitente no verificado, sin red...).
+        /// Cada fallo queda en el log con el detalle que devuelve Brevo.
+        /// </summary>
+        public async Task<ResultadoCorreo> EnviarCorreoConResultadoAsync(string destinatarioEmail, string destinatarioNombre,
+            string asunto, string cuerpoHtml, string? responderA = null)
         {
             try
             {
-                var apiKey = _configuration["Brevo:ApiKey"];
-                var fromEmail = _configuration["Brevo:FromEmail"];
+                var apiKey = _configuration["Brevo:ApiKey"]?.Trim();
+                var fromEmail = _configuration["Brevo:FromEmail"]?.Trim();
                 var fromName = _configuration["Brevo:FromName"] ?? "Llandupar";
 
                 if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(fromEmail) || string.IsNullOrWhiteSpace(destinatarioEmail))
                 {
-                    Console.WriteLine("EmailService: falta configurar Brevo:ApiKey, Brevo:FromEmail o el destinatario.");
-                    return false;
+                    const string faltan = "Falta configurar Brevo:ApiKey, Brevo:FromEmail o el destinatario (Privado/appsettings.json).";
+                    _log.LogError("EmailService: {Motivo}", faltan);
+                    return new ResultadoCorreo(false, faltan, "El envío de correos no está configurado.");
                 }
 
                 var payload = new Dictionary<string, object>
@@ -48,19 +62,40 @@ namespace Llanteria.Services
                 request.Headers.Add("api-key", apiKey);
                 request.Headers.Add("accept", "application/json");
 
-                var response = await Http.SendAsync(request);
-                if (!response.IsSuccessStatusCode)
-                {
-                    var detalle = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Error Brevo ({response.StatusCode}): {detalle}");
-                }
-                return response.IsSuccessStatusCode;
+                using var response = await Http.SendAsync(request);
+                if (response.IsSuccessStatusCode) return new ResultadoCorreo(true);
+
+                var detalle = await response.Content.ReadAsStringAsync();
+                var motivo = $"Brevo respondió {(int)response.StatusCode} {response.StatusCode}: {detalle}";
+                _log.LogError("EmailService: no se pudo enviar a {Destino}. {Motivo}", destinatarioEmail, motivo);
+                return new ResultadoCorreo(false, motivo, Explicar(response.StatusCode, detalle));
+            }
+            catch (TaskCanceledException ex)
+            {
+                _log.LogError(ex, "EmailService: Brevo no respondió en 20 segundos (¿sin salida a internet o bloqueado por firewall?).");
+                return new ResultadoCorreo(false, "Brevo no respondió a tiempo (timeout de 20 s).", "El servicio de correo no respondió a tiempo.");
+            }
+            catch (HttpRequestException ex)
+            {
+                _log.LogError(ex, "EmailService: no se pudo conectar con api.brevo.com.");
+                return new ResultadoCorreo(false, "No se pudo conectar con api.brevo.com: " + ex.Message, "No hay conexión con el servicio de correo.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al enviar correo: {ex.Message}");
-                return false;
+                _log.LogError(ex, "EmailService: error inesperado al enviar correo.");
+                return new ResultadoCorreo(false, ex.Message, "No se pudo enviar el correo.");
             }
+        }
+
+        private static string Explicar(HttpStatusCode codigo, string detalle)
+        {
+            var d = (detalle ?? "").ToLowerInvariant();
+            if (codigo == HttpStatusCode.Unauthorized)
+                return d.Contains("ip") ? "Brevo bloqueó la IP de este servidor (Brevo > Seguridad > Direcciones IP autorizadas)." : "Brevo rechazó la llave de API (Brevo:ApiKey).";
+            if (codigo == HttpStatusCode.Forbidden) return "La cuenta de Brevo no tiene permiso para enviar correos (¿cuenta sin activar?).";
+            if (codigo == HttpStatusCode.TooManyRequests) return "Se alcanzó el límite de envíos de Brevo.";
+            if (codigo == HttpStatusCode.BadRequest && d.Contains("sender")) return "El remitente (Brevo:FromEmail) no está verificado en Brevo.";
+            return "El servicio de correo rechazó el envío.";
         }
 
         public static string PlantillaAviso(string titulo, IEnumerable<(string Etiqueta, string? Valor)> datos, string? mensaje = null)
@@ -80,9 +115,13 @@ namespace Llanteria.Services
 
         /// <summary>Correo del código OTP (login, registro y recuperación de contraseña). Mensaje corto, en negro, sin adornos.</summary>
         public async Task<bool> EnviarTokenRecuperacionAsync(string destinatarioEmail, string otp)
+            => (await EnviarTokenAsync(destinatarioEmail, otp)).Ok;
+
+        /// <summary>Igual que <see cref="EnviarTokenRecuperacionAsync"/> pero con el motivo del fallo, para avisarle al usuario.</summary>
+        public Task<ResultadoCorreo> EnviarTokenAsync(string destinatarioEmail, string otp)
         {
             var cuerpo = $"<p style='font-family:Arial,sans-serif;font-size:15px;color:#000;margin:0'>Código de verificación: <strong>{WebUtility.HtmlEncode(otp)}</strong>. No compartir.</p>";
-            return await EnviarCorreoAsync(destinatarioEmail, "Usuario", "Código de verificación - Llandupar", cuerpo);
+            return EnviarCorreoConResultadoAsync(destinatarioEmail, "Usuario", "Código de verificación - Llandupar", cuerpo);
         }
     }
 }

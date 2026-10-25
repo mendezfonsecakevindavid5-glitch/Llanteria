@@ -282,11 +282,19 @@
                 btnVerify.textContent = 'Verificar';
 
                 try {
-                    await fetch('@Url.Action("ReenviarCodigoLogin", "Account")', {
+                    const respuesta = await fetch('@Url.Action("ReenviarCodigoLogin", "Account")', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: new URLSearchParams({ username: currentUsername })
                     });
+                    const datos = await respuesta.json();
+                    if (!datos.success) {
+                        clientErrorStage2.innerHTML = '&bull; ' + (datos.message || 'No se pudo reenviar el código');
+                        clientErrorStage2.style.display = 'block';
+                        resendCodeBtn.style.display = 'inline-block';
+                        return;
+                    }
+                    clientErrorStage2.style.display = 'none';
                     iniciarTemporizador(80);
                 } catch (err) {
                     clientErrorStage2.innerHTML = '&bull; No se pudo reenviar el código';

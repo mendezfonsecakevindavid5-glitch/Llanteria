@@ -186,7 +186,7 @@ public class AccountController : Controller
 
     // --- MÉTODOS NUEVOS PARA EL LOGIN POR FASES (OTP) ---
     [HttpPost]
-    public IActionResult IniciarAutenticacion(string username, string password)
+    public async Task<IActionResult> IniciarAutenticacion(string username, string password)
     {
         username = (username ?? "").Trim();
         password ??= "";
@@ -215,14 +215,18 @@ public class AccountController : Controller
 
         var codigo = System.Security.Cryptography.RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
 
+        if (string.IsNullOrWhiteSpace(user.Correo))
+            return Json(new { success = false, message = "Tu cuenta no tiene un correo registrado para enviarte el código. Comunícate con el administrador." });
+
+        // Antes el envío se lanzaba "sin esperar" y el resultado se ignoraba: si Brevo lo rechazaba, el usuario pasaba a la
+        // segunda etapa y esperaba un código que nunca iba a llegar. Ahora se espera el resultado y, si falla, se avisa en la primera etapa.
+        var envio = await _emailSer.EnviarTokenAsync(user.Correo, codigo);
+        if (!envio.Ok)
+            return Json(new { success = false, message = MensajeFalloCorreo(envio) });
+
         HttpContext.Session.SetString("login:username", user.Username);
         HttpContext.Session.SetString("login:code", codigo);
         HttpContext.Session.SetString("login:exp", DateTimeOffset.UtcNow.AddMinutes(10).ToUnixTimeSeconds().ToString());
-
-        if (!string.IsNullOrEmpty(user.Correo))
-        {
-            _ = _emailSer.EnviarTokenRecuperacionAsync(user.Correo, codigo);
-        }
 
         string correoCensurado = user.Correo ?? user.Username;
         if (!string.IsNullOrEmpty(user.Correo) && user.Correo.Contains("@"))
@@ -279,8 +283,14 @@ public class AccountController : Controller
             return Json(new { success = false, message = "No se pudo reenviar el código." });
         }
 
+        // Solo se reenvía dentro de un intento de inicio de sesión que ya pasó la contraseña (evita usar este endpoint para enviar correos a cualquiera).
+        if (!string.Equals(HttpContext.Session.GetString("login:username"), user.Username, StringComparison.OrdinalIgnoreCase))
+            return Json(new { success = false, message = "La sesión de verificación venció. Vuelve a iniciar sesión." });
+
         var codigo = System.Security.Cryptography.RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
-        await _emailSer.EnviarTokenRecuperacionAsync(user.Correo, codigo);
+        var envio = await _emailSer.EnviarTokenAsync(user.Correo, codigo);
+        if (!envio.Ok)
+            return Json(new { success = false, message = MensajeFalloCorreo(envio) });
 
         HttpContext.Session.SetString("login:code", codigo);
         HttpContext.Session.SetString("login:exp", DateTimeOffset.UtcNow.AddMinutes(10).ToUnixTimeSeconds().ToString());
@@ -507,8 +517,9 @@ public class AccountController : Controller
             return Json(new { success = false, message = "Espera unos segundos antes de pedir otro código." });
 
         var codigo = System.Security.Cryptography.RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
-        if (!await _emailSer.EnviarTokenRecuperacionAsync(correo, codigo))
-            return Json(new { success = false, message = "No se pudo enviar el correo. Inténtalo más tarde." });
+        var envio = await _emailSer.EnviarTokenAsync(correo, codigo);
+        if (!envio.Ok)
+            return Json(new { success = false, message = MensajeFalloCorreo(envio) });
 
         s.SetString(flujo + ":code", codigo);
         s.SetString(flujo + ":correo", correo);
@@ -541,6 +552,15 @@ public class AccountController : Controller
         s.SetString(flujo + ":ok", s.GetString(flujo + ":correo") ?? "");
         s.Remove(flujo + ":code");
         return Json(new { success = true });
+    }
+
+    /// <summary>Mensaje para el usuario cuando no se pudo enviar el código. En desarrollo se agrega el detalle técnico (el mismo queda siempre en el log).</summary>
+    private string MensajeFalloCorreo(ResultadoCorreo r)
+    {
+        var mensaje = "No se pudo enviar el código a tu correo. Inténtalo de nuevo en un momento.";
+        var env = HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>();
+        if (env.IsDevelopment()) mensaje += $" [{r.Mensaje} | {r.Motivo}]";
+        return mensaje;
     }
 
     private void LimpiarCodigo(string flujo)
