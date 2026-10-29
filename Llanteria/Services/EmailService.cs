@@ -1,4 +1,6 @@
 using System.Net;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
 using System.Text;
 using System.Text.Json;
 
@@ -68,6 +70,16 @@ namespace Llanteria.Services
                 var detalle = await response.Content.ReadAsStringAsync();
                 var motivo = $"Brevo respondió {(int)response.StatusCode} {response.StatusCode}: {detalle}";
                 _log.LogError("EmailService: no se pudo enviar a {Destino}. {Motivo}", destinatarioEmail, motivo);
+
+                // Respaldo: si la API bloqueó la IP (401 "unrecognised IP address") y hay SMTP configurado,
+                // se reintenta por el relay SMTP de Brevo, que no depende de la lista de IPs autorizadas de la API.
+                if (response.StatusCode == HttpStatusCode.Unauthorized && SmtpConfigurado())
+                {
+                    _log.LogWarning("EmailService: la API de Brevo bloqueó la IP; reintentando por SMTP.");
+                    var porSmtp = await EnviarPorSmtpAsync(destinatarioEmail, destinatarioNombre, asunto, cuerpoHtml, responderA, fromEmail, fromName);
+                    if (porSmtp.Ok) return porSmtp;
+                    motivo += " | Respaldo SMTP: " + porSmtp.Motivo;
+                }
                 return new ResultadoCorreo(false, motivo, Explicar(response.StatusCode, detalle));
             }
             catch (TaskCanceledException ex)
@@ -87,11 +99,61 @@ namespace Llanteria.Services
             }
         }
 
+        private bool SmtpConfigurado()
+            => !string.IsNullOrWhiteSpace(_configuration["Brevo:SmtpLogin"]) && !string.IsNullOrWhiteSpace(_configuration["Brevo:SmtpKey"]);
+
+        /// <summary>Envío por el relay SMTP de Brevo (smtp-relay.brevo.com:587, STARTTLS). Usa Brevo:SmtpLogin y Brevo:SmtpKey.</summary>
+        private async Task<ResultadoCorreo> EnviarPorSmtpAsync(string destinatarioEmail, string destinatarioNombre,
+            string asunto, string cuerpoHtml, string? responderA, string fromEmail, string fromName)
+        {
+            try
+            {
+                var host = _configuration["Brevo:SmtpHost"]?.Trim();
+                if (string.IsNullOrWhiteSpace(host)) host = "smtp-relay.brevo.com";
+                var puerto = int.TryParse(_configuration["Brevo:SmtpPort"], out var pt) ? pt : 587;
+
+                using var msg = new MailMessage
+                {
+                    From = new MailAddress(fromEmail, fromName, Encoding.UTF8),
+                    Subject = asunto,
+                    SubjectEncoding = Encoding.UTF8,
+                    Body = cuerpoHtml,
+                    BodyEncoding = Encoding.UTF8,
+                    IsBodyHtml = true
+                };
+                msg.To.Add(new MailAddress(destinatarioEmail, destinatarioNombre, Encoding.UTF8));
+                if (!string.IsNullOrWhiteSpace(responderA)) msg.ReplyToList.Add(new MailAddress(responderA));
+
+                using var smtp = new SmtpClient(host, puerto)
+                {
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(_configuration["Brevo:SmtpLogin"]!.Trim(), _configuration["Brevo:SmtpKey"]!.Trim()),
+                    Timeout = 20000
+                };
+                await smtp.SendMailAsync(msg);
+                return new ResultadoCorreo(true);
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "EmailService: falló también el envío por SMTP.");
+                return new ResultadoCorreo(false, ex.Message, "No se pudo enviar el correo por SMTP.");
+            }
+        }
+
         private static string Explicar(HttpStatusCode codigo, string detalle)
         {
             var d = (detalle ?? "").ToLowerInvariant();
             if (codigo == HttpStatusCode.Unauthorized)
-                return d.Contains("ip") ? "Brevo bloqueó la IP de este servidor (Brevo > Seguridad > Direcciones IP autorizadas)." : "Brevo rechazó la llave de API (Brevo:ApiKey).";
+            {
+                if (d.Contains("ip"))
+                {
+                    var ip = Regex.Match(detalle ?? "", @"\b\d{1,3}(\.\d{1,3}){3}\b").Value;
+                    return $"Brevo bloqueó la IP {ip} de este servidor. Agrégala en Brevo > Seguridad > Direcciones IP autorizadas o configura el envío por SMTP.";
+                }
+                return "Brevo rechazó la llave de API (Brevo:ApiKey).";
+            }
             if (codigo == HttpStatusCode.Forbidden) return "La cuenta de Brevo no tiene permiso para enviar correos (¿cuenta sin activar?).";
             if (codigo == HttpStatusCode.TooManyRequests) return "Se alcanzó el límite de envíos de Brevo.";
             if (codigo == HttpStatusCode.BadRequest && d.Contains("sender")) return "El remitente (Brevo:FromEmail) no está verificado en Brevo.";

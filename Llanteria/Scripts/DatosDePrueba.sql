@@ -10,8 +10,8 @@
    - Ejecútalo con la base ya creada por la aplicación (EnsureCreated). Usa GO, por lo que va en SSMS / Azure Data Studio / sqlcmd.
    - Cambia el nombre de la base en la línea USE.
    ===================================================================================================== */
--- USE [Llanteria];
--- GO
+USE [LlanteriaDB];
+GO
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
 GO
@@ -64,7 +64,7 @@ GO
 
 /* 4) Marcas (se agregan las que falten, por nombre) */
 INSERT INTO dbo.Marcas (Nombre)
-SELECT m.N FROM (VALUES (N'Michelin'), (N'Bridgestone'), (N'Goodyear'), (N'Pirelli'), (N'Continental'), (N'Hankook'), (N'Yokohama'), (N'Dunlop'), (N'Kumho'), (N'Maxxis'), (N'Bosch'), (N'Varta'), (N'Willard'), (N'MAC'), (N'Yuasa'), (N'Mobil'), (N'Castrol'), (N'Valvoline'), (N'Shell'), (N'Terpel'), (N'Havoline'), (N'Motul')) m(N)
+SELECT m.N FROM (VALUES (N'Michelin'), (N'Bridgestone'), (N'Goodyear'), (N'Pirelli'), (N'Continental'), (N'Hankook'), (N'Yokohama'), (N'Dunlop'), (N'Kumho'), (N'Maxxis'), (N'Bosch'), (N'Varta'), (N'Willard'), (N'MAC'), (N'Yuasa'), (N'Mobil'), (N'Castrol'), (N'Valvoline'), (N'Shell'), (N'Terpel'), (N'Havoline'), (N'Motul'), (N'Firestone'), (N'Toyo'), (N'Cooper'), (N'Falken'), (N'General Tire'), (N'Metzeler'), (N'Optima'), (N'ACDelco'), (N'Exide'), (N'LTH'), (N'Liqui Moly'), (N'Total'), (N'Repsol'), (N'Petronas')) m(N)
 WHERE NOT EXISTS (SELECT 1 FROM dbo.Marcas x WHERE x.Nombre = m.N);
 GO
 
@@ -119,7 +119,78 @@ INSERT INTO @P VALUES
 (N'Motul 7100 4T 10W-40 Sintético 1 L Moto',N'Aceites',N'Motul',N'Aceite 100 % sintético para motos 4 tiempos.',48000,64000,NULL,NULL,NULL,N'Moto',NULL,NULL,N'10W-40',N'Sintético',6,NULL,NULL,NULL,NULL),
 (N'Mobil Super Moto 20W-50 1 L Moto',N'Aceites',N'Mobil',N'Para motos de trabajo y ciudad.',28000,38000,NULL,NULL,NULL,N'Moto',NULL,NULL,N'20W-50',N'Mineral',6,NULL,NULL,NULL,NULL),
 (N'Castrol Power1 4T 10W-40 1 L Moto',N'Aceites',N'Castrol',N'Semisintético para motos de media y alta cilindrada.',42000,56000,NULL,NULL,NULL,N'Moto',NULL,NULL,N'10W-40',N'Semisintético',6,NULL,NULL,10,30),
-(N'Valvoline 4T 20W-50 1 L Moto',N'Aceites',N'Valvoline',N'Lubricante mineral de uso diario para motos.',26000,35000,NULL,NULL,NULL,N'Moto',NULL,NULL,N'20W-50',N'Mineral',6,NULL,NULL,NULL,NULL);
+(N'Valvoline 4T 20W-50 1 L Moto',N'Aceites',N'Valvoline',N'Lubricante mineral de uso diario para motos.',26000,35000,NULL,NULL,NULL,N'Moto',NULL,NULL,N'20W-50',N'Mineral',6,NULL,NULL,NULL,NULL),
+-- ---- Productos adicionales (más llantas, baterías y lubricantes: el catálogo pasa de 20 por página) ----
+(N'Michelin Energy XM2+ 185/65 R15 88H',N'Llantas',N'Michelin',N'Baja resistencia a la rodadura y gran duración para ciudad.',285000,365000,N'185',N'65',N'15',N'Auto',N'88',N'H',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Michelin Primacy SUV 235/60 R18 103V',N'Llantas',N'Michelin',N'Confort y seguridad para SUV de uso familiar.',560000,710000,N'235',N'60',N'18',N'Auto',N'103',N'V',NULL,NULL,60,NULL,NULL,10,30),
+(N'Michelin LTX Force 265/70 R16 112T',N'Llantas',N'Michelin',N'Para camionetas: tracción firme en carretera y trocha liviana.',545000,690000,N'265',N'70',N'16',N'Auto',N'112',N'T',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Bridgestone Dueler H/T 684 265/70 R16 112S',N'Llantas',N'Bridgestone',N'Camioneta y SUV: resistencia y buen agarre en carretera.',470000,600000,N'265',N'70',N'16',N'Auto',N'112',N'S',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Bridgestone Potenza RE980AS 225/45 R17 91W',N'Llantas',N'Bridgestone',N'Deportiva de todas las estaciones con respuesta precisa.',450000,575000,N'225',N'45',N'17',N'Auto',N'91',N'W',NULL,NULL,60,NULL,NULL,8,25),
+(N'Bridgestone Turanza ER300 195/65 R15 91V',N'Llantas',N'Bridgestone',N'Silenciosa y estable, pensada para sedanes de uso diario.',300000,385000,N'195',N'65',N'15',N'Auto',N'91',N'V',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Goodyear Wrangler Territory HT 245/70 R16 107T',N'Llantas',N'Goodyear',N'Camionetas: tracción segura y desgaste parejo.',430000,550000,N'245',N'70',N'16',N'Auto',N'107',N'T',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Goodyear Eagle F1 Asymmetric 5 245/40 R18 97Y',N'Llantas',N'Goodyear',N'Ultra alto desempeño con frenado corto en mojado.',690000,870000,N'245',N'40',N'18',N'Auto',N'97',N'Y',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Goodyear DuraGrip 175/70 R13 82T',N'Llantas',N'Goodyear',N'Opción duradera y económica para autos pequeños.',190000,245000,N'175',N'70',N'13',N'Auto',N'82',N'T',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Pirelli Scorpion Verde 235/55 R18 100V',N'Llantas',N'Pirelli',N'Eficiencia y confort para SUV y crossover.',540000,680000,N'235',N'55',N'18',N'Auto',N'100',N'V',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Pirelli Cinturato P7 225/50 R17 94W',N'Llantas',N'Pirelli',N'Equilibrio entre deportividad, confort y bajo consumo.',470000,595000,N'225',N'50',N'17',N'Auto',N'94',N'W',NULL,NULL,60,NULL,NULL,12,20),
+(N'Continental ContiPremiumContact 5 205/55 R16 91V',N'Llantas',N'Continental',N'Frenado seguro y alta durabilidad para turismos.',350000,445000,N'205',N'55',N'16',N'Auto',N'91',N'V',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Continental ContiCrossContact LX 265/65 R17 112T',N'Llantas',N'Continental',N'Camionetas y SUV: confort de marcha en asfalto.',520000,655000,N'265',N'65',N'17',N'Auto',N'112',N'T',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Continental EcoContact 6 185/60 R15 84H',N'Llantas',N'Continental',N'Ahorro de combustible y larga vida útil.',290000,370000,N'185',N'60',N'15',N'Auto',N'84',N'H',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Hankook Ventus Prime3 225/45 R17 91V',N'Llantas',N'Hankook',N'Agarre deportivo con buen confort en autopista.',360000,460000,N'225',N'45',N'17',N'Auto',N'91',N'V',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Hankook Optimo H426 195/60 R15 88H',N'Llantas',N'Hankook',N'Rodamiento suave y silencioso para uso urbano.',230000,295000,N'195',N'60',N'15',N'Auto',N'88',N'H',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Yokohama Geolandar G91 265/70 R16 112H',N'Llantas',N'Yokohama',N'Para camionetas, buena tracción en carretera.',450000,575000,N'265',N'70',N'16',N'Auto',N'112',N'H',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Yokohama Advan Sport V105 255/35 R19 96Y',N'Llantas',N'Yokohama',N'Alto desempeño para deportivos exigentes.',780000,980000,N'255',N'35',N'19',N'Auto',N'96',N'Y',NULL,NULL,60,NULL,NULL,NULL,NULL),
+(N'Firestone Firehawk 900 195/55 R16 87V',N'Llantas',N'Firestone',N'Buen agarre y confort a un precio accesible.',270000,350000,N'195',N'55',N'16',N'Auto',N'87',N'V',NULL,NULL,48,NULL,NULL,NULL,NULL),
+(N'Firestone Destination LE3 235/65 R17 104T',N'Llantas',N'Firestone',N'SUV y camionetas ligeras: marcha silenciosa.',410000,520000,N'235',N'65',N'17',N'Auto',N'104',N'T',NULL,NULL,48,NULL,NULL,NULL,NULL),
+(N'Toyo Proxes CF2 205/55 R16 91V',N'Llantas',N'Toyo',N'Respuesta ágil y buen frenado en mojado.',340000,435000,N'205',N'55',N'16',N'Auto',N'91',N'V',NULL,NULL,48,NULL,NULL,9,30),
+(N'Toyo Open Country A/T III 265/70 R16 112S',N'Llantas',N'Toyo',N'Todo terreno para trocha y carretera.',560000,710000,N'265',N'70',N'16',N'Auto',N'112',N'S',NULL,NULL,48,NULL,NULL,NULL,NULL),
+(N'Cooper Discoverer AT3 265/65 R17 112T',N'Llantas',N'Cooper',N'Todo terreno resistente a cortes y desgaste irregular.',540000,685000,N'265',N'65',N'17',N'Auto',N'112',N'T',NULL,NULL,48,NULL,NULL,NULL,NULL),
+(N'Falken Ziex ZE310 215/45 R17 87W',N'Llantas',N'Falken',N'Deportiva accesible con gran estabilidad en curva.',330000,420000,N'215',N'45',N'17',N'Auto',N'87',N'W',NULL,NULL,48,NULL,NULL,NULL,NULL),
+(N'General Tire Altimax RT43 205/65 R15 94T',N'Llantas',N'General Tire',N'Llanta de turismo con muy buen kilometraje.',270000,345000,N'205',N'65',N'15',N'Auto',N'94',N'T',NULL,NULL,48,NULL,NULL,NULL,NULL),
+(N'Kumho Ecsta HS51 225/45 R17 91W',N'Llantas',N'Kumho',N'Alto agarre para uso deportivo diario.',350000,445000,N'225',N'45',N'17',N'Auto',N'91',N'W',NULL,NULL,48,NULL,NULL,NULL,NULL),
+(N'Maxxis Bravo UE-168 185/70 R14 88H',N'Llantas',N'Maxxis',N'Llanta económica para autos compactos.',195000,250000,N'185',N'70',N'14',N'Auto',N'88',N'H',NULL,NULL,36,NULL,NULL,NULL,NULL),
+(N'Metzeler Sportec M9 RR 120/70 ZR17 58W',N'Llantas',N'Metzeler',N'Moto deportiva: agarre inmediato en pista y calle.',420000,530000,N'120',N'70',N'17',N'Moto',N'58',N'W',NULL,NULL,24,NULL,NULL,NULL,NULL),
+(N'Metzeler Tourance Next 110/80 R19 59V',N'Llantas',N'Metzeler',N'Moto doble propósito para viajes largos.',390000,490000,N'110',N'80',N'19',N'Moto',N'59',N'V',NULL,NULL,24,NULL,NULL,NULL,NULL),
+(N'Michelin Pilot Street 2 70/90-17 Moto',N'Llantas',N'Michelin',N'Moto urbana de baja cilindrada, segura en mojado.',105000,135000,N'70',N'90',N'17',N'Moto',N'38',N'P',NULL,NULL,24,NULL,NULL,NULL,NULL),
+(N'Batería Bosch S4 12V 40Ah',N'Baterías',N'Bosch',N'Compacta y sellada para autos pequeños y citadinos.',205000,265000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,12,N'40Ah',N'Derecha',NULL,NULL),
+(N'Batería Bosch S5 12V 70Ah',N'Baterías',N'Bosch',N'Alta potencia de arranque para sedanes y SUV.',360000,460000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,12,N'70Ah',N'Derecha',NULL,NULL),
+(N'Batería Bosch S6 12V 80Ah',N'Baterías',N'Bosch',N'Capacidad extra para camionetas con muchos accesorios.',440000,560000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,18,N'80Ah',N'Izquierda',8,30),
+(N'Batería Varta Blue Dynamic 12V 60Ah',N'Baterías',N'Varta',N'Arranque confiable y gran resistencia al calor.',290000,370000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,18,N'60Ah',N'Derecha',NULL,NULL),
+(N'Batería Varta Silver Dynamic 12V 95Ah',N'Baterías',N'Varta',N'Máxima reserva de energía para camionetas diésel.',520000,660000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,18,N'95Ah',N'Izquierda',NULL,NULL),
+(N'Batería Varta Start-Stop AGM 12V 70Ah',N'Baterías',N'Varta',N'Tecnología AGM para vehículos con sistema Start-Stop.',600000,760000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,24,N'70Ah',N'Derecha',NULL,NULL),
+(N'Batería Willard 24HP 12V 45Ah',N'Baterías',N'Willard',N'Batería nacional para autos pequeños, libre de mantenimiento.',200000,258000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,12,N'45Ah',N'Derecha',NULL,NULL),
+(N'Batería Willard 42HP 12V 60Ah',N'Baterías',N'Willard',N'Resistente al clima caliente, garantía local.',280000,355000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,12,N'60Ah',N'Derecha',10,20),
+(N'Batería Willard 65HP 12V 75Ah',N'Baterías',N'Willard',N'Para camionetas y vehículos de trabajo.',350000,445000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,12,N'75Ah',N'Izquierda',NULL,NULL),
+(N'Batería MAC Silver 12V 45Ah',N'Baterías',N'MAC',N'Buen rendimiento y precio para uso diario.',210000,270000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,12,N'45Ah',N'Izquierda',NULL,NULL),
+(N'Batería MAC Platinum 12V 80Ah',N'Baterías',N'MAC',N'Alta durabilidad para vehículos pesados.',420000,535000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,18,N'80Ah',N'Derecha',NULL,NULL),
+(N'Batería Optima RedTop 12V 50Ah',N'Baterías',N'Optima',N'Arranque instantáneo y resistencia a vibraciones.',640000,810000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,24,N'50Ah',N'Derecha',NULL,NULL),
+(N'Batería Optima YellowTop 12V 55Ah',N'Baterías',N'Optima',N'Ciclo profundo para equipos de sonido y accesorios.',720000,910000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,24,N'55Ah',N'Izquierda',NULL,NULL),
+(N'Batería ACDelco Advantage 12V 55Ah',N'Baterías',N'ACDelco',N'Rendimiento confiable para vehículos americanos y asiáticos.',270000,345000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,12,N'55Ah',N'Derecha',NULL,NULL),
+(N'Batería ACDelco Gold 12V 65Ah',N'Baterías',N'ACDelco',N'Mayor potencia de arranque en frío.',330000,420000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,18,N'65Ah',N'Izquierda',NULL,NULL),
+(N'Batería Exide Excell 12V 50Ah',N'Baterías',N'Exide',N'Batería económica con buena vida útil.',235000,300000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,12,N'50Ah',N'Derecha',NULL,NULL),
+(N'Batería LTH L-24F 12V 70Ah',N'Baterías',N'LTH',N'Pensada para camionetas y SUV de uso exigente.',330000,420000,NULL,NULL,NULL,N'Auto',NULL,NULL,NULL,NULL,12,N'70Ah',N'Izquierda',NULL,NULL),
+(N'Batería Yuasa YTX5L-BS 12V 4Ah Moto',N'Baterías',N'Yuasa',N'Batería sellada para motos de baja cilindrada.',70000,95000,NULL,NULL,NULL,N'Moto',NULL,NULL,NULL,NULL,12,N'4Ah',N'Izquierda',NULL,NULL),
+(N'Batería Yuasa YB7-A 12V 8Ah Moto',N'Baterías',N'Yuasa',N'Convencional con alto rendimiento para motos medianas.',95000,125000,NULL,NULL,NULL,N'Moto',NULL,NULL,NULL,NULL,12,N'8Ah',N'Derecha',NULL,NULL),
+(N'Batería Bosch M6 12V 12Ah Moto',N'Baterías',N'Bosch',N'Para motos de alta cilindrada y cuatrimotos.',130000,170000,NULL,NULL,NULL,N'Moto',NULL,NULL,NULL,NULL,12,N'12Ah',N'Izquierda',NULL,NULL),
+(N'Mobil 1 0W-20 Sintético 4 L',N'Aceites',N'Mobil',N'Sintético de baja viscosidad para motores híbridos y modernos.',155000,200000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'0W-20',N'Sintético',12,NULL,NULL,NULL,NULL),
+(N'Mobil Super 2000 10W-40 Semisintético 4 L',N'Aceites',N'Mobil',N'Protección confiable para uso diario.',95000,125000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'10W-40',N'Semisintético',6,NULL,NULL,NULL,NULL),
+(N'Mobil Delvac MX 15W-40 Diésel 4 L',N'Aceites',N'Mobil',N'Aceite para motores diésel de camionetas y vehículos de carga.',110000,145000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'15W-40',N'Mineral',6,NULL,NULL,NULL,NULL),
+(N'Castrol Edge 5W-30 Sintético 4 L',N'Aceites',N'Castrol',N'Tecnología de titanio para máxima resistencia a la fricción.',170000,220000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'5W-30',N'Sintético',12,NULL,NULL,10,30),
+(N'Castrol Magnatec 5W-30 Sintético 4 L',N'Aceites',N'Castrol',N'Protección inmediata desde el arranque.',140000,182000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'5W-30',N'Sintético',12,NULL,NULL,NULL,NULL),
+(N'Castrol CRB Turbo Diesel 15W-40 4 L',N'Aceites',N'Castrol',N'Para motores diésel turbo de alta exigencia.',105000,138000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'15W-40',N'Mineral',6,NULL,NULL,NULL,NULL),
+(N'Valvoline Premium Protection 5W-30 4 L',N'Aceites',N'Valvoline',N'Sintético con protección extendida contra el desgaste.',135000,175000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'5W-30',N'Sintético',12,NULL,NULL,NULL,NULL),
+(N'Valvoline Synpower 5W-40 Sintético 4 L',N'Aceites',N'Valvoline',N'Resiste altas temperaturas y exigencias de carga.',150000,195000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'5W-40',N'Sintético',12,NULL,NULL,NULL,NULL),
+(N'Shell Helix HX8 5W-30 Sintético 4 L',N'Aceites',N'Shell',N'Sintético con tecnología de limpieza para motores modernos.',150000,195000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'5W-30',N'Sintético',12,NULL,NULL,8,25),
+(N'Shell Helix HX5 15W-40 4 L',N'Aceites',N'Shell',N'Mineral mejorado para motores de gasolina y gas.',80000,105000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'15W-40',N'Mineral',6,NULL,NULL,NULL,NULL),
+(N'Shell Rimula R4 15W-40 Diésel 4 L',N'Aceites',N'Shell',N'Aceite diésel para trabajo pesado.',100000,132000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'15W-40',N'Mineral',6,NULL,NULL,NULL,NULL),
+(N'Terpel Oiltec 10W-40 Semisintético 4 L',N'Aceites',N'Terpel',N'Producto nacional con excelente relación precio-calidad.',78000,102000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'10W-40',N'Semisintético',6,NULL,NULL,NULL,NULL),
+(N'Terpel Celerity 5W-30 Sintético 4 L',N'Aceites',N'Terpel',N'Sintético económico para motores modernos.',125000,162000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'5W-30',N'Sintético',12,NULL,NULL,NULL,NULL),
+(N'Havoline Extended Life 10W-30 4 L',N'Aceites',N'Havoline',N'Protección prolongada para intervalos largos de cambio.',115000,150000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'10W-30',N'Semisintético',6,NULL,NULL,NULL,NULL),
+(N'Liqui Moly Top Tec 5W-30 Sintético 4 L',N'Aceites',N'Liqui Moly',N'Aceite alemán de alto desempeño con baja fricción.',260000,335000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'5W-30',N'Sintético',12,NULL,NULL,NULL,NULL),
+(N'Total Quartz 9000 5W-40 Sintético 4 L',N'Aceites',N'Total',N'Gran protección en arranques en frío y alta carga.',165000,215000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'5W-40',N'Sintético',12,NULL,NULL,NULL,NULL),
+(N'Repsol Elite Evolution 5W-30 Sintético 4 L',N'Aceites',N'Repsol',N'Sintético para consumo reducido de combustible.',145000,188000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'5W-30',N'Sintético',12,NULL,NULL,NULL,NULL),
+(N'Petronas Syntium 3000 5W-40 Sintético 4 L',N'Aceites',N'Petronas',N'Protección contra depósitos y desgaste.',155000,200000,NULL,NULL,NULL,N'Auto',NULL,NULL,N'5W-40',N'Sintético',12,NULL,NULL,NULL,NULL),
+(N'Motul 3000 4T 20W-50 Mineral 1 L Moto',N'Aceites',N'Motul',N'Mineral para motos de trabajo y uso diario.',32000,43000,NULL,NULL,NULL,N'Moto',NULL,NULL,N'20W-50',N'Mineral',6,NULL,NULL,NULL,NULL),
+(N'Motul 5100 4T 10W-40 Semisintético 1 L Moto',N'Aceites',N'Motul',N'Tecnología Ester para motos de media y alta cilindrada.',54000,72000,NULL,NULL,NULL,N'Moto',NULL,NULL,N'10W-40',N'Semisintético',6,NULL,NULL,10,30);
 
 INSERT INTO dbo.Productos (Nombre, Descripcion, PrecioCompra, PrecioVenta, IdProveedor, Categoria, RutaImagen, IdBodega, IdLlanteria, PorcentajeDescuento, DuracionDescuentoDias, FechaInicioDescuento)
 SELECT p.Nombre, p.Descr, p.Compra, p.Venta, @Prov, p.Cat, N'default-producto.png', @Bod, @Lla, p.Dto, p.Dias, CASE WHEN p.Dto IS NOT NULL THEN GETDATE() END
