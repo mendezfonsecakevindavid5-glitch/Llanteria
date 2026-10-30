@@ -1,4 +1,5 @@
 @model Llanteria.Models.DashboardViewModel
+@inject Llanteria.Services.PowerBiService PowerBi
 
 @{
     ViewData["Title"] = "Panel";
@@ -30,6 +31,38 @@
         <div class="col-6 col-xl-3"><div class="stat"><span class="stat-icon"><i class="fa-solid fa-box"></i></span><div class="label">Productos</div><div class="value">@Model.TotalProductos</div></div></div>
     }
 </div>
+
+@if (esAdmin)
+{
+    <div class="panel mb-3" id="panelPowerBi">
+        <div class="panel-head">
+            <span><i class="fa-solid fa-chart-pie me-2"></i>Análisis interactivo (Power BI)</span>
+            @if (PowerBi.Configurado)
+            {
+                <button type="button" class="btn btn-line btn-sm" id="pbiPantallaCompleta"><i class="fa-solid fa-expand me-1"></i>Pantalla completa</button>
+            }
+        </div>
+        <div class="panel-body p-0">
+            @if (PowerBi.Configurado && !PowerBi.EsEmbebido)
+            {
+                <iframe id="pbiMarco" title="Informe de Power BI" src="@PowerBi.UrlIframe" loading="lazy" allowfullscreen
+                        referrerpolicy="strict-origin-when-cross-origin" style="width:100%;height:640px;border:0;display:block"></iframe>
+            }
+            else if (PowerBi.Configurado)
+            {
+                <div id="pbiContenedor" data-url="@Url.Action("PowerBi", "Dashboard")" style="width:100%;height:640px"></div>
+                <div id="pbiEstado" class="empty-state">Cargando informe…</div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    Power BI todavía no está configurado. Agrega la sección <code>PowerBI</code> en <code>Privado/appsettings.json</code>
+                    (y <code>PowerBI:ClientSecret</code> en la bóveda) y vuelve a firmar con <code>boveda firmar</code>.
+                </div>
+            }
+        </div>
+    </div>
+}
 
 <div class="row g-3">
     <div class="col-lg-7">
@@ -222,3 +255,14 @@
         </div>
     }
 </div>
+
+@section Scripts {
+    @if (esAdmin && PowerBi.Configurado)
+    {
+        if (PowerBi.EsEmbebido)
+        {
+            <script src="https://cdn.jsdelivr.net/npm/powerbi-client@2.23.1/dist/powerbi.min.js"></script>
+        }
+        <script src="~/js/powerbi-panel.js" asp-append-version="true"></script>
+    }
+}

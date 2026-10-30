@@ -554,12 +554,18 @@ public class AccountController : Controller
         return Json(new { success = true });
     }
 
-    /// <summary>Mensaje para el usuario cuando no se pudo enviar el código. En desarrollo se agrega el detalle técnico (el mismo queda siempre en el log).</summary>
+    /// <summary>
+    /// Mensaje para el usuario cuando no se pudo enviar el código. El detalle técnico (IP del servidor, respuesta de Brevo) queda
+    /// SOLO en el log: antes se mostraba en pantalla en desarrollo y revelaba datos de la infraestructura. Para verlo en pantalla mientras
+    /// depuras, define Depuracion:MostrarDetalleCorreo = true (solo funciona en Development).
+    /// </summary>
     private string MensajeFalloCorreo(ResultadoCorreo r)
     {
         var mensaje = "No se pudo enviar el código a tu correo. Inténtalo de nuevo en un momento.";
-        var env = HttpContext.RequestServices.GetRequiredService<IWebHostEnvironment>();
-        if (env.IsDevelopment()) mensaje += $" [{r.Mensaje} | {r.Motivo}]";
+        var sp = HttpContext.RequestServices;
+        var env = sp.GetRequiredService<IWebHostEnvironment>();
+        var cfg = sp.GetRequiredService<IConfiguration>();
+        if (env.IsDevelopment() && cfg.GetValue<bool>("Depuracion:MostrarDetalleCorreo")) mensaje += $" [{r.Mensaje}]";
         return mensaje;
     }
 

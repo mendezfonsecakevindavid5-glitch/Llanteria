@@ -82,8 +82,8 @@
             <span asp-validation-for="DetalleProducto.IdMarca" class="text-danger small"></span>
         </div>
         <div class="col-md-2">
-            <label class="form-label" for="DetalleProducto_TipoVehiculo">Vehículo</label>
-            <select asp-for="DetalleProducto.TipoVehiculo" class="form-select" asp-items="@(new SelectList(Llanteria.Models.TiposVehiculo.Todos, Model.DetalleProducto?.TipoVehiculo ?? "Auto"))"></select>
+            <label class="form-label" for="DetalleProducto_TipoVehiculo">Vehículo / máquina</label>
+            <select asp-for="DetalleProducto.TipoVehiculo" class="form-select" asp-items="@(new SelectList(Llanteria.Models.TiposVehiculo.Opciones, "Valor", "Texto", Model.DetalleProducto?.TipoVehiculo ?? "Auto"))"></select>
         </div>
         <div class="col-6 col-md-2">
             <label class="form-label" for="DetalleProducto_Ancho">Ancho</label>
@@ -119,6 +119,49 @@
                 <option value="">Sin especificar</option>
                 <option value="Izquierda">Izquierda</option>
                 <option value="Derecha">Derecha</option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label" for="DetalleProducto_Voltaje">Voltaje (baterías)</label>
+            <select asp-for="DetalleProducto.Voltaje" class="form-select">
+                <option value="">Sin especificar</option>
+                <option value="6V">6V</option><option value="12V">12V</option><option value="24V">24V</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" for="DetalleProducto_TecnologiaBateria">Tecnología (baterías)</label>
+            <select asp-for="DetalleProducto.TecnologiaBateria" class="form-select">
+                <option value="">Sin especificar</option>
+                <option>Plomo-ácido</option><option>Libre de mantenimiento</option><option>AGM</option><option>Gel</option><option>Litio</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" for="DetalleProducto_AplicacionLubricante">Aplicación (lubricantes)</label>
+            <select asp-for="DetalleProducto.AplicacionLubricante" class="form-select">
+                <option value="">Sin especificar</option>
+                <option>Motor gasolina</option><option>Motor diésel</option><option>Motocicleta 4T</option><option>Transmisión</option><option>Hidráulico</option><option>Maquinaria pesada</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" for="DetalleProducto_PresentacionLubricante">Presentación (lubricantes)</label>
+            <select asp-for="DetalleProducto.PresentacionLubricante" class="form-select">
+                <option value="">Sin especificar</option>
+                <option>Litro</option><option>Cuarto</option><option>Galón (4 L)</option><option>Balde (5 gal)</option><option>Caneca (55 gal)</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" for="DetalleProducto_TipoAccesorio">Tipo de accesorio</label>
+            <select asp-for="DetalleProducto.TipoAccesorio" class="form-select">
+                <option value="">Sin especificar</option>
+                <option>Frenos</option><option>Filtros</option><option>Iluminación</option><option>Limpiaparabrisas</option><option>Seguridad</option><option>Interior</option><option>Exterior</option><option>Herramientas</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" for="DetalleProducto_UbicacionAccesorio">Ubicación (accesorios)</label>
+            <select asp-for="DetalleProducto.UbicacionAccesorio" class="form-select">
+                <option value="">Sin especificar</option>
+                <option>Delantero</option><option>Trasero</option><option>Universal</option>
             </select>
         </div>
 

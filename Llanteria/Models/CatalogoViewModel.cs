@@ -32,10 +32,25 @@ public class CatalogoViewModel
     public string? Amperaje { get; set; }
     public string? Polaridad { get; set; }
 
+    // Filtros nuevos de Baterías
+    public string? Voltaje { get; set; }
+    public string? TecnologiaBateria { get; set; }
+
+    // Filtros nuevos de Lubricantes
+    public string? Aplicacion { get; set; }
+    public string? Presentacion { get; set; }
+
+    // Filtros propios de Accesorios
+    public string? TipoAccesorio { get; set; }
+    public string? Ubicacion { get; set; }
+
+    /// <summary>Chip "Promociones" (bajo la barra de búsqueda): solo productos con una promoción o descuento vigente.</summary>
+    public bool SoloPromociones { get; set; }
+
     // Filtro extra compartido (Lubricantes y Baterías)
     public int? Garantia { get; set; }
 
-    /// <summary>Qué bloque de filtros adicionales mostrar en el panel izquierdo: "Llantas", "Lubricantes", "Baterias" o "".</summary>
+    /// <summary>Qué bloque de filtros adicionales mostrar en el panel izquierdo: "Llantas", "Lubricantes", "Baterias", "Accesorios" o "".</summary>
     public string ModoExtra { get; set; } = "";
 
     // Opciones disponibles
@@ -50,11 +65,20 @@ public class CatalogoViewModel
     public List<string> AmperajesDisponibles { get; set; } = new();
     public List<string> PolaridadesDisponibles { get; set; } = new();
     public List<int> GarantiasDisponibles { get; set; } = new();
+    public List<string> VoltajesDisponibles { get; set; } = new();
+    public List<string> TecnologiasDisponibles { get; set; } = new();
+    public List<string> AplicacionesDisponibles { get; set; } = new();
+    public List<string> PresentacionesDisponibles { get; set; } = new();
+    public List<string> TiposAccesorioDisponibles { get; set; } = new();
+    public List<string> UbicacionesDisponibles { get; set; } = new();
     public int PrecioMasBajo { get; set; }
     public int PrecioMasAlto { get; set; }
 
     public bool HayFiltros => !string.IsNullOrEmpty(Ancho) || !string.IsNullOrEmpty(Perfil) || !string.IsNullOrEmpty(Diametro) || !string.IsNullOrEmpty(Tipo)
                               || Marcas.Length > 0 || Evento.HasValue || Promocion.HasValue || !string.IsNullOrEmpty(BuscarMarca) || PrecioMin.HasValue || PrecioMax.HasValue
                               || !string.IsNullOrEmpty(Viscosidad) || !string.IsNullOrEmpty(TipoAceite)
-                              || !string.IsNullOrEmpty(Amperaje) || !string.IsNullOrEmpty(Polaridad) || Garantia.HasValue;
+                              || !string.IsNullOrEmpty(Amperaje) || !string.IsNullOrEmpty(Polaridad) || Garantia.HasValue
+                              || !string.IsNullOrEmpty(Voltaje) || !string.IsNullOrEmpty(TecnologiaBateria)
+                              || !string.IsNullOrEmpty(Aplicacion) || !string.IsNullOrEmpty(Presentacion)
+                              || !string.IsNullOrEmpty(TipoAccesorio) || !string.IsNullOrEmpty(Ubicacion) || SoloPromociones;
 }

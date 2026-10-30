@@ -166,6 +166,12 @@ public class ProductoController : Controller
                 tipoAceite = Texto("TipoAceite"),
                 amperaje = Texto("Amperaje"),
                 polaridad = Texto("Polaridad"),
+                voltaje = Texto("Voltaje"),
+                tecnologiaBateria = Texto("TecnologiaBateria"),
+                aplicacionLubricante = Texto("AplicacionLubricante"),
+                presentacionLubricante = Texto("PresentacionLubricante"),
+                tipoAccesorio = Texto("TipoAccesorio"),
+                ubicacionAccesorio = Texto("UbicacionAccesorio"),
             };
 
             return Json(new { ok = true, datos, avisos });

@@ -1,4 +1,4 @@
-@* Página de catálogo con panel de filtros a la izquierda y resultados a la derecha (llantas, lubricantes y baterías). *@
+@* Página de catálogo con panel de filtros a la izquierda y resultados a la derecha (llantas, lubricantes, baterías y accesorios). *@
 @model Llanteria.Models.CatalogoViewModel
 @{
     string titulo = ViewData["TituloCatalogo"] as string ?? "Catálogo";
@@ -16,6 +16,7 @@
                 @if (!string.IsNullOrEmpty(Model.Tipo)) { <input type="hidden" name="tipo" value="@Model.Tipo" /> }
                 @if (Model.Orden is "precio-asc" or "precio-desc") { <input type="hidden" name="orden" value="@Model.Orden" /> }
                 @if (!string.IsNullOrEmpty(Model.BuscarMarca)) { <input type="hidden" name="qmarca" value="@Model.BuscarMarca" /> }
+                @if (Model.SoloPromociones) { <input type="hidden" name="promociones" value="true" /> }
                 <div class="cat-filters-head">
                     <strong>Filtrar por</strong>
                     @if (Model.HayFiltros) { <a asp-controller="@controlador" asp-action="Index">Limpiar</a> }
@@ -57,6 +58,20 @@
                         </select>
                     </div>
                     <div class="cat-group">
+                        <div class="cat-group-title">Aplicación</div>
+                        <select name="aplicacion" class="form-select form-select-sm" aria-label="Aplicación">
+                            <option value="">Todas</option>
+                            @foreach (var x in Model.AplicacionesDisponibles) { <option value="@x" selected="@(Model.Aplicacion == x)">@x</option> }
+                        </select>
+                    </div>
+                    <div class="cat-group">
+                        <div class="cat-group-title">Presentación</div>
+                        <select name="presentacion" class="form-select form-select-sm" aria-label="Presentación">
+                            <option value="">Todas</option>
+                            @foreach (var x in Model.PresentacionesDisponibles) { <option value="@x" selected="@(Model.Presentacion == x)">@x</option> }
+                        </select>
+                    </div>
+                    <div class="cat-group">
                         <div class="cat-group-title">Garantía</div>
                         <select name="garantia" class="form-select form-select-sm" aria-label="Garantía">
                             <option value="">Todas</option>
@@ -82,6 +97,20 @@
                         </select>
                     </div>
                     <div class="cat-group">
+                        <div class="cat-group-title">Voltaje</div>
+                        <select name="voltaje" class="form-select form-select-sm" aria-label="Voltaje">
+                            <option value="">Todos</option>
+                            @foreach (var x in Model.VoltajesDisponibles) { <option value="@x" selected="@(Model.Voltaje == x)">@x</option> }
+                        </select>
+                    </div>
+                    <div class="cat-group">
+                        <div class="cat-group-title">Tecnología</div>
+                        <select name="tecnologia" class="form-select form-select-sm" aria-label="Tecnología">
+                            <option value="">Todas</option>
+                            @foreach (var x in Model.TecnologiasDisponibles) { <option value="@x" selected="@(Model.TecnologiaBateria == x)">@x</option> }
+                        </select>
+                    </div>
+                    <div class="cat-group">
                         <div class="cat-group-title">Garantía</div>
                         <select name="garantia" class="form-select form-select-sm" aria-label="Garantía">
                             <option value="">Todas</option>
@@ -90,7 +119,25 @@
                     </div>
                 }
 
-                @* La marca se filtra con la barra de búsqueda de arriba; este panel filtra por evento y por promoción. *@
+                @if (Model.ModoExtra == "Accesorios")
+                {
+                    <div class="cat-group">
+                        <div class="cat-group-title">Tipo de accesorio</div>
+                        <select name="tipoAccesorio" class="form-select form-select-sm" aria-label="Tipo de accesorio">
+                            <option value="">Todos</option>
+                            @foreach (var x in Model.TiposAccesorioDisponibles) { <option value="@x" selected="@(Model.TipoAccesorio == x)">@x</option> }
+                        </select>
+                    </div>
+                    <div class="cat-group">
+                        <div class="cat-group-title">Ubicación</div>
+                        <select name="ubicacion" class="form-select form-select-sm" aria-label="Ubicación">
+                            <option value="">Todas</option>
+                            @foreach (var x in Model.UbicacionesDisponibles) { <option value="@x" selected="@(Model.Ubicacion == x)">@x</option> }
+                        </select>
+                    </div>
+                }
+
+                @* La marca se filtra con la barra de búsqueda de arriba; este panel filtra por evento; las promociones van en el chip "Promociones" bajo la barra de búsqueda. *@
                 <div class="cat-group">
                     <div class="cat-group-title">Evento</div>
                     <select name="evento" class="form-select form-select-sm" aria-label="Evento">
@@ -98,15 +145,6 @@
                         @foreach (var ev in Model.EventosDisponibles) { <option value="@ev.Id" selected="@(Model.Evento == ev.Id)">@ev.Nombre (@ev.Cantidad)</option> }
                     </select>
                     @if (!Model.EventosDisponibles.Any()) { <div class="small text-muted mt-1">No hay eventos con promociones vigentes.</div> }
-                </div>
-
-                <div class="cat-group">
-                    <div class="cat-group-title">Promoción</div>
-                    <select name="promocion" class="form-select form-select-sm" aria-label="Promoción">
-                        <option value="">Todas</option>
-                        @foreach (var pr in Model.PromocionesDisponibles) { <option value="@pr.Id" selected="@(Model.Promocion == pr.Id)">@pr.Nombre (@pr.Cantidad)</option> }
-                    </select>
-                    @if (!Model.PromocionesDisponibles.Any()) { <div class="small text-muted mt-1">No hay promociones vigentes.</div> }
                 </div>
 
                 <div class="cat-group">

@@ -12,6 +12,17 @@ public class DashboardController : Controller
 
     public DashboardController(LlanteriaDbContext context) => _context = context;
 
+    /// <summary>Token de solo lectura para incrustar el informe de Power BI (modo "Embebido"). Solo el administrador.</summary>
+    [HttpGet]
+    public async Task<IActionResult> PowerBi([FromServices] Llanteria.Services.PowerBiService pbi, CancellationToken ct)
+    {
+        if (!User.IsInRole("Administrador")) return Forbid();
+        var r = await pbi.ObtenerAsync(ct);
+        if (r == null) return StatusCode(503, new { error = "No se pudo preparar el informe de Power BI. Revisa la configuración y el registro del servidor." });
+        Response.Headers.CacheControl = "no-store";
+        return Json(new { embedUrl = r.EmbedUrl, reportId = r.ReportId, token = r.Token, expira = r.Expira });
+    }
+
     public IActionResult Index()
     {
         var hoy = DateTime.Today;

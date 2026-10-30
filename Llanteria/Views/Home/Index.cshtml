@@ -46,10 +46,6 @@
                     <a asp-controller="Llantas" asp-action="Index" asp-route-tipo="Moto" class="vb-btn" tabindex="-1">Ver llantas de moto</a>
                 </div>
             </div>
-            <div class="vb-dots" role="tablist" aria-label="Elegir banner">
-                <button type="button" class="vb-dot is-active" role="tab" aria-selected="true" aria-label="Autos" data-i="0"></button>
-                <button type="button" class="vb-dot" role="tab" aria-selected="false" aria-label="Motocicletas" data-i="1"></button>
-            </div>
         </div>
     </div>
 </section>
@@ -72,7 +68,7 @@
         (function () {
             var cont = document.getElementById('vbSlider');
             if (!cont) return;
-            var slides = cont.querySelectorAll('.vb-slide'), dots = cont.querySelectorAll('.vb-dot');
+            var slides = cont.querySelectorAll('.vb-slide');
             var actual = 0, timer = null;
             var reducir = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -84,12 +80,10 @@
                     s.setAttribute('aria-hidden', on ? 'false' : 'true');
                     var a = s.querySelector('a'); if (a) a.tabIndex = on ? 0 : -1;
                 });
-                dots.forEach(function (d, n) { d.classList.toggle('is-active', n === actual); d.setAttribute('aria-selected', n === actual ? 'true' : 'false'); });
             }
             function iniciar() { if (reducir || timer) return; timer = setInterval(function () { mostrar(actual + 1); }, 7000); }
             function detener() { clearInterval(timer); timer = null; }
 
-            dots.forEach(function (d) { d.addEventListener('click', function () { mostrar(parseInt(d.dataset.i, 10)); detener(); iniciar(); }); });
             cont.addEventListener('mouseenter', detener);
             cont.addEventListener('mouseleave', iniciar);
             cont.addEventListener('focusin', detener);

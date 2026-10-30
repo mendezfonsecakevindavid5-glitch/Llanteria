@@ -246,6 +246,20 @@ IF COL_LENGTH('dbo.DetalleProductos', 'Amperaje') IS NULL
 IF COL_LENGTH('dbo.DetalleProductos', 'Polaridad') IS NULL
     ALTER TABLE dbo.DetalleProductos ADD Polaridad nvarchar(20) NULL;
 
+-- Filtros nuevos del catálogo (baterías, lubricantes y accesorios)
+IF COL_LENGTH('dbo.DetalleProductos', 'Voltaje') IS NULL
+    ALTER TABLE dbo.DetalleProductos ADD Voltaje nvarchar(10) NULL;
+IF COL_LENGTH('dbo.DetalleProductos', 'TecnologiaBateria') IS NULL
+    ALTER TABLE dbo.DetalleProductos ADD TecnologiaBateria nvarchar(30) NULL;
+IF COL_LENGTH('dbo.DetalleProductos', 'AplicacionLubricante') IS NULL
+    ALTER TABLE dbo.DetalleProductos ADD AplicacionLubricante nvarchar(30) NULL;
+IF COL_LENGTH('dbo.DetalleProductos', 'PresentacionLubricante') IS NULL
+    ALTER TABLE dbo.DetalleProductos ADD PresentacionLubricante nvarchar(30) NULL;
+IF COL_LENGTH('dbo.DetalleProductos', 'TipoAccesorio') IS NULL
+    ALTER TABLE dbo.DetalleProductos ADD TipoAccesorio nvarchar(40) NULL;
+IF COL_LENGTH('dbo.DetalleProductos', 'UbicacionAccesorio') IS NULL
+    ALTER TABLE dbo.DetalleProductos ADD UbicacionAccesorio nvarchar(20) NULL;
+
 IF COL_LENGTH('dbo.Empleados', 'FotoDocumento') IS NULL
     ALTER TABLE dbo.Empleados ADD FotoDocumento varbinary(max) NULL;
 

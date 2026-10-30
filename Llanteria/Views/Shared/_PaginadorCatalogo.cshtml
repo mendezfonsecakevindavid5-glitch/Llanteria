@@ -1,10 +1,10 @@
 @* Paginador de los catálogos (Llantas, Lubricantes, Baterías): máximo 20 productos por página, abajo a la derecha.
-   Estructura:  [página actual] ◁ página(s) de ▷ [total] páginas
+   Estructura:  [página actual] ◁ página(s) de ▷ [total]
    - Números y textos en rojo y sin clic.
    - Triángulos: solo el borde en rojo; al pasar el mouse se rellenan de rojo. Son lo único que se puede pulsar.
    - Triángulo izquierdo: página anterior (deshabilitado en la página 1).
    - Triángulo derecho: página siguiente (deshabilitado en la última página).
-   - "página" va en singular cuando la página actual es la 1; en las demás, "páginas". *@
+   - "página" va en singular cuando la página actual es la 1; en las demás, "páginas". Después del total no hay texto. *@
 @model (int Pagina, int TotalPaginas)
 
 @{
@@ -20,7 +20,6 @@
     var enPrimera = Model.Pagina <= 1;
     var enUltima = Model.Pagina >= Model.TotalPaginas;
     var textoActual = Model.Pagina == 1 ? "página" : "páginas";
-    var textoTotal = Model.TotalPaginas == 1 ? "página" : "páginas";
 }
 
 <nav class="cat-pager" aria-label="Paginación del catálogo">
@@ -55,5 +54,4 @@
     }
 
     <span class="cat-pager-txt">@Model.TotalPaginas</span>
-    <span class="cat-pager-txt">@textoTotal</span>
 </nav>

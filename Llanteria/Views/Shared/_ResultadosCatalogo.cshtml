@@ -1,4 +1,4 @@
-@* Bloque de resultados del catálogo (barra de búsqueda por marca, chips, grid y paginación). Se recarga solo,
+@* Bloque de resultados del catálogo (barra de búsqueda por marca, chips —tipo de vehículo o máquina, Promociones y precio—, grid y paginación). Se recarga solo,
    vía AJAX, cuando el usuario escribe en la búsqueda o cambia un chip; el resto de filtros recargan la página entera. *@
 @model Llanteria.Models.CatalogoViewModel
 @{
@@ -17,6 +17,15 @@
     </button>
     <button type="button" class="cat-chip @(Model.Tipo == "Moto" ? "is-active" : "")" data-filtro="tipo" data-valor="Moto">
         <span class="cat-chip-dot"></span>Motocicletas
+    </button>
+    <button type="button" class="cat-chip @(Model.Tipo == "Pesada" ? "is-active" : "")" data-filtro="tipo" data-valor="Pesada">
+        <span class="cat-chip-dot"></span>Maquinaria pesada
+    </button>
+    <button type="button" class="cat-chip @(Model.Tipo == "Agricola" ? "is-active" : "")" data-filtro="tipo" data-valor="Agricola">
+        <span class="cat-chip-dot"></span>Maquinaria agrícola
+    </button>
+    <button type="button" class="cat-chip @(Model.SoloPromociones || Model.Promocion.HasValue ? "is-active" : "")" data-filtro="promociones" data-valor="true">
+        <span class="cat-chip-dot"></span>Promociones
     </button>
     <button type="button" class="cat-chip @(Model.Orden == "precio-asc" ? "is-active" : "")" data-filtro="orden" data-valor="precio-asc">
         <span class="cat-chip-dot"></span>Menor precio

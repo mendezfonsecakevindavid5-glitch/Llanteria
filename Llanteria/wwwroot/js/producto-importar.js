@@ -63,6 +63,12 @@
                 establecerValor("DetalleProducto.TipoAceite", d.tipoAceite);
                 establecerValor("DetalleProducto.Amperaje", d.amperaje);
                 establecerValor("DetalleProducto.Polaridad", d.polaridad);
+                establecerValor("DetalleProducto.Voltaje", d.voltaje);
+                establecerValor("DetalleProducto.TecnologiaBateria", d.tecnologiaBateria);
+                establecerValor("DetalleProducto.AplicacionLubricante", d.aplicacionLubricante);
+                establecerValor("DetalleProducto.PresentacionLubricante", d.presentacionLubricante);
+                establecerValor("DetalleProducto.TipoAccesorio", d.tipoAccesorio);
+                establecerValor("DetalleProducto.UbicacionAccesorio", d.ubicacionAccesorio);
 
                 var listaAvisos = resultado.json.avisos || [];
                 mostrarAviso(listaAvisos.length ? ("Formulario precargado. " + listaAvisos.join(" ")) : "Formulario precargado correctamente.", listaAvisos.length > 0);

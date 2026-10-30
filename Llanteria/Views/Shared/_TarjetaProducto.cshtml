@@ -8,7 +8,7 @@
 }
 <article class="cat-card @(Model.Agotado ? "is-out" : "")">
     <div class="cat-card-img">
-        <img src="~/images/productoos/@foto" alt="@p.Nombre" loading="lazy" />
+        <img src="~/images/productoos/@foto" alt="@p.Nombre" loading="lazy" decoding="async" />
         @if (p.EnPromocion) { <span class="cat-badge-promo" title="Descuento del @p.PorcentajeMostrado%" aria-label="Descuento del @p.PorcentajeMostrado por ciento">-@p.PorcentajeMostrado%</span> }
         @if (Model.Agotado) { <span class="cat-badge">Agotado</span> }
     </div>

@@ -13,9 +13,11 @@ public class LubricantesController : CatalogoControllerBase
 
     [HttpGet]
     public IActionResult Index(string[]? marca, int? min, int? max, string? orden, int pagina = 1, string? tipo = null,
-        string? qmarca = null, string? viscosidad = null, string? tipoAceite = null, int? garantia = null, int? evento = null, int? promocion = null)
+        string? qmarca = null, string? viscosidad = null, string? tipoAceite = null, int? garantia = null, int? evento = null, int? promocion = null,
+        string? aplicacion = null, string? presentacion = null, bool promociones = false)
     {
-        var vm = Armar(null, null, null, marca, min, max, orden, pagina, tipo, qmarca, viscosidad, tipoAceite, garantia: garantia, evento: evento, promocion: promocion);
+        var vm = Armar(null, null, null, marca, min, max, orden, pagina, tipo, qmarca, viscosidad, tipoAceite, garantia: garantia, evento: evento, promocion: promocion,
+            aplicacion: aplicacion, presentacion: presentacion, promociones: promociones);
         return EsAjax() ? PartialView("_ResultadosCatalogo", vm) : View(vm);
     }
 }

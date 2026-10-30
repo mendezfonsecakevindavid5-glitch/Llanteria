@@ -185,6 +185,12 @@ public partial class LlanteriaDbContext : DbContext
             entity.Property(e => e.Perfil).HasMaxLength(10);
             entity.Property(e => e.TipoAceite).HasMaxLength(30);
             entity.Property(e => e.Viscosidad).HasMaxLength(20);
+            entity.Property(e => e.Voltaje).HasMaxLength(10);
+            entity.Property(e => e.TecnologiaBateria).HasMaxLength(30);
+            entity.Property(e => e.AplicacionLubricante).HasMaxLength(30);
+            entity.Property(e => e.PresentacionLubricante).HasMaxLength(30);
+            entity.Property(e => e.TipoAccesorio).HasMaxLength(40);
+            entity.Property(e => e.UbicacionAccesorio).HasMaxLength(20);
 
             entity.HasOne(d => d.IdMarcaNavigation).WithMany(p => p.DetalleProductos)
                 .HasForeignKey(d => d.IdMarca)

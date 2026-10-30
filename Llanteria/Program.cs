@@ -5,7 +5,13 @@ using Llanteria.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.ResponseCompression;
 using System.Globalization;
+using System.IO.Compression;
+
+// Administración de la bóveda de secretos: "dotnet run -- boveda ..." (ver Seguridad/BovedaCli.cs). No arranca el sitio.
+if (args.Length > 0 && string.Equals(args[0], "boveda", StringComparison.OrdinalIgnoreCase))
+    Environment.Exit(BovedaCli.Ejecutar(args.Skip(1).ToArray()));
 
 // Formato colombiano para fechas y moneda (la lectura de decimales se hace con cultura invariante, ver InvariantDecimalModelBinder).
 var cultura = new CultureInfo("es-CO");
@@ -23,8 +29,14 @@ if (!File.Exists(appsettingsPrivado))
         $"No se encontró appsettings.json en la carpeta privada ({carpetaPrivada}). Cópialo allí (hay una plantilla en Privado/appsettings.ejemplo.json) " +
         $"o define la variable de entorno {CarpetaPrivada.VariableEntorno} con la ruta correcta.");
 
-builder.Configuration.AddJsonFile(appsettingsPrivado, optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile(CarpetaPrivada.Archivo($"appsettings.{builder.Environment.EnvironmentName}.json"), optional: true, reloadOnChange: true);
+// Bóveda de secretos: abre Privado/boveda.json (cifrada) y comprueba que appsettings no fue editado a mano. Si el sello no coincide, la
+// aplicación no arranca. Sin bóveda (todavía no corriste "boveda init") todo funciona como antes, leyendo appsettings.json.
+var secretosBoveda = Boveda.CargarParaApp();
+
+// reloadOnChange:false -> un cambio en el archivo con la aplicación encendida no tiene efecto (ni siquiera uno malicioso).
+builder.Configuration.AddJsonFile(appsettingsPrivado, optional: false, reloadOnChange: false);
+builder.Configuration.AddJsonFile(CarpetaPrivada.Archivo($"appsettings.{builder.Environment.EnvironmentName}.json"), optional: true, reloadOnChange: false);
+if (secretosBoveda != null) builder.Configuration.AddInMemoryCollection(secretosBoveda); // los secretos de la bóveda mandan sobre los archivos
 
 // Las variables de entorno y la línea de comandos siguen teniendo prioridad sobre los archivos.
 builder.Configuration.AddEnvironmentVariables();
@@ -112,12 +124,27 @@ builder.Services.AddSingleton<EmailService>();
 builder.Services.AddSingleton(builder.Configuration.GetSection("Negocio").Get<NegocioInfo>() ?? new NegocioInfo());
 builder.Services.AddSingleton(builder.Configuration.GetSection("Pagos").Get<PagoInfo>() ?? new PagoInfo());
 builder.Services.AddHostedService<RecordatorioCitasService>();
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton<PowerBiService>(); // panel interactivo con Power BI
 
 // Rotativa busca wkhtmltopdf.exe dentro de wwwroot/<relativePath>. Los binarios están en wwwroot/Rotativa/Rotativa,
 // así que se detecta la carpeta que realmente contiene el .exe (si estuviera en wwwroot/Rotativa también funciona).
 var rutaRotativa = new[] { "Rotativa", Path.Combine("Rotativa", "Rotativa") }
     .FirstOrDefault(r => File.Exists(Path.Combine(builder.Environment.WebRootPath, r, "wkhtmltopdf.exe"))) ?? "Rotativa";
 Rotativa.AspNetCore.RotativaConfiguration.Setup(builder.Environment.WebRootPath, rutaRotativa);
+
+builder.Services.AddMemoryCache(); // catálogo: lista de productos de cada categoría guardada unos segundos (ver CatalogoControllerBase)
+
+// Compresión: las páginas y los scripts viajan 70-80 % más livianos, lo que más se nota con datos móviles o señal débil.
+builder.Services.AddResponseCompression(o =>
+{
+    o.EnableForHttps = true;
+    o.Providers.Add<BrotliCompressionProvider>();
+    o.Providers.Add<GzipCompressionProvider>();
+    o.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "image/svg+xml", "application/manifest+json" });
+});
+builder.Services.Configure<BrotliCompressionProviderOptions>(o => o.Level = CompressionLevel.Fastest);
+builder.Services.Configure<GzipCompressionProviderOptions>(o => o.Level = CompressionLevel.Fastest);
 
 builder.Services.AddDistributedMemoryCache(); // almacenamiento de la sesión (guarda los códigos de verificación mientras se escriben)
 builder.Services.AddSession(options =>
@@ -158,6 +185,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseResponseCompression();
 
 // Cabeceras de seguridad: evitan que el sitio se incruste en otro, que el navegador "adivine" tipos de archivo
 // y limitan lo que la página puede pedir del dispositivo.
@@ -172,7 +200,22 @@ app.Use(async (ctx, next) =>
     await next();
 });
 
-app.UseStaticFiles(); // también sirve los archivos subidos en tiempo de ejecución (productos, logos, soportes)
+// También sirve los archivos subidos en tiempo de ejecución (productos, logos, soportes).
+// Caché del navegador: lo que ya se descargó no se vuelve a pedir (clave con conexión lenta o intermitente).
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        var ruta = ctx.Context.Request.Path.Value ?? "";
+        var cabeceras = ctx.Context.Response.Headers;
+        if (ruta.Equals("/sw.js", StringComparison.OrdinalIgnoreCase))
+            cabeceras.CacheControl = "no-cache"; // el service worker siempre se revalida para que las actualizaciones lleguen
+        else if (ctx.Context.Request.Query.ContainsKey("v") || ruta.StartsWith("/lib/", StringComparison.OrdinalIgnoreCase))
+            cabeceras.CacheControl = "public,max-age=31536000,immutable"; // css/js con ?v=hash (asp-append-version) y librerías
+        else if (ruta.StartsWith("/images/", StringComparison.OrdinalIgnoreCase))
+            cabeceras.CacheControl = "public,max-age=86400"; // imágenes: un día (si cambias una foto, se ve al día siguiente como máximo)
+    }
+});
 app.UseRouting();
 app.UseSession();
 app.UseAuthentication();

@@ -3,10 +3,11 @@ using Llanteria.Infrastructure;
 using Llanteria.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Llanteria.Controllers;
 
-/// <summary>Lógica común de los catálogos públicos con filtros (llantas, lubricantes y baterías).</summary>
+/// <summary>Lógica común de los catálogos públicos con filtros (llantas, lubricantes, baterías y accesorios).</summary>
 public abstract class CatalogoControllerBase : Controller
 {
     protected const int PorPagina = 20;
@@ -17,31 +18,53 @@ public abstract class CatalogoControllerBase : Controller
     protected abstract string Categoria { get; }
     protected virtual bool PorMedida => false;
 
-    /// <summary>Qué bloque de filtros adicionales va en el panel izquierdo: "Llantas", "Lubricantes", "Baterias" o "".</summary>
+    /// <summary>Qué bloque de filtros adicionales va en el panel izquierdo: "Llantas", "Lubricantes", "Baterias", "Accesorios" o "".</summary>
     protected virtual string ModoExtra => "";
 
     /// <summary>True si la petición pide solo el bloque de resultados (búsqueda en vivo), no la página completa.</summary>
     protected bool EsAjax() => Request.Headers["X-Requested-With"] == "XMLHttpRequest";
 
+    /// <summary>
+    /// Productos de la categoría con marca y promoción ya cargadas. Se guardan 45 segundos en memoria: antes cada petición
+    /// (y cada letra escrita en la búsqueda) hacía DOS consultas completas a la base; con conexiones lentas eso se notaba.
+    /// El precio con descuento y el "agotado" se siguen calculando al momento, así que un cambio de precio o de stock aparece en menos de un minuto.
+    /// </summary>
+    private List<Producto> CargarCategoria()
+    {
+        var cache = HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
+        return cache.GetOrCreate($"catalogo:{Categoria}:{PorMedida}", entrada =>
+        {
+            entrada.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(45);
+            IQueryable<Producto> baseQ = _db.Productos.AsNoTracking()
+                .Include(p => p.DetalleProducto).ThenInclude(d => d!.IdMarcaNavigation)
+                .Include(p => p.OfertaNavigation).ThenInclude(o => o!.EventoNavigation);
+            // Las llantas también se reconocen por tener medida cargada.
+            baseQ = PorMedida
+                ? baseQ.Where(p => p.Categoria == Categoria || (p.DetalleProducto != null && p.DetalleProducto.Ancho != null))
+                : baseQ.Where(p => p.Categoria == Categoria);
+            return baseQ.ToList();
+        })!;
+    }
+
+    private static bool Ig(string? a, string? b) => string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+
+    private static List<string> Valores(IEnumerable<Producto> productos, Func<DetalleProducto, string?> campo)
+        => productos.Select(p => p.DetalleProducto == null ? null : campo(p.DetalleProducto))
+            .Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
+
     protected CatalogoViewModel Armar(string? ancho, string? perfil, string? diametro, string[]? marca,
         int? min, int? max, string? orden, int pagina, string? tipo = null, string? qmarca = null,
         string? viscosidad = null, string? tipoAceite = null, string? amperaje = null, string? polaridad = null, int? garantia = null,
-        int? evento = null, int? promocion = null)
+        int? evento = null, int? promocion = null,
+        string? voltaje = null, string? tecnologia = null, string? aplicacion = null, string? presentacion = null,
+        string? tipoAccesorio = null, string? ubicacion = null, bool promociones = false)
     {
-        // Base: productos de la categoría. Las llantas también se reconocen por tener medida cargada.
-        IQueryable<Producto> baseQ = _db.Productos.AsNoTracking()
-            .Include(p => p.DetalleProducto).ThenInclude(d => d!.IdMarcaNavigation)
-            .Include(p => p.OfertaNavigation).ThenInclude(o => o!.EventoNavigation);
-        baseQ = PorMedida
-            ? baseQ.Where(p => p.Categoria == Categoria || (p.DetalleProducto != null && p.DetalleProducto.Ancho != null))
-            : baseQ.Where(p => p.Categoria == Categoria);
-
         var vm = new CatalogoViewModel
         {
             Ancho = Limpio(ancho),
             Perfil = Limpio(perfil),
             Diametro = Limpio(diametro),
-            Tipo = string.IsNullOrWhiteSpace(tipo) ? null : TiposVehiculo.Normalizar(tipo), // "Auto" o "Moto" (banner del inicio y chips)
+            Tipo = string.IsNullOrWhiteSpace(tipo) ? null : TiposVehiculo.Normalizar(tipo), // Auto, Moto, Pesada o Agricola (banner del inicio y chips)
             Marcas = (marca ?? Array.Empty<string>()).Where(m => !string.IsNullOrWhiteSpace(m)).Select(m => m.Trim()).Distinct().ToArray(),
             BuscarMarca = Limpio(qmarca),
             PrecioMin = min is > 0 ? min : null,
@@ -49,37 +72,54 @@ public abstract class CatalogoControllerBase : Controller
             Orden = orden is "precio-asc" or "precio-desc" ? orden : "nombre", // alfabético por defecto
             Evento = evento is > 0 ? evento : null,
             Promocion = promocion is > 0 ? promocion : null,
+            SoloPromociones = promociones,
             Viscosidad = Limpio(viscosidad),
             TipoAceite = Limpio(tipoAceite),
             Amperaje = Limpio(amperaje),
             Polaridad = Limpio(polaridad),
+            Voltaje = Limpio(voltaje),
+            TecnologiaBateria = Limpio(tecnologia),
+            Aplicacion = Limpio(aplicacion),
+            Presentacion = Limpio(presentacion),
+            TipoAccesorio = Limpio(tipoAccesorio),
+            Ubicacion = Limpio(ubicacion),
             Garantia = garantia is > 0 ? garantia : null,
             ModoExtra = ModoExtra
         };
 
         // Opciones del panel (calculadas sobre toda la categoría, no sobre el resultado filtrado).
-        var todos = baseQ.ToList();
+        var todos = CargarCategoria();
         if (PorMedida)
         {
-            vm.AnchosDisponibles = todos.Select(p => p.DetalleProducto?.Ancho).Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
-            vm.PerfilesDisponibles = todos.Select(p => p.DetalleProducto?.Perfil).Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
-            vm.DiametrosDisponibles = todos.Select(p => p.DetalleProducto?.Diametro).Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
+            vm.AnchosDisponibles = Valores(todos, d => d.Ancho);
+            vm.PerfilesDisponibles = Valores(todos, d => d.Perfil);
+            vm.DiametrosDisponibles = Valores(todos, d => d.Diametro);
         }
         if (ModeExtraEs("Lubricantes"))
         {
-            vm.ViscosidadesDisponibles = todos.Select(p => p.DetalleProducto?.Viscosidad).Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
-            vm.TiposAceiteDisponibles = todos.Select(p => p.DetalleProducto?.TipoAceite).Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
-            vm.GarantiasDisponibles = todos.Select(p => p.DetalleProducto?.GarantiaMeses).Where(v => v.HasValue).Select(v => v!.Value).Distinct().OrderBy(v => v).ToList();
+            vm.ViscosidadesDisponibles = Valores(todos, d => d.Viscosidad);
+            vm.TiposAceiteDisponibles = Valores(todos, d => d.TipoAceite);
+            vm.AplicacionesDisponibles = Valores(todos, d => d.AplicacionLubricante);
+            vm.PresentacionesDisponibles = Valores(todos, d => d.PresentacionLubricante);
         }
         if (ModeExtraEs("Baterias"))
         {
-            vm.AmperajesDisponibles = todos.Select(p => p.DetalleProducto?.Amperaje).Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
-            vm.PolaridadesDisponibles = todos.Select(p => p.DetalleProducto?.Polaridad).Where(v => !string.IsNullOrEmpty(v)).Select(v => v!).Distinct().OrderBy(v => v).ToList();
+            vm.AmperajesDisponibles = Valores(todos, d => d.Amperaje);
+            vm.PolaridadesDisponibles = Valores(todos, d => d.Polaridad);
+            vm.VoltajesDisponibles = Valores(todos, d => d.Voltaje);
+            vm.TecnologiasDisponibles = Valores(todos, d => d.TecnologiaBateria);
+        }
+        if (ModeExtraEs("Lubricantes") || ModeExtraEs("Baterias"))
             vm.GarantiasDisponibles = todos.Select(p => p.DetalleProducto?.GarantiaMeses).Where(v => v.HasValue).Select(v => v!.Value).Distinct().OrderBy(v => v).ToList();
+        if (ModeExtraEs("Accesorios"))
+        {
+            vm.TiposAccesorioDisponibles = Valores(todos, d => d.TipoAccesorio);
+            vm.UbicacionesDisponibles = Valores(todos, d => d.UbicacionAccesorio);
         }
         vm.MarcasDisponibles = todos
             .Select(p => p.DetalleProducto?.IdMarcaNavigation?.Nombre).Where(n => !string.IsNullOrEmpty(n))
             .GroupBy(n => n!).OrderBy(g => g.Key).Select(g => (g.Key, g.Count())).ToList();
+
         // Promociones vigentes que cubren productos de esta categoría, y los eventos a los que se deben.
         // Una promoción ligada a un evento solo se muestra el día del evento (de 12:00 a. m. a 11:59 p. m.).
         var hoy = DateTime.Now;
@@ -97,33 +137,35 @@ public abstract class CatalogoControllerBase : Controller
             vm.PrecioMasAlto = (int)Math.Ceiling(todos.Max(p => p.PrecioActual));
         }
 
-        // Filtros elegidos
-        var q = baseQ;
-        if (vm.Ancho != null) q = q.Where(p => p.DetalleProducto!.Ancho == vm.Ancho);
-        if (vm.Perfil != null) q = q.Where(p => p.DetalleProducto!.Perfil == vm.Perfil);
-        if (vm.Diametro != null) q = q.Where(p => p.DetalleProducto!.Diametro == vm.Diametro);
-        if (vm.Tipo != null) q = q.Where(p => p.DetalleProducto!.TipoVehiculo == vm.Tipo);
+        // Filtros elegidos. Todo se resuelve en memoria sobre la lista ya cargada (una sola consulta, y ni siquiera eso si está en caché).
+        IEnumerable<Producto> q = todos;
+        if (vm.Ancho != null) q = q.Where(p => Ig(p.DetalleProducto?.Ancho, vm.Ancho));
+        if (vm.Perfil != null) q = q.Where(p => Ig(p.DetalleProducto?.Perfil, vm.Perfil));
+        if (vm.Diametro != null) q = q.Where(p => Ig(p.DetalleProducto?.Diametro, vm.Diametro));
+        if (vm.Tipo != null) q = q.Where(p => Ig(p.DetalleProducto?.TipoVehiculo, vm.Tipo));
         if (vm.Marcas.Length > 0)
         {
-            var marcas = vm.Marcas;
-            q = q.Where(p => p.DetalleProducto != null && p.DetalleProducto.IdMarcaNavigation != null
-                             && marcas.Contains(p.DetalleProducto.IdMarcaNavigation.Nombre));
+            var marcas = new HashSet<string>(vm.Marcas, StringComparer.OrdinalIgnoreCase);
+            q = q.Where(p => p.DetalleProducto?.IdMarcaNavigation?.Nombre is { } n && marcas.Contains(n));
         }
         if (vm.BuscarMarca != null)
         {
             var texto = vm.BuscarMarca;
-            q = q.Where(p => p.DetalleProducto != null && p.DetalleProducto.IdMarcaNavigation != null
-                             && p.DetalleProducto.IdMarcaNavigation.Nombre.Contains(texto));
+            q = q.Where(p => p.DetalleProducto?.IdMarcaNavigation?.Nombre is { } n && n.Contains(texto, StringComparison.CurrentCultureIgnoreCase));
         }
-        if (vm.Viscosidad != null) q = q.Where(p => p.DetalleProducto!.Viscosidad == vm.Viscosidad);
-        if (vm.TipoAceite != null) q = q.Where(p => p.DetalleProducto!.TipoAceite == vm.TipoAceite);
-        if (vm.Amperaje != null) q = q.Where(p => p.DetalleProducto!.Amperaje == vm.Amperaje);
-        if (vm.Polaridad != null) q = q.Where(p => p.DetalleProducto!.Polaridad == vm.Polaridad);
-        if (vm.Garantia.HasValue) q = q.Where(p => p.DetalleProducto!.GarantiaMeses == vm.Garantia.Value);
+        if (vm.Viscosidad != null) q = q.Where(p => Ig(p.DetalleProducto?.Viscosidad, vm.Viscosidad));
+        if (vm.TipoAceite != null) q = q.Where(p => Ig(p.DetalleProducto?.TipoAceite, vm.TipoAceite));
+        if (vm.Aplicacion != null) q = q.Where(p => Ig(p.DetalleProducto?.AplicacionLubricante, vm.Aplicacion));
+        if (vm.Presentacion != null) q = q.Where(p => Ig(p.DetalleProducto?.PresentacionLubricante, vm.Presentacion));
+        if (vm.Amperaje != null) q = q.Where(p => Ig(p.DetalleProducto?.Amperaje, vm.Amperaje));
+        if (vm.Polaridad != null) q = q.Where(p => Ig(p.DetalleProducto?.Polaridad, vm.Polaridad));
+        if (vm.Voltaje != null) q = q.Where(p => Ig(p.DetalleProducto?.Voltaje, vm.Voltaje));
+        if (vm.TecnologiaBateria != null) q = q.Where(p => Ig(p.DetalleProducto?.TecnologiaBateria, vm.TecnologiaBateria));
+        if (vm.TipoAccesorio != null) q = q.Where(p => Ig(p.DetalleProducto?.TipoAccesorio, vm.TipoAccesorio));
+        if (vm.Ubicacion != null) q = q.Where(p => Ig(p.DetalleProducto?.UbicacionAccesorio, vm.Ubicacion));
+        if (vm.Garantia.HasValue) q = q.Where(p => p.DetalleProducto?.GarantiaMeses == vm.Garantia.Value);
 
-        // Lo que sigue se resuelve en memoria porque depende del precio con descuento (PrecioActual), que cambia con la fecha
-        // y la base de datos no puede calcular. Antes se ordenaba por PrecioVenta: un producto en promoción quedaba
-        // "fuera de lugar" frente al precio que se ve en la tarjeta. Ahora el filtro y el orden usan el precio real.
+        // El filtro y el orden usan el precio real (PrecioActual, con el descuento vigente), que cambia con la fecha.
         var filtrados = q.ToList();
 
         if (vm.Evento.HasValue)
@@ -131,11 +173,13 @@ public abstract class CatalogoControllerBase : Controller
             var idEvento = vm.Evento.Value;
             filtrados = filtrados.Where(p => p.OfertaNavigation != null && p.OfertaNavigation.IdEvento == idEvento && p.OfertaNavigation.VigenteAhora(hoy)).ToList();
         }
-        if (vm.Promocion.HasValue)
+        if (vm.Promocion.HasValue) // se conserva para los enlaces que ya apuntan a una promoción concreta
         {
             var idPromocion = vm.Promocion.Value;
             filtrados = filtrados.Where(p => p.IdOferta == idPromocion && p.OfertaNavigation != null && p.OfertaNavigation.VigenteAhora(hoy)).ToList();
         }
+        if (vm.SoloPromociones) // chip "Promociones": cualquier promoción vigente o descuento propio del producto
+            filtrados = filtrados.Where(p => p.EnPromocion || (p.OfertaNavigation != null && p.OfertaNavigation.VigenteAhora(hoy))).ToList();
         if (vm.PrecioMin.HasValue) filtrados = filtrados.Where(p => p.PrecioActual >= vm.PrecioMin.Value).ToList();
         if (vm.PrecioMax.HasValue) filtrados = filtrados.Where(p => p.PrecioActual <= vm.PrecioMax.Value).ToList();
 
@@ -148,7 +192,7 @@ public abstract class CatalogoControllerBase : Controller
         };
         vm.Resultados = Paginado<Producto>.De(ordenados, pagina, PorPagina);
 
-        // Un producto con inventario cargado y sin unidades disponibles se muestra como agotado.
+        // Un producto con inventario cargado y sin unidades disponibles se muestra como agotado (consulta en vivo, solo de la página mostrada).
         var ids = vm.Resultados.Items.Select(p => p.Id).ToList();
         var danado = StockHelper.IdEstado(_db, UsuariosIniciales.Estados.Danado);
         var inv = _db.Inventarios.AsNoTracking().Where(i => ids.Contains(i.IdProducto)).ToList()

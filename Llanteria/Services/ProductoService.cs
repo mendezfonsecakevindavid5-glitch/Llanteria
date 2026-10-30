@@ -107,6 +107,12 @@ public class ProductoService
                 existente.DetalleProducto.TipoVehiculo = obj.DetalleProducto.TipoVehiculo;
                 existente.DetalleProducto.Amperaje = obj.DetalleProducto.Amperaje;
                 existente.DetalleProducto.Polaridad = obj.DetalleProducto.Polaridad;
+                existente.DetalleProducto.Voltaje = obj.DetalleProducto.Voltaje;
+                existente.DetalleProducto.TecnologiaBateria = obj.DetalleProducto.TecnologiaBateria;
+                existente.DetalleProducto.AplicacionLubricante = obj.DetalleProducto.AplicacionLubricante;
+                existente.DetalleProducto.PresentacionLubricante = obj.DetalleProducto.PresentacionLubricante;
+                existente.DetalleProducto.TipoAccesorio = obj.DetalleProducto.TipoAccesorio;
+                existente.DetalleProducto.UbicacionAccesorio = obj.DetalleProducto.UbicacionAccesorio;
             }
         }
 

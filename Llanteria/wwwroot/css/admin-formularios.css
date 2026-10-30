@@ -1,0 +1,121 @@
+/* ==========================================================================
+   Formularios del menú lateral (panel): el MISMO estilo simple de Iniciar sesión, Registro y Restablecer contraseña.
+   - Tarjeta blanca de esquinas rectas con la sombra del login.
+   - Etiquetas negras en negrita, campos de 55 px con borde gris y esquinas rectas.
+   - Botón principal rojo de la marca (mayúsculas, en negrita) y "Cancelar" en blanco y negro.
+   - Errores en rojo de la marca.
+   Se carga después de admin.css (ver _AdminLayout) y solo toca formularios dentro de .content.
+   ========================================================================== */
+
+/* Tarjeta: cualquier panel que contenga un formulario */
+body.admin .content .panel:has(form) {
+    background: #fff;
+    border: 0;
+    border-radius: 0;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, .1), 0 5px 15px rgba(0, 0, 0, .05);
+}
+body.admin .content .panel:has(form) .panel-body { padding: 2.5rem; }
+@media (max-width: 575.98px) { body.admin .content .panel:has(form) .panel-body { padding: 1.5rem 1.25rem; } }
+
+/* Etiquetas */
+body.admin .content form .form-label,
+body.admin .content form label.form-check-label {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: .5rem;
+    text-align: left;
+}
+body.admin .content form .form-check-label { font-size: 1rem; font-weight: 600; display: inline; }
+
+/* Campos */
+body.admin .content form .form-control,
+body.admin .content form .form-select {
+    height: 55px;
+    min-height: 55px;
+    font-size: 1.1rem;
+    color: #000;
+    border: 1px solid #ced4da;
+    border-radius: 0;
+    padding: .5rem 15px;
+    background-color: #fff;
+}
+body.admin .content form textarea.form-control { height: auto; min-height: 0; padding-top: .8rem; }
+body.admin .content form input[type="file"].form-control { height: auto; padding: .85rem 15px; }
+body.admin .content form .form-control:focus,
+body.admin .content form .form-select:focus { border-color: #000; box-shadow: 0 0 0 .2rem rgba(0, 0, 0, .08); }
+body.admin .content form .form-control[readonly],
+body.admin .content form .form-control:disabled { background: #f4f5f7; }
+
+/* Campos compactos (líneas de factura, filtros de las tablas): mismo estilo, menor altura */
+body.admin .content form .form-control-sm,
+body.admin .content form .form-select-sm {
+    height: 40px;
+    min-height: 40px;
+    font-size: .95rem;
+    border-radius: 0;
+    padding: .35rem .75rem;
+}
+
+/* Casillas y opciones */
+body.admin .content form .form-check-input { border-radius: 0; border-color: #6b7280; width: 1.15em; height: 1.15em; }
+body.admin .content form .form-check-input[type="radio"] { border-radius: 50%; }
+body.admin .content form .form-check-input:checked { background-color: var(--llanteria-primary, #C92B0A); border-color: var(--llanteria-primary, #C92B0A); }
+
+/* Textos de ayuda y errores */
+body.admin .content form .form-text { color: #6c757d; font-size: .9rem; }
+body.admin .content form .text-danger,
+body.admin .content form .field-validation-error,
+body.admin .content form .validation-summary-errors {
+    color: var(--llanteria-primary, #C92B0A) !important;
+    font-weight: 600;
+    font-size: .95rem;
+}
+body.admin .content form .input-validation-error { border-color: var(--llanteria-primary, #C92B0A); }
+
+/* Secciones dentro del formulario */
+body.admin .content form .form-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+    font-size: .8rem;
+    letter-spacing: .1em;
+    color: #6c757d;
+}
+
+/* Botones: principal rojo, secundario blanco y negro, esquinas rectas */
+body.admin .content form .btn-brand,
+body.admin .content form button[type="submit"].btn-brand {
+    background-color: var(--llanteria-primary, #C92B0A) !important;
+    border: 0 !important;
+    border-radius: 0;
+    color: #fff !important;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 1rem 1.75rem;
+    text-transform: uppercase;
+    transition: filter .3s ease;
+}
+body.admin .content form .btn-brand:hover { filter: brightness(.85); }
+body.admin .content form .btn-line {
+    background: #fff;
+    border: 1px solid #000;
+    border-radius: 0;
+    color: #000;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 1rem 1.5rem;
+    text-transform: uppercase;
+    transition: background-color .2s ease, color .2s ease;
+}
+body.admin .content form .btn-line:hover { background: #000; color: #fff; }
+body.admin .content form .btn-sm { font-size: .9rem; padding: .5rem .9rem; }
+body.admin .content form .form-actions { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1.5rem; gap: .75rem; }
+@media (max-width: 575.98px) {
+    body.admin .content form .form-actions { flex-direction: column-reverse; }
+    body.admin .content form .form-actions .btn { width: 100%; }
+}
+
+/* Panel "Cargar desde Excel" y cuadros de ayuda dentro de formularios */
+body.admin .content .panel-importar-excel { border-radius: 0; background: #f8f9fa; }
