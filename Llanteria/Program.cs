@@ -173,8 +173,11 @@ using (var scope = app.Services.CreateScope())
     Paso("crear la base de datos", () => db.Database.EnsureCreated());
     Paso("actualizar el esquema", () => EsquemaUpdater.Aplicar(db));
     Paso("datos iniciales (roles y catálogos)", () => UsuariosIniciales.AsegurarCatalogos(db));
-    Paso("llantería inicial", () => LlanteriaInicial.Asegurar(db, scope.ServiceProvider.GetRequiredService<NegocioInfo>()));
     Paso("usuarios iniciales (administrador, empleado y usuario)", () => UsuariosIniciales.Asegurar(db, log));
+    // Datos de ejemplo (INSERT INTO incluidos en el proyecto): solo en una base recién creada. Va antes de LlanteriaInicial
+    // (para que lo que quede sin sede se asigne a la primera llantería) y antes del cifrado (para cifrar lo recién insertado).
+    Paso("datos de ejemplo (Scripts/DatosEjemploInicial.sql)", () => DatosEjemplo.Asegurar(db, log, app.Configuration, app.Environment));
+    Paso("llantería inicial", () => LlanteriaInicial.Asegurar(db, scope.ServiceProvider.GetRequiredService<NegocioInfo>()));
     Paso("cifrado de datos existentes", () => CifradoMigrador.Aplicar(db, log));
 }
 
