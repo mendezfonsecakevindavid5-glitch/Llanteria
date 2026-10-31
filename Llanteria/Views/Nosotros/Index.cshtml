@@ -1,0 +1,91 @@
+@inject Llanteria.Infrastructure.NegocioInfo Negocio
+@{
+    ViewData["Title"] = "Nosotros";
+    ViewData["Description"] = $"Ficha de {Negocio.Nombre}: datos de contacto, horario, ubicación y servicios.";
+    var servicios = ViewBag.Servicios as List<Llanteria.Models.ServicioViewModel> ?? new();
+}
+
+<div class="container py-5">
+    <div class="mb-4">
+        <span class="eyebrow">Ficha del negocio</span>
+        <h1 class="section-title mt-1">@Negocio.Nombre</h1>
+        <p class="section-sub">
+            Taller y comercio de autopartes en @Negocio.Ciudad.
+            @if (!string.IsNullOrWhiteSpace(Negocio.Nit))
+            {
+                <span>NIT @Negocio.Nit.</span>
+            }
+        </p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="contact-info-card">
+                <div class="contact-info-item">
+                    <div class="contact-info-icon"><i class="fa-solid fa-phone"></i></div>
+                    <div class="contact-info-text"><label>Teléfono</label><a href="tel:@Negocio.TelefonoLimpio">@Negocio.Telefono</a></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-info-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                    <div class="contact-info-text"><label>WhatsApp</label><a href="@Negocio.LinkWhatsApp(null)" target="_blank" rel="noopener">Escríbenos ahora</a></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-info-icon"><i class="fa-solid fa-envelope"></i></div>
+                    <div class="contact-info-text"><label>Correo</label><a href="mailto:@Negocio.Correo">@Negocio.Correo</a></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-info-icon"><i class="fa-solid fa-clock"></i></div>
+                    <div class="contact-info-text"><label>Horario</label><p>Lunes a viernes: @Negocio.HorarioSemana</p><p>Sábados: @Negocio.HorarioSabado</p></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-info-icon"><i class="fa-solid fa-location-dot"></i></div>
+                    <div class="contact-info-text"><label>Ubicación</label><p>@Negocio.Direccion</p><a href="@Negocio.ComoLlegar" target="_blank" rel="noopener">Cómo llegar</a></div>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Negocio.Instagram) || !string.IsNullOrWhiteSpace(Negocio.Facebook)
+                     || !string.IsNullOrWhiteSpace(Negocio.LinkedIn) || !string.IsNullOrWhiteSpace(Negocio.YouTube))
+                {
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon"><i class="fa-solid fa-share-nodes"></i></div>
+                        <div class="contact-info-text">
+                            <label>Redes</label>
+                            <p class="d-flex gap-3">
+                                @if (!string.IsNullOrWhiteSpace(Negocio.Instagram)) { <a href="@Negocio.Instagram" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i></a> }
+                                @if (!string.IsNullOrWhiteSpace(Negocio.Facebook)) { <a href="@Negocio.Facebook" target="_blank" rel="noopener"><i class="fa-brands fa-facebook"></i></a> }
+                                @if (!string.IsNullOrWhiteSpace(Negocio.LinkedIn)) { <a href="@Negocio.LinkedIn" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin"></i></a> }
+                                @if (!string.IsNullOrWhiteSpace(Negocio.YouTube)) { <a href="@Negocio.YouTube" target="_blank" rel="noopener"><i class="fa-brands fa-youtube"></i></a> }
+                            </p>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="map-frame mt-4">
+                <iframe title="Ubicación de @Negocio.Nombre" src="@Negocio.MapaIncrustado" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <h2 class="h4 mb-3">Qué ofrecemos</h2>
+            @if (servicios.Any())
+            {
+                <div class="emp-tags mb-4">
+                    @foreach (var s in servicios) { <span>@s.Titulo</span> }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-4">El catálogo de servicios se administra desde el panel.</p>
+            }
+
+            <h2 class="h4 mb-3">Sobre nosotros</h2>
+            <p class="text-muted">
+                En @Negocio.Nombre ofrecemos soluciones integrales en neumáticos, baterías, lubricantes y mantenimiento
+                automotriz, con respaldo y garantía escrita en productos y mano de obra. Atendemos tanto al público
+                en general como a empresas con flotas de vehículos.
+            </p>
+
+            <a asp-controller="Contacto" asp-action="Index" class="btn btn-hyper-action mt-2">Hablar con el taller</a>
+        </div>
+    </div>
+</div>

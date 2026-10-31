@@ -5,6 +5,7 @@
     bool isHomeIndex = currentController.Equals("Home", StringComparison.OrdinalIgnoreCase) && currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase);
 
     bool isInicio = isHomeIndex;
+    bool isNosotros = currentController.Equals("Nosotros", StringComparison.OrdinalIgnoreCase);
     bool isLlantas = currentController.Equals("Llantas", StringComparison.OrdinalIgnoreCase);
     bool isBaterias = currentController.Equals("Baterias", StringComparison.OrdinalIgnoreCase);
     bool isLubricantes = currentController.Equals("Lubricantes", StringComparison.OrdinalIgnoreCase);
@@ -65,6 +66,9 @@
                     <ul class="navbar-nav me-auto align-items-xl-center gap-xl-1" id="navMenuList">
                         <li class="nav-item">
                             <a class="nav-link @(isInicio ? "is-active" : "")" asp-controller="Home" asp-action="Index">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isNosotros ? "is-active" : "")" asp-controller="Nosotros" asp-action="Index">Nosotros</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @(isLlantas ? "is-active" : "")" asp-controller="Llantas" asp-action="Index">Llantas</a>
