@@ -127,6 +127,58 @@
     <div class="col-12">
         <div class="panel">
             <div class="panel-head">
+                <span>Sugerencias de reabastecimiento</span>
+                <span class="tag @(Model.SugerenciasReabastecimiento.Any() ? "tag-bad" : "tag-ok")">@Model.SugerenciasReabastecimiento.Count</span>
+            </div>
+            @if (Model.SugerenciasReabastecimiento.Any())
+            {
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th class="text-end">Stock actual</th>
+                            <th class="text-end">Venta diaria prom.</th>
+                            <th class="text-end">Se agota en</th>
+                            <th class="text-end">Pedir</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in Model.SugerenciasReabastecimiento)
+                        {
+                            <tr>
+                                <td class="cell-title">@s.Producto</td>
+                                <td class="text-end">@s.StockActual <span class="cell-sub">/ mín. @s.StockMinimo</span></td>
+                                <td class="text-end">@s.VentaDiariaPromedio.ToString("0.##") u/día</td>
+                                <td class="text-end">
+                                    @if (s.DiasParaAgotarse.HasValue)
+                                    {
+                                        <span class="tag @(s.DiasParaAgotarse <= 3 ? "tag-bad" : "tag-warn")">@s.DiasParaAgotarse días</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="cell-sub">sin ventas recientes</span>
+                                    }
+                                </td>
+                                <td class="text-end"><strong>@s.CantidadSugerida</strong> und.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <p class="small text-muted px-3 pb-2 mb-0">
+                    Calculado con el ritmo de venta de los últimos @Llanteria.Infrastructure.SugerenciasInventario.DiasHistorial días.
+                    La cantidad sugerida cubre @Llanteria.Infrastructure.SugerenciasInventario.DiasReposicion días de venta estimada; ajústala según tu proveedor.
+                </p>
+            }
+            else
+            {
+                <div class="empty-state">Ningún producto necesita reposición por ahora.</div>
+            }
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="panel">
+            <div class="panel-head">
                 <span>Más vendidos (últimos 90 días)</span>
             </div>
             @if (Model.MasVendidos.Any())

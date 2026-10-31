@@ -51,7 +51,8 @@ public class DashboardController : Controller
             StockBajo = _context.Inventarios.AsNoTracking()
                 .Include(i => i.IdProductoNavigation).Include(i => i.IdBodegaNavigation)
                 .Where(i => i.StockActual != null && i.StockMinimo != null && i.StockActual <= i.StockMinimo)
-                .OrderBy(i => i.StockActual).Take(8).ToList()
+                .OrderBy(i => i.StockActual).Take(8).ToList(),
+            SugerenciasReabastecimiento = Infrastructure.SugerenciasInventario.Calcular(_context, hoy)
         };
 
         // Más vendidos de los últimos 90 días (productos y servicios facturados, por descripción).

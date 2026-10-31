@@ -14,6 +14,7 @@ public class DashboardViewModel
     public List<Factura> UltimasFacturas { get; set; } = new();
     public List<Inventario> StockBajo { get; set; } = new();
     public List<TopProducto> MasVendidos { get; set; } = new();
+    public List<Infrastructure.SugerenciaReabastecimiento> SugerenciasReabastecimiento { get; set; } = new();
 }
 
 public record TopProducto(string Nombre, int Unidades, decimal Total);
