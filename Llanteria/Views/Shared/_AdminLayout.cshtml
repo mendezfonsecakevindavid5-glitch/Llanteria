@@ -84,7 +84,9 @@
                 <button class="sidebar-toggle" type="button" id="sidebarToggle" aria-label="Contraer o expandir el menú" title="Contraer / expandir">
                     <i class="fa-solid fa-bars-staggered"></i>
                 </button>
-                <a class="sidebar-brand brand-matrix" asp-controller="@(esPersonal ? "Dashboard" : items.First(Visible).C)" asp-action="Index" aria-label="Llandupar, panel"><span class="brand-llan">Llan</span><span class="brand-dupar">dupar</span></a>
+                @* FirstOrDefault en vez de First: si el usuario no tiene ningún ítem visible (por ejemplo,
+                   un rol público que terminó aquí por error), no se rompe la página; vuelve al inicio. *@
+                <a class="sidebar-brand brand-matrix" asp-controller="@(esPersonal ? "Dashboard" : items.Where(Visible).Select(i => i.C).FirstOrDefault() ?? "Home")" asp-action="Index" aria-label="Llandupar, panel"><span class="brand-llan">Llan</span><span class="brand-dupar">dupar</span></a>
             </div>
 
             <nav class="sidebar-nav">
