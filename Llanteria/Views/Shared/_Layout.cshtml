@@ -6,6 +6,7 @@
 
     bool isInicio = isHomeIndex;
     bool isNosotros = currentController.Equals("Nosotros", StringComparison.OrdinalIgnoreCase);
+    bool isIndicadores = currentController.Equals("Indicadores", StringComparison.OrdinalIgnoreCase);
     bool isLlantas = currentController.Equals("Llantas", StringComparison.OrdinalIgnoreCase);
     bool isBaterias = currentController.Equals("Baterias", StringComparison.OrdinalIgnoreCase);
     bool isLubricantes = currentController.Equals("Lubricantes", StringComparison.OrdinalIgnoreCase);
@@ -90,6 +91,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @(isContacto ? "is-active" : "")" asp-controller="Contacto" asp-action="Index">Contacto</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(isIndicadores ? "is-active" : "")" asp-controller="Indicadores" asp-action="Index">Indicadores</a>
                         </li>
                         @if (User.Identity!.IsAuthenticated)
                         {

@@ -1,0 +1,64 @@
+@model Llanteria.Models.IndicadoresViewModel
+@inject Llanteria.Infrastructure.NegocioInfo Negocio
+@{
+    ViewData["Title"] = "Indicadores";
+    ViewData["Description"] = $"Indicadores del negocio de {Negocio.Nombre}: clientes, vehículos y servicios atendidos.";
+    var maximo = Math.Max(1, Model.VehiculosPorMes.Count == 0 ? 1 : Model.VehiculosPorMes.Max(m => m.Cantidad));
+}
+
+<div class="container py-5">
+    <div class="mb-4">
+        <span class="eyebrow">Indicadores</span>
+        <h1 class="section-title mt-1">Cómo va @Negocio.Nombre</h1>
+        <p class="section-sub">Cifras propias del negocio, actualizadas con la operación real del taller. No incluye datos de dinero ni información de clientes.</p>
+    </div>
+
+    <div class="ind-grid">
+        <div class="ind-card">
+            <div class="ind-value">@Model.VehiculosAtendidosAnio</div>
+            <div class="ind-label">Vehículos atendidos este año</div>
+        </div>
+        <div class="ind-card">
+            <div class="ind-value">@Model.ServiciosRealizadosAnio</div>
+            <div class="ind-label">Citas de servicio completadas este año</div>
+        </div>
+        <div class="ind-card">
+            <div class="ind-value">@Model.TotalClientes</div>
+            <div class="ind-label">Clientes registrados</div>
+        </div>
+        <div class="ind-card">
+            <div class="ind-value">@Model.TotalProductos</div>
+            <div class="ind-label">Productos en catálogo</div>
+        </div>
+    </div>
+
+    @if (Model.TotalResenias > 0)
+    {
+        <div class="ind-card mt-3" style="max-width:420px">
+            <div class="ind-value">@Model.PromedioResenias.ToString("0.0") <span style="font-size:1.1rem;color:#5b626b">/ 5</span></div>
+            <div class="ind-label">Calificación promedio de @Model.TotalResenias reseña(s) de clientes</div>
+        </div>
+    }
+
+    <div class="ind-chart">
+        <h2 class="h5 mb-3">Vehículos entregados por mes</h2>
+        @if (Model.VehiculosPorMes.Any(m => m.Cantidad > 0))
+        {
+            <div class="ind-bars">
+                @foreach (var m in Model.VehiculosPorMes)
+                {
+                    <div class="ind-bar-col" title="@m.Etiqueta: @m.Cantidad vehículo(s)">
+                        <div class="ind-bar-count">@m.Cantidad</div>
+                        <div class="ind-bar" style="height:@((int)(m.Cantidad / (double)maximo * 100))%"></div>
+                        <div class="ind-bar-label">@m.Etiqueta</div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted mb-0">Todavía no hay órdenes de trabajo entregadas en este período.</p>
+        }
+        <p class="ind-nota">Órdenes de trabajo marcadas como "Entregado", últimos 6 meses.</p>
+    </div>
+</div>
